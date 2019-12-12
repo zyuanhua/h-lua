@@ -2,7 +2,6 @@ hslk_global = {
 
     dzapi_map_level_award = {},
     item_moment = {},
-    item_cooldown = {},
     env_model = {},
 
     skill_item_separate = 0,
@@ -104,12 +103,6 @@ end
 qty = cj.LoadInteger(cg.hash_hslk, cj.StringHash("item_moment"), -1) - 1
 for i = 1, qty do
     table.insert(hslk_global.item_moment, cj.LoadInteger(cg.hash_hslk, cj.StringHash("item_moment"), i))
-end
---空冷却
-qty = cj.LoadInteger(cg.hash_hslk, cj.StringHash("item_cooldown"), -1) - 1
-for i = 0, qty do
-    hslk_global.item_cooldown[i] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("item_cooldown"), i)
-    hslk_global.item_cooldown[i] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("item_cooldown"), i)
 end
 
 --环境系统

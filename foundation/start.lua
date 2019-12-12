@@ -1,4 +1,7 @@
 
+-- 加载debug
+require "foundation.debug"
+
 -- 加载json
 require "foundation.json"
 

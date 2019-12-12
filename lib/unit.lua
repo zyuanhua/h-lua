@@ -108,8 +108,16 @@ hunit.create = function(bean)
     if (bean.qty == nil) then
         bean.qty = 1
     end
-    if (bean.whichPlayer == nil or bean.unitId == nil or bean.qty <= 0) then
-        print('create unit fail -pl-id')
+    if (bean.whichPlayer == nil) then
+        print('create unit fail -pl')
+        return
+    end
+    if (bean.unitId == nil) then
+        print('create unit fail -id')
+        return
+    end
+    if (bean.qty <= 0) then
+        print('create unit fail -qty')
         return
     end
     if (bean.x == nil and bean.y == nil and bean.loc == nil) then

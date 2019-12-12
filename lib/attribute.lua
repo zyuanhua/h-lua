@@ -246,8 +246,12 @@ hattr.registerAll = function(whichUnit)
     local unitId = hSys.getObjChar(cj.GetUnitTypeId(whichUnit))
     print(cj.GetUnitTypeId(whichUnit))
     print(unitId)
+    if (hslk_global.unitsKV[unitId] == nil) then
+        print(unitId .. "未注册 hslk_global.unitsKV")
+        return
+    end
     hRuntime.attribute[whichUnit] = {
-        primary = hslk_global.unitsKV[unitId].Primary,
+        primary = hslk_global.unitsKV[unitId].Primary or "NIL",
         be_hunting = false,
         --
         life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE),
