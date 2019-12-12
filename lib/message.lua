@@ -2,8 +2,17 @@
 local hmessage = {}
 
 -- 在屏幕打印信息给所有玩家
-hmessage.echo = function(msg)
-    cj.DisplayTextToForce(cj.GetPlayersAll(), msg)
+hmessage.echo = function(msg, duration)
+    if (duration == nil) then
+        duration = 0
+    end
+    for i = 0, 15, 1 do
+        if (duration < 5) then
+            cj.DisplayTextToPlayer(cj.Player(i), 0, 0, msg)
+        else
+            cj.DisplayTimedTextToPlayer(cj.Player(i), 0, 0, duration, msg)
+        end
+    end
 end
 -- 在屏幕(x.y)处打印信息给某玩家
 hmessage.echoXY = function(whichPlayer, msg, x, y, duration)

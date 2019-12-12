@@ -51,6 +51,7 @@ hhero = require "lib.hero" -- 英雄
 hskill = require "lib.skill" -- 技能
 hattr = require "lib.attribute" -- 属性
 hitem = require "lib.item" -- 物品
+hdialog = require "lib.dialog" -- 对话框
 
 -- 最后的初始化run
 -- last init
