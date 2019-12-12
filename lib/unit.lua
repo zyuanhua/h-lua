@@ -155,7 +155,7 @@ hunit.create = function(bean)
     if (bean.qty > 1) then
         g = cj.CreateGroup()
     end
-    for i = 0, bean.qty, 1 do
+    for i = 1, bean.qty, 1 do
         if (bean.x ~= nil and bean.y ~= nil) then
             u = cj.CreateUnit(bean.whichPlayer, bean.unitId, bean.x, bean.y, facing)
         elseif (bean.loc ~= nil) then
