@@ -26,7 +26,7 @@ hmark.display = function(whichPlayer, path, through, startPercent, endPercent, d
     if (during < through + 1) then
         during = through + 1
     end
-    htime.setTimeout(during, function(t, td)
+    htime.setTimeout(during, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         hmark.hide(whichPlayer)

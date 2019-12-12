@@ -1,4 +1,3 @@
-
 local hcamera = {}
 
 -- 重置镜头
@@ -71,7 +70,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
     cameraData[whichPlayer].isShocking = true
     if (whichType == 'shake') then
         cj.CameraSetTargetNoiseForPlayer(whichPlayer, scale, 1.00)
-        htime.setTimeout(during, function(t, td)
+        htime.setTimeout(during, nil, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cameraData[whichPlayer].isShocking = false
@@ -81,7 +80,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         end)
     elseif (whichType == 'quake') then
         cj.CameraSetEQNoiseForPlayer(whichPlayer, scale)
-        htime.setTimeout(during, function(t, td)
+        htime.setTimeout(during, nil, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cameraData[whichPlayer].isShocking = false

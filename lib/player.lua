@@ -152,7 +152,7 @@ hplayer.diffGoldRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].goldRatio = hRuntime.player[whichPlayer].goldRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
+            htime.setTimeout(during, nil, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 hRuntime.player[whichPlayer].goldRatio = hRuntime.player[whichPlayer].goldRatio - diff
@@ -178,7 +178,7 @@ hplayer.diffLumberRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].lumberRatio = hRuntime.player[whichPlayer].lumberRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
+            htime.setTimeout(during, nil, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 hRuntime.player[whichPlayer].lumberRatio = hRuntime.player[whichPlayer].lumberRatio - diff
@@ -204,7 +204,7 @@ hplayer.diffExpRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].expRatio = hRuntime.player[whichPlayer].expRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
+            htime.setTimeout(during, nil, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 hRuntime.player[whichPlayer].expRatio = hRuntime.player[whichPlayer].expRatio - diff
@@ -230,7 +230,7 @@ hplayer.diffSellRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].sellRatio = hRuntime.player[whichPlayer].sellRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
+            htime.setTimeout(during, nil, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 hRuntime.player[whichPlayer].sellRatio = hRuntime.player[whichPlayer].sellRatio - diff

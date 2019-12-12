@@ -1,4 +1,3 @@
-
 local hskill = {
     SKILL_TOKEN = hslk_global.unit_token,
     SKILL_BREAK = hslk_global.skill_break,
@@ -163,7 +162,7 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
         percent = percent,
         during = during,
     })
-    hRuntime.skill[u].swimTimer = htime.setTimeout(during, function(t, td)
+    hRuntime.skill[u].swimTimer = htime.setTimeout(during, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
@@ -225,7 +224,7 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
         percent = percent,
         during = during,
     })
-    htime.setTimeout(during, function(t, td)
+    htime.setTimeout(during, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         hRuntime.skill[u].silentLevel = hRuntime.skill[u].silentLevel - 1
@@ -293,7 +292,7 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
         percent = percent,
         during = during,
     })
-    htime.setTimeout(during, function(t, td)
+    htime.setTimeout(during, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         hRuntime.skill[u].unarmLevel = hRuntime.skill[u].unarmLevel - 1
@@ -312,7 +311,7 @@ hskill.avoid = function(whichUnit)
     cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
     cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
     cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
-    htime.setTimeout(0.00, function(t, td)
+    htime.setTimeout(0.00, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
@@ -327,7 +326,7 @@ hskill.invulnerableZero = function(whichUnit)
         return
     end
     cj.SetUnitInvulnerable(whichUnit, true)
-    htime.setTimeout(0.00, function(t, td)
+    htime.setTimeout(0.00, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.SetUnitInvulnerable(whichUnit, false)
@@ -342,7 +341,7 @@ hskill.invulnerable = function(whichUnit, during)
         during = 0.00  -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
     end
     cj.SetUnitInvulnerable(whichUnit, true)
-    htime.setTimeout(during, function(t, td)
+    htime.setTimeout(during, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.SetUnitInvulnerable(whichUnit, false)
@@ -359,7 +358,7 @@ hskill.invulnerableGroup = function(whichGroup, during)
     cj.ForGroup(whichGroup, function()
         cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
     end)
-    htime.setTimeout(during, function(t, td)
+    htime.setTimeout(during, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.ForGroup(whichGroup, function()
@@ -400,7 +399,7 @@ hskill.pause = function(whichUnit, during, pauseColor)
     end
     cj.SetUnitTimeScalePercent(whichUnit, 0.00)
     cj.PauseUnit(whichUnit, true)
-    hRuntime.skill[whichUnit].pauseTimer = htime.setTimeout(during + prevTimeRemaining, function(t, td)
+    hRuntime.skill[whichUnit].pauseTimer = htime.setTimeout(during + prevTimeRemaining, nil, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.PauseUnit(whichUnit, false)
@@ -419,7 +418,7 @@ hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
         if (abilityLevel > 0) then
             cj.SetUnitAbilityLevel(whichUnit, whichAbility, abilityLevel)
         end
-        htime.setTimeout(during, function(t, td)
+        htime.setTimeout(during, nil, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cj.UnitRemoveAbility(whichUnit, whichAbility)
