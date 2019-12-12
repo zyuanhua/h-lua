@@ -23,11 +23,9 @@ hdialog.create = function(whichPlayer, options, call)
     end)
     cj.TriggerRegisterDialogEvent(dtg, d)
     if (whichPlayer == nil) then
-        print("whichPlayer == nil")
         for i = 1, 16, 1 do
             if (cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER
                     and cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING) then
-                print("whichPlayer == x" .. cj.GetPlayerName(hplayer.players[i]))
                 whichPlayer = hplayer.players[i]
                 break
             end
