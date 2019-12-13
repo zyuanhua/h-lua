@@ -140,3 +140,4 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
     end
 end
 
+return htextTag

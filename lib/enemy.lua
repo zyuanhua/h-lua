@@ -5,6 +5,7 @@ local henemy = {
     numberLimit = 100000, -- 充当敌人的玩家调用次数上限，达到就全体归0
     name = "敌军",
     color = cj.ConvertPlayerColor(12),
+    shareSight = false,
 }
 
 --- 设置敌人的名称
@@ -23,6 +24,15 @@ end
 --- 获取敌人的颜色
 henemy.getColor = function()
     return henemy.color
+end
+
+--- 设置敌人是否共享视野
+henemy.setShareSight = function(b)
+    henemy.shareSight = b
+end
+--- 获取敌人是否共享视野
+henemy.isShareSight = function()
+    return henemy.shareSight
 end
 
 --- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
@@ -90,7 +100,8 @@ end
     }
 ]]
 henemy.create = function(bean)
-    bean.whichPlayer = henemy.getPlayer(bean.qty)
+    bean.whichPlayer = henemy.getPlayer(bean.qty or 1)
+    bean.isShareSight = true
     return hunit.create(bean)
 end
 

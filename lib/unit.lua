@@ -9,16 +9,16 @@ hunit.getCurLife = function(u)
     return cj.GetUnitState(u, UNIT_STATE_LIFE)
 end
 -- 设置单位的当前生命
-hunit.setLife = function(u, val)
+hunit.setCurLife = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_LIFE, val)
 end
 -- 增加单位的当前生命
-hunit.addLife = function(u, val)
-    cj.SetUnitState(u, UNIT_STATE_LIFE, hunit.curLife(u) + val)
+hunit.addCurLife = function(u, val)
+    cj.SetUnitState(u, UNIT_STATE_LIFE, hunit.getCurLife(u) + val)
 end
 -- 减少单位的当前生命
-hunit.subLife = function(u, val)
-    cj.SetUnitState(u, UNIT_STATE_LIFE, hunit.getLife(u) - val)
+hunit.subCurLife = function(u, val)
+    cj.SetUnitState(u, UNIT_STATE_LIFE, hunit.getCurLife(u) - val)
 end
 -- 获取单位的最大魔法
 hunit.getMaxMana = function(u)
@@ -29,32 +29,32 @@ hunit.getCurMana = function(u)
     return cj.GetUnitState(u, UNIT_STATE_MANA)
 end
 -- 设置单位的当前魔法
-hunit.setMana = function(u, val)
+hunit.setCurMana = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_MANA, val)
 end
 -- 增加单位的当前魔法
-hunit.addMana = function(u, val)
-    cj.SetUnitState(u, UNIT_STATE_MANA, hunit.getMana(u) + val)
+hunit.addCurMana = function(u, val)
+    cj.SetUnitState(u, UNIT_STATE_MANA, hunit.getCurMana(u) + val)
 end
 -- 减少单位的当前魔法
-hunit.subMana = function(u, val)
-    cj.SetUnitState(u, UNIT_STATE_MANA, hunit.getMana(u) - val)
+hunit.subCurMana = function(u, val)
+    cj.SetUnitState(u, UNIT_STATE_MANA, hunit.getCurMana(u) - val)
 end
 
 -- 获取单位百分比生命
-hunit.getLifePercent = function(u)
+hunit.getCurLifePercent = function(u)
     return cj.GetUnitLifePercent(u)
 end
 -- 设置单位百分比生命
-hunit.setLifePercent = function(u, val)
+hunit.setCurLifePercent = function(u, val)
     cj.SetUnitLifePercentBJ(u, val)
 end
 -- 获取单位百分比魔法
-hunit.getManaPercent = function(u)
+hunit.getCurManaPercent = function(u)
     return cj.GetUnitManaPercent(u)
 end
 -- 设置单位百分比魔法
-hunit.setManaPercent = function(u, val)
+hunit.setCurManaPercent = function(u, val)
     cj.SetUnitManaPercentBJ(u, val)
 end
 -- 设置单位的生命周期
@@ -217,6 +217,12 @@ hunit.create = function(bean)
             cj.UnitAddAbility(u, 'Aloc')
             cj.PauseUnit(u, true)
             cj.SetUnitInvulnerable(u, true)
+        end
+        --是否与共享视野
+        if (bean.isShareSight ~= nil and bean.isShareSight == true) then
+            for pi = 0, 15, 1 do
+                cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
+            end
         end
         --记入realtime
         hRuntime.unit[u] = {
