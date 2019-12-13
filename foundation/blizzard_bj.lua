@@ -230,4 +230,10 @@ end
 bj_mapInitialPlayableArea = cj.Rect(cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT), cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM), cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT), cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP))
 bj_mapInitialCameraBounds = bj.GetCurrentCameraBoundsMapRectBJ()
 
+bj.TriggerRegisterEnterRectSimple = function(trig, r)
+    local rectRegion = cj.CreateRegion()
+    cj.RegionAddRect(rectRegion, r)
+    return cj.TriggerRegisterEnterRegion(trig, rectRegion, null)
+end
+
 return bj

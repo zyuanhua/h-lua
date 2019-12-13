@@ -79,7 +79,7 @@ htime.setTimeout = function(time, title, myfunc)
     if (title ~= nil) then
         td = cj.CreateTimerDialog(t)
         cj.TimerDialogSetTitle(td, title)
-        cj.TimerDialogDisplay(td, false)
+        cj.TimerDialogDisplay(td, true)
     end
     cj.TimerStart(t, time, false, function()
         myfunc(t, td)
