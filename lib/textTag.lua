@@ -14,7 +14,7 @@ htextTag.create = function(msg, size, color, opacity, during)
     end
     local ttg = cj.CreateTextTag()
     if (color ~= nil and string.len(color) == 6) then
-        msg = "|cff" + color + msg + "|r"
+        msg = "|cff" .. color .. msg .. "|r"
     end
     hRuntime.textTag[ttg] = {
         msg = msg,
@@ -24,7 +24,7 @@ htextTag.create = function(msg, size, color, opacity, during)
         during = during,
     }
     cj.SetTextTagText(ttg, s, size * 0.023 / 10)
-    cj.SetTextTagColor(ttg, cj.PercentTo255(100.00), cj.PercentTo255(100.00), cj.PercentTo255(100.00), cj.PercentTo255(100.0 - opacity))
+    cj.SetTextTagColor(ttg, 255, 255, 255, 255 * (100 - opacity))
     if (during == 0) then
         cj.SetTextTagPermanent(ttg, true)
     else
@@ -51,7 +51,7 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
     local ttg = htextTag.create2Unit(u, msg, size, color, opacity, during, zOffset)
     local txt = htextTag.getMsg(ttg)
     local scale = 0.5
-    htime.setInterval(0.03, function()
+    htime.setInterval(0.03, nil, function()
         if (hcamera.model == "zoomin") then
             scale = 0.25
         elseif (hcamera.model == "zoomout") then
@@ -94,7 +94,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local size = htextTag.getSize(ttg)
         local tnow = 0
         local tend = 0.5
-        htime.setInterval(0.03, function(t, td)
+        htime.setInterval(0.03, nil, function(t, td)
             tnow = tnow + cj.TimerGetTimeout(t)
             if (tnow >= tend) then
                 htime.delDialog(td)
@@ -108,7 +108,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local size = htextTag.getSize(ttg)
         local tnow = 0
         local tend = 0.5
-        htime.setInterval(0.03, function(t, td)
+        htime.setInterval(0.03, nil, function(t, td)
             tnow = tnow + cj.TimerGetTimeout(t)
             if (tnow >= tend) then
                 htime.delDialog(td)
@@ -124,9 +124,9 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local tend1 = 0.2
         local tend2 = 0.2
         local during = 0.7
-        htime.setInterval(0.03, function(t, td)
+        htime.setInterval(0.03, nil, function(t, td)
             tnow = tnow + cj.TimerGetTimeout(t)
-            if (ttnow >= tend1 + tend2 + during) then
+            if (tnow >= tend1 + tend2 + during) then
                 htime.delDialog(td)
                 htime.delTimer(t)
                 return

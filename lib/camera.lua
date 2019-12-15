@@ -113,16 +113,16 @@ hcamera.setModel = function(bean)
         if (bean.lockUnit == nil or bean.whichPlayer == nil) then
             return
         end
-        htime.setInterval(0.1, function()
+        htime.setInterval(0.1, nil,function()
             hcamera.lock(bean.whichPlayer, bean.lockUnit)
         end)
     elseif (bean.model == "zoomin") then
-        htime.setInterval(0.1, function()
+        htime.setInterval(0.1, nil,function()
             hcamera.distance(bean.whichPlayer, 825)
         end)
         -- hattr.max_move_speed = hattr.max_move_speed * 2
     elseif (bean.model == "zoomout") then
-        htime.setInterval(0.1, function()
+        htime.setInterval(0.1, nil,function()
             hcamera.distance(bean.whichPlayer, 3000)
         end)
     else

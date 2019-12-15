@@ -73,7 +73,7 @@ htime.getElapsedTime = function(t)
     end
 end
 -- 设置一次性计时器
-htime.setTimeout = function(time, title, myfunc)
+htime.setTimeout = function(time, title, yourFunc)
     local t = cj.CreateTimer()
     local td
     if (title ~= nil) then
@@ -82,12 +82,12 @@ htime.setTimeout = function(time, title, myfunc)
         cj.TimerDialogDisplay(td, true)
     end
     cj.TimerStart(t, time, false, function()
-        myfunc(t, td)
+        yourFunc(t, td)
     end)
     return t
 end
 -- 设置周期性计时器
-htime.setInterval = function(time, title, myfunc)
+htime.setInterval = function(time, title, yourFunc)
     local t = cj.CreateTimer()
     local td
     if (title ~= nil) then
@@ -96,7 +96,7 @@ htime.setInterval = function(time, title, myfunc)
         cj.TimerDialogDisplay(td, true)
     end
     cj.TimerStart(t, time, true, function()
-        myfunc(t, td)
+        yourFunc(t, td)
     end)
     return t
 end

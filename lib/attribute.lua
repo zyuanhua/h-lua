@@ -131,19 +131,19 @@ end
 --- hslk_global.attr
 hattr.regAllAbility = function(whichUnit)
     --生命魔法
-    for k, ability in pairs(hslk_global.attr.life.add) do
+    for _, ability in pairs(hslk_global.attr.life.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    for k, ability in pairs(hslk_global.attr.life.sub) do
+    for _, ability in pairs(hslk_global.attr.life.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    for k, ability in pairs(hslk_global.attr.mana.add) do
+    for _, ability in pairs(hslk_global.attr.mana.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    for k, ability in pairs(hslk_global.attr.mana.sub) do
+    for _, ability in pairs(hslk_global.attr.mana.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
@@ -153,81 +153,81 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitRemoveAbility(whichUnit, hattr.default_skill_item_slot)
     end
     --绿字攻击
-    for k, ability in pairs(hslk_global.attr.attack_green.add) do
+    for _, ability in pairs(hslk_global.attr.attack_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.attack_green.sub) do
+    for _, ability in pairs(hslk_global.attr.attack_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
     --绿色属性
-    for k, ability in pairs(hslk_global.attr.str_green.add) do
+    for _, ability in pairs(hslk_global.attr.str_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.str_green.sub) do
+    for _, ability in pairs(hslk_global.attr.str_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.agi_green.add) do
+    for _, ability in pairs(hslk_global.attr.agi_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.agi_green.sub) do
+    for _, ability in pairs(hslk_global.attr.agi_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.int_green.add) do
+    for _, ability in pairs(hslk_global.attr.int_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.int_green.sub) do
+    for _, ability in pairs(hslk_global.attr.int_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
     --攻击速度
-    for k, ability in pairs(hslk_global.attr.attack_speed.add) do
+    for _, ability in pairs(hslk_global.attr.attack_speed.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.attack_speed.sub) do
+    for _, ability in pairs(hslk_global.attr.attack_speed.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
     --防御
-    for k, ability in pairs(hslk_global.attr.defend.add) do
+    for _, ability in pairs(hslk_global.attr.defend.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
-    for k, ability in pairs(hslk_global.attr.defend.sub) do
+    for _, ability in pairs(hslk_global.attr.defend.sub) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
         cj.SetUnitAbilityLevel(whichUnit, ability, 1)
     end
     --白字攻击
-    for k, ability in pairs(hslk_global.attr.attack_white.add) do
+    for _, ability in pairs(hslk_global.attr.attack_white.add) do
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
     end
-    for k, ability in pairs(hslk_global.attr.attack_white.sub) do
+    for _, ability in pairs(hslk_global.attr.attack_white.sub) do
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
     end
     --视野
-    for k, ability in pairs(hslk_global.attr.sight.add) do
+    for _, ability in pairs(hslk_global.attr.sight.add) do
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
     end
-    for k, ability in pairs(hslk_global.attr.sight.sub) do
+    for _, ability in pairs(hslk_global.attr.sight.sub) do
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
     end
     --物品拆分
@@ -309,7 +309,7 @@ hattr.registerAll = function(whichUnit)
         hunt_rebound_oppose = 0.0,
         swim_oppose = 0.0,
         heavy_oppose = 0.0,
-        break_oppose = 0.0,
+        broken_oppose = 0.0,
         unluck_oppose = 0.0,
         silent_oppose = 0.0,
         unarm_oppose = 0.0,
@@ -559,10 +559,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 elseif (futureVal > hattr.max_attack_range) then
                     futureVal = hattr.max_attack_range
                 end
-                for k, ability in pairs(hslk_global.attr.attack_green.add) do
+                for _, ability in pairs(hslk_global.attr.attack_green.add) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
-                for k, ability in pairs(hslk_global.attr.attack_green.sub) do
+                for _, ability in pairs(hslk_global.attr.attack_green.sub) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
                 if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
@@ -576,10 +576,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 elseif (futureVal > hattr.max_sight) then
                     futureVal = hattr.max_sight
                 end
-                for k, ability in pairs(hslk_global.attr.sight.add) do
+                for _, ability in pairs(hslk_global.attr.sight.add) do
                     cj.UnitRemoveAbility(whichUnit, ability)
                 end
-                for k, ability in pairs(hslk_global.attr.sight.sub) do
+                for _, ability in pairs(hslk_global.attr.sight.sub) do
                     cj.UnitRemoveAbility(whichUnit, ability)
                 end
                 tempVal = math.floor(futureVal)
@@ -590,7 +590,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                     while (true) do
                         local isFound = false
-                        for k, v in pairs(sightTotal) do
+                        for _, v in pairs(sightTotal) do
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
                                 hSys.rmArray(v, sightTotal)
@@ -615,10 +615,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 elseif (futureVal > 99999999) then
                     futureVal = 99999999
                 end
-                for k, ability in pairs(hslk_global.attr[attr].add) do
+                for _, ability in pairs(hslk_global.attr[attr].add) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
-                for k, ability in pairs(hslk_global.attr[attr].sub) do
+                for _, ability in pairs(hslk_global.attr[attr].sub) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
                 tempVal = math.floor(futureVal)
@@ -645,10 +645,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 elseif (futureVal > 99999999) then
                     futureVal = 99999999
                 end
-                for k, ability in pairs(hslk_global.attr[attr].add) do
+                for _, ability in pairs(hslk_global.attr[attr].add) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
-                for k, ability in pairs(hslk_global.attr[attr].sub) do
+                for _, ability in pairs(hslk_global.attr[attr].sub) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
                 tempVal = math.floor(futureVal)
@@ -1416,7 +1416,7 @@ hattr.huntUnit = function(bean)
         local skillBuff = hattr.get(bean.fromUnit, 'skill_buff')
         local skillDebuff = hattr.get(bean.fromUnit, 'skill_debuff')
         if (bean.huntKind == 'attack') then
-            for k, b in pairs(attackBuff) do
+            for _, b in pairs(attackBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { k = '+' .. b.val })
                     if (type(b.model) == 'string' and string.len(b.model) > 0) then
@@ -1424,7 +1424,7 @@ hattr.huntUnit = function(bean)
                     end
                 end
             end
-            for k, b in pairs(attackDebuff) do
+            for _, b in pairs(attackDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { k = '-' .. b.val })
                     if (type(b.model) == 'string' and string.len(b.model) > 0) then
@@ -1434,7 +1434,7 @@ hattr.huntUnit = function(bean)
             end
         end
         if (bean.huntKind == 'skill') then
-            for k, b in pairs(skillBuff) do
+            for _, b in pairs(skillBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { k = '+' .. b.val })
                     if (type(b.model) == 'string' and string.len(b.model) > 0) then
@@ -1442,7 +1442,7 @@ hattr.huntUnit = function(bean)
                     end
                 end
             end
-            for k, b in pairs(skillDebuff) do
+            for _, b in pairs(skillDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { k = '-' .. b.val })
                     if (type(b.model) == 'string' and string.len(b.model) > 0) then
@@ -1494,8 +1494,8 @@ hattr.huntUnit = function(bean)
             skill = hSys.cloneTable(skillEffect.lightning_chain),
         }
         local crackFlyEffect = {
-            attack = hSys.cloneTable(attackEffect.lightning_chain),
-            skill = hSys.cloneTable(skillEffect.lightning_chain),
+            attack = hSys.cloneTable(attackEffect.crack_fly),
+            skill = hSys.cloneTable(skillEffect.crack_fly),
         }
         -- oppose
         local swimOppose = hattr.get(bean.toUnit, 'swim_oppose')
@@ -1505,7 +1505,7 @@ hattr.huntUnit = function(bean)
         local fetterOppose = hattr.get(bean.toUnit, 'fetter_oppose')
         local bombOppose = hattr.get(bean.toUnit, 'bomb_oppose')
         local lightningChainOppose = hattr.get(bean.toUnit, 'lightning_chain_oppose')
-        local crackFlyOppose = hattr.get(bean.toUnit, 'crack_fly')
+        local crackFlyOppose = hattr.get(bean.toUnit, 'crack_fly_oppose')
 
         if (bean.huntKind == 'attack') then
             swimEffect.attack.odds = swimEffect.attack.odds * (1 - swimOppose * 0.01)

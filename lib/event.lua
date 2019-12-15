@@ -81,6 +81,9 @@ local hevent = {
     defaultHandle = cj.Player(PLAYER_NEUTRAL_PASSIVE),
     -- set最后一位伤害的单位
     setLastDamageUnit = function(which, last)
+        if (hRuntime.event[which] == nil) then
+            hRuntime.event[which] = {}
+        end
         hRuntime.event[which].lastDamageUnit = last
     end,
     -- get最后一位伤害的单位
