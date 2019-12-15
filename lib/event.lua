@@ -123,6 +123,9 @@ hevent.triggerEvent = function(bean)
             return
         end
         for _, tempTgr in pairs(triggers) do
+            if (hRuntime.eventTgr[tempTgr] == nil) then
+                hRuntime.eventTgr[tempTgr] = {}
+            end
             if (bean.triggerUnit ~= nil) then
                 hRuntime.eventTgr[tempTgr].triggerUnit = bean.triggerUnit
             end

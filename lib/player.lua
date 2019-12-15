@@ -49,7 +49,7 @@ hplayer.getConvertRatio = function()
 end
 --- 获取玩家ID，例如：玩家一等于0，玩家三等于2
 hplayer.index = function(whichPlayer)
-    return cj.GetConvertedPlayerId(whichPlayer)
+    return cj.GetPlayerId(whichPlayer) + 1
 end
 --- 获取玩家当前选中的单位
 hplayer.getSelection = function(whichPlayer)

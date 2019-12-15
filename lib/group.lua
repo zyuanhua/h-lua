@@ -5,7 +5,11 @@ hgroup.count = function(whichGroup)
     if (whichGroup == nil) then
         return 0
     end
-    return cj.CountUnitsInGroup(whichGroup)
+    local count = 0
+    cj.ForGroup(whichGroup, function()
+        count = count + 1
+    end)
+    return count
 end
 
 -- 判断单位是否在单位组内

@@ -8,26 +8,25 @@ haward.setShareRange = function(range)
 end
 -- 奖励单位（经验黄金木头）
 haward.forUnit = function(whichUnit, exp, gold, lumber)
-    local floatStr = null
+    local floatStr = ""
     local realExp = exp
     local realGold = gold
     local realLumber = lumber
     local index = 0
     local ttgColorLen = 0
-    local ttg = null
-    local p = null
+    local ttg
+    local p
     if (whichUnit == nil) then
         return
     end
-    floatStr = ""
-    index = cj.GetConvertedPlayerId(cj.GetOwningPlayer(whichUnit))
-    -- 增益
     p = cj.GetOwningPlayer(whichUnit)
+    index = hplayer.index(p)
+    -- 增益
     realGold = cj.R2I(gold * hplayer.getGoldRatio(p) / 100.00)
     realLumber = cj.R2I(lumber * hplayer.getLumberRatio(p) / 100.00)
     realExp = cj.R2I(exp * hplayer.getExpRatio(p) / 100.00)
     if (realExp >= 1 and his.hero(whichUnit)) then
-        cj.AddHeroXPSwapped(realExp, whichUnit, true)
+        cj.AddHeroXP(whichUnit, realExp, true)
         floatStr = floatStr .. "|cffc4c4ff" .. realExp .. "Exp" .. "|r"
         ttgColorLen = ttgColorLen + 12
     end
@@ -62,11 +61,10 @@ end
 
 -- 平分奖励英雄组（经验黄金木头）
 haward.forGroup = function(whichUnit, exp, gold, lumber)
-    local gCount = 0
     local cutExp = 0
     local cutGold = 0
     local cutLumber = 0
-    local g = hgroup.createByUnit(whichUnit, hAwardRange, function()
+    local g = hgroup.createByUnit(whichUnit, haward.shareRange, function()
         local flag = true
         if (his.hero(cj.GetFilterUnit()) == false) then
             flag = false
@@ -82,7 +80,8 @@ haward.forGroup = function(whichUnit, exp, gold, lumber)
         end
         return flag
     end)
-    if (cj.CountUnitsInGroup(g) <= 0) then
+    local gCount = hgroup.count(g)
+    if (gCount <= 0) then
         return
     end
     cutExp = cj.R2I(exp / gCount)
