@@ -359,9 +359,9 @@ struct hMultiboard
                     call setContentIcon( mbid, 3+h, 2, GetUnitName(u) , hunit.getAvatar(GetUnitTypeId(u)) )
                     call setContent( mbid, 3+h, 3, "Lv"+I2S(GetUnitLevel(u)) )
                     call setContent( mbid, 3+h, 4, hhero.getHeroTypeLabel(GetUnitTypeId(u)) )
-                    call setContent( mbid, 3+h, 5, R2S(hunit.getLife(u))+" / "+R2S(hunit.getMaxLife(u)) )
+                    call setContent( mbid, 3+h, 5, R2S(hunit.getCurLife(u))+" / "+R2S(hunit.getMaxLife(u)) )
                     call setContent( mbid, 3+h, 6, R2S(hattr.getLifeSourceCurrent(u))+" / "+R2S(hattr.getLifeSource(u)) )
-                    call setContent( mbid, 3+h, 7, R2S(hunit.getMana(u))+" / "+R2S(hunit.getMaxMana(u)) )
+                    call setContent( mbid, 3+h, 7, R2S(hunit.getCurMana(u))+" / "+R2S(hunit.getMaxMana(u)) )
                     call setContent( mbid, 3+h, 8, R2S(hattr.getManaSourceCurrent(u))+" / "+R2S(hattr.getManaSource(u)) )
                     call setContent( mbid, 3+h, 9, I2S(R2I(hattr.getMove(u))) )
                     call setContent( mbid, 3+h,10, R2S(hattr.getPunishCurrent(u))+" / "+R2S(hattr.getPunish(u)) )
@@ -430,7 +430,7 @@ struct hMultiboard
             if(hplayer.getSelection(players[i])!=null)then
                 call setTitle(mbid, "属性( "+GetUnitName(hplayer.getSelection(players[i]))+" )")
 
-                call setContent( mbid, 2, 1, R2S(hunit.getLife(hplayer.getSelection(players[i])))+" / "+R2S(hunit.getMaxLife(hplayer.getSelection(players[i]))) )
+                call setContent( mbid, 2, 1, R2S(hunit.getCurLife(hplayer.getSelection(players[i])))+" / "+R2S(hunit.getMaxLife(hplayer.getSelection(players[i]))) )
                 call setContent( mbid, 2, 2, R2S(hattr.getLifeBack(hplayer.getSelection(players[i])))+" 每秒" )
                 call setContent( mbid, 2, 3, R2S(hattr.getLifeSourceCurrent(hplayer.getSelection(players[i])))+" / "+R2S(hattr.getLifeSource(hplayer.getSelection(players[i]))) )
                 call setContent( mbid, 2, 4, R2S(hattr.getPunishCurrent(hplayer.getSelection(players[i])))+" / "+R2S(hattr.getPunish(hplayer.getSelection(players[i]))) )
@@ -446,7 +446,7 @@ struct hMultiboard
                 call setContent( mbid, 2,14, I2S(R2I(hattr.getLuck(hplayer.getSelection(players[i]))))+"%" )
                 call setContent( mbid, 2,15, R2S(hattr.getWeightCurrent(hplayer.getSelection(players[i])))+" / "+R2S(hattr.getWeight(hplayer.getSelection(players[i]))) )
 
-                call setContent( mbid, 4, 1, R2S(hunit.getMana(hplayer.getSelection(players[i])))+" / "+R2S(hunit.getMaxMana(hplayer.getSelection(players[i]))) )
+                call setContent( mbid, 4, 1, R2S(hunit.getCurMana(hplayer.getSelection(players[i])))+" / "+R2S(hunit.getMaxMana(hplayer.getSelection(players[i]))) )
                 call setContent( mbid, 4, 2, R2S(hattr.getManaBack(hplayer.getSelection(players[i])))+" 每秒" )
                 call setContent( mbid, 4, 3, R2S(hattr.getManaSourceCurrent(hplayer.getSelection(players[i])))+" / "+R2S(hattr.getManaSource(hplayer.getSelection(players[i]))) )
                 call setContent( mbid, 4, 4, R2S(hattr.getPunishOppose(hplayer.getSelection(players[i])))+"%" )

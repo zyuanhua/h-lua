@@ -1,4 +1,3 @@
-
 -- 加载debug
 require "foundation.debug"
 
@@ -30,14 +29,14 @@ hLuaStart = {
             local fromUnit = cj.GetEventDamageSource()
             local toUnit = cj.GetTriggerUnit()
             local damage = cj.GetEventDamage()
-            local oldLife = hunit.getLife(toUnit)
+            local oldLife = hunit.getCurLife(toUnit)
             if (damage > 0.125) then
                 hattr.set(toUnit, 0, { life = '+' .. damage })
                 htime.setTimeout(0, nil, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     hattr.set(toUnit, 0, { life = '-' .. damage })
-                    hunit.setLife(toUnit, oldLife)
+                    hunit.setCurLife(toUnit, oldLife)
                     hattr.huntUnit({
                         fromUnit = fromUnit,
                         toUnit = toUnit,
@@ -79,9 +78,9 @@ hLuaStart = {
             -- 排除单位类型
             local uid = cj.GetUnitTypeId(u)
             if (uid == hslk_global.unit_token
-                    or uid == hslk_global.unit_hero_tavern_token
-                    or uid == hslk_global.unit_hero_death_token
-                    or uid == hslk_global.unit_hero_tavern
+                or uid == hslk_global.unit_hero_tavern_token
+                or uid == hslk_global.unit_hero_death_token
+                or uid == hslk_global.unit_hero_tavern
             ) then
                 return
             end
@@ -110,20 +109,20 @@ hLuaStart = {
             for k, u in pairs(hRuntime.attributeGroup.life_back) do
                 if (his.alive(u)) then
                     if (hattr.get(u, 'life_back') ~= 0) then
-                        hunit.addLife(u, hattr.get(u, 'life_back') * period)
+                        hunit.addCurLife(u, hattr.get(u, 'life_back') * period)
                     end
                 end
             end
             for k, u in pairs(hRuntime.attributeGroup.mana_back) do
                 if (his.alive(u)) then
                     if (hattr.get(u, 'mana_back') ~= 0) then
-                        hunit.addMana(u, hattr.get(u, 'mana_back') * period)
+                        hunit.addCurMana(u, hattr.get(u, 'mana_back') * period)
                     end
                 end
             end
             --- 源力只有在没受伤判定的情况下才会有效
             for k, u in pairs(hRuntime.attributeGroup.life_source) do
-                if (his.alive(u) and hunit.getLifePercent(u) < hplayer.getLifeSourceRatio(cj.GetOwningPlayer(u))) then
+                if (his.alive(u) and hunit.getCurLifePercent(u) < hplayer.getLifeSourceRatio(cj.GetOwningPlayer(u))) then
                     if (hattr.get(u, 'be_hunting') == false) then
                         if (hattr.get(u, 'life_source_current') > 0) then
                             local fill = hunit.getMaxLife(u) - hunit.getCurLife(u)
@@ -131,19 +130,19 @@ hLuaStart = {
                                 fill = hattr.get(u, 'life_source_current')
                             end
                             hattr.set(u, 0, { life_source_current = '-' .. fill })
-                            hunit.addLife(u, fill)
+                            hunit.addCurLife(u, fill)
                             httg.style(
-                                    httg.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
-                                    "scale",
-                                    0,
-                                    0.2
+                                httg.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
+                                "scale",
+                                0,
+                                0.2
                             )
                         end
                     end
                 end
             end
             for k, u in pairs(hRuntime.attributeGroup.mana_source) do
-                if (his.alive(u) and hunit.getManaPercent(u) < hplayer.getManaSourceRatio(cj.GetOwningPlayer(u))) then
+                if (his.alive(u) and hunit.getCurManaPercent(u) < hplayer.getManaSourceRatio(cj.GetOwningPlayer(u))) then
                     if (hattr.get(u, 'be_hunting') == false) then
                         if (hattr.get(u, 'mana_source_current') > 0) then
                             local fill = hunit.getMaxLife(u) - hunit.getCurMana(u)
@@ -151,12 +150,12 @@ hLuaStart = {
                                 fill = hattr.get(u, 'mana_source_current')
                             end
                             hattr.set(u, 0, { mana_source_current = '-' .. fill })
-                            hunit.addMana(u, fill)
+                            hunit.addCurMana(u, fill)
                             httg.style(
-                                    httg.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
-                                    "scale",
-                                    0,
-                                    0.2
+                                httg.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
+                                "scale",
+                                0,
+                                0.2
                             )
                         end
                     end
