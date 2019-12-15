@@ -56,11 +56,11 @@ his.hasSlot = function(whichUnit)
 end
 --是否死亡
 his.death = function(whichUnit)
-    return cj.IsUnitDeadBJ(whichUnit)
+    return cj.GetUnitState(whichUnit, UNIT_STATE_LIFE) <= 0
 end
 --是否生存
 his.alive = function(whichUnit)
-    return not his.death(whichUnit)
+    return cj.GetUnitState(whichUnit, UNIT_STATE_LIFE) > 0
 end
 --是否无敌
 his.invincible = function(whichUnit)
