@@ -88,6 +88,9 @@ local hevent = {
     end,
     -- get最后一位伤害的单位
     getLastDamageUnit = function(which)
+        if (hRuntime.event[which] == nil) then
+            return nil
+        end
         return hRuntime.event[which].lastDamageUnit or nil
     end,
 }
