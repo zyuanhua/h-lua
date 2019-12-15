@@ -22,6 +22,23 @@ local hplayer = {
     --换算比率，默认：1000000金 -> 1木
     convert_ratio = 1000000,
 }
+
+hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
+    if delta > 0 then
+        if whichPlayerState == PLAYER_STATE_RESOURCE_GOLD then
+            cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED) + delta)
+        elseif whichPlayerState == PLAYER_STATE_RESOURCE_LUMBER then
+            cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED) + delta)
+        end
+    end
+    cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, whichPlayerState) + delta)
+end
+
+hplayer.setPlayerState = function(whichPlayer, whichPlayerState, value)
+    local oldValue = cj.GetPlayerState(whichPlayer, whichPlayerState)
+    hplayer.adjustPlayerState(value - oldValue, whichPlayer, whichPlayerState)
+end
+
 --- 设置换算比率
 hplayer.setConvertRatio = function(ratio)
     hplayer.convert_ratio = ratio
@@ -68,7 +85,7 @@ hplayer.defeat = function(whichPlayer, tips)
     local g = hgroup.createByRect(cj.GetEntireMapRect(), function()
         return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
     end)
-    while (cj.IsUnitGroupEmptyBJ(g) ~= true) do
+    while (hgroup.isEmpty(g) ~= true) do
         local u = cj.FirstOfGroup(g)
         cj.GroupRemoveUnit(g, u)
         cj.RemoveUnit(u)
@@ -316,13 +333,13 @@ hplayer.setGold = function(whichPlayer, gold)
         exceedLumber = hplayer.getExceedLumber(whichPlayer, gold - 1000000)
         if (hplayer.getIsAutoConvert(whichPlayer) == true) then
             if (exceedLumber > 0) then
-                cj.SetPlayerStateBJ(whichPlayer, PLAYER_STATE_RESOURCE_GOLD, cj.SetPlayerStateBJ(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER) + exceedLumber)
+                hplayer.adjustPlayerState(exceedLumber, whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
                 hplayer.adjustLumber(whichPlayer)
             end
         end
         gold = 1000000
     end
-    cj.SetPlayerStateBJ(whichPlayer, PLAYER_STATE_RESOURCE_GOLD, gold)
+    hplayer.adjustPlayerState(gold - hplayer.getGold(whichPlayer), whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
     hplayer.adjustGold(whichPlayer)
 end
 --- 增加玩家金钱
@@ -340,7 +357,7 @@ hplayer.getLumber = function(whichPlayer)
 end
 --- 设置玩家实时木头
 hplayer.setLumber = function(whichPlayer, lumber)
-    cj.SetPlayerStateBJ(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER, lumber)
+    hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER, lumber)
     hplayer.adjustLumber(whichPlayer)
 end
 --- 增加玩家木头
@@ -382,7 +399,7 @@ hplayerInit = function()
             end
             return b
         end)
-        while (cj.IsUnitGroupEmptyBJ(g) == false) do
+        while (hgroup.isEmpty(g) == false) do
             local u = cj.FirstOfGroup(g)
             cj.GroupRemoveUnit(g, u)
             cj.RemoveUnit(u)
