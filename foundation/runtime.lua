@@ -34,6 +34,7 @@ hRuntime = {
         punish_current = {},
     },
     item = {},
+    leaderBoard = {},
 }
 
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
