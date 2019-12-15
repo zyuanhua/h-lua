@@ -1,6 +1,6 @@
 -- [[奖励]]
 local haward = {
-    shareRange = 2000.00
+    shareRange = 1000.00
 }
 -- 设置共享范围
 haward.setShareRange = function(range)

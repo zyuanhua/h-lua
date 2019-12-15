@@ -242,10 +242,7 @@ end
 hattr.registerAll = function(whichUnit)
     hattr.regAllAbility(whichUnit)
     --init
-    hSys.print_r(hslk_global.unitsKV)
     local unitId = hSys.getObjChar(cj.GetUnitTypeId(whichUnit))
-    print(cj.GetUnitTypeId(whichUnit))
-    print(unitId)
     if (hslk_global.unitsKV[unitId] == nil) then
         print(unitId .. "未注册 hslk_global.unitsKV")
         return
