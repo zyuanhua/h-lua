@@ -1012,7 +1012,7 @@ hattr.huntUnit = function(bean)
     if (bean.huntKind == "attack" and toUnitAvoid - fromUnitAim > 0 and math.random(1, 100) <= toUnitAvoid - fromUnitAim) then
         isAvoid = true
         realDamage = 0
-        httg.style(httg.ttg2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.ttg2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
         -- @触发回避事件
         hevent.triggerEvent({
             triggerKey = heventKeyMap.avoid,
@@ -1031,7 +1031,7 @@ hattr.huntUnit = function(bean)
     if (realDamage > 0) then
         -- 自然属性
         local fromUnitNaturalFire = hattr.get(bean.fromUnit, 'natural_fire') - hattr.get(bean.toUnit, 'natural_fire_oppose') + 10
-        local fromUnitNaturalSoil = hattr.get(bean.fromUnit, 'natural_soil') - hattr.get(bean.toUnit, 'natural_soi_loppose') + 10
+        local fromUnitNaturalSoil = hattr.get(bean.fromUnit, 'natural_soil') - hattr.get(bean.toUnit, 'natural_soil_oppose') + 10
         local fromUnitNaturalWater = hattr.get(bean.fromUnit, 'natural_water') - hattr.get(bean.toUnit, 'natural_water_oppose') + 10
         local fromUnitNaturalIce = hattr.get(bean.fromUnit, 'natural_ice') - hattr.get(bean.toUnit, 'natural_ice_oppose') + 10
         local fromUnitNaturalWind = hattr.get(bean.fromUnit, 'natural_wind') - hattr.get(bean.toUnit, 'natural_wind_oppose') + 10
@@ -1386,7 +1386,7 @@ hattr.huntUnit = function(bean)
                 attack_speed = '-' .. punishEffectAttackSpeed,
                 move = '-' .. punishEffectMove,
             })
-            httg.style(httg.create2Unit(bean.toUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00), "scale", 0, 0)
+            htextTag.style(htextTag.create2Unit(bean.toUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00), "scale", 0, 0)
             -- @触发硬直事件
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.heavy,
@@ -1400,7 +1400,7 @@ hattr.huntUnit = function(bean)
         local toUnitHuntRebound = hattr.get(bean.toUnit, 'hunt_rebound') - hattr.get(bean.fromUnit, 'hunt_rebound_oppose')
         if (toUnitHuntRebound > 0) then
             hunit.subLife(bean.fromUnit, realDamage * toUnitHuntRebound * 0.01)
-            httg.style(httg.create2Unit(bean.fromUnit, "反伤" .. (realDamage * toUnitHuntRebound * 0.01), 10.00, "f8aaeb", 10, 1.00, 10.00), "shrink", -0.05, 0)
+            htextTag.style(htextTag.create2Unit(bean.fromUnit, "反伤" .. (realDamage * toUnitHuntRebound * 0.01), 10.00, "f8aaeb", 10, 1.00, 10.00), "shrink", -0.05, 0)
             -- @触发反伤事件
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.rebound,

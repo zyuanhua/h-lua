@@ -43,9 +43,9 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
         ttgColorLen = ttgColorLen + 13
         hmedia.sound2Unit(gg_snd_BundleOfLumber, whichUnit)
     end
-    ttg = httg.create2Unit(whichUnit, floatStr, 7, "", 0, 1.70, 60.00)
+    ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 0, 1.70, 60.00)
     cj.SetTextTagPos(ttg, cj.GetUnitX(whichUnit) - (string.len(floatStr) - ttgColorLen) * 7 * 0.5, cj.GetUnitY(whichUnit), 50)
-    httg.style(ttg, "toggle", 0, 0.23)
+    htextTag.style(ttg, "toggle", 0, 0.23)
 end
 -- 奖励单位经验
 haward.forUnitExp = function(whichUnit, exp)

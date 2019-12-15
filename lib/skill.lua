@@ -12,7 +12,7 @@ hskill.damage = function(bean)
     -- 文本显示
     bean.realDamageString = bean.realDamageString or ''
     bean.realDamageStringColor = bean.realDamageStringColor or nil
-    httg.style(httg.create2Unit(
+    htextTag.style(htextTag.create2Unit(
             bean.toUnit,
             bean.realDamageString .. math.floor(bean.realDamage),
             6.00,
@@ -128,7 +128,7 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
             htime.delTimer(t)
             hRuntime.skill[u].swimTimer = nil
             cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
-            httg.style(httg.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
+            htextTag.style(htextTag.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
         end
     end
     local cu = hunit.create({
@@ -193,9 +193,9 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
     end
     local level = hRuntime.skill[u].silentLevel + 1
     if (level <= 1) then
-        httg.style(httg.ttg2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.ttg2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
-        httg.style(httg.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     end
     hRuntime.skill[u].silentLevel = level
     if (hSys.inArray(u, hRuntime.skill.silentUnits) == false) then
@@ -261,9 +261,9 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
     end
     local level = hRuntime.skill[u].unarmLevel + 1
     if (level <= 1) then
-        httg.style(httg.ttg2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.ttg2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
-        httg.style(httg.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     end
     hRuntime.skill[u].unarmLevel = level
     if (hSys.inArray(u, hRuntime.skill.unarmUnits) == false) then

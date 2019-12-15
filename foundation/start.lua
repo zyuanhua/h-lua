@@ -131,8 +131,8 @@ hLuaStart = {
                             end
                             hattr.set(u, 0, { life_source_current = '-' .. fill })
                             hunit.addCurLife(u, fill)
-                            httg.style(
-                                httg.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
+                            htextTag.style(
+                                htextTag.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
                                 "scale",
                                 0,
                                 0.2
@@ -151,8 +151,8 @@ hLuaStart = {
                             end
                             hattr.set(u, 0, { mana_source_current = '-' .. fill })
                             hunit.addCurMana(u, fill)
-                            httg.style(
-                                httg.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
+                            htextTag.style(
+                                htextTag.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
                                 "scale",
                                 0,
                                 0.2
