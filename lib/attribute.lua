@@ -1255,8 +1255,8 @@ hattr.huntUnit = function(bean)
             toUnit = bean.toUnit,
             huntKind = bean.huntKind,
             huntType = bean.huntType,
-            damage = realDamage,
-            realDamage = bean.realDamage,
+            damage = bean.damage,
+            realDamage = realDamage,
             realDamageString = realDamageString,
             realDamageStringColor = realDamageStringColor,
         })
@@ -1399,7 +1399,7 @@ hattr.huntUnit = function(bean)
         -- 反射
         local toUnitHuntRebound = hattr.get(bean.toUnit, 'hunt_rebound') - hattr.get(bean.fromUnit, 'hunt_rebound_oppose')
         if (toUnitHuntRebound > 0) then
-            hunit.subLife(bean.fromUnit, realDamage * toUnitHuntRebound * 0.01)
+            hunit.subCurLife(bean.fromUnit, realDamage * toUnitHuntRebound * 0.01)
             htextTag.style(htextTag.create2Unit(bean.fromUnit, "反伤" .. (realDamage * toUnitHuntRebound * 0.01), 10.00, "f8aaeb", 10, 1.00, 10.00), "shrink", -0.05, 0)
             -- @触发反伤事件
             hevent.triggerEvent({

@@ -24,7 +24,7 @@ hskill.damage = function(bean)
     hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
     hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), bean.realDamage)
     hplayer.addBeDamage(cj.GetOwningPlayer(bean.toUnit), bean.realDamage)
-    hunit.subLife(bean.toUnit, bean.realDamage)
+    hunit.subCurLife(bean.toUnit, bean.realDamage)
     if (type(bean.huntEff) == 'string' and string.len(bean.huntEff) > 0) then
         heffect.toXY(bean.huntEff, cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), 0)
     end
@@ -120,12 +120,12 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
     if (hRuntime.skill[u] == nil) then
         hRuntime.skill[u] = {}
     end
-    local t = hRuntime.skill[u].swimTimer
-    if (t ~= nil and cj.TimerGetRemaining(t) > 0) then
-        if (during <= cj.TimerGetRemaining(t)) then
+    local swimTimer = hRuntime.skill[u].swimTimer
+    if (swimTimer ~= nil and cj.TimerGetRemaining(t) > 0) then
+        if (during <= cj.TimerGetRemaining(swimTimer)) then
             return
         else
-            htime.delTimer(t)
+            htime.delTimer(swimTimer)
             hRuntime.skill[u].swimTimer = nil
             cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
             htextTag.style(htextTag.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
@@ -481,7 +481,7 @@ hskill.lightningChain = function(codename, qty, change, range, isRepeat, bean)
     else
         bean.index = bean.index + 1
     end
-    hlightning.unit2unit(codename, bean.fromUnit, bean.toUnit, 0.2 * qty)
+    hlightning.unit2unit(codename, bean.fromUnit, bean.toUnit, 0.25)
     if (bean.model ~= nil) then
         heffect.toUnit(bean.model, bean.toUnit, "origin", 0.5)
     end
