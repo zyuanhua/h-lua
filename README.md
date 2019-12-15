@@ -1,4 +1,4 @@
-# h-lua
+# h-lua（开发中，bug一堆请见谅）
 ### h-lua是在h-vjass基础上更进一步的魔兽制图框架
  * 未有实践（敬请期待）
  * author hunzsig
