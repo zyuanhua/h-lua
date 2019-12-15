@@ -148,11 +148,11 @@ hplayer.addBeDamage = function(whichPlayer, val)
     hRuntime.player[whichPlayer].beDamage = hRuntime.player[whichPlayer].beDamage + val
 end
 --- 获取玩家杀敌数
-hplayer.getBeDamage = function(whichPlayer)
+hplayer.getKill = function(whichPlayer)
     return hRuntime.player[whichPlayer].kill or 0
 end
 --- 增加玩家杀敌数
-hplayer.addBeDamage = function(whichPlayer, val)
+hplayer.addKill = function(whichPlayer, val)
     hRuntime.player[whichPlayer].kill = hRuntime.player[whichPlayer].kill + val
 end
 --- 获取玩家生命源设定百分比

@@ -19,6 +19,7 @@ hRuntime = {
     player = {},
     award = {},
     unit = {},
+    unitEvent = {},
     enemy = {},
     group = {},
     hero = {},

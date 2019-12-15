@@ -51,7 +51,7 @@ hLuaStart = {
         cj.TriggerAddAction(triggerDeath, function()
             local u = cj.GetTriggerUnit()
             local killer = hevent.getLastDamageUnit(u)
-            hplayer.addKill(GetOwningPlayer(killer), 1)
+            hplayer.addKill(cj.GetOwningPlayer(killer), 1)
             -- @触发死亡事件
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.dead,
@@ -85,11 +85,16 @@ hLuaStart = {
                 return
             end
             -- 注册事件
-            if (hRuntime.attribute[u] == nil) then
-                hattr.registerAll(u)
+            if (hRuntime.unitEvent[u] == nil) then
+                hRuntime.unitEvent[u] = 1
+                -- 受伤与死亡
                 cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
                 cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)
-                -- 拥有物品栏的单位绑定物品处理
+                -- 属性系统
+                if (hRuntime.attribute[u] == nil) then
+                    hattr.registerAll(u)
+                end
+                -- 物品系统
                 if (his.hasSlot(u)) then
                     hitem.initUnit(u)
                 end
