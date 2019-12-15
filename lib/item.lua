@@ -57,4 +57,45 @@ hitem.del = function(it, during)
     end
 end
 
+-- 使一个单位的所有物品给另一个单位
+hitem.give = function(origin, target)
+    if (origin == nil or target == nil) then
+        return
+    end
+    for i = 0, 5, 1 do
+        local it = cj.UnitItemInSlot(origin, i)
+        if (it ~= nil) then
+            hitem.toUnitPrivate(cj.GetItemTypeId(it), cj.GetItemCharges(it), target, false)
+        end
+        hitem.del(it, 0)
+    end
+end
+
+-- 复制一个单位的所有物品给另一个单位
+hitem.copy = function(origin, target)
+    if (origin == nil or target == nil) then
+        return
+    end
+    for i = 0, 5, 1 do
+        local it = cj.UnitItemInSlot(origin, i)
+        if (it ~= nil) then
+            hitem.toUnitPrivate(cj.GetItemTypeId(it), cj.GetItemCharges(it), target, false)
+        end
+    end
+end
+
+-- 令一个单位把物品全部仍在地上
+hitem.drop = function(origin)
+    if (origin == nil) then
+        return
+    end
+    for i = 0, 5, 1 do
+        local it = cj.nitItemInSlot(origin, i)
+        if (it ~= nil) then
+            htime.toXY(cj.GetItemTypeId(it), cj.GetItemCharges(it), cj.GetUnitX(origin), cj.GetUnitY(origin), -1)
+            htime.del(it, 0)
+        end
+    end
+end
+
 return hitem
