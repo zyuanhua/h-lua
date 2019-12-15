@@ -327,11 +327,11 @@ hplayer.setGold = function(whichPlayer, gold)
 end
 --- 增加玩家金钱
 hplayer.addGold = function(whichPlayer, gold)
-    hplayer.setGold(hplayer.getGold(whichPlayer) + gold)
+    hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) + gold)
 end
 --- 减少玩家金钱
 hplayer.subGold = function(whichPlayer, gold)
-    hplayer.setGold(hplayer.getGold(whichPlayer) - gold)
+    hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) - gold)
 end
 
 --- 获取玩家实时木头
@@ -345,11 +345,11 @@ hplayer.setLumber = function(whichPlayer, lumber)
 end
 --- 增加玩家木头
 hplayer.addLumber = function(whichPlayer, lumber)
-    hplayer.setLumber(hplayer.getLumber(whichPlayer) + lumber)
+    hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) + lumber)
 end
 --- 减少玩家木头
 hplayer.subLumber = function(whichPlayer, lumber)
-    hplayer.setLumber(hplayer.getLumber(whichPlayer) - lumber)
+    hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) - lumber)
 end
 
 

@@ -116,12 +116,16 @@ haward.forPlayer = function(gold, lumber)
     if (hplayer.qty_current <= 0) then
         return
     end
-    local cutGold = cj.R2I(gold / hplayer.qty_current)
-    local cutLumber = cj.R2I(lumber / hplayer.qty_current)
+    local cutGold = math.floor(gold / hplayer.qty_current)
+    local cutLumber = math.floor(lumber / hplayer.qty_current)
     for i = 1, hplayer.qty_max, 1 do
         if (hplayer.getStatus(hplayer.players[i]) == hplayer.player_status.gaming) then
-            hplayer.addGold(hplayer.players[i], cutGold)
-            hplayer.addLumber(hplayer.players[i], cutLumber)
+            if (cutGold > 0) then
+                hplayer.addGold(hplayer.players[i], cutGold)
+            end
+            if (cutLumber > 0) then
+                hplayer.addLumber(hplayer.players[i], cutLumber)
+            end
         end
     end
 end
