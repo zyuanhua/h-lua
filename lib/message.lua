@@ -6,7 +6,7 @@ hmessage.echo = function(msg, duration)
     if (duration == nil) then
         duration = 0
     end
-    for i = 0, 15, 1 do
+    for i = 0, bj_MAX_PLAYERS - 1, 1 do
         if (duration < 5) then
             cj.DisplayTextToPlayer(cj.Player(i), 0, 0, msg)
         else

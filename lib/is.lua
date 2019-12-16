@@ -1,5 +1,28 @@
 local his = {}
 
+his.set = function(handle, key, val)
+    if (handle == nil or key == nil or val == nil or ~is_boolean(val)) then
+        return
+    end
+    if (hRuntime.is[handle] == nil) then
+        hRuntime.is[handle] = {}
+    end
+    hRuntime.is[handle][key] = val
+end
+
+his.get = function(handle, key)
+    if (handle == nil or key == nil) then
+        return false
+    end
+    if (hRuntime.is[handle] == nil) then
+        return false
+    elseif (is_boolean(hRuntime.is[handle])) then
+        return hRuntime.is[handle][key]
+    else
+        return false
+    end
+end
+
 --是否夜晚
 his.night = function()
     return (cj.GetTimeOfDay() <= 6.00 or cj.GetTimeOfDay() >= 18.00)
@@ -10,11 +33,11 @@ his.day = function()
 end
 --是否电脑
 his.computer = function(whichPlayer)
-    return hRuntime.is[whichPlayer].isComputer
+    return his.get(whichPlayer, "isComputer")
 end
 --是否自动换算黄金木头
 his.autoConvertGoldLumber = function(whichPlayer)
-    return hRuntime.is[whichPlayer].isAutoConvertGoldLumber
+    return his.get(whichPlayer, "isAutoConvertGoldLumber")
 end
 --是否玩家位置(如果位置为真实玩家或为空，则为true；而如果选择了电脑玩家补充，则为false)
 his.playerSite = function(whichPlayer)
@@ -68,7 +91,7 @@ his.invincible = function(whichUnit)
 end
 --是否英雄
 his.hero = function(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or (hRuntime.is[whichUnit] ~= nil and hRuntime.is[whichUnit].isHero == true)
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or his.get(whichUnit, "isHero") == true
 end
 --是否建筑
 his.building = function(whichUnit)
@@ -108,23 +131,23 @@ his.ancient = function(whichUnit)
 end
 --是否被眩晕
 his.swim = function(whichUnit)
-    return (hRuntime.is[whichUnit] and hRuntime.is[whichUnit].isSwim == true) or false
+    return his.get(whichUnit, "isSwim")
 end
 --是否被硬直
 his.punish = function(whichUnit)
-    return (hRuntime.is[whichUnit] and hRuntime.is[whichUnit].isPunishing == true) or false
+    return his.get(whichUnit, "isPunishing")
 end
 --是否被沉默
 his.silent = function(whichUnit)
-    return (hRuntime.is[whichUnit] and hRuntime.is[whichUnit].isSilent == true) or false
+    return his.get(whichUnit, "isSilent")
 end
 --是否被缴械
 his.unarm = function(whichUnit)
-    return (hRuntime.is[whichUnit] and hRuntime.is[whichUnit].isUnArm == true) or false
+    return his.get(whichUnit, "isUnArm")
 end
 --是否被击飞
 his.crackfly = function(whichUnit)
-    return (hRuntime.is[whichUnit] and hRuntime.is[whichUnit].isCrackFly == true) or false
+    return his.get(whichUnit, "isCrackFly")
 end
 --判断是否处在水面
 his.water = function(whichUnit)

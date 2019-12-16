@@ -477,7 +477,7 @@ hplayerInit = function()
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_ORDER)
-    for i = 1, 12, 1 do
+    for i = 1, bj_MAX_PLAYERS, 1 do
         hplayer.players[i] = cj.Player(i - 1)
         cj.SetPlayerHandicapXP(hplayer.players[i], 0)
         hRuntime.player[hplayer.players[i]].prevGold = 0

@@ -72,7 +72,7 @@ hLuaStart = {
         cj.TriggerAddAction(triggerRegIn, function()
             local u = cj.GetTriggerUnit()
             if (cj.GetUnitAbilityLevel(u, 'Aloc') > 0) then
-                -- 蝗虫不做某些处理
+                -- 蝗虫不做处理
                 return
             end
             -- 排除单位类型
@@ -84,9 +84,9 @@ hLuaStart = {
             ) then
                 return
             end
-            -- 注册事件
-            if (hRuntime.unitEvent[u] == nil) then
-                hRuntime.unitEvent[u] = 1
+            -- 注册
+            if (hRuntime.register[u] == nil) then
+                hRuntime.register[u] = 1
                 -- 受伤与死亡
                 cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
                 cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)

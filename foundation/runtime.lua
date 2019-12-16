@@ -1,4 +1,5 @@
 hRuntime = {
+    register = {},
     system = {},
     logic = {},
     time = {},
@@ -19,7 +20,6 @@ hRuntime = {
     player = {},
     award = {},
     unit = {},
-    unitEvent = {},
     enemy = {},
     group = {},
     hero = {},

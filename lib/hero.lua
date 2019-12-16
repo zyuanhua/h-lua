@@ -36,10 +36,10 @@ cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
     hattr.addManaSource(u, 10 * diffLv, 0)
     -- @触发升级事件
     hevt.triggerEvent({
-        triggerKey = "levelUp",
+        triggerKey = heventKeyMap.levelUp,
         triggerUnit = u,
     })
-    hhero.setPrevLevel(u, ch.GetHeroLevel(GetTriggerUnit()))
+    hhero.setPrevLevel(u, ch.GetHeroLevel(u))
 end)
 --- 设置英雄之前的等级
 hhero.setPrevLevel = function(u, lv)
@@ -156,11 +156,20 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         cj.AddItemToStock(tavern, itemId, 1, 1)
     end
 end
---- 设置一个单位是否使用英雄判定
+--- 设置一个单位是否使用英雄判定(请勿重复设置)
 -- 请不要乱设置[一般单位]为[英雄]，以致于力量敏捷智力等不属于一般单位的属性引起崩溃报错
 -- 设定后 his.hero 方法会认为单位为英雄，同时属性系统才会认定它为英雄，从而生效
 hhero.setIsHero = function(u, flag)
+    flag = flag or false
+    if (hRuntime.is[u] == nil) then
+        hRuntime.is[u] = {}
+    end
     hRuntime.is[u].isHero = flag
+    if (flag == true and ~hRuntime.is[u].isHeroInit) then
+        hRuntime.is[u].isHeroInit = true
+        hhero.setHeroPrevLevel(u, 1)
+        cj.TriggerRegisterUnitEvent(hhero.trigger_hero_lvup, u, EVENT_UNIT_HERO_LEVEL)
+    end
 end
 --- 获取英雄的类型（STR AGI INT）
 hhero.getHeroType = function(u)
@@ -263,11 +272,11 @@ hhero.buildClick = function(during, clickQty)
             end
         end
         hmessage.echoXY0(p, "已为您 |cffffff80random|r 选择了 "
-                .. "|cffffff80"
-                .. math.floor(qty)
-                .. "|r 个单位：|cffffff80"
-                .. txt
-                .. "|r", 0)
+            .. "|cffffff80"
+            .. math.floor(qty)
+            .. "|r 个单位：|cffffff80"
+            .. txt
+            .. "|r", 0)
     end)
     cj.TriggerAddAction(tgr_repick, function()
         local p = hevent.getTriggerPlayer()
@@ -384,11 +393,11 @@ hhero.buildTavern = function(during)
             end
         end
         hmessage.echoXY0(p, "已为您 |cffffff80random|r 选择了 "
-                .. "|cffffff80"
-                .. math.floor(qty)
-                .. "|r 个单位：|cffffff80"
-                .. txt
-                .. "|r", 0)
+            .. "|cffffff80"
+            .. math.floor(qty)
+            .. "|r 个单位：|cffffff80"
+            .. txt
+            .. "|r", 0)
     end)
     cj.TriggerAddAction(tgr_repick, function()
         local p = hevent.getTriggerPlayer()
