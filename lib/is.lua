@@ -5,7 +5,7 @@ his.set = function(handle, key, val)
         print_stack()
         return
     end
-    if (~is_boolean(val)) then
+    if (type(val) ~= "boolean") then
         print("his.set not boolean")
         return
     end
