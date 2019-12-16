@@ -1364,11 +1364,11 @@ hattr.huntUnit = function(bean)
                 punish_current = '-' .. realDamage
             })
             if (hattr.get(bean.toUnit, 'punish_current') <= 0) then
-                hRuntime.is[bean.toUnit].isPunishing = true
+                his.set(bean.toUnit, "isPunishing", true)
                 htime.setTimeout(punish_during + 1.00, nil, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
-                    hRuntime.is[bean.toUnit].isPunishing = false
+                    his.set(bean.toUnit, "isPunishing", false)
                 end)
             end
             local punishEffectAttackSpeed = (100 + hattr.get(bean.toUnit, 'attack_speed')) * punishEffectRatio

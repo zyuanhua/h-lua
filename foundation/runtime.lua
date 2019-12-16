@@ -43,7 +43,7 @@ for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     -- is
     hRuntime.is[p] = {}
     hRuntime.is[p].isComputer = true
-    hRuntime.is[p].isAutoConvertGoldLumber = true
+    hRuntime.is[p].isAutoConvertGoldToLumber = true
     -- sound
     hRuntime.sound[p] = {}
     hRuntime.sound[p].currentBgm = nil

@@ -465,13 +465,13 @@ hplayerInit = function()
         cj.DialogDisplay(p, d, true)
     end)
     cj.TriggerAddAction(triggerConvert, function()
-        local p = GetTriggerPlayer()
+        local p = cj.GetTriggerPlayer()
         if (his.autoConvertGoldLumber(p) == true) then
-            hRuntime.is[p].isAutoConvertGoldLumber = false
-            hmessage.echoXY0(GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
+            his.set(p, "isAutoConvertGoldToLumber", false)
+            hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
         else
-            hRuntime.is[p].isAutoConvertGoldLumber = true
-            hmessage.echoXY0(GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
+            his.set(p, "isAutoConvertGoldToLumber", true)
+            hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
         end
     end)
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)

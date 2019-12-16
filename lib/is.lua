@@ -21,7 +21,7 @@ his.get = function(handle, key)
     end
     if (hRuntime.is[handle] == nil) then
         return false
-    elseif (is_boolean(hRuntime.is[handle])) then
+    elseif (type(hRuntime.is[handle]) == "boolean") then
         return hRuntime.is[handle][key]
     else
         return false
@@ -42,7 +42,7 @@ his.computer = function(whichPlayer)
 end
 --是否自动换算黄金木头
 his.autoConvertGoldLumber = function(whichPlayer)
-    return his.get(whichPlayer, "isAutoConvertGoldLumber")
+    return his.get(whichPlayer, "isAutoConvertGoldToLumber")
 end
 --是否玩家位置(如果位置为真实玩家或为空，则为true；而如果选择了电脑玩家补充，则为false)
 his.playerSite = function(whichPlayer)

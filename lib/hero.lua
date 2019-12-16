@@ -27,13 +27,11 @@ cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
     if (diffLv < 1) then
         return
     end
-    hattr.setStrWhite(u, cj.GetHeroStr(u, false), 0)
-    hattr.setAgiWhite(u, cj.GetHeroAgi(u, false), 0)
-    hattr.setIntWhite(u, cj.GetHeroInt(u, false), 0)
-    hattr.addHelp(u, 2 * diffLv, 0)
-    hattr.addWeight(u, 0.25 * diffLv, 0)
-    hattr.addLifeSource(u, 10 * diffLv, 0)
-    hattr.addManaSource(u, 10 * diffLv, 0)
+    hattr.set(u, 0, {
+        str_white = "=" .. cj.GetHeroStr(u, false),
+        agi_white = "=" .. cj.GetHeroAgi(u, false),
+        int_white = "=" .. cj.GetHeroInt(u, false),
+    })
     -- @触发升级事件
     hevt.triggerEvent({
         triggerKey = heventKeyMap.levelUp,
@@ -161,13 +159,10 @@ end
 -- 设定后 his.hero 方法会认为单位为英雄，同时属性系统才会认定它为英雄，从而生效
 hhero.setIsHero = function(u, flag)
     flag = flag or false
-    if (hRuntime.is[u] == nil) then
-        hRuntime.is[u] = {}
-    end
-    hRuntime.is[u].isHero = flag
-    if (flag == true and ~hRuntime.is[u].isHeroInit) then
-        hRuntime.is[u].isHeroInit = true
-        hhero.setHeroPrevLevel(u, 1)
+    his.set(u, "isHero", flag)
+    if (flag == true and his.get(u, "isHeroInit") == false) then
+        his.set(u, "isHeroInit", true)
+        hhero.setPrevLevel(u, 1)
         cj.TriggerRegisterUnitEvent(hhero.trigger_hero_lvup, u, EVENT_UNIT_HERO_LEVEL)
     end
 end
