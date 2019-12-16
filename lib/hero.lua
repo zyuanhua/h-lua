@@ -23,7 +23,6 @@ hhero.trigger_hero_lvup = cj.CreateTrigger()
 cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
     local u = cj.GetTriggerUnit()
     local diffLv = cj.GetHeroLevel(u) - hhero.getPrevLevel(u)
-    print("diffLv=" .. diffLv)
     if (diffLv < 1) then
         return
     end
@@ -36,6 +35,7 @@ cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
     hevt.triggerEvent({
         triggerKey = heventKeyMap.levelUp,
         triggerUnit = u,
+        value = diffLv,
     })
     hhero.setPrevLevel(u, ch.GetHeroLevel(u))
 end)

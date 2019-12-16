@@ -1021,6 +1021,7 @@ hevent.onReborn = function(whichUnit, action)
 end
 --提升升等级时
 --- getTriggerUnit 获取触发单位
+--- getValue 获取提升了多少级
 hevent.onLevelUp = function(whichUnit, action)
     local evtKey = heventKeyMap.levelUp
     return hevent.onEventByHandle(evtKey, whichUnit, action)
