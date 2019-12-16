@@ -529,11 +529,11 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
                 --- 白字攻击
             elseif (attr == 'attack_white') then
-                if (futureVal > hattr.max_attack_white or futureVal < -hattr.max_attack_white) then
+                local max = 100000000
+                if (futureVal > max or futureVal < -max) then
                     diff = 0
                 end
                 tempVal = math.floor(diff)
-                local max = 100000000
                 if (tempVal ~= 0) then
                     if (diff < 0) then
                         tempVal = math.abs(tempVal);
