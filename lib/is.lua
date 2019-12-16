@@ -1,7 +1,12 @@
 local his = {}
 
 his.set = function(handle, key, val)
-    if (handle == nil or key == nil or val == nil or ~is_boolean(val)) then
+    if (handle == nil or key == nil or val == nil) then
+        print_stack()
+        return
+    end
+    if (~is_boolean(val)) then
+        print("his.set not boolean")
         return
     end
     if (hRuntime.is[handle] == nil) then
