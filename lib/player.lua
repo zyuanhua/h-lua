@@ -497,8 +497,8 @@ hplayerInit = function()
         hRuntime.player[hplayer.players[i]].beDamage = 0
         hRuntime.player[hplayer.players[i]].kill = 0
         if ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)) then
-            --- his
-            hRuntime.is[hplayer.players[i]].isComputer = false
+            -- his
+            his.set(hplayer.players[i], "isComputer", false)
             --
             hplayer.qty_current = hplayer.qty_current + 1
             hRuntime.player[hplayer.players[i]].status = hplayer.player_status.gaming
@@ -513,8 +513,8 @@ hplayerInit = function()
             cj.TriggerRegisterPlayerChatEvent(triggerMSR, hplayer.players[i], "-msr", true)
             cj.TriggerRegisterPlayerChatEvent(triggerConvert, hplayer.players[i], "-apc", true)
         else
-            --- his
-            hRuntime.is[hplayer.players[i]].isComputer = true
+            -- his
+            his.set(hplayer.players[i], "isComputer", true)
             --
             hRuntime.player[hplayer.players[i]].status = hplayer.player_status.none
         end
