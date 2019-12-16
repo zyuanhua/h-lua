@@ -17,7 +17,7 @@ end
 hsound.sound2Unit = function(s, volumePercent, u)
     if (s ~= nil) then
         cj.AttachSoundToUnit(s, u)
-        cj.SetSoundVolume(s, cj.PercentToInt(volumePercent, 127))
+        cj.SetSoundVolume(s, cj.R2I(volumePercent * cj.I2R(127) * 0.01))
         cj.StartSound(s)
     end
 end
@@ -38,7 +38,7 @@ end
 -- 由于音乐快速切换会卡顿，所以有3秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）
 -- 延时是每个玩家独立时间，当切换的BGM为同一首时，切换不会进行
 hsound.bgm = function(musicFileName, whichPlayer)
-    if (musicFileName ~= null and string.len(musicFileName) > 0) then
+    if (musicFileName ~= nil and string.len(musicFileName) > 0) then
         if (whichPlayer ~= nil and hRuntime.sound[whichPlayer].currentBgm ~= musicFileName) then
             return
         end
@@ -51,7 +51,7 @@ hsound.bgm = function(musicFileName, whichPlayer)
                     htime.setTimeout(hRuntime.sound[p].bgmDelay, nil, function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        cj.PlayMusic(txt)
+                        cj.PlayMusic(musicFileName)
                         hRuntime.sound[p].bgmDelay = hRuntime.sound[p].bgmDelay - 3.00
                     end)
                     hRuntime.sound[p].bgmDelay = hRuntime.sound[p].bgmDelay + 3.00

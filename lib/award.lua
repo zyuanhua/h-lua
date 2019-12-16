@@ -34,13 +34,13 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
         hplayer.addGold(p, realGold)
         floatStr = floatStr .. " |cffffcc00" .. realGold .. "G" .. "|r"
         ttgColorLen = ttgColorLen + 13
-        hmedia.sound2Unit(gg_snd_ReceiveGold, whichUnit)
+        hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, whichUnit)
     end
     if (realLumber >= 1) then
         hplayer.addLumber(p, realLumber)
         floatStr = floatStr .. " |cff80ff80" .. realLumber .. "L" .. "|r"
         ttgColorLen = ttgColorLen + 13
-        hmedia.sound2Unit(gg_snd_BundleOfLumber, whichUnit)
+        hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, whichUnit)
     end
     ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 0, 1.70, 60.00)
     cj.SetTextTagPos(ttg, cj.GetUnitX(whichUnit) - (string.len(floatStr) - ttgColorLen) * 7 * 0.5, cj.GetUnitY(whichUnit), 50)
