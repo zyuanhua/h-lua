@@ -666,7 +666,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
                 local setting = {}
-                for k, v in pairs(hattr.threeBuff[string.gsub(attr, '_green')]) do
+                for k, v in pairs(hattr.threeBuff[string.gsub(attr, '_green', '')]) do
                     setting[k] = '+' .. diff * v
                 end
                 hattr.set(whichUnit, 0, setting)
@@ -680,7 +680,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
                 end
                 local setting = {}
-                for k, v in pairs(hattr.threeBuff[string.gsub(attr, '_white')]) do
+                for k, v in pairs(hattr.threeBuff[string.gsub(attr, '_white', '')]) do
                     setting[k] = '+' .. diff * v
                 end
                 hattr.set(whichUnit, 0, setting)

@@ -37,7 +37,7 @@ cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
         triggerUnit = u,
         value = diffLv,
     })
-    hhero.setPrevLevel(u, ch.GetHeroLevel(u))
+    hhero.setPrevLevel(u, cj.GetHeroLevel(u))
 end)
 --- 设置英雄之前的等级
 hhero.setPrevLevel = function(u, lv)

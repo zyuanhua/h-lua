@@ -26,9 +26,9 @@ local hplayer = {
 hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     if delta > 0 then
         if whichPlayerState == PLAYER_STATE_RESOURCE_GOLD then
-            cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED) + delta)
+            cj.SetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED, cj.GetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED) + delta)
         elseif whichPlayerState == PLAYER_STATE_RESOURCE_LUMBER then
-            cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED) + delta)
+            cj.SetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED, cj.GetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED) + delta)
         end
     end
     cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, whichPlayerState) + delta)
@@ -339,7 +339,7 @@ hplayer.setGold = function(whichPlayer, gold)
         end
         gold = 1000000
     end
-    hplayer.adjustPlayerState(gold - hplayer.getGold(whichPlayer), whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
+    hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD, gold)
     hplayer.adjustGold(whichPlayer)
 end
 --- 增加玩家金钱

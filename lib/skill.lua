@@ -37,7 +37,7 @@ hskill.damage = function(bean)
         bean.realDamageString .. math.floor(bean.realDamage),
         6.00,
         bean.realDamageStringColor,
-        10,
+        1,
         1.1,
         11.00
     ), "toggle", -0.05, 0)

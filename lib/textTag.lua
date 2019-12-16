@@ -7,10 +7,16 @@ htextTag.del = function(ttg)
 end
 -- 创建漂浮字
 -- 设置during为0则永久显示
+-- opacity设置为0则不可见(0.0~1.0)
 -- color为6位颜色代码 http://www.atool.org/colorpicker.php
 htextTag.create = function(msg, size, color, opacity, during)
-    if (string.len(msg) <= 0 or opacity >= 100 or opacity < 0 or during < 0) then
+    if (string.len(msg) <= 0 or during < 0) then
         return nil
+    end
+    if (opacity >= 1) then
+        opacity = 1
+    elseif (opacity < 0) then
+        opacity = 0
     end
     local ttg = cj.CreateTextTag()
     if (color ~= nil and string.len(color) == 6) then
@@ -24,7 +30,7 @@ htextTag.create = function(msg, size, color, opacity, during)
         during = during,
     }
     cj.SetTextTagText(ttg, s, size * 0.023 / 10)
-    cj.SetTextTagColor(ttg, 255, 255, 255, 255 * (100 - opacity))
+    cj.SetTextTagColor(ttg, 255, 255, 255, math.floor(255 * opacity))
     if (during == 0) then
         cj.SetTextTagPermanent(ttg, true)
     else
