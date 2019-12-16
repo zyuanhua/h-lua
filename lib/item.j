@@ -1177,8 +1177,8 @@ private static integer hk_dragonOppose = 1087
 	//触发物品的瞬逝
 	private static method triggerMoment takes nothing returns nothing
         local trigger tg = null
-		local unit it = hevt.getTriggerUnit()
-		local unit triggerUnit = hevt.getTriggerEnterUnit()
+		local unit it = hevent.getTriggerUnit()
+		local unit triggerUnit = hevent.getTriggerEnterUnit()
 		local integer charges = 0
 		if(it!=null and triggerUnit!=null and his.hasSlot(triggerUnit) and his.alive(triggerUnit))then
 			set charges = GetUnitUserData(it)
@@ -1190,9 +1190,9 @@ private static integer hk_dragonOppose = 1087
 			endif
 			set tg = LoadTriggerHandle(hash_item,GetUnitTypeId(it),hk_item_onmoment_trigger)
 			if(tg!=null)then
-				call hevt.setTriggerUnit(tg,triggerUnit)
-				call hevt.setId(tg,GetUnitTypeId(it))
-				call hevt.setValue(tg,charges)
+				call hevent.setTriggerUnit(tg,triggerUnit)
+				call hevent.setId(tg,GetUnitTypeId(it))
+				call hevent.setValue(tg,charges)
 				call TriggerExecute(tg)
                 set tg = null
 			endif
@@ -4225,8 +4225,8 @@ endif
 		if(getType(itemid)==HITEM_TYPE_MOMENT or getIsPowerup(itemid) == true)then
 			set tg = LoadTriggerHandle(hash_item,itemid,hk_item_onmoment_trigger)
 			if(tg!=null)then
-				call hevt.setTriggerUnit(tg,whichUnit)
-				call hevt.setValue(tg,charges)
+				call hevent.setTriggerUnit(tg,whichUnit)
+				call hevent.setValue(tg,charges)
 				call TriggerExecute(tg)
                 set tg = null
 			endif
@@ -4295,7 +4295,7 @@ endif
 				set hevtBean.triggerKey = "itemMix"
 				set hevtBean.triggerUnit = whichUnit
 				set hevtBean.triggerItem = hjass_global_item
-				call hevt.triggerEvent(hevtBean)
+				call hevent.triggerEvent(hevtBean)
 				call hevtBean.destroy()
 			endif
 			if(getEmptySlot(whichUnit)>=1)then
@@ -4308,7 +4308,7 @@ endif
 				set hevtBean.triggerKey = "itemGet"
 				set hevtBean.triggerUnit = whichUnit
 				set hevtBean.triggerItem = hjass_global_item
-				call hevt.triggerEvent(hevtBean)
+				call hevent.triggerEvent(hevtBean)
 				call hevtBean.destroy()
 			endif
 		endif
@@ -4355,7 +4355,7 @@ endif
 			else
 				set range = 100
 			endif
-			call hevt.onEnterUnitRange(u,range,function thistype.triggerMoment)
+			call hevent.onEnterUnitRange(u,range,function thistype.triggerMoment)
 			if(during > 0)then
 				call hunit.del(u,during)
 			endif
@@ -4482,8 +4482,8 @@ endif
 		if(getType(itid)==HITEM_TYPE_MOMENT or getIsPowerup(itid) == true or GetItemType(hjass_global_item) == ITEM_TYPE_POWERUP)then
 			set tg = LoadTriggerHandle(hash_item,itid,hk_item_onmoment_trigger)
 			if(tg!=null)then
-				call hevt.setTriggerUnit(tg,u)
-				call hevt.setValue(tg,charges)
+				call hevent.setTriggerUnit(tg,u)
+				call hevent.setValue(tg,charges)
 				call TriggerExecute(tg)
                 set tg = null
 			endif
@@ -4511,7 +4511,7 @@ endif
 			set hevtBean.triggerKey = "itemDrop"
 			set hevtBean.triggerUnit = u
 			set hevtBean.triggerItem = hjass_global_item
-			call hevt.triggerEvent(hevtBean)
+			call hevent.triggerEvent(hevtBean)
 			call hevtBean.destroy()
 			call thistype.setIsHjass(hjass_global_item,false)
 		endif
@@ -4541,7 +4541,7 @@ endif
 			set hevtBean.triggerKey = "itemPawn"
 			set hevtBean.triggerUnit = u
 			set hevtBean.triggerItem = hjass_global_item
-			call hevt.triggerEvent(hevtBean)
+			call hevent.triggerEvent(hevtBean)
 			call hevtBean.destroy()
 		endif
         set u = null
@@ -4576,7 +4576,7 @@ endif
 				set hevtBean.triggerUnit = GetSellingUnit()
 				set hevtBean.targetUnit = GetBuyingUnit()
 				set hevtBean.triggerItem = hjass_global_item
-				call hevt.triggerEvent(hevtBean)
+				call hevent.triggerEvent(hevtBean)
 				call hevtBean.destroy()
 			endif
             set hjass_global_item = null
@@ -4607,7 +4607,7 @@ endif
 		set hevtBean.triggerUnit = u
 		set hevtBean.id = itid
 		set hevtBean.type = "simple"
-		call hevt.triggerEvent(hevtBean)
+		call hevent.triggerEvent(hevtBean)
 		call hevtBean.destroy()
 		if(IsItemOwned(itSeparate) == true)then
 			set weight = hattr.getWeightCurrent(u) - getWeight(itid)*I2R(charges)
@@ -4642,7 +4642,7 @@ endif
 			set hevtBean.triggerUnit = u
 			set hevtBean.id = itid
 			set hevtBean.type = "mixed"
-			call hevt.triggerEvent(hevtBean)
+			call hevent.triggerEvent(hevtBean)
 			call hevtBean.destroy()
 
 			if(IsItemOwned(itSeparate) == true)then
@@ -4799,9 +4799,9 @@ endif
 		endif
 		set tg = LoadTriggerHandle(hash_item,itid,hk_item_onuse_trigger)
 		if(tg != null)then
-			call hevt.setTriggerUnit(tg,u)
-			call hevt.setTriggerItem(tg,it)
-			call hevt.setId(tg,itid)
+			call hevent.setTriggerUnit(tg,u)
+			call hevent.setTriggerItem(tg,it)
+			call hevent.setId(tg,itid)
 			call TriggerExecute(tg)
 			//@触发 使用物品 事件
 			set hevtBean = hEvtBean.create()
@@ -4809,7 +4809,7 @@ endif
 			set hevtBean.triggerUnit = u
 			set hevtBean.triggerItem = it
 			set hevtBean.id = itid
-			call hevt.triggerEvent(hevtBean)
+			call hevent.triggerEvent(hevtBean)
 			call hevtBean.destroy()
             set tg = null
 		endif

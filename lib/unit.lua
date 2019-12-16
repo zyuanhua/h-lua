@@ -362,7 +362,7 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
                 hskill.invulnerable(u, invulnerable)
             end
             -- @触发复活事件
-            hevt.triggerEvent({
+            hevent.triggerEvent({
                 triggerKey = "reborn",
                 triggerUnit = u
             })
@@ -376,7 +376,7 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
                     hskill.invulnerable(u, invulnerable)
                 end
                 -- @触发复活事件
-                hevt.triggerEvent({
+                hevent.triggerEvent({
                     triggerKey = "reborn",
                     triggerUnit = u
                 })

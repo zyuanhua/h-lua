@@ -32,7 +32,7 @@ cj.TriggerAddAction(hhero.trigger_hero_lvup, function()
         int_white = "=" .. cj.GetHeroInt(u, false),
     })
     -- @触发升级事件
-    hevt.triggerEvent({
+    hevent.triggerEvent({
         triggerKey = heventKeyMap.levelUp,
         triggerUnit = u,
         value = diffLv,
