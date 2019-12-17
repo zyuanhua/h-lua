@@ -1,9 +1,10 @@
-# h-lua（开发中，bug一堆请见谅）
-### h-lua是在h-vjass基础上更进一步的魔兽制图框架
- * 未有实践（敬请期待）
+ * [github网址](https://github.com/hunzsig-warcraft3/h-lua)
+ * 最佳实践：未有实践（敬请期待）
+ * [h-lua技术文档](http://hlua.book.hunzsig.org)
  * author hunzsig
 
 ## 使用优势？
+### h-lua是在h-vjass基础上更进一步的魔兽制图框架
 ##### h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依赖任何游戏平台（如JAPI、DzAPI）但并不禁止你使用(有集成DzAPI)。
 ##### 包含多样丰富的属性系统，内置多达几十种以上的自定义事件,可以轻松做出平时难以甚至不能做出的技能效果。
 ##### 强大的物品合成分拆，丰富自定义技能模板！免去自行编写！
@@ -37,6 +38,7 @@
         ├── attrbute.lua - 基础/拓展/伤害特效/自然/单位关联，万能属性系统，比h-vjass的更加自由及强大
         ├── award.lua - 奖励模块，用于控制玩家的黄金木头经验
         ├── camera.lua - 镜头模块，用于控制玩家镜头
+        ├── dialog.lua - 对话框模块，用于显示对话框
         ├── dzapi.lua - Dzapi
         ├── effect.lua - 特效模块
         ├── enemy.lua - 敌人模块，用于设定敌人玩家，自动分配单位
@@ -46,6 +48,7 @@
         ├── hero.lua - 英雄/选英雄模块，包含点击/酒馆选择，repick/random功能等
         ├── is.lua - 判断模块 * 常用
         ├── item.lua - 物品模块，与属性系统无缝结合，合成/分拆等功能
+        ├── leaderBoard.lua 排行榜模块，用于简易构建排行榜
         ├── lightning.lua - 闪电链
         ├── logic.lua - 逻辑模块
         ├── mark.lua - 遮罩模块
