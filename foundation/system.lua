@@ -129,7 +129,7 @@ hSys.stripslashes = function(s)
     return s
 end
 
-hSys.base64encode = function(source_str)
+hSys.base64Encode = function(source_str)
     local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
     local s64 = ''
     local str = source_str
