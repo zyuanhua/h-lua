@@ -640,7 +640,12 @@ end
 --拆分物品
 --- getTriggerUnit 获取触发单位
 --- getId 获取拆分的物品ID
---- getType 获取拆分的类型 { simple 单件拆分 | mixed 合成品拆分 }
+--- getType 获取拆分的类型
+--[[
+    getType 获取拆分的类型
+        simple 单件拆分(同一种物品拆成很多件)
+        mixed 合成品拆分(一种物品拆成零件的种类)
+]]
 hevent.onItemSeparate = function(whichUnit, action)
     local evtKey = heventKeyMap.itemSeparate
     return hevent.onEventByHandle(evtKey, whichUnit, action)
@@ -706,7 +711,7 @@ end
 --- getTargetUnit 获取被眩晕单位
 --- getPercent 获取眩晕几率百分比
 --- getDuring 获取眩晕时间（秒）
---- getDamage 获取眩晕实际伤害
+--- getDamage 获取眩晕伤害
 hevent.onSwim = function(whichUnit, action)
     local evtKey = heventKeyMap.swim
     return hevent.onEventByHandle(evtKey, whichUnit, action)
@@ -716,7 +721,7 @@ end
 --- getSourceUnit 获取来源单位
 --- getPercent 获取眩晕几率百分比
 --- getDuring 获取眩晕时间（秒）
---- getDamage 获取眩晕实际伤害
+--- getDamage 获取眩晕伤害
 hevent.onBeSwim = function(whichUnit, action)
     local evtKey = heventKeyMap.beSwim
     return hevent.onEventByHandle(evtKey, whichUnit, action)
@@ -731,11 +736,11 @@ hevent.onBroken = function(whichUnit, action)
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
 --被打断
---- getTriggerUnit 获取被眩晕单位
+--- getTriggerUnit 获取被打断单位
 --- getSourceUnit 获取来源单位
 --- getPercent 获取打断几率百分比
 --- getDamage 获取打断伤害
-hevent.onBeSwim = function(whichUnit, action)
+hevent.onBeBroken = function(whichUnit, action)
     local evtKey = heventKeyMap.beBroken
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
@@ -842,7 +847,7 @@ hevent.onBeLightningChain = function(whichUnit, action)
 end
 --击飞成功
 --- getTriggerUnit 获取触发单位
---- getTargetUnit 获取被闪电链单位
+--- getTargetUnit 获取被击飞单位
 --- getPercent 获取击飞几率百分比
 --- getDamage 获取击飞伤害
 --- getHigh 获取击飞高度
@@ -946,7 +951,7 @@ hevent.onBeSpilt = function(whichUnit, action)
     local evtKey = heventKeyMap.beSpilt
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---极限韧性抵抗
+--极限减伤抵抗（减伤不足以抵扣）
 --- getTriggerUnit 获取触发单位
 --- getSourceUnit 获取来源单位
 hevent.onLimitToughness = function(whichUnit, action)
@@ -1013,8 +1018,8 @@ hevent.onKill = function(whichUnit, action)
     local evtKey = heventKeyMap.kill
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
 --- getTriggerUnit 获取触发单位
+--- 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
 hevent.onReborn = function(whichUnit, action)
     local evtKey = heventKeyMap.reborn
     return hevent.onEventByHandle(evtKey, whichUnit, action)
@@ -1068,10 +1073,10 @@ hevent.onEnterUnitRange = function(whichUnit, range, action)
     end
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
---离开某区域内
+--离开某区域
 --- getTriggerRect 获取被离开的矩形区域
 --- getTriggerUnit 获取离开矩形区域的单位
-hevent.onEnterUnitRange = function(whichRect, action)
+hevent.onLeaveRect = function(whichRect, action)
     local evtKey = heventKeyMap.leaveRect
     if (hRuntime.event[whichRect].evtInit == nil) then
         hRuntime.event[whichRect].evtInit = {}
