@@ -28,6 +28,18 @@ hskill.get = function(handle, key, defaultVal)
 end
 
 --- 造成伤害
+--[[
+    bean = {
+        fromUnit = nil, --伤害来源
+        toUnit = nil, --目标单位
+        damage = 0, --初始伤害
+        realDamage = 0, --实际伤害
+        realDamageStringColor = "", --伤害漂浮字颜色
+        huntKind = "attack", --伤害种类 attack | skill | special
+        huntType = { "magic", "thunder" }, --伤害类型 physical | magic 等
+        huntEff = "", --伤害特效
+    }
+]]
 hskill.damage = function(bean)
     -- 文本显示
     bean.realDamageString = bean.realDamageString or ''
@@ -97,10 +109,9 @@ end
 
 ---打断
 -- ! 注意这个方法对中立被动无效
-hskill.broken = function(u, sourceUnit, damage, percent)
+hskill.broken = function(u, sourceUnit, damage)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
-    percent = percent or -1
     local cu = hunit.create({
         id = hskill.SKILL_TOKEN,
         whichPlayer = hplayer.player_passive,
@@ -118,7 +129,6 @@ hskill.broken = function(u, sourceUnit, damage, percent)
             triggerUnit = sourceUnit,
             targetUnit = u,
             damage = damage,
-            percent = percent,
         })
     end
     -- @触发被打断事件
@@ -127,16 +137,14 @@ hskill.broken = function(u, sourceUnit, damage, percent)
         triggerUnit = u,
         sourceUnit = sourceUnit,
         damage = damage,
-        percent = percent,
     })
 end
 
 ---眩晕
 -- ! 注意这个方法对中立被动无效
-hskill.swim = function(u, during, sourceUnit, damage, percent)
+hskill.swim = function(u, during, sourceUnit, damage)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
-    percent = percent or -1
     local swimTimer = hskill.get(u, "swimTimer")
     if (swimTimer ~= nil and cj.TimerGetRemaining(t) > 0) then
         if (during <= cj.TimerGetRemaining(swimTimer)) then
@@ -166,7 +174,6 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
             triggerUnit = sourceUnit,
             targetUnit = u,
             damage = damage,
-            percent = percent,
             during = during,
         })
     end
@@ -176,7 +183,6 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
         triggerUnit = u,
         sourceUnit = sourceUnit,
         damage = damage,
-        percent = percent,
         during = during,
     })
     hskill.set(u, "swimTimer", htime.setTimeout(during, nil, function(t, td)
@@ -188,10 +194,9 @@ hskill.swim = function(u, during, sourceUnit, damage, percent)
 end
 
 ---沉默
-hskill.silent = function(u, during, sourceUnit, damage, percent)
+hskill.silent = function(u, during, sourceUnit, damage)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
-    percent = percent or -1
     if (hRuntime.skill.silentUnits == nil) then
         hRuntime.skill.silentUnits = {}
     end
@@ -225,7 +230,6 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
             triggerUnit = sourceUnit,
             targetUnit = u,
             damage = damage,
-            percent = percent,
             during = during,
         })
     end
@@ -235,7 +239,6 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
         triggerUnit = u,
         sourceUnit = sourceUnit,
         damage = damage,
-        percent = percent,
         during = during,
     })
     htime.setTimeout(during, nil, function(t, td)
@@ -253,10 +256,9 @@ hskill.silent = function(u, during, sourceUnit, damage, percent)
 end
 
 ---缴械
-hskill.unarm = function(u, during, sourceUnit, damage, percent)
+hskill.unarm = function(u, during, sourceUnit, damage)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
-    percent = percent or -1
     if (hRuntime.skill.unarmUnits == nil) then
         hRuntime.skill.unarmUnits = {}
     end
@@ -290,7 +292,6 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
             triggerUnit = sourceUnit,
             targetUnit = u,
             damage = damage,
-            percent = percent,
             during = during,
         })
     end
@@ -300,7 +301,6 @@ hskill.unarm = function(u, during, sourceUnit, damage, percent)
         triggerUnit = u,
         sourceUnit = sourceUnit,
         damage = damage,
-        percent = percent,
         during = during,
     })
     htime.setTimeout(during, nil, function(t, td)

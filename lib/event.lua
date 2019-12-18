@@ -729,7 +729,6 @@ end
 --打断成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被打断单位
---- getPercent 获取打断几率百分比
 --- getDamage 获取打断伤害
 hevent.onBroken = function(whichUnit, action)
     local evtKey = heventKeyMap.broken
@@ -738,7 +737,6 @@ end
 --被打断
 --- getTriggerUnit 获取被打断单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取打断几率百分比
 --- getDamage 获取打断伤害
 hevent.onBeBroken = function(whichUnit, action)
     local evtKey = heventKeyMap.beBroken
@@ -747,7 +745,6 @@ end
 --沉默成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被沉默单位
---- getPercent 获取沉默几率百分比
 --- getDuring 获取沉默时间（秒）
 --- getDamage 获取沉默伤害
 hevent.onSilent = function(whichUnit, action)
@@ -757,7 +754,6 @@ end
 --被沉默
 --- getTriggerUnit 获取被沉默单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取沉默几率百分比
 --- getDuring 获取沉默时间（秒）
 --- getDamage 获取沉默伤害
 hevent.onBeSilent = function(whichUnit, action)
@@ -767,7 +763,6 @@ end
 --缴械成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被缴械单位
---- getPercent 获取缴械几率百分比
 --- getDuring 获取缴械时间（秒）
 --- getDamage 获取缴械伤害
 hevent.onUnarm = function(whichUnit, action)
@@ -777,7 +772,6 @@ end
 --被缴械
 --- getTriggerUnit 获取被缴械单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取缴械几率百分比
 --- getDuring 获取缴械时间（秒）
 --- getDamage 获取缴械伤害
 hevent.onBeUnarm = function(whichUnit, action)
@@ -787,7 +781,6 @@ end
 --缚足成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被缚足单位
---- getPercent 获取缚足几率百分比
 --- getDuring 获取缚足时间（秒）
 --- getDamage 获取缚足伤害
 hevent.onFetter = function(whichUnit, action)
@@ -797,7 +790,6 @@ end
 --被缚足
 --- getTriggerUnit 获取被缚足单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取缚足几率百分比
 --- getDuring 获取缚足时间（秒）
 --- getDamage 获取缚足伤害
 hevent.onBeFetter = function(whichUnit, action)
@@ -807,7 +799,6 @@ end
 --爆破成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被爆破单位
---- getPercent 获取爆破几率百分比
 --- getDamage 获取爆破伤害
 --- getRange 获取爆破范围
 hevent.onBomb = function(whichUnit, action)
@@ -817,7 +808,6 @@ end
 --被爆破
 --- getTriggerUnit 获取被爆破单位
 --- getSourceUnit 获取来源单位
---- getPercent 获取爆破几率百分比
 --- getDamage 获取爆破伤害
 --- getRange 获取爆破范围
 hevent.onBeBomb = function(whichUnit, action)
@@ -827,7 +817,6 @@ end
 --闪电链成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被闪电链单位
---- getPercent 获取闪电链几率百分比
 --- getDamage 获取闪电链伤害
 --- getRange 获取闪电链范围
 --- getQty 获取闪电链数量
@@ -848,7 +837,6 @@ end
 --击飞成功
 --- getTriggerUnit 获取触发单位
 --- getTargetUnit 获取被击飞单位
---- getPercent 获取击飞几率百分比
 --- getDamage 获取击飞伤害
 --- getHigh 获取击飞高度
 --- getDistance 获取击飞距离

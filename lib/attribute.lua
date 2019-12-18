@@ -1695,7 +1695,6 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
                 damage = fetterEffect.val,
-                percent = fetterEffect.odds,
                 during = fetterEffect.during,
             })
             -- @触发被缚足事件
@@ -1704,7 +1703,6 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.toUnit,
                 sourceUnit = bean.fromUnit,
                 damage = fetterEffect.val,
-                percent = fetterEffect.odds,
                 during = fetterEffect.during,
             })
         end
@@ -1730,7 +1728,6 @@ hattr.huntUnit = function(bean)
                     triggerUnit = bean.fromUnit,
                     targetUnit = bean.toUnit,
                     damage = bombEffect.val,
-                    percent = bombEffect.odds,
                     range = bombEffect.range,
                 })
                 cj.ForGroup(tempGroup, function()
@@ -1748,7 +1745,6 @@ hattr.huntUnit = function(bean)
                         triggerUnit = cj.GetEnumUnit(),
                         sourceUnit = bean.fromUnit,
                         damage = bombEffect.val,
-                        percent = bombEffect.odds,
                         range = bombEffect.range,
                     })
                 end)
@@ -1772,7 +1768,6 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
                 damage = lightningChainEffect.val,
-                percent = lightningChainEffect.odds,
                 range = lightningChainEffect.range,
                 qty = lightningChainEffect.qty,
             })
@@ -1796,7 +1791,6 @@ hattr.huntUnit = function(bean)
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
                 damage = crackFlyEffect.val,
-                percent = crackFlyEffect.odds,
                 high = crackFlyEffect.high,
                 distance = crackFlyEffect.distance,
             })

@@ -249,7 +249,7 @@ end
 hunit.getId = function(u)
     return hSys.getObjChar(cj.GetUnitTypeId(u))
 end
--- 获取单位数据集
+-- 获取单位SLK数据集
 hunit.getSlk = function(u)
     local slk
     local uid = hunit.getId(u)
