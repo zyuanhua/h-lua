@@ -41,7 +41,7 @@ his.computer = function(whichPlayer)
     return his.get(whichPlayer, "isComputer")
 end
 --是否自动换算黄金木头
-his.autoConvertGoldLumber = function(whichPlayer)
+his.autoConvertGoldToLumber = function(whichPlayer)
     return his.get(whichPlayer, "isAutoConvertGoldToLumber")
 end
 --是否玩家位置(如果位置为真实玩家或为空，则为true；而如果选择了电脑玩家补充，则为false)
@@ -151,7 +151,7 @@ his.unarm = function(whichUnit)
     return his.get(whichUnit, "isUnArm")
 end
 --是否被击飞
-his.crackfly = function(whichUnit)
+his.crackFly = function(whichUnit)
     return his.get(whichUnit, "isCrackFly")
 end
 --判断是否处在水面
@@ -189,7 +189,7 @@ end
 his.borderMap = function(x, y)
     return cj.borderRect(cj.GetPlayableMapRect(), x, y)
 end
---单位身上是否有某物品
+--单位身上是否有某种物品
 his.ownItem = function(u, itemId)
     local f = false
     for i = 0, 5, 1 do

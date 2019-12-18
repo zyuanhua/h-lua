@@ -47,7 +47,7 @@ end
 hplayer.getConvertRatio = function()
     return hplayer.convert_ratio
 end
---- 获取玩家ID，例如：玩家一等于0，玩家三等于2
+--- 获取玩家ID，例如：玩家一等于1，玩家三等于3
 hplayer.index = function(whichPlayer)
     return cj.GetPlayerId(whichPlayer) + 1
 end

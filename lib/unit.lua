@@ -57,6 +57,7 @@ end
 hunit.setCurManaPercent = function(u, val)
     cj.SetUnitManaPercentBJ(u, val)
 end
+
 -- 设置单位的生命周期
 hunit.setPeriod = function(u, life)
     cj.UnitApplyTimedLifeBJ(life, hSys.getObjId('BTLF'), u)

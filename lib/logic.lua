@@ -1,7 +1,7 @@
 local hlogic = {}
 
 -- 计算字符串宽度
-hlogic.stringLen = function(str)
+hlogic.mbStringLen = function(str)
     local lenInByte = #str
     local fontSize = 20
     local width = 0
@@ -98,7 +98,7 @@ end
 hlogic.getDistanceBetweenXY = function(x1, y1, x2, y2)
     local dx = x2 - x1
     local dy = y2 - y1
-    return SquareRoot(dx * dx + dy * dy)
+    return cj.SquareRoot(dx * dx + dy * dy)
 end
 --获取两个点距离
 hlogic.getDistanceBetweenLoc = function(l1, l2)

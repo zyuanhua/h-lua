@@ -66,7 +66,7 @@ hhero.setHeroBornParams = function(x, y)
     hhero.hero_born_params.x = x
     hhero.hero_born_params.y = y
 end
---- 设置玩家最大单位数量,支持1 - 7
+--- 设置玩家最大英雄数量,支持1 - 7
 hhero.setPlayerAllowQty = function(whichPlayer, max)
     if (max > 0 and max <= 7) then
         heros.player_allow_qty[whichPlayer] = max
@@ -74,11 +74,11 @@ hhero.setPlayerAllowQty = function(whichPlayer, max)
         print("hhero.setPlayerMaxQty error")
     end
 end
---- 获取玩家最大单位数量
+--- 获取玩家最大英雄数量
 hhero.getPlayerAllowQty = function(whichPlayer)
     return heros.player_allow_qty[whichPlayer]
 end
---- 添加一个单位给玩家
+--- 添加一个英雄给玩家
 hhero.addPlayerUnit = function(whichPlayer, sItem, type)
     if (sItem ~= nil) then
         hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] + 1
@@ -122,7 +122,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         })
     end
 end
---- 删除一个单位对玩家
+--- 删除一个英雄单位对玩家
 hhero.removePlayerUnit = function(whichPlayer, u, type)
     hSys.rmArray(u, hhero.player_units[whichPlayer])
     hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
@@ -170,7 +170,7 @@ end
 hhero.getHeroType = function(u)
     return hslk_global.heroesKV[cj.GetUnitTypeId(u)].Primary
 end
---- 获取英雄的类型文本（力 敏 智）
+--- 获取英雄的类型文本（力量 敏捷 智力）
 hhero.getHeroTypeLabel = function(u)
     return hhero.primary[hhero.getHeroType(u)]
 end
@@ -191,7 +191,7 @@ hhero.buildClick = function(during, clickQty)
     local rowNowQty = 0
     local x = 0
     local y = 0
-    for k, v in pairs(hslk_global.heroes) do
+    for _, v in pairs(hslk_global.heroes) do
         local heroId = v.heroID
         if (heroId > 0) then
             if (rowNowQty >= hhero.build_params.per_row) then
