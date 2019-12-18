@@ -331,18 +331,6 @@ hskill.avoid = function(whichUnit)
     end)
 end
 
----0秒无敌
-hskill.invulnerableZero = function(whichUnit)
-    if (whichUnit == nil) then
-        return
-    end
-    cj.SetUnitInvulnerable(whichUnit, true)
-    htime.setTimeout(0.00, nil, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        cj.SetUnitInvulnerable(whichUnit, false)
-    end)
-end
 ---无敌
 hskill.invulnerable = function(whichUnit, during)
     if (whichUnit == nil) then
@@ -434,7 +422,7 @@ hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
     end
 end
 
---- 自定义技能 - 对点
+--- 自定义技能 - 对单位/对XY/对点
 --[[
     bean = {
         whichPlayer,
@@ -444,15 +432,17 @@ end
         targetX,targetY 对XY时可选
         targetLoc, 对点时可选
         targetUnit, 对单位时可选
+        life, 马甲生命周期
     }
 ]]
-hskill.diy = function(bean, life)
+hskill.diy = function(bean)
     if (bean.whichPlayer == nil or bean.skillId == nil or bean.orderString == nil) then
         return
     end
     if (bean.x == nil or bean.y == nil) then
         return
     end
+    local life = bean.life
     if (bean.life == nil or bean.life < 2.00) then
         life = 2.00
     end
