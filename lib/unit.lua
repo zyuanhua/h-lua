@@ -103,6 +103,7 @@ end
         isUnSelectable = false, --是否可鼠标选中，可选
         isPause = false, -- 是否暂停
         isInvulnerable = false, --是否无敌，可选
+        isShareSight = false, --是否与所有玩家共享视野，可选
     }
 ]]
 hunit.create = function(bean)
@@ -219,9 +220,9 @@ hunit.create = function(bean)
             cj.PauseUnit(u, true)
             cj.SetUnitInvulnerable(u, true)
         end
-        --是否与共享视野
+        --是否与所有玩家共享视野
         if (bean.isShareSight ~= nil and bean.isShareSight == true) then
-            for pi = 0, 15, 1 do
+            for pi = 0, bj_MAX_PLAYERS - 1, 1 do
                 cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
             end
         end
