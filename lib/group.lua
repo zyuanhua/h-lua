@@ -88,7 +88,7 @@ hgroup.move = function(whichGroup, loc, eff, isFollow)
         if (isFollow == true) then
             cj.PanCameraToTimedLocForPlayer(cj.GetOwningPlayer(u), loc, 0.00)
         end
-        if (eff ~= null) then
+        if (eff ~= nil) then
             heffect.toLoc(eff, loc, 0)
         end
     end

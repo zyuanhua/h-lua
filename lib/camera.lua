@@ -48,7 +48,7 @@ hcamera.distance = function(whichPlayer, distance)
         cj.SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, distance, 0)
     end
 end
--- 玩家镜头震动，震动包括两种，一种摇晃shake，一种抖动
+-- 玩家镜头震动，震动包括两种，一种摇晃shake，一种抖动quake
 -- scale 振幅 - 摇晃
 hcamera.shock = function(whichPlayer, whichType, during, scale)
     if (whichPlayer == nil) then
@@ -99,8 +99,8 @@ end
 --[[
  bean = {
     model = "normal" | "lock",
-    whichPlayer = nil, -- 锁定单位的玩家
-    lockUnit = {}, -- 锁定单位的绑定单位,与玩家对应
+    whichPlayer = player, -- 锁定单位的玩家
+    lockUnit = unit, -- 锁定单位的绑定单位,与玩家对应
  }
 ]]
 hcamera.setModel = function(bean)

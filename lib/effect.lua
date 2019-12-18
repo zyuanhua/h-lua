@@ -3,7 +3,7 @@ local heffect = {}
 
 --删除特效
 heffect.del = function(e)
-    if (e ~= null) then
+    if (e ~= nil) then
         cj.DestroyEffect(e)
     end
 end

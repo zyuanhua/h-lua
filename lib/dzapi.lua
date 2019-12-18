@@ -27,7 +27,7 @@ hdzapi.server = {}
 hdzapi.server.save = function(whichPlayer, key, data)
     japi.DzAPI_Map_SaveServerValue(whichPlayer, key, data)
 end
-hdzapi.server.load = function(whichPlayer, key, data)
+hdzapi.server.load = function(whichPlayer, key)
     return japi.DzAPI_Map_GetServerValue(whichPlayer, key)
 end
 -- 封装的服务器存档 get / set
