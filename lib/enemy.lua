@@ -32,7 +32,10 @@ henemy.setShareSight = function(b)
 end
 --- 获取敌人是否共享视野
 henemy.isShareSight = function()
-    return henemy.shareSight
+    if(type(henemy.shareSight) == 'boolean')then
+        return henemy.shareSight
+    end
+    return false
 end
 
 --- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
@@ -101,7 +104,7 @@ end
 ]]
 henemy.create = function(bean)
     bean.whichPlayer = henemy.getPlayer(bean.qty or 1)
-    bean.isShareSight = true
+    bean.isShareSight = hemeny.isShareSight()
     return hunit.create(bean)
 end
 

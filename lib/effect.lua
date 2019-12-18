@@ -28,7 +28,7 @@ heffect.toXY = function(effectModel, x, y, during)
     return eff
 end
 -- 特效 点
--- during -1为固定存在（需要手动删除）0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+-- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toLoc = function(effectModel, loc, during)
     if (effectModel == nil or loc == nil or during < 0) then
         return
@@ -48,7 +48,7 @@ heffect.toLoc = function(effectModel, loc, during)
     return eff
 end
 -- 特效 单位所处位置
--- during -1为固定存在（需要手动删除）0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+-- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toUnit = function(effectModel, targetUnit, during)
     if (effectModel == nil or targetUnit == nil or during < 0) then
         return
@@ -70,7 +70,7 @@ heffect.toUnit = function(effectModel, targetUnit, during)
     return eff
 end
 -- 特效 绑定单位
--- during -1为90秒固定存在（需要手动删除）0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+-- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.bindUnit = function(effectModel, targetUnit, attach, during)
     if (effectModel == nil or targetUnit == nil or attach == nil or during < 0) then
         return

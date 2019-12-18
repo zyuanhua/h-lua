@@ -88,11 +88,11 @@ end
 htextTag.getOpacity = function(ttg)
     return hRuntime.textTag[ttg].opacity
 end
--- 获取漂浮字内容
+-- 获取漂浮字持续时间
 htextTag.getDuring = function(ttg)
     return hRuntime.textTag[ttg].during
 end
--- 特效
+-- 风格特效
 htextTag.style = function(ttg, showtype, xspeed, yspeed)
     cj.SetTextTagVelocity(ttg, xspeed, yspeed)
     if (showtype == "scale") then
