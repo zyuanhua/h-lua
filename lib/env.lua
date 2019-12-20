@@ -45,6 +45,8 @@ henvData = {
     },
 }
 local henv = {}
+
+-- 构建区域装饰
 henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, ground, doodad, units)
     if (whichRect == nil or typeStr == nil) then
         return
@@ -74,8 +76,8 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
     local midX = (rectEndX - rectStartX) * 0.5
     local midY = (rectEndY - rectStartY) * 0.5
     local doodads = {}
-    for k, v in pairs(doodad) do
-        for kk, vv in pairs(v) do
+    for _, v in pairs(doodad) do
+        for _, vv in pairs(v) do
             table.insert(doodads, vv)
         end
     end
@@ -112,10 +114,10 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         end
         if (buildType == 1) then
             local tempUnit = cj.CreateUnit(
-                cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                units[math.random(1, #units)],
-                x, y,
-                bj_UNIT_FACING
+                    cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                    units[math.random(1, #units)],
+                    x, y,
+                    bj_UNIT_FACING
             )
             table.insert(hRuntime.env[whichRect], tempUnit)
         elseif (buildType == 2) then
@@ -126,6 +128,8 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         end
     end)
 end
+
+-- 随机构建区域装饰
 henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
     local ground
     local doodad = {}

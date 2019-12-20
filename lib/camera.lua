@@ -93,6 +93,11 @@ end
 
 --- 获取镜头模型
 hcamera.getModel = function(whichPlayer)
+    if (hRuntime.camera[whichPlayer] == nil) then
+        return "normal"
+    elseif (hRuntime.camera[whichPlayer].model == nil) then
+        return "normal"
+    end
     return hRuntime.camera[whichPlayer].model
 end
 --- 设置镜头模式
@@ -113,16 +118,16 @@ hcamera.setModel = function(bean)
         if (bean.lockUnit == nil or bean.whichPlayer == nil) then
             return
         end
-        htime.setInterval(0.1, nil,function()
+        htime.setInterval(0.1, nil, function()
             hcamera.lock(bean.whichPlayer, bean.lockUnit)
         end)
     elseif (bean.model == "zoomin") then
-        htime.setInterval(0.1, nil,function()
+        htime.setInterval(0.1, nil, function()
             hcamera.distance(bean.whichPlayer, 825)
         end)
         -- hattr.max_move_speed = hattr.max_move_speed * 2
     elseif (bean.model == "zoomout") then
-        htime.setInterval(0.1, nil,function()
+        htime.setInterval(0.1, nil, function()
             hcamera.distance(bean.whichPlayer, 3000)
         end)
     else

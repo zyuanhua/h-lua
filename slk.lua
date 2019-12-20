@@ -52,6 +52,31 @@ obj.nsight = 0
 call SaveInteger(hash_hslk, StringHash("unit_token"), 1, '<?=obj:get_id()?>')
 <?
 
+--树
+-- #token
+local obj = slk.unit.hfoo:new("unit_tree")
+obj.EditorSuffix = "#h-lua"
+obj.Name = "Tree"
+obj.special = 1
+obj.abilList = "Avul,Aloc"
+obj.upgrade = ""
+obj.file = "war3mapImported\\deco_NewBirch.mdl"
+obj.unitShadow = "ShadowFlyer"
+obj.Art = ""
+obj.movetp = ""
+obj.moveHeight = 0
+obj.spd = 0
+obj.turnRate = 0
+obj.moveFloor = 0
+obj.weapsOn = 0
+obj.race = "other"
+obj.fused = 0
+obj.sight = 0
+obj.nsight = 0
+?>
+call SaveInteger(hash_hslk, StringHash("unit_tree"), 1, '<?=obj:get_id()?>')
+<?
+
 --技能
 -- #拆分物品
 local obj = slk.ability.ANtm:new("skill_item_separate")
