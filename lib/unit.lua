@@ -43,19 +43,19 @@ end
 
 -- 获取单位百分比生命
 hunit.getCurLifePercent = function(u)
-    return cj.GetUnitLifePercent(u)
+    return hlogic.round(100 * (hunit.getCurLife(u) / hunit.getMaxLife(u)))
 end
 -- 设置单位百分比生命
 hunit.setCurLifePercent = function(u, val)
-    cj.SetUnitLifePercentBJ(u, val)
+    hunit.setCurLife(math.floor(hunit.getMaxLife(u) * val * 0.01))
 end
 -- 获取单位百分比魔法
 hunit.getCurManaPercent = function(u)
-    return cj.GetUnitManaPercent(u)
+    return hlogic.round(100 * (hunit.getCurMana(u) / hunit.getMaxMana(u)))
 end
 -- 设置单位百分比魔法
 hunit.setCurManaPercent = function(u, val)
-    cj.SetUnitManaPercentBJ(u, val)
+    hunit.setCurLife(math.floor(hunit.getMaxMana(u) * val * 0.01))
 end
 
 -- 设置单位的生命周期

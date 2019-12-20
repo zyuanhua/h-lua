@@ -49,6 +49,26 @@ hSys.cloneTable = function(org)
     copy(org, res)
     return res
 end
+--合并table
+hSys.mergeTable = function(table1, table2)
+    local tempTable = {}
+    if (table1 ~= nil) then
+        tempTable = hSys.cloneTable(table1)
+    end
+    if (table2 == nil) then
+        return tempTable
+    end
+    if (hSys.getTableLen == #table2) then
+        for _, v in ipairs(table2) do
+            table.insert(tempTable, v)
+        end
+    else
+        for k, v in pairs(table2) do
+            tempTable[k] = v
+        end
+    end
+    return tempTable
+end
 --在数组内
 hSys.inArray = function(val, arr)
     local isin = false
