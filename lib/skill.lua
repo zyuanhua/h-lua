@@ -27,6 +27,39 @@ hskill.get = function(handle, key, defaultVal)
     return hRuntime.skill[handle][key]
 end
 
+-- 添加技能
+hskill.add = function(whichUnit, ability_id, during)
+    local id = hSys.getObjId(ability_id)
+    if (during <= 0) then
+        cj.UnitAddAbility(whichUnit, id)
+        cj.UnitMakeAbilityPermanent(whichUnit, true, id)
+    else
+        cj.UnitAddAbility(whichUnit, id)
+        htime.setTimeout(during, nil, function(t, td)
+            cj.UnitRemoveAbility(whichUnit, id)
+        end)
+    end
+end
+
+-- 删除技能
+hskill.del = function(whichUnit, ability_id, during)
+    local id = hSys.getObjId(ability_id)
+    if (during <= 0) then
+        cj.UnitRemoveAbility(whichUnit, id)
+    else
+        cj.UnitRemoveAbility(whichUnit, id)
+        htime.setTimeout(during, nil, function(t, td)
+            cj.UnitAddAbility(whichUnit, id)
+        end)
+    end
+end
+
+-- 设置技能的永久使用性
+hskill.forever = function(whichUnit, ability_id)
+    local id = hSys.getObjId(ability_id)
+    cj.UnitMakeAbilityPermanent(whichUnit, true, id)
+end
+
 --- 造成伤害
 --[[
     bean = {
@@ -45,13 +78,13 @@ hskill.damage = function(bean)
     bean.realDamageString = bean.realDamageString or ''
     bean.realDamageStringColor = bean.realDamageStringColor or nil
     htextTag.style(htextTag.create2Unit(
-        bean.toUnit,
-        bean.realDamageString .. math.floor(bean.realDamage),
-        6.00,
-        bean.realDamageStringColor,
-        1,
-        1.1,
-        11.00
+            bean.toUnit,
+            bean.realDamageString .. math.floor(bean.realDamage),
+            6.00,
+            bean.realDamageStringColor,
+            1,
+            1.1,
+            11.00
     ), "toggle", -0.05, 0)
     hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
     hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), bean.realDamage)
