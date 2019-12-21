@@ -69,12 +69,12 @@ hitem.create = function(bean)
     local during = bean.during or 0
     -- 优先级 坐标 > 单位 > 点
     local it
-    if (bean.x == nil and bean.y == nil) then
+    if (bean.x ~= nil and bean.y ~= nil) then
         it = cj.CreateItem(hSys.getObjId(bean.itemId), bean.x, bean.y)
-    elseif (bean.whichUnit == nil) then
+    elseif (bean.whichUnit ~= nil) then
         it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichUnit), cj.GetLocationY(bean.whichUnit))
         cj.UnitAddItem(bean.whichUnit, it)
-    elseif (bean.whichLoc == nil) then
+    elseif (bean.whichLoc ~= nil) then
         it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
     else
         print("htime create -site")
@@ -88,6 +88,7 @@ hitem.create = function(bean)
             hitem.del(it, 0)
         end)
     end
+    return it
 end
 
 -- 使一个单位的所有物品给另一个单位
