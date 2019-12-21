@@ -72,7 +72,6 @@ hitem.create = function(bean)
         type = "position"
     elseif (bean.whichUnit ~= nil) then
         it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.getUnitX(bean.whichUnit), cj.getUnitY(bean.whichUnit))
-        cj.UnitAddItem(bean.whichUnit, it)
         type = "unit"
     elseif (bean.whichLoc ~= nil) then
         it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
@@ -84,6 +83,9 @@ hitem.create = function(bean)
     cj.SetItemCharges(it, charges)
     if (during > 0) then
         if (type == "unit") then
+            local overlie = hitem.getOverlie(bean.itemId)
+            --todo here 检测重量,没空间就丢在地上
+            cj.UnitAddItem(bean.whichUnit, it)
             --触发获得物品
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.itemGet,
@@ -107,9 +109,14 @@ hitem.getId = function(it)
 end
 
 -- 获取物品SLK数据集
-hitem.getSlk = function(it)
+hitem.getSlk = function(itOrId)
     local slk
-    local itId = hitem.getId(it)
+    local itId
+    if (type(itOrId == "string")) then
+        itId = itOrId
+    else
+        itId = hitem.getId(itOrId)
+    end
     if (hslk_global.itemsKV[itId] ~= nil) then
         slk = hslk_global.itemsKV[itId]
     else
@@ -118,8 +125,8 @@ hitem.getSlk = function(it)
     return slk
 end
 -- 获取物品的图标路径
-hitem.getAvatar = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getAvatar = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.Art
     else
@@ -127,8 +134,8 @@ hitem.getAvatar = function(it)
     end
 end
 -- 获取物品的模型路径
-hitem.getAvatar = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getAvatar = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.file
     else
@@ -136,8 +143,8 @@ hitem.getAvatar = function(it)
     end
 end
 -- 获取物品的分类
-hitem.getClass = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getClass = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.class
     else
@@ -145,8 +152,8 @@ hitem.getClass = function(it)
     end
 end
 -- 获取物品所需的金币
-hitem.getGoldCost = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getGoldCost = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.goldcost
     else
@@ -154,8 +161,8 @@ hitem.getGoldCost = function(it)
     end
 end
 -- 获取物品所需的木头
-hitem.getLumberCost = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getLumberCost = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.lumbercost
     else
@@ -163,8 +170,8 @@ hitem.getLumberCost = function(it)
     end
 end
 -- 获取物品是否可以使用
-hitem.getIsUsable = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getIsUsable = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.usable == 1
     else
@@ -172,8 +179,8 @@ hitem.getIsUsable = function(it)
     end
 end
 -- 获取物品是否自动使用
-hitem.getIsPowerUp = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getIsPowerUp = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.powerup == 1
     else
@@ -181,8 +188,8 @@ hitem.getIsPowerUp = function(it)
     end
 end
 -- 获取物品是否可卖
-hitem.getIsSellAble = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getIsSellAble = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.sellable == 1
     else
@@ -190,12 +197,30 @@ hitem.getIsSellAble = function(it)
     end
 end
 -- 获取物品的影子ID（实现神符满格购物的关键）
-hitem.getShadowId = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getShadowId = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.shadowID
     else
         return nil
+    end
+end
+-- 获取物品的回调函数
+hitem.getTriggerCall = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
+    if (slk ~= nil) then
+        return slk.triggerCall
+    else
+        return nil
+    end
+end
+-- 获取物品的最大叠加数(默认是1个,此系统以使用次数作为数量使用)
+hitem.getOverlie = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
+    if (slk ~= nil) then
+        return slk.overlie
+    else
+        return 1
     end
 end
 
@@ -329,6 +354,10 @@ hitem.init = function()
         if (shadowItId == nil) then
             if (hitem.getIsPowerUp() == false) then
                 --原生的自动使用物品,触发一下 onItemUse 事件即可
+                local call = hitem.getTriggerCall()
+                if (call ~= nil and type(call) == 'function') then
+                    call(u, it, itId, charges)
+                end
                 hevent.triggerEvent({
                     triggerKey = heventKeyMap.itemUsed,
                     triggerUnit = u,
