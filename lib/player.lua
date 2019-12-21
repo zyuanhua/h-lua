@@ -370,8 +370,8 @@ hplayer.subLumber = function(whichPlayer, lumber)
 end
 
 
--- 初始化
-hplayerInit = function()
+-- 初始化(已内部调用)
+hplayer.init = function()
     local triggerApm = cj.CreateTrigger()
     local triggerApmUnit = cj.CreateTrigger()
     local triggerLeave = cj.CreateTrigger()

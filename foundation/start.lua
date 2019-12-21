@@ -22,7 +22,9 @@ hLuaStart = {
         -- 全局计时器
         cj.TimerStart(cj.CreateTimer(), 1.00, true, htime.clock)
 
-        -- 属性初始化
+        -- 玩家
+        hplayer.init()
+
         -- 单位受伤
         local triggerBeHunt = cj.CreateTrigger()
         cj.TriggerAddAction(triggerBeHunt, function()
@@ -96,7 +98,7 @@ hLuaStart = {
                 end
                 -- 物品系统
                 if (his.hasSlot(u)) then
-                    hitem.initUnit(u)
+                    hitem.registerAll(u)
                 end
                 -- 触发注册事件(全局)
                 hevent.triggerEvent({
