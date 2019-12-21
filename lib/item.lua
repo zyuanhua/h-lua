@@ -1,11 +1,6 @@
 -- 物品系统
 
 --[[
-    物品分为（item_type）
-    1、永久型物品 forever
-    2、消耗型物品 consume
-    3、瞬逝型 moment
-
     每个英雄最大支持使用6件物品
     支持满背包合成
     物品存在重量，背包有负重，超过负重即使存在合成关系，也会被暂时禁止合成
@@ -26,11 +21,6 @@ local hitem = {
 
     DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
     DEFAULT_SKILL_ITEM_SEPARATE = hslk_global.skill_item_separate, -- 默认拆分物品技能
-    typeMap = {
-        forever = 'forever',
-        consume = 'consume',
-        moment = 'moment',
-    }
 
 }
 

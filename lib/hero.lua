@@ -1,10 +1,5 @@
 local hhero = {
     trigger_hero_lvup = nil,
-    primary = {
-        STR = "力量",
-        AGI = "敏捷",
-        INT = "智力",
-    },
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
     player_current_qty = {}, -- 玩家当前单位数量,默认0
     player_units = {}, -- 玩家当前单位
@@ -172,7 +167,7 @@ hhero.getHeroType = function(u)
 end
 --- 获取英雄的类型文本（力量 敏捷 智力）
 hhero.getHeroTypeLabel = function(u)
-    return hhero.primary[hhero.getHeroType(u)]
+    return CONST_HERO_PRIMARY[hhero.getHeroType(u)]
 end
 
 --- 构建选择单位给玩家（clickQty 击）
