@@ -317,14 +317,14 @@ hhero.buildClick = function(during, clickQty)
         cj.PingMinimapEx(x1, y1, 1.00, 254, 0, 0, true)
     end)
     -- 一定时间后clear
-    htime.setTimeout(during - 0.5, '选择英雄', function(t, td)
+    htime.setTimeout(during - 0.5, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.DisableTrigger(tgr_random)
         cj.DestroyTrigger(tgr_random)
         cj.DisableTrigger(tgr_click)
         cj.DestroyTrigger(tgr_click)
-    end)
+    end, '选择英雄')
     -- 转移玩家镜头
     hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
 end
@@ -482,14 +482,14 @@ hhero.buildTavern = function(during)
         cj.PingMinimapEx(x1, y1, 1.00, 254, 0, 0, true)
     end)
     -- 一定时间后clear
-    htime.setTimeout(during - 0.5, '选择英雄', function(t, td)
+    htime.setTimeout(during - 0.5, function(t, td)
         htime.delDialog(td)
         htime.delTimer(t)
         cj.DisableTrigger(tgr_random)
         cj.DestroyTrigger(tgr_random)
         cj.DisableTrigger(tgr_sell)
         cj.DestroyTrigger(tgr_sell)
-    end)
+    end, '选择英雄')
     -- 转移玩家镜头
     hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
 end
