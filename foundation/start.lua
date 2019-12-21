@@ -32,7 +32,7 @@ hLuaStart = {
             local oldLife = hunit.getCurLife(toUnit)
             if (damage > 0.125) then
                 hattr.set(toUnit, 0, { life = '+' .. damage })
-                htime.setTimeout(0, nil, function(t, td)
+                htime.setTimeout(0, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     hattr.set(toUnit, 0, { life = '-' .. damage })
@@ -78,9 +78,9 @@ hLuaStart = {
             -- 排除单位类型
             local uid = cj.GetUnitTypeId(u)
             if (uid == hslk_global.unit_token
-                or uid == hslk_global.unit_hero_tavern_token
-                or uid == hslk_global.unit_hero_death_token
-                or uid == hslk_global.unit_hero_tavern
+                    or uid == hslk_global.unit_hero_tavern_token
+                    or uid == hslk_global.unit_hero_death_token
+                    or uid == hslk_global.unit_hero_tavern
             ) then
                 return
             end
@@ -109,7 +109,7 @@ hLuaStart = {
 
         -- 计时器
         -- 生命魔法恢复
-        htime.setInterval(0.50, nil, function(t, td)
+        htime.setInterval(0.50, function(t, td)
             local period = cj.TimerGetTimeout(t)
             for k, u in pairs(hRuntime.attributeGroup.life_back) do
                 if (his.alive(u)) then
@@ -137,10 +137,10 @@ hLuaStart = {
                             hattr.set(u, 0, { life_source_current = '-' .. fill })
                             hunit.addCurLife(u, fill)
                             htextTag.style(
-                                htextTag.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
-                                "scale",
-                                0,
-                                0.2
+                                    htextTag.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
+                                    "scale",
+                                    0,
+                                    0.2
                             )
                         end
                     end
@@ -157,10 +157,10 @@ hLuaStart = {
                             hattr.set(u, 0, { mana_source_current = '-' .. fill })
                             hunit.addCurMana(u, fill)
                             htextTag.style(
-                                htextTag.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
-                                "scale",
-                                0,
-                                0.2
+                                    htextTag.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
+                                    "scale",
+                                    0,
+                                    0.2
                             )
                         end
                     end
@@ -168,7 +168,7 @@ hLuaStart = {
             end
         end)
         -- 硬直恢复(3秒内没收到伤害后,每1秒恢复1%)
-        htime.setInterval(1.00, nil, function(t, td)
+        htime.setInterval(1.00, function(t, td)
             for k, u in pairs(hRuntime.attributeGroup.punish_current) do
                 if (his.alive(u) and hattr.get(u, 'punish') > 0 and hattr.get(u, 'punish_current') < hattr.get(u, 'punish')) then
                     if (hattr.get(u, 'be_hunting') == false) then
@@ -178,7 +178,7 @@ hLuaStart = {
             end
         end)
         -- 源恢复
-        htime.setInterval(15.00, nil, function(t, td)
+        htime.setInterval(15.00, function(t, td)
             for k, u in pairs(hRuntime.attributeGroup.life_source) do
                 if (his.alive(u)) then
                     hattr.set(u, 0, { life_source_current = '+100' })

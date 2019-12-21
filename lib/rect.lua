@@ -82,7 +82,7 @@ end
 --删除区域
 hrect.del = function(whichRect, during)
     if (during > 0) then
-        htime.setTimeout(during, nil, function(t, td)
+        htime.setTimeout(during, function(t, td)
             htime.delTimer(t)
             htime.delDialog(td)
             cj.RemoveRect(whichRect)
@@ -120,7 +120,7 @@ hrect.lock = function(bean)
     end
     local inc = 0
     local inGroups = {}
-    htime.setInterval(0.10, nil, function(t, td)
+    htime.setInterval(0.10, function(t, td)
         inc = inc + 1
         if (inc > (during / 0.10)) then
             htime.delDialog(td)

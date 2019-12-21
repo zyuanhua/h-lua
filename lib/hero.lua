@@ -267,11 +267,11 @@ hhero.buildClick = function(during, clickQty)
             end
         end
         hmessage.echoXY0(p, "已为您 |cffffff80random|r 选择了 "
-            .. "|cffffff80"
-            .. math.floor(qty)
-            .. "|r 个单位：|cffffff80"
-            .. txt
-            .. "|r", 0)
+                .. "|cffffff80"
+                .. math.floor(qty)
+                .. "|r 个单位：|cffffff80"
+                .. txt
+                .. "|r", 0)
     end)
     cj.TriggerAddAction(tgr_repick, function()
         local p = hevent.getTriggerPlayer()
@@ -306,7 +306,7 @@ hhero.buildClick = function(during, clickQty)
         cj.TriggerRegisterPlayerChatEvent(tgr_repick, p, "-repick", true)
     end
     -- 还剩10秒给个选英雄提示
-    htime.setTimeout(during - 10.0, nil, function(t, td)
+    htime.setTimeout(during - 10.0, function(t, td)
         local x1 = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance
         local y1 = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance
         htime.delDialog(td)
@@ -388,11 +388,11 @@ hhero.buildTavern = function(during)
             end
         end
         hmessage.echoXY0(p, "已为您 |cffffff80random|r 选择了 "
-            .. "|cffffff80"
-            .. math.floor(qty)
-            .. "|r 个单位：|cffffff80"
-            .. txt
-            .. "|r", 0)
+                .. "|cffffff80"
+                .. math.floor(qty)
+                .. "|r 个单位：|cffffff80"
+                .. txt
+                .. "|r", 0)
     end)
     cj.TriggerAddAction(tgr_repick, function()
         local p = hevent.getTriggerPlayer()
@@ -471,7 +471,7 @@ hhero.buildTavern = function(during)
         cj.TriggerRegisterPlayerChatEvent(tgr_repick, p, "-repick", true)
     end
     -- 还剩10秒给个选英雄提示
-    htime.setTimeout(during - 10.0, nil, function(t, td)
+    htime.setTimeout(during - 10.0, function(t, td)
         local x1 = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance
         local y1 = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance
         htime.delDialog(td)

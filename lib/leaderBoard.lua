@@ -21,7 +21,7 @@ hleaderBoard.create = function(key, refreshFrequency, yourFunc)
         hRuntime.leaderBoard[key] = cj.CreateLeaderboard()
     end
     cj.LeaderboardSetLabel(hRuntime.leaderBoard[key], "排行榜")
-    htime.setInterval(refreshFrequency, nil, function(t, td)
+    htime.setInterval(refreshFrequency, function(t, td)
         for i = 1, hplayer.qty_max, 1 do
             if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[i]) then
                 cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[i])

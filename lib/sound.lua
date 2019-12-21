@@ -48,7 +48,7 @@ hsound.bgm = function(musicFileName, whichPlayer)
                 if (hRuntime.sound[p].currentBgm ~= musicFileName) then
                     hRuntime.sound[p].currentBgm = musicFileName
                     cj.StopMusic(true)
-                    htime.setTimeout(hRuntime.sound[p].bgmDelay, nil, function(t, td)
+                    htime.setTimeout(hRuntime.sound[p].bgmDelay, function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
                         cj.PlayMusic(musicFileName)

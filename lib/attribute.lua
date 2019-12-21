@@ -71,7 +71,7 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
     else
         local per = 3.00
         local limit = 180.0 / per -- 一般不会超过3分钟复活
-        htime.setInterval(per, nil, function(t, td)
+        htime.setInterval(per, function(t, td)
             limit = limit - 1
             if (limit < 0) then
                 htime.delDialog(td)
@@ -412,7 +412,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             -- 添加
             table.insert(params[attr], val)
             if (dur > 0) then
-                htime.setTimeout(dur, nil, function(t, td)
+                htime.setTimeout(dur, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     hattr.setHandle(params, whichUnit, attr, '-', val, 0)
@@ -423,7 +423,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             if (hSys.inArray(val, params[attr])) then
                 hSys.rmArray(val, params[attr], 1)
                 if (dur > 0) then
-                    htime.setTimeout(dur, nil, function(t, td)
+                    htime.setTimeout(dur, function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
                         hattr.setHandle(params, whichUnit, attr, '+', val, 0)
@@ -435,7 +435,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             local old = hSys.cloneTable(params[attr])
             params[attr] = val
             if (dur > 0) then
-                htime.setTimeout(dur, nil, function(t, td)
+                htime.setTimeout(dur, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     hattr.setHandle(params, whichUnit, attr, '=', old, 0)
@@ -449,7 +449,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             local min = math.min(old, val)
             params[attr] = max + min * 0.35
             if (dur > 0) then
-                htime.setTimeout(dur, nil, function(t, td)
+                htime.setTimeout(dur, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     hattr.setHandle(params, whichUnit, attr, '=', old, 0)
@@ -475,7 +475,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             local futureVal = params[attr] + diff
             params[attr] = futureVal
             if (dur > 0) then
-                htime.setTimeout(dur, nil, function(t, td)
+                htime.setTimeout(dur, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     hattr.setHandle(params, whichUnit, attr, '-', diff, 0)
@@ -1365,7 +1365,7 @@ hattr.huntUnit = function(bean)
             })
             if (hattr.get(bean.toUnit, 'punish_current') <= 0) then
                 his.set(bean.toUnit, "isPunishing", true)
-                htime.setTimeout(punish_during + 1.00, nil, function(t, td)
+                htime.setTimeout(punish_during + 1.00, function(t, td)
                     htime.delDialog(td)
                     htime.delTimer(t)
                     his.set(bean.toUnit, "isPunishing", false)

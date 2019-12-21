@@ -70,7 +70,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
     cameraData[whichPlayer].isShocking = true
     if (whichType == 'shake') then
         cj.CameraSetTargetNoiseForPlayer(whichPlayer, scale, 1.00)
-        htime.setTimeout(during, nil, function(t, td)
+        htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cameraData[whichPlayer].isShocking = false
@@ -80,7 +80,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         end)
     elseif (whichType == 'quake') then
         cj.CameraSetEQNoiseForPlayer(whichPlayer, scale)
-        htime.setTimeout(during, nil, function(t, td)
+        htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cameraData[whichPlayer].isShocking = false
@@ -118,16 +118,16 @@ hcamera.setModel = function(bean)
         if (bean.lockUnit == nil or bean.whichPlayer == nil) then
             return
         end
-        htime.setInterval(0.1, nil, function()
+        htime.setInterval(0.1, function()
             hcamera.lock(bean.whichPlayer, bean.lockUnit)
         end)
     elseif (bean.model == "zoomin") then
-        htime.setInterval(0.1, nil, function()
+        htime.setInterval(0.1, function()
             hcamera.distance(bean.whichPlayer, 825)
         end)
         -- hattr.max_move_speed = hattr.max_move_speed * 2
     elseif (bean.model == "zoomout") then
-        htime.setInterval(0.1, nil, function()
+        htime.setInterval(0.1, function()
             hcamera.distance(bean.whichPlayer, 3000)
         end)
     else

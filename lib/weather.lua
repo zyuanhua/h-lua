@@ -1,4 +1,3 @@
-
 local hweather = {
     --天气ID
     sun = hSys.getObjId('LRaa'), --日光
@@ -22,7 +21,7 @@ hweather.del = function(w, during)
         cj.EnableWeatherEffect(w, false)
         cj.RemoveWeatherEffect(w)
     else
-        htime.setTimeout(during, nil, function(t, td)
+        htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cj.EnableWeatherEffect(w, false)
@@ -55,7 +54,7 @@ hweather.create = function(bean)
     local r = hrect.createLoc(bean.x, bean.y, bean.w, bean.h)
     local w = cj.AddWeatherEffect(r, bean.type)
     if (bean.during > 0) then
-        htime.setTimeout(bean.during, nil, function(t, td)
+        htime.setTimeout(bean.during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cj.RemoveRect(r)

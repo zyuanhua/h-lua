@@ -94,40 +94,6 @@ hSys.rmArray = function(val, arr, qty)
         end
     end
 end
---打印对象table
-hSys.print_r = function(t)
-    local print_r_cache = {}
-    local function sub_print_r(tt, indent)
-        if (print_r_cache[tostring(tt)]) then
-            print(indent .. "*" .. tostring(tt))
-        else
-            print_r_cache[tostring(tt)] = true
-            if (type(tt) == "table") then
-                for pos, val in pairs(tt) do
-                    if (type(val) == "table") then
-                        print(indent .. "[" .. pos .. "] => " .. tostring(tt) .. " {")
-                        sub_print_r(val, indent .. string.rep(" ", string.len(pos) + 8))
-                        print(indent .. string.rep(" ", string.len(pos) + 6) .. "}")
-                    elseif (type(val) == "string") then
-                        print(indent .. "[" .. pos .. '] => "' .. val .. '"')
-                    else
-                        print(indent .. "[" .. pos .. "] => " .. tostring(val))
-                    end
-                end
-            else
-                print(indent .. tostring(tt))
-            end
-        end
-    end
-    if (type(t) == "table") then
-        print(tostring(t) .. " {")
-        sub_print_r(t, "  ")
-        print("}")
-    else
-        sub_print_r(t, "  ")
-    end
-    print()
-end
 
 --转义
 hSys.addslashes = function(s)

@@ -57,7 +57,7 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
     local ttg = htextTag.create2Unit(u, msg, size, color, opacity, during, zOffset)
     local txt = htextTag.getMsg(ttg)
     local scale = 0.5
-    htime.setInterval(0.03, nil, function()
+    htime.setInterval(0.03, function()
         if (hcamera.model == "zoomin") then
             scale = 0.25
         elseif (hcamera.model == "zoomout") then
@@ -100,7 +100,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local size = htextTag.getSize(ttg)
         local tnow = 0
         local tend = 0.5
-        htime.setInterval(0.03, nil, function(t, td)
+        htime.setInterval(0.03, function(t, td)
             tnow = tnow + cj.TimerGetTimeout(t)
             if (tnow >= tend) then
                 htime.delDialog(td)
@@ -114,7 +114,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local size = htextTag.getSize(ttg)
         local tnow = 0
         local tend = 0.5
-        htime.setInterval(0.03, nil, function(t, td)
+        htime.setInterval(0.03, function(t, td)
             tnow = tnow + cj.TimerGetTimeout(t)
             if (tnow >= tend) then
                 htime.delDialog(td)
@@ -130,7 +130,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local tend1 = 0.2
         local tend2 = 0.2
         local during = 0.7
-        htime.setInterval(0.03, nil, function(t, td)
+        htime.setInterval(0.03, function(t, td)
             tnow = tnow + cj.TimerGetTimeout(t)
             if (tnow >= tend1 + tend2 + during) then
                 htime.delDialog(td)

@@ -1179,7 +1179,7 @@ hevent.onSelectionBindPlayer = function(whichPlayer, action, evtKey)
                 triggerPlayer = triggerPlayer,
                 triggerUnit = triggerUnit,
             })
-            htime.setTimeout(0.3, nil, function(t, td)
+            htime.setTimeout(0.3, function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 hRuntime.event[whichPlayer].evtInit.clickQty = hRuntime.event[whichPlayer].evtInit.clickQty - 1

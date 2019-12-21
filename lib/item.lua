@@ -32,27 +32,60 @@ local hitem = {
 
 }
 
--- 获取物品是否h-lua内部函数创建
-hitem.isHLua = function(it)
-    return hRuntime.item[it].isHLua
-end
--- 设定物品是否h-lua内部函数创建
-hitem.setHLua = function(it, b)
-    hRuntime.item[it].isHLua = b
-end
-
 -- 删除物品，可延时
 hitem.del = function(it, during)
     if (during <= 0) then
         cj.SetWidgetLife(it, 1.00)
         cj.RemoveItem(it)
     else
-        htime.setTimeout(during, nil, function(t, td)
+        htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             cj.SetWidgetLife(it, 1.00)
             cj.RemoveItem(it)
             hRuntime.item[it] = nil
+        end)
+    end
+end
+
+--[[
+    创建物品
+    bean = {
+        itemId = 'I001', --物品ID
+        charge = 1, --物品可使用次数（可选，默认为1）
+        whichUnit = nil, --哪个单位（可选）
+        x = nil, --哪个坐标X（可选）
+        y = nil, --哪个坐标Y（可选）
+        whichLoc = nil, --哪个点（可选，不推荐）
+        during = 0, --持续时间（可选，创建给单位要注意powerUp物品的问题）
+    }
+]]
+hitem.create = function(bean)
+    if (bean.itemId == nil) then
+        print("htime create -it-id")
+        return
+    end
+    local charge = bean.charge or 1
+    local during = bean.during or 0
+    -- 优先级 坐标 > 单位 > 点
+    local it
+    if (bean.x == nil and bean.y == nil) then
+        it = cj.CreateItem(hSys.getObjId(bean.itemId), bean.x, bean.y)
+    elseif (bean.whichUnit == nil) then
+        it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichUnit), cj.GetLocationY(bean.whichUnit))
+        cj.UnitAddItem(bean.whichUnit, it)
+    elseif (bean.whichLoc == nil) then
+        it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
+    else
+        print("htime create -site")
+        return
+    end
+    cj.SetItemCharges(it, charge)
+    if (during > 0) then
+        htime.setTimeout(during, function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            hitem.del(it, 0)
         end)
     end
 end

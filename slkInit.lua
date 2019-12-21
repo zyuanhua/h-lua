@@ -20,6 +20,8 @@ hslk_global = {
     heroesItems = {},
     heroesItemsKV = {},
     unitsKV = {},
+    itemsKV = {},
+    abilitiesKV = {},
 
     attr = {
         agi_green = {

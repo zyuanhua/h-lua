@@ -81,7 +81,7 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
             table.insert(doodads, vv)
         end
     end
-    htime.setInterval(0.01, nil, function(t, td)
+    htime.setInterval(0.01, function(t, td)
         local x = rectStartX + indexX * 80
         local y = rectStartY + indexY * 80
         local buildType = cj.GetRandomInt(1, 4)
