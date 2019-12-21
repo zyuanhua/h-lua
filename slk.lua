@@ -636,26 +636,6 @@ call SaveInteger(hash_hslk, StringHash("attr_life_sub"), <?=val?>, '<?=obj:get_i
 <?
 end
 
-
--- #空冷却
-local qty = 60
-ITEM_COOLDOWN = {}
-?>
-call SaveInteger(hash_hslk, StringHash("item_cooldown"), -1, <?=qty?>)
-<?
-for i = 0, qty do
-local obj = slk.ability.AIsm:new("item_cooldown_" .. i)
-obj.EditorSuffix = "#h-lua"
-obj.Name = "物品系统#冷却 " .. i .. "秒"
-obj.Art = ""
-obj.TargetArt = ""
-obj.Targetattach = ""
-obj.DataC1 = 0
-ITEM_COOLDOWN[i] = obj:get_id()
-?>
-call SaveInteger(hash_hslk, StringHash("item_cooldown"), <?=i?>, '<?=obj:get_id()?>')
-<?
-end
 -- #回避
 local obj = slk.ability.AIlu:new("attr_avoid_add")
 obj.EditorSuffix = "#h-lua"
