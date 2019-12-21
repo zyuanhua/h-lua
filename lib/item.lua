@@ -22,8 +22,8 @@
 
 local hitem = {
 
-    default_skill_item_slot = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）hjass默认全部认定这个技能为物品栏，如有需要自行更改
-    default_skill_item_separate = hslk_global.skill_item_separate, -- 默认拆分物品技能
+    DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
+    DEFAULT_SKILL_ITEM_SEPARATE = hslk_global.skill_item_separate, -- 默认拆分物品技能
     typeMap = {
         forever = 'forever',
         consume = 'consume',
@@ -89,6 +89,103 @@ hitem.create = function(bean)
         end)
     end
     return it
+end
+
+-- 获取物品ID字符串
+hitem.getId = function(it)
+    return hSys.getObjChar(cj.GetItemTypeId(it))
+end
+
+-- 获取物品SLK数据集
+hitem.getSlk = function(it)
+    local slk
+    local itId = hitem.getId(it)
+    if (hslk_global.itemsKV[itId] ~= nil) then
+        slk = hslk_global.itemsKV[itId]
+    else
+        print("itemsKV need register id:" .. itId)
+    end
+    return slk
+end
+-- 获取物品的图标路径
+hitem.getAvatar = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.Art
+    else
+        return ""
+    end
+end
+-- 获取物品的模型路径
+hitem.getAvatar = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.file
+    else
+        return ""
+    end
+end
+-- 获取物品的分类
+hitem.getClass = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.class
+    else
+        return "Permanent"
+    end
+end
+-- 获取物品所需的金币
+hitem.getGoldCost = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.goldcost
+    else
+        return 0
+    end
+end
+-- 获取物品所需的木头
+hitem.getLumberCost = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.lumbercost
+    else
+        return 0
+    end
+end
+-- 获取物品是否可以使用
+hitem.getIsUsable = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.usable == 1
+    else
+        return false
+    end
+end
+-- 获取物品是否自动使用
+hitem.getIsPowerUp = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.powerup == 1
+    else
+        return false
+    end
+end
+-- 获取物品是否可卖
+hitem.getIsSellAble = function(it)
+    local slk = hitem.getSlk(it)
+    if (slk ~= nil) then
+        return slk.sellable == 1
+    else
+        return false
+    end
+end
+
+-- 设置单位拥有拆分的技能
+hitem.setAllowSeparate = function(whichUnit)
+    --物品拆分
+    cj.UnitAddAbility(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
+    cj.UnitMakeAbilityPermanent(whichUnit, true, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
+    cj.SetUnitAbilityLevel(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE, 1)
 end
 
 -- 使一个单位的所有物品给另一个单位

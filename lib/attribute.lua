@@ -9,7 +9,7 @@ local hattr = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    default_skill_item_slot = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId('AInv'), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
     threeBuff = {
         --- 每一点三围对属性的影响，默认会写一些，可以通过 setThreeBuff 方法来改变系统构成
         --- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
@@ -58,8 +58,8 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
     if (his.alive(u) == true) then
         local i = 1
         local it
-        if (cj.GetUnitAbilityLevel(u, hattr.default_skill_item_slot) < 1) then
-            cj.UnitAddAbility(u, hattr.default_skill_item_slot)
+        if (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1) then
+            cj.UnitAddAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
         end
         while (i <= qty) do
             it = cj.CreateItem(itemId, 0, 0)
@@ -81,8 +81,8 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
                 htime.delTimer(t)
                 local i = 1
                 local it
-                if (cj.GetUnitAbilityLevel(u, hattr.default_skill_item_slot) < 1) then
-                    cj.UnitAddAbility(u, hattr.default_skill_item_slot)
+                if (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1) then
+                    cj.UnitAddAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
                 end
                 while (i <= qty) do
                     it = cj.CreateItem(itemId, 0, 0)
@@ -148,9 +148,9 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
     --物品栏
-    if (cj.GetUnitAbilityLevel(whichUnit, hattr.default_skill_item_slot) < 1) then
-        cj.UnitAddAbility(whichUnit, hattr.default_skill_item_slot)
-        cj.UnitRemoveAbility(whichUnit, hattr.default_skill_item_slot)
+    if (cj.GetUnitAbilityLevel(whichUnit, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1) then
+        cj.UnitAddAbility(whichUnit, hattr.DEFAULT_SKILL_ITEM_SLOT)
+        cj.UnitRemoveAbility(whichUnit, hattr.DEFAULT_SKILL_ITEM_SLOT)
     end
     --绿字攻击
     for _, ability in pairs(hslk_global.attr.attack_green.add) do
@@ -229,12 +229,6 @@ hattr.regAllAbility = function(whichUnit)
     end
     for _, ability in pairs(hslk_global.attr.sight.sub) do
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-    end
-    --物品拆分
-    if (his.hero(whichUnit) == true) then
-        cj.UnitAddAbility(whichUnit, hslk_global.skill_item_separate)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, hslk_global.skill_item_separate)
-        cj.SetUnitAbilityLevel(whichUnit, hslk_global.skill_item_separate, 1)
     end
 end
 --- 为单位注册属性系统所需要的基础技能
