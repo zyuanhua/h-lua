@@ -187,8 +187,7 @@ end
 hitem.getWeight = function(it, charges)
     local slk = hitem.getSlk(it)
     if (slk ~= nil) then
-        print(type(it))
-        if (charges == nil and type(it) == '') then
+        if (charges == nil and type(it) == 'userdata') then
             --如果没有传次数，这里会直接获取物品的次数，请注意
             charges = hitem.getCharges(it)
         else
@@ -336,18 +335,19 @@ hitem.detector = function(whichUnit, it)
                         cj.SetItemCharges(tempIt, currentCharges + tempCharges)
                         hitem.del(it, 0)
                         isOverlieOver = true
+                        hitem.addAttribute(whichUnit, currentItId, currentCharges)
                         break
                     else
                         --否则，如果使用次数大于极限值,旧物品次数满载，新物品数量减少
                         cj.SetItemCharges(tempIt, overlie)
                         cj.SetItemCharges(it, currentCharges - (overlie - tempCharges))
+                        hitem.addAttribute(whichUnit, currentItId, overlie - tempCharges)
                     end
                 end
             end
         end
         --如果叠加已经全部消化，这里就把物品it设置为null
         if (isOverlieOver == true) then
-            hitem.addAttribute(whichUnit, currentItId, currentCharges)
             it = nil
         end
     end
