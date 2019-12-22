@@ -250,17 +250,27 @@ hunit.getId = function(u)
     return hSys.getObjChar(cj.GetUnitTypeId(u))
 end
 -- 获取单位SLK数据集
-hunit.getSlk = function(u)
+hunit.getSlk = function(uOrUid)
     local slk
-    local uid = hunit.getId(u)
+    local uid
+    if (uOrUid == nil) then
+        print("uOrUid is nil")
+    end
+    if (type(uOrUid) == "string") then
+        uid = uOrUid
+    elseif (type(uOrUid) == "number") then
+        uid = hSys.getObjChar(uOrUid)
+    else
+        uid = hunit.getId(u)
+    end
     if (hslk_global.unitsKV[uid] ~= nil) then
         slk = hslk_global.unitsKV[uid]
     end
     return slk
 end
 -- 获取单位的头像
-hunit.getAvatar = function(u)
-    local slk = hunit.getSlk(u)
+hunit.getAvatar = function(uOrUid)
+    local slk = hunit.getSlk(uOrUid)
     if (slk ~= nil) then
         return slk.Art
     else
@@ -268,8 +278,8 @@ hunit.getAvatar = function(u)
     end
 end
 -- 获取单位的攻击速度间隔
-hunit.getAttackSpeedBaseSpace = function(u)
-    local slk = hunit.getSlk(u)
+hunit.getAttackSpeedBaseSpace = function(uOrUid)
+    local slk = hunit.getSlk(uOrUid)
     if (slk ~= nil) then
         return slk.cool1
     else
@@ -277,8 +287,8 @@ hunit.getAttackSpeedBaseSpace = function(u)
     end
 end
 -- 获取单位的攻击范围
-hunit.getAttackRange = function(u)
-    local slk = hunit.getSlk(u)
+hunit.getAttackRange = function(uOrUid)
+    local slk = hunit.getSlk(uOrUid)
     if (slk ~= nil) then
         return slk.rangeN1
     else

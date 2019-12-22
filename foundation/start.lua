@@ -22,8 +22,10 @@ hLuaStart = {
         -- 全局计时器
         cj.TimerStart(cj.CreateTimer(), 1.00, true, htime.clock)
 
-        -- 玩家
+        -- 玩家系统
         hplayer.init()
+        -- 物品系统
+        hitem.init()
 
         -- 单位受伤
         local triggerBeHunt = cj.CreateTrigger()
@@ -87,8 +89,11 @@ hLuaStart = {
                 return
             end
             -- 注册
-            if (hRuntime.register[u] == nil) then
-                hRuntime.register[u] = 1
+            if (hRuntime.unit[u] == nil) then
+                hRuntime.unit[u] = {}
+            end
+            if (hRuntime.unit[u].init == nil) then
+                hRuntime.unit[u].init = 1
                 -- 受伤与死亡
                 cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
                 cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)
@@ -98,6 +103,7 @@ hLuaStart = {
                 end
                 -- 物品系统
                 if (his.hasSlot(u)) then
+                    print(cj.GetUnitName(u))
                     hitem.registerAll(u)
                 end
                 -- 触发注册事件(全局)

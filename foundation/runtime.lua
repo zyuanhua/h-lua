@@ -1,5 +1,23 @@
 hRuntime = {
-    register = {},
+    --[[
+        注册runtime的数据
+        unit,item,ability
+    ]]
+    register = {
+        unit = function(json)
+            hslk_global.unitsKV[json.UNIT_ID] = json
+        end,
+        item = function(json)
+            hslk_global.itemsKV[json.ITEM_ID] = json
+            if (type(json.SHADOW_ID) == "string") then
+                hslk_global.itemsShadowKV[json.ITEM_ID] = json.SHADOW_ID
+                hslk_global.itemsFaceKV[json.SHADOW_ID] = json.ITEM_ID
+            end
+        end,
+        ability = function(json)
+            hslk_global.abilitiesKV[json.ABILITY_ID] = json
+        end,
+    },
     system = {},
     logic = {},
     time = {},
@@ -58,19 +76,3 @@ for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     hRuntime.camera[p].model = "normal" -- 镜头模型
     hRuntime.camera[p].isShocking = false
 end
-
---[[
-    注册runtime的数据
-    unit,item,ability
-]]
-hRuntime.register = {
-    unit = function(json)
-        hslk_global.unitsKV[json.UNIT_ID] = json
-    end,
-    item = function(json)
-        hslk_global.itemsKV[json.ITEM_ID] = json
-    end,
-    ability = function(json)
-        hslk_global.abilitiesKV[json.ABILITY_ID] = json
-    end,
-}

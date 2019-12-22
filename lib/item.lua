@@ -112,11 +112,17 @@ end
 hitem.getSlk = function(itOrId)
     local slk
     local itId
-    if (type(itOrId == "string")) then
+    if (itOrId == nil) then
+        print("itOrId is nil")
+    end
+    if (type(itOrId) == "string") then
         itId = itOrId
+    elseif (type(itOrId) == "number") then
+        itId = hSys.getObjChar(itOrId)
     else
         itId = hitem.getId(itOrId)
     end
+    print(itId)
     if (hslk_global.itemsKV[itId] ~= nil) then
         slk = hslk_global.itemsKV[itId]
     else
@@ -198,18 +204,29 @@ hitem.getIsSellAble = function(itOrId)
 end
 -- 获取物品的影子ID（实现神符满格购物的关键）
 hitem.getShadowId = function(itOrId)
-    local slk = hitem.getSlk(itOrId)
-    if (slk ~= nil) then
-        return slk.shadowID
+    local itId
+    if (type(itOrId == "string")) then
+        itId = itOrId
     else
-        return nil
+        itId = hitem.getId(itOrId)
     end
+    return hslk_global.itemsShadowKV[itId]
+end
+-- 获取物品的真实ID（实现神符满格购物的关键）
+hitem.getFaceId = function(itOrId)
+    local itId
+    if (type(itOrId == "string")) then
+        itId = itOrId
+    else
+        itId = hitem.getId(itOrId)
+    end
+    return hslk_global.itemsFaceKV[itId]
 end
 -- 获取物品的回调函数
 hitem.getTriggerCall = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.triggerCall
+        return slk.TRIGGER_CALL
     else
         return nil
     end
@@ -218,7 +235,7 @@ end
 hitem.getOverlie = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.overlie
+        return slk.OVERLIE
     else
         return 1
     end
@@ -346,15 +363,19 @@ hitem.init = function()
     }
     --获取物品
     cj.TriggerAddAction(hitem.PRIVATE_TRIGGER.pickup, function()
-        local u = cj.GetTriggerUnit()
         local it = cj.GetManipulatedItem()
-        local itId = cj.GetItemTypeId(it)
+        local itId = hSys.getObjChar(cj.GetItemTypeId(it))
+        if (hRuntime.itemsKV[itId] == nil)then
+            -- 排除掉没有注册的物品。例如框架内自带的一些物品
+            return
+        end
+        local u = cj.GetTriggerUnit()
         local charges = cj.GetItemCharges(it)
         local shadowItId = hitem.getShadowId(itId)
         if (shadowItId == nil) then
-            if (hitem.getIsPowerUp() == false) then
+            if (hitem.getIsPowerUp(itId) == true) then
                 --原生的自动使用物品,触发一下 onItemUse 事件即可
-                local call = hitem.getTriggerCall()
+                local call = hitem.getTriggerCall(itId)
                 if (call ~= nil and type(call) == 'function') then
                     call(u, it, itId, charges)
                 end
@@ -364,6 +385,7 @@ hitem.init = function()
                     triggerItem = it,
                 })
             else
+                print_mb("nil创建了")
                 --这里删除重建是为了实现地上物品的过期重置
                 hitem.del(it, 0)
                 hitem.create({
@@ -374,6 +396,7 @@ hitem.init = function()
                 })
             end
         else
+            print_mb("创建了")
             --这里删除重建是为了实现地上物品的过期重置
             hitem.del(it, 0)
             --这里是实现神符满格的关键

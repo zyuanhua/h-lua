@@ -21,6 +21,8 @@ hslk_global = {
     heroesItemsKV = {},
     unitsKV = {},
     itemsKV = {},
+    itemsShadowKV = {},
+    itemsFaceKV = {},
     abilitiesKV = {},
 
     attr = {

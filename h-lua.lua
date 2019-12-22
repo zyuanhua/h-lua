@@ -1,6 +1,6 @@
 -- 加载YDWE本体库
 cj = require "jass.common"
-cmsg = require "jass.message"
+gctl = require "jass.message"
 cg = require "jass.globals"
 japi = require "jass.japi"
 

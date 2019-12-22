@@ -11,6 +11,11 @@ print_stack = function(...)
     -- print(debug.traceback("Stack trace"))
 end
 
+--打印utf8->ansi编码
+print_mb = function(str)
+    console.write(str)
+end
+
 --打印对象table
 print_r = function(t)
     local print_r_cache = {}
