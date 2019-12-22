@@ -103,7 +103,6 @@ hLuaStart = {
                 end
                 -- 物品系统
                 if (his.hasSlot(u)) then
-                    print(cj.GetUnitName(u))
                     hitem.registerAll(u)
                 end
                 -- 触发注册事件(全局)

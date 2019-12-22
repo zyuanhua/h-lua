@@ -255,6 +255,7 @@ hunit.getSlk = function(uOrUid)
     local uid
     if (uOrUid == nil) then
         print("uOrUid is nil")
+        return nil
     end
     if (type(uOrUid) == "string") then
         uid = uOrUid

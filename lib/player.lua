@@ -23,6 +23,16 @@ local hplayer = {
     convert_ratio = 1000000,
 }
 
+--- 循环玩家
+hplayer.loop = function(call)
+    if (call == nil) then
+        return
+    end
+    for i = 1, hplayer.qty_max, 1 do
+        call(hplayer.players[i], i)
+    end
+end
+
 hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     if delta > 0 then
         if whichPlayerState == PLAYER_STATE_RESOURCE_GOLD then

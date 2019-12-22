@@ -19,6 +19,8 @@ heventKeyMap = {
     itemDestroy = "itemDestroy",
     itemMix = "itemMix",
     itemSeparate = "itemSeparate",
+    itemOverWeight = "itemOverWeight",
+    itemOverSlot = "itemOverSlot",
     damage = "damage",
     beDamage = "beDamage",
     avoid = "avoid",
@@ -650,6 +652,22 @@ hevent.onItemSeparate = function(whichUnit, action)
     local evtKey = heventKeyMap.itemSeparate
     return hevent.onEventByHandle(evtKey, whichUnit, action)
 end
+--物品超重
+--- getTriggerUnit 获取触发单位
+--- getTriggerItem 获取得到的物品
+--- getValue 获取超出的重量
+hevent.onItemOverWeight = function(whichUnit, action)
+    local evtKey = heventKeyMap.itemOverWeight
+    return hevent.onEventByHandle(evtKey, whichUnit, action)
+end
+--单位满格
+--- getTriggerUnit 获取触发单位
+--- getTriggerItem 获取触发的物品
+hevent.onItemOverSlot = function(whichUnit, action)
+    local evtKey = heventKeyMap.itemOverSlot
+    return hevent.onEventByHandle(evtKey, whichUnit, action)
+end
+
 --造成伤害
 --- getTriggerUnit 获取伤害来源
 --- getTargetUnit 获取被伤害单位
