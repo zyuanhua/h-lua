@@ -11,9 +11,9 @@ end
 --获取一个对象的id字符串
 hSys.getObjChar = function(id)
     return string.char(id // 0x1000000)
-            .. string.char(id // 0x10000 % 0x100)
-            .. string.char(id // 0x100 % 0x100)
-            .. string.char(id % 0x100)
+        .. string.char(id // 0x10000 % 0x100)
+        .. string.char(id // 0x100 % 0x100)
+        .. string.char(id % 0x100)
 end
 --获取一个table的正确长度
 hSys.getTableLen = function(table)

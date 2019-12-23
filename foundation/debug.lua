@@ -50,3 +50,38 @@ print_r = function(t)
     end
     print()
 end
+
+--打印对象table
+print_mbr = function(t)
+    local print_r_cache = {}
+    local function sub_print_r(tt, indent)
+        if (print_r_cache[tostring(tt)]) then
+            print_mb(indent .. "*" .. tostring(tt))
+        else
+            print_r_cache[tostring(tt)] = true
+            if (type(tt) == "table") then
+                for pos, val in pairs(tt) do
+                    if (type(val) == "table") then
+                        print_mb(indent .. "[" .. pos .. "] => " .. tostring(tt) .. " {")
+                        sub_print_r(val, indent .. string.rep(" ", string.len(pos) + 8))
+                        print_mb(indent .. string.rep(" ", string.len(pos) + 6) .. "}")
+                    elseif (type(val) == "string") then
+                        print_mb(indent .. "[" .. pos .. '] => "' .. val .. '"')
+                    else
+                        print_mb(indent .. "[" .. pos .. "] => " .. tostring(val))
+                    end
+                end
+            else
+                print_mb(indent .. tostring(tt))
+            end
+        end
+    end
+    if (type(t) == "table") then
+        print_mb(tostring(t) .. " {")
+        sub_print_r(t, "  ")
+        print_mb("}")
+    else
+        sub_print_r(t, "  ")
+    end
+    print()
+end
