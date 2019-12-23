@@ -178,7 +178,7 @@ end
 hitem.getOverlie = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.OVERLIE
+        return slk.OVERLIE or 1
     else
         return 1
     end
@@ -190,8 +190,6 @@ hitem.getWeight = function(it, charges)
         if (charges == nil and type(it) == 'userdata') then
             --如果没有传次数，这里会直接获取物品的次数，请注意
             charges = hitem.getCharges(it)
-        else
-            charges = 1
         end
         return (slk.WEIGHT or 0) * charges
     else
@@ -328,7 +326,10 @@ hitem.detector = function(whichUnit, it)
                 --如果第i格物品和获得的一致
                 --如果有极限值,并且原有的物品未达上限
                 local tempCharges = hitem.getCharges(tempIt)
-                if (cj.GetItemCharges(tempIt) < overlie) then
+                if (tempCharges < overlie) then
+                    print("currentCharges=" .. currentCharges)
+                    print("tempCharges=" .. tempCharges)
+                    print("overlie=" .. overlie)
                     if ((currentCharges + tempCharges) <= overlie) then
                         --条件：如果旧物品足以容纳所有的新物品个数
                         --使旧物品使用次数增加，新物品删掉
@@ -368,7 +369,9 @@ hitem.detector = function(whichUnit, it)
                 triggerUnit = whichUnit,
                 triggerItem = it,
             })
-            hattr.set(whichUnit, 0, hitem.getAttribute(it))
+            local currentItId = cj.GetItemTypeId(it)
+            local currentCharges = hitem.getCharges(it)
+            hitem.addAttribute(whichUnit, currentItId, currentCharges)
             it = nil
         else
             isFullSlot = true
@@ -589,11 +592,39 @@ hitem.init = function()
     end)
     --丢弃物品
     cj.TriggerAddAction(hitem.PRIVATE_TRIGGER.drop, function()
-
+        local u = cj.GetTriggerUnit()
+        local it = cj.GetManipulatedItem()
+        local itId = hSys.getObjChar(cj.GetItemTypeId(it))
+        local faceId = hitem.getFaceId(itId)
+        local orderId = cj.OrderId("dropitem")
+        local charges = cj.GetItemCharges(it)
+        if (cj.GetUnitCurrentOrder(u) == orderId) then
+            if (faceId == nil) then
+                hRuntime.item[it].type = hitem.TYPE.COORDINATE
+            else
+                htime.setTimeout(0, function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    local x = cj.GetItemX(it)
+                    local y = cj.GetItemX(it)
+                    hitem.del(it, 0)
+                    --这里是实现表面物品的关键
+                    hitem.create({
+                        itemId = faceId,
+                        x = x,
+                        y = y,
+                        charges = charges,
+                        during = 0,
+                    })
+                end)
+            end
+            hitem.subAttribute(u, itId, charges)
+        end
     end)
     --抵押物品
     cj.TriggerAddAction(hitem.PRIVATE_TRIGGER.pawn, function()
-
+        local u = cj.GetTriggerUnit()
+        local it = cj.GetManipulatedItem()
     end)
     --使用物品
     cj.TriggerAddAction(hitem.PRIVATE_TRIGGER.use, function()

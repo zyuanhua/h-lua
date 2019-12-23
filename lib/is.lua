@@ -177,6 +177,14 @@ end
 his.ally = function(whichUnit, otherUnit)
     return cj.IsUnitAlly(whichUnit, cj.GetOwningPlayer(otherUnit))
 end
+--是否敌人
+his.enemyPlayer = function(whichUnit, whichPlayer)
+    return cj.IsUnitEnemy(whichUnit, whichPlayer)
+end
+--是否友军
+his.allyPlayer = function(whichUnit, whichPlayer)
+    return cj.IsUnitAlly(whichUnit, whichPlayer)
+end
 --是否超出区域边界
 his.borderRect = function(r, x, y)
     local flag = false
