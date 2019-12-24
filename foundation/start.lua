@@ -55,7 +55,9 @@ hLuaStart = {
         cj.TriggerAddAction(triggerDeath, function()
             local u = cj.GetTriggerUnit()
             local killer = hevent.getLastDamageUnit(u)
-            hplayer.addKill(cj.GetOwningPlayer(killer), 1)
+            if(killer ~= nil)then
+                hplayer.addKill(cj.GetOwningPlayer(killer), 1)
+            end
             -- @触发死亡事件
             hevent.triggerEvent({
                 triggerKey = heventKeyMap.dead,

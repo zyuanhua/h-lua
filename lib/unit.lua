@@ -322,7 +322,7 @@ end
 
 -- 删除单位，延时during秒
 hunit.del = function(targetUnit, during)
-    if (during <= 0) then
+    if (during == nil or during <= 0) then
         cj.RemoveUnit(targetUnit)
     else
         htime.setTimeout(during, function(t, td)
@@ -334,7 +334,7 @@ hunit.del = function(targetUnit, during)
 end
 -- 杀死单位，延时during秒
 hunit.kill = function(targetUnit, during)
-    if (during <= 0) then
+    if (during == nil or during <= 0) then
         cj.KillUnit(targetUnit)
     else
         htime.setTimeout(during, function(t, td)
@@ -346,7 +346,7 @@ hunit.kill = function(targetUnit, during)
 end
 -- 爆毁单位，延时during秒
 hunit.exploded = function(targetUnit, during)
-    if (during <= 0) then
+    if (during == nil or during <= 0) then
         cj.SetUnitExploded(targetUnit, true)
         cj.KillUnit(targetUnit)
     else

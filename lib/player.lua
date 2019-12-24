@@ -13,14 +13,14 @@ local hplayer = {
     player_status = {
         none = "无参与",
         gaming = "游戏中",
-        leave = "已离开",
+        leave = "已离开"
     },
     --用户玩家最大数量
     qty_max = 12,
     --当前玩家数量
     qty_current = 0,
     --换算比率，默认：1000000金 -> 1木
-    convert_ratio = 1000000,
+    convert_ratio = 1000000
 }
 
 --- 循环玩家
@@ -36,9 +36,17 @@ end
 hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     if delta > 0 then
         if whichPlayerState == PLAYER_STATE_RESOURCE_GOLD then
-            cj.SetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED, cj.GetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED) + delta)
+            cj.SetPlayerState(
+                whichPlayer,
+                PLAYER_STATE_GOLD_GATHERED,
+                cj.GetPlayerState(whichPlayer, PLAYER_STATE_GOLD_GATHERED) + delta
+            )
         elseif whichPlayerState == PLAYER_STATE_RESOURCE_LUMBER then
-            cj.SetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED, cj.GetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED) + delta)
+            cj.SetPlayerState(
+                whichPlayer,
+                PLAYER_STATE_LUMBER_GATHERED,
+                cj.GetPlayerState(whichPlayer, PLAYER_STATE_LUMBER_GATHERED) + delta
+            )
         end
     end
     cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, whichPlayerState) + delta)
@@ -85,16 +93,23 @@ hplayer.getRandomHero = function()
         return nil
     end
     local ri = cj.GetRandomInt(1, #pi)
-    return hhero.getPlayerUnit(hplayer.players[pi[ri]], cj.GetRandomInt(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]])))
+    return hhero.getPlayerUnit(
+        hplayer.players[pi[ri]],
+        cj.GetRandomInt(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
+    )
 end
 --- 令玩家失败
 hplayer.defeat = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
     end
-    local g = hgroup.createByRect(cj.GetEntireMapRect(), function()
-        return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
-    end)
+    local g =
+        hgroup.createByRect(
+        cj.GetEntireMapRect(),
+        function()
+            return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
+        end
+    )
     while (hgroup.isEmpty(g) ~= true) do
         local u = cj.FirstOfGroup(g)
         cj.GroupRemoveUnit(g, u)
@@ -179,11 +194,14 @@ hplayer.diffGoldRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].goldRatio = hRuntime.player[whichPlayer].goldRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hRuntime.player[whichPlayer].goldRatio = hRuntime.player[whichPlayer].goldRatio - diff
-            end)
+            htime.setTimeout(
+                during,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hRuntime.player[whichPlayer].goldRatio = hRuntime.player[whichPlayer].goldRatio - diff
+                end
+            )
         end
     end
 end
@@ -205,11 +223,14 @@ hplayer.diffLumberRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].lumberRatio = hRuntime.player[whichPlayer].lumberRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hRuntime.player[whichPlayer].lumberRatio = hRuntime.player[whichPlayer].lumberRatio - diff
-            end)
+            htime.setTimeout(
+                during,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hRuntime.player[whichPlayer].lumberRatio = hRuntime.player[whichPlayer].lumberRatio - diff
+                end
+            )
         end
     end
 end
@@ -231,11 +252,14 @@ hplayer.diffExpRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].expRatio = hRuntime.player[whichPlayer].expRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hRuntime.player[whichPlayer].expRatio = hRuntime.player[whichPlayer].expRatio - diff
-            end)
+            htime.setTimeout(
+                during,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hRuntime.player[whichPlayer].expRatio = hRuntime.player[whichPlayer].expRatio - diff
+                end
+            )
         end
     end
 end
@@ -257,11 +281,14 @@ hplayer.diffSellRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hRuntime.player[whichPlayer].sellRatio = hRuntime.player[whichPlayer].sellRatio + diff
         if (during > 0) then
-            htime.setTimeout(during, function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hRuntime.player[whichPlayer].sellRatio = hRuntime.player[whichPlayer].sellRatio - diff
-            end)
+            htime.setTimeout(
+                during,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hRuntime.player[whichPlayer].sellRatio = hRuntime.player[whichPlayer].sellRatio - diff
+                end
+            )
         end
     end
 end
@@ -275,7 +302,7 @@ hplayer.subSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, -val, during)
 end
 hplayer.getSellRatio = function(whichPlayer)
-    return hRuntime.player[whichPlayer].sellRatio
+    return hRuntime.player[whichPlayer].sellRatio or 100
 end
 
 --- 玩家总获金量
@@ -379,7 +406,6 @@ hplayer.subLumber = function(whichPlayer, lumber)
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) - lumber)
 end
 
-
 -- 初始化(已内部调用)
 hplayer.init = function()
     local triggerApm = cj.CreateTrigger()
@@ -389,101 +415,136 @@ hplayer.init = function()
     local triggerLSR = cj.CreateTrigger()
     local triggerMSR = cj.CreateTrigger()
     local triggerConvert = cj.CreateTrigger()
-    cj.TriggerAddAction(triggerApm, function()
-        local p = cj.GetTriggerPlayer()
-        hRuntime.player[p].apm = hRuntime.player[p].apm + 1
-    end)
-    cj.TriggerAddAction(triggerApmUnit, function()
-        local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
-        hRuntime.player[p].apm = hRuntime.player[p].apm + 1
-    end)
-    cj.TriggerAddAction(triggerLeave, function()
-        local p = cj.GetTriggerPlayer()
-        local g
-        hRuntime.player[p].status = p, hplayer.player_status.leave
-        hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
-        g = hgroup.createByRect(cj.GetEntireMapRect(), function()
-            local b = false
-            if (cj.GetOwningPlayer(cj.GetFilterUnit()) == p) then
-                b = true
+    cj.TriggerAddAction(
+        triggerApm,
+        function()
+            local p = cj.GetTriggerPlayer()
+            hRuntime.player[p].apm = hRuntime.player[p].apm + 1
+        end
+    )
+    cj.TriggerAddAction(
+        triggerApmUnit,
+        function()
+            local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
+            hRuntime.player[p].apm = hRuntime.player[p].apm + 1
+        end
+    )
+    cj.TriggerAddAction(
+        triggerLeave,
+        function()
+            local p = cj.GetTriggerPlayer()
+            local g
+            hRuntime.player[p].status = p, hplayer.player_status.leave
+            hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
+            g =
+                hgroup.createByRect(
+                cj.GetEntireMapRect(),
+                function()
+                    local b = false
+                    if (cj.GetOwningPlayer(cj.GetFilterUnit()) == p) then
+                        b = true
+                    end
+                    return b
+                end
+            )
+            while (hgroup.isEmpty(g) == false) do
+                local u = cj.FirstOfGroup(g)
+                cj.GroupRemoveUnit(g, u)
+                cj.RemoveUnit(u)
             end
-            return b
-        end)
-        while (hgroup.isEmpty(g) == false) do
-            local u = cj.FirstOfGroup(g)
-            cj.GroupRemoveUnit(g, u)
-            cj.RemoveUnit(u)
+            cj.GroupClear(g)
+            cj.DestroyGroup(g)
+            hplayer.qty_current = hplayer.qty_current - 1
         end
-        cj.GroupClear(g)
-        cj.DestroyGroup(g)
-        hplayer.qty_current = hplayer.qty_current - 1
-    end)
-    hevent.onSelection(nil, 2, function()
-        hRuntime.player[hevent.getTriggerPlayer()].selection = hevent.getTriggerUnit()
-    end)
-    cj.TriggerAddAction(triggerDeSelection, function()
-        hRuntime.player[cj.GetTriggerPlayer()].selection = nil
-    end)
-    cj.TriggerAddAction(triggerLSR, function()
-        local p = cj.GetTriggerPlayer()
-        local d = cj.DialogCreate()
-        local b
-        local tg
-        cj.DialogSetMessage(d, "设定某个比例触发生命源恢复")
-        local bValue = {}
-        for i = 100, 10, -10 do
-            b = cj.DialogAddButton(d, i .. "%", 0)
-            bValue[b] = i
+    )
+    hevent.onSelection(
+        nil,
+        2,
+        function()
+            hRuntime.player[hevent.getTriggerPlayer()].selection = hevent.getTriggerUnit()
         end
-        tg = cj.CreateTrigger()
-        cj.TriggerAddAction(tg, function()
-            local dd = cj.GetClickedDialog()
-            local bb = cj.GetClickedButton()
-            hmessage.echoXY0(p, "已设定生命源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
-            hRuntime.player[p].lifeSourceRatio = bValue[bb]
-            cj.DialogClear(dd)
-            cj.DialogDestroy(dd)
-            cj.DisableTrigger(cj.GetTriggeringTrigger())
-            cj.DestroyTrigger(cj.GetTriggeringTrigger())
-        end)
-        cj.TriggerRegisterDialogEvent(tg, d)
-        cj.DialogDisplay(p, d, true)
-    end)
-    cj.TriggerAddAction(triggerMSR, function()
-        local p = cj.GetTriggerPlayer()
-        local d = cj.DialogCreate()
-        local b
-        local tg
-        cj.DialogSetMessage(d, "设定某个比例触发魔法源恢复")
-        local bValue = {}
-        for i = 100, 10, -10 do
-            b = cj.DialogAddButton(d, i .. "%", 0)
-            bValue[b] = i
+    )
+    cj.TriggerAddAction(
+        triggerDeSelection,
+        function()
+            hRuntime.player[cj.GetTriggerPlayer()].selection = nil
         end
-        tg = cj.CreateTrigger()
-        cj.TriggerAddAction(tg, function()
-            local dd = cj.GetClickedDialog()
-            local bb = cj.GetClickedButton()
-            hmessage.echoXY0(p, "已设定魔法源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
-            hRuntime.player[p].manaSourceRatio = bValue[bb]
-            cj.DialogClear(dd)
-            cj.DialogDestroy(dd)
-            cj.DisableTrigger(cj.GetTriggeringTrigger())
-            cj.DestroyTrigger(cj.GetTriggeringTrigger())
-        end)
-        cj.TriggerRegisterDialogEvent(tg, d)
-        cj.DialogDisplay(p, d, true)
-    end)
-    cj.TriggerAddAction(triggerConvert, function()
-        local p = cj.GetTriggerPlayer()
-        if (his.autoConvertGoldLumber(p) == true) then
-            his.set(p, "isAutoConvertGoldToLumber", false)
-            hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
-        else
-            his.set(p, "isAutoConvertGoldToLumber", true)
-            hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
+    )
+    cj.TriggerAddAction(
+        triggerLSR,
+        function()
+            local p = cj.GetTriggerPlayer()
+            local d = cj.DialogCreate()
+            local b
+            local tg
+            cj.DialogSetMessage(d, "设定某个比例触发生命源恢复")
+            local bValue = {}
+            for i = 100, 10, -10 do
+                b = cj.DialogAddButton(d, i .. "%", 0)
+                bValue[b] = i
+            end
+            tg = cj.CreateTrigger()
+            cj.TriggerAddAction(
+                tg,
+                function()
+                    local dd = cj.GetClickedDialog()
+                    local bb = cj.GetClickedButton()
+                    hmessage.echoXY0(p, "已设定生命源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
+                    hRuntime.player[p].lifeSourceRatio = bValue[bb]
+                    cj.DialogClear(dd)
+                    cj.DialogDestroy(dd)
+                    cj.DisableTrigger(cj.GetTriggeringTrigger())
+                    cj.DestroyTrigger(cj.GetTriggeringTrigger())
+                end
+            )
+            cj.TriggerRegisterDialogEvent(tg, d)
+            cj.DialogDisplay(p, d, true)
         end
-    end)
+    )
+    cj.TriggerAddAction(
+        triggerMSR,
+        function()
+            local p = cj.GetTriggerPlayer()
+            local d = cj.DialogCreate()
+            local b
+            local tg
+            cj.DialogSetMessage(d, "设定某个比例触发魔法源恢复")
+            local bValue = {}
+            for i = 100, 10, -10 do
+                b = cj.DialogAddButton(d, i .. "%", 0)
+                bValue[b] = i
+            end
+            tg = cj.CreateTrigger()
+            cj.TriggerAddAction(
+                tg,
+                function()
+                    local dd = cj.GetClickedDialog()
+                    local bb = cj.GetClickedButton()
+                    hmessage.echoXY0(p, "已设定魔法源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
+                    hRuntime.player[p].manaSourceRatio = bValue[bb]
+                    cj.DialogClear(dd)
+                    cj.DialogDestroy(dd)
+                    cj.DisableTrigger(cj.GetTriggeringTrigger())
+                    cj.DestroyTrigger(cj.GetTriggeringTrigger())
+                end
+            )
+            cj.TriggerRegisterDialogEvent(tg, d)
+            cj.DialogDisplay(p, d, true)
+        end
+    )
+    cj.TriggerAddAction(
+        triggerConvert,
+        function()
+            local p = cj.GetTriggerPlayer()
+            if (his.autoConvertGoldLumber(p) == true) then
+                his.set(p, "isAutoConvertGoldToLumber", false)
+                hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
+            else
+                his.set(p, "isAutoConvertGoldToLumber", true)
+                hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
+            end
+        end
+    )
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
     bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_ORDER)
@@ -506,7 +567,10 @@ hplayer.init = function()
         hRuntime.player[hplayer.players[i]].damage = 0
         hRuntime.player[hplayer.players[i]].beDamage = 0
         hRuntime.player[hplayer.players[i]].kill = 0
-        if ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)) then
+        if
+            ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and
+                (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING))
+         then
             -- his
             his.set(hplayer.players[i], "isComputer", false)
             --
@@ -514,10 +578,30 @@ hplayer.init = function()
             hRuntime.player[hplayer.players[i]].status = hplayer.player_status.gaming
             bj.TriggerRegisterPlayerSelectionEventBJ(triggerApm, hplayer.players[i], true)
             cj.TriggerRegisterPlayerEvent(triggerLeave, hplayer.players[i], EVENT_PLAYER_LEAVE)
-            bj.TriggerRegisterPlayerKeyEventBJ(triggerApm, hplayer.players[i], bj_KEYEVENTTYPE_DEPRESS, bj_KEYEVENTKEY_LEFT)
-            bj.TriggerRegisterPlayerKeyEventBJ(triggerApm, hplayer.players[i], bj_KEYEVENTTYPE_DEPRESS, bj_KEYEVENTKEY_RIGHT)
-            bj.TriggerRegisterPlayerKeyEventBJ(triggerApm, hplayer.players[i], bj_KEYEVENTTYPE_DEPRESS, bj_KEYEVENTKEY_DOWN)
-            bj.TriggerRegisterPlayerKeyEventBJ(triggerApm, hplayer.players[i], bj_KEYEVENTTYPE_DEPRESS, bj_KEYEVENTKEY_UP)
+            bj.TriggerRegisterPlayerKeyEventBJ(
+                triggerApm,
+                hplayer.players[i],
+                bj_KEYEVENTTYPE_DEPRESS,
+                bj_KEYEVENTKEY_LEFT
+            )
+            bj.TriggerRegisterPlayerKeyEventBJ(
+                triggerApm,
+                hplayer.players[i],
+                bj_KEYEVENTTYPE_DEPRESS,
+                bj_KEYEVENTKEY_RIGHT
+            )
+            bj.TriggerRegisterPlayerKeyEventBJ(
+                triggerApm,
+                hplayer.players[i],
+                bj_KEYEVENTTYPE_DEPRESS,
+                bj_KEYEVENTKEY_DOWN
+            )
+            bj.TriggerRegisterPlayerKeyEventBJ(
+                triggerApm,
+                hplayer.players[i],
+                bj_KEYEVENTTYPE_DEPRESS,
+                bj_KEYEVENTKEY_UP
+            )
             cj.TriggerRegisterPlayerUnitEvent(triggerDeSelection, hplayer.players[i], EVENT_PLAYER_UNIT_DESELECTED, nil)
             cj.TriggerRegisterPlayerChatEvent(triggerLSR, hplayer.players[i], "-lsr", true)
             cj.TriggerRegisterPlayerChatEvent(triggerMSR, hplayer.players[i], "-msr", true)

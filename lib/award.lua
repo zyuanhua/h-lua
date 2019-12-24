@@ -21,7 +21,6 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
     end
     p = cj.GetOwningPlayer(whichUnit)
     index = hplayer.index(p)
-    -- 增益
     realGold = cj.R2I(gold * hplayer.getGoldRatio(p) / 100.00)
     realLumber = cj.R2I(lumber * hplayer.getLumberRatio(p) / 100.00)
     realExp = cj.R2I(exp * hplayer.getExpRatio(p) / 100.00)
