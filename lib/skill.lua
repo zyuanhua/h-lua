@@ -30,7 +30,7 @@ end
 -- 添加技能
 hskill.add = function(whichUnit, ability_id, during)
     local id = hSys.getObjId(ability_id)
-    if (during <= 0) then
+    if (during == nil or during <= 0) then
         cj.UnitAddAbility(whichUnit, id)
         cj.UnitMakeAbilityPermanent(whichUnit, true, id)
     else

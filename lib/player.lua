@@ -105,7 +105,7 @@ hplayer.defeat = function(whichPlayer, tips)
     end
     local g =
         hgroup.createByRect(
-        cj.GetEntireMapRect(),
+        cj.GetWorldBounds(),
         function()
             return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
         end
@@ -438,7 +438,7 @@ hplayer.init = function()
             hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
             g =
                 hgroup.createByRect(
-                cj.GetEntireMapRect(),
+                cj.GetWorldBounds(),
                 function()
                     local b = false
                     if (cj.GetOwningPlayer(cj.GetFilterUnit()) == p) then
