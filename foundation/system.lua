@@ -1,18 +1,29 @@
-hSys = {};
+hSys = {}
 
 --获取一个对象的id
 hSys.getObjId = function(idChar)
-    local i = string.byte(idChar, 1)
-    i = i * 256 + string.byte(idChar, 2)
-    i = i * 256 + string.byte(idChar, 3)
-    i = i * 256 + string.byte(idChar, 4)
-    return i
+    if (idChar == nil) then
+        print_stack()
+    end
+    local len = string.len(idChar)
+    local id = 0
+    for i = 1, len, 1 do
+        if (i == 1) then
+            id = string.byte(idChar, i)
+        else
+            id = id * 256 + string.byte(idChar, i)
+        end
+    end
+    return id
 end
 --获取一个对象的id字符串
 hSys.getObjChar = function(id)
-    return string.char(id // 0x1000000)
-        .. string.char(id // 0x10000 % 0x100)
-        .. string.char(id // 0x100 % 0x100)
+    if (id == nil) then
+        print_stack()
+    end
+    return string.char(id // 0x1000000) 
+        .. string.char(id // 0x10000 % 0x100) 
+        .. string.char(id // 0x100 % 0x100) 
         .. string.char(id % 0x100)
 end
 --获取一个table的正确长度
@@ -29,7 +40,7 @@ hSys.randTable = function(arr)
     for k, _ in pairs(arr) do
         table.insert(keys, k)
     end
-    local val = arr[math.random(1, #keys)]
+    local val = arr[keys[math.random(1, #keys)]]
     keys = nil
     return val
 end
@@ -38,9 +49,9 @@ hSys.cloneTable = function(org)
     local function copy(org1, res)
         for k, v in pairs(org1) do
             if type(v) ~= "table" then
-                res[k] = v;
+                res[k] = v
             else
-                res[k] = {};
+                res[k] = {}
                 copy(v, res[k])
             end
         end
@@ -97,27 +108,27 @@ end
 
 --转义
 hSys.addslashes = function(s)
-    local in_char = { '\\', '"', '/', '\b', '\f', '\n', '\r', '\t' }
-    local out_char = { '\\', '"', '/', 'b', 'f', 'n', 'r', 't' }
+    local in_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
+    local out_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     for i, c in ipairs(in_char) do
-        s = s:gsub(c, '\\' .. out_char[i])
+        s = s:gsub(c, "\\" .. out_char[i])
     end
     return s
 end
 --反转义
 hSys.stripslashes = function(s)
-    local in_char = { '\\', '"', '/', 'b', 'f', 'n', 'r', 't' }
-    local out_char = { '\\', '"', '/', '\b', '\f', '\n', '\r', '\t' }
+    local in_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
+    local out_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
 
     for i, c in ipairs(in_char) do
-        s = s:gsub('\\' .. c, out_char[i])
+        s = s:gsub("\\" .. c, out_char[i])
     end
     return s
 end
 
 hSys.base64Encode = function(source_str)
-    local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-    local s64 = ''
+    local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    local s64 = ""
     local str = source_str
 
     while #str > 0 do
@@ -140,19 +151,19 @@ hSys.base64Encode = function(source_str)
         end
 
         for fill_cnt = 1, (3 - bytes_num) do
-            s64 = s64 .. '='
+            s64 = s64 .. "="
         end
     end
 
     return s64
 end
 hSys.base64Decode = function(str64)
-    local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local temp = {}
     for i = 1, 64 do
         temp[string.sub(b64chars, i, i)] = i
     end
-    temp['='] = 0
+    temp["="] = 0
     local str = ""
     for i = 1, #str64, 4 do
         if i > #str64 then
