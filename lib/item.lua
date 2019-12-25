@@ -434,10 +434,16 @@ end
 ]]
 hitem.create = function(bean)
     if (bean.itemId == nil) then
-        print("htime create -it-id")
+        print("hitem create -it-id")
         return
     end
-    local charges = bean.charges or 1
+    if (bean.charges == nil) then
+        bean.charges = 1
+    end
+    if (bean.charges < 1) then
+        return
+    end
+    local charges = bean.charges
     local during = bean.during or 0
     -- 优先级 坐标 > 单位 > 点
     local it
@@ -455,7 +461,7 @@ hitem.create = function(bean)
         it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
         type = hitem.TYPE.LOCATION
     else
-        print("htime create -site")
+        print("hitem create -site")
         return
     end
     cj.SetItemCharges(it, charges)
@@ -491,8 +497,8 @@ hitem.give = function(origin, target)
         if (it ~= nil) then
             hitem.create(
                 {
-                    itemId = cj.GetItemTypeId(it),
-                    charges = cj.GetItemCharges(it),
+                    itemId = hitem.getId(it),
+                    charges = hitem.getCharges(it),
                     whichUnit = target
                 }
             )
@@ -511,8 +517,8 @@ hitem.copy = function(origin, target)
         if (it ~= nil) then
             hitem.create(
                 {
-                    itemId = cj.GetItemTypeId(it),
-                    charges = cj.GetItemCharges(it),
+                    itemId = hitem.getId(it),
+                    charges = hitem.getCharges(it),
                     whichUnit = target
                 }
             )
@@ -530,8 +536,8 @@ hitem.drop = function(origin)
         if (it ~= nil) then
             hitem.create(
                 {
-                    itemId = cj.GetItemTypeId(it),
-                    charges = cj.GetItemCharges(it),
+                    itemId = hitem.getId(it),
+                    charges = hitem.getCharges(it),
                     x = cj.GetUnitX(origin),
                     x = cj.GetUnitY(origin)
                 }
@@ -584,7 +590,19 @@ hitem.init = function()
             local shadowItId = hitem.getShadowId(itId)
             if (shadowItId == nil) then
                 if (hitem.getIsPowerUp(itId) == true) then
-                    --原生的自动使用物品,因为会自动触发使用的事件，所以这里什么都不用做
+                    --检测是否有回调动作
+                    local call = hitem.getTriggerCall(itId)
+                    if (call ~= nil and type(call) == "function") then
+                        call(u, it, itId, charges)
+                    end
+                    --触发使用物品事件
+                    hevent.triggerEvent(
+                        {
+                            triggerKey = heventKeyMap.itemUsed,
+                            triggerUnit = u,
+                            triggerItem = it
+                        }
+                    )
                 else
                     --这里删除重建是为了实现地上物品的过期重置
                     hitem.del(it, 0)
