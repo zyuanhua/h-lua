@@ -178,7 +178,12 @@ hplayer.getKill = function(whichPlayer)
 end
 --- 增加玩家杀敌数
 hplayer.addKill = function(whichPlayer, val)
-    hRuntime.player[whichPlayer].kill = hRuntime.player[whichPlayer].kill + val
+    if (whichPlayer ~= nil and hRuntime.player[whichPlayer] ~= nil) then
+        if (val == nil) then
+            val = 1
+        end
+        hRuntime.player[whichPlayer].kill = hRuntime.player[whichPlayer].kill + val
+    end
 end
 --- 获取玩家生命源设定百分比
 hplayer.getLifeSourceRatio = function(whichPlayer)

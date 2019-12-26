@@ -238,7 +238,7 @@ hattr.registerAll = function(whichUnit)
     --init
     local unitId = hSys.getObjChar(cj.GetUnitTypeId(whichUnit))
     if (hslk_global.unitsKV[unitId] == nil) then
-        print(unitId .. "未注册 hslk_global.unitsKV")
+        print_mb("未注册 hslk_global.unitsKV:"..cj.GetUnitName(whichUnit)..unitId)
         return
     end
     hRuntime.attribute[whichUnit] = {
@@ -715,6 +715,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
     end
 end
 hattr.set = function(whichUnit, during, data)
+    if (whichUnit == nil) then
+        print_stack("whichUnit is nil")
+        return
+    end
     if (hRuntime.attribute[whichUnit] == nil) then
         hattr.registerAll(whichUnit)
     end
