@@ -22,6 +22,15 @@ end
 hcamera.toLoc = function(whichPlayer, during, loc)
     hcamera.toXY(whichPlayer, during, cj.GetLocationX(loc), cj.GetLocationY(loc))
 end
+-- 移动到单位位置
+hcamera.toUnit = function(whichPlayer, during, whichUnit)
+    if (whichUnit == nil) then
+        return
+    end
+    if (whichPlayer == nil or cj.GetLocalPlayer() == whichPlayer) then
+        cj.PanCameraToTimed(cj.GetUnitX(whichUnit), cj.GetUnitY(whichUnit), during)
+    end
+end
 -- 锁定镜头
 -- whichUnit = {} 以玩家为key
 hcamera.lock = function(whichPlayer, whichUnit)
@@ -68,26 +77,32 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         return
     end
     cameraData[whichPlayer].isShocking = true
-    if (whichType == 'shake') then
+    if (whichType == "shake") then
         cj.CameraSetTargetNoiseForPlayer(whichPlayer, scale, 1.00)
-        htime.setTimeout(during, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cameraData[whichPlayer].isShocking = false
-            if (cj.GetLocalPlayer() == whichPlayer) then
-                cj.CameraSetTargetNoise(0, 0)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cameraData[whichPlayer].isShocking = false
+                if (cj.GetLocalPlayer() == whichPlayer) then
+                    cj.CameraSetTargetNoise(0, 0)
+                end
             end
-        end)
-    elseif (whichType == 'quake') then
+        )
+    elseif (whichType == "quake") then
         cj.CameraSetEQNoiseForPlayer(whichPlayer, scale)
-        htime.setTimeout(during, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cameraData[whichPlayer].isShocking = false
-            if (cj.GetLocalPlayer() == whichPlayer) then
-                cj.CameraClearNoiseForPlayer(0, 0)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cameraData[whichPlayer].isShocking = false
+                if (cj.GetLocalPlayer() == whichPlayer) then
+                    cj.CameraClearNoiseForPlayer(0, 0)
+                end
             end
-        end)
+        )
     end
 end
 
@@ -118,18 +133,27 @@ hcamera.setModel = function(bean)
         if (bean.lockUnit == nil or bean.whichPlayer == nil) then
             return
         end
-        htime.setInterval(0.1, function()
-            hcamera.lock(bean.whichPlayer, bean.lockUnit)
-        end)
+        htime.setInterval(
+            0.1,
+            function()
+                hcamera.lock(bean.whichPlayer, bean.lockUnit)
+            end
+        )
     elseif (bean.model == "zoomin") then
-        htime.setInterval(0.1, function()
-            hcamera.distance(bean.whichPlayer, 825)
-        end)
         -- hattr.max_move_speed = hattr.max_move_speed * 2
+        htime.setInterval(
+            0.1,
+            function()
+                hcamera.distance(bean.whichPlayer, 825)
+            end
+        )
     elseif (bean.model == "zoomout") then
-        htime.setInterval(0.1, function()
-            hcamera.distance(bean.whichPlayer, 3000)
-        end)
+        htime.setInterval(
+            0.1,
+            function()
+                hcamera.distance(bean.whichPlayer, 3000)
+            end
+        )
     else
         return
     end

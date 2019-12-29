@@ -124,7 +124,7 @@ bj.CustomVictoryDialogBJ = function(whichPlayer)
     bj.StartSoundForPlayerBJ(whichPlayer, cg.bj_victoryDialogSound)
 end
 bj.CustomDefeatBJ = function(whichPlayer, message)
-    if AllowVictoryDefeatBJ(PLAYER_GAME_RESULT_DEFEAT) then
+    if bj.AllowVictoryDefeatBJ(PLAYER_GAME_RESULT_DEFEAT) then
         cj.RemovePlayer(whichPlayer, PLAYER_GAME_RESULT_DEFEAT)
         if not cg.bj_isSinglePlayer then
             cj.DisplayTimedTextFromPlayer(whichPlayer, 0, 0, 60, cj.GetLocalizedString("PLAYER_DEFEATED"))
@@ -150,7 +150,7 @@ bj.CustomVictorySkipBJ = function(whichPlayer)
     end
 end
 bj.CustomVictoryBJ = function(whichPlayer, showDialog, showScores)
-    if AllowVictoryDefeatBJ(PLAYER_GAME_RESULT_VICTORY) then
+    if bj.AllowVictoryDefeatBJ(PLAYER_GAME_RESULT_VICTORY) then
         cj.RemovePlayer(whichPlayer, PLAYER_GAME_RESULT_VICTORY)
 
         if not cg.bj_isSinglePlayer then
