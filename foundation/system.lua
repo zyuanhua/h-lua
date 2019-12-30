@@ -125,7 +125,7 @@ hSys.stripslashes = function(s)
     end
     return s
 end
-
+--base64编码
 hSys.base64Encode = function(source_str)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local s64 = ""
@@ -157,6 +157,7 @@ hSys.base64Encode = function(source_str)
 
     return s64
 end
+--base64解码
 hSys.base64Decode = function(str64)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local temp = {}
@@ -198,6 +199,7 @@ hSys.base64Decode = function(str64)
     end
     return str
 end
+--把字符串以分隔符打散为数组
 hSys.explode = function(delimeter, str)
     local res = {}
     local start, start_pos, end_pos = 1, 1, 1
@@ -212,6 +214,7 @@ hSys.explode = function(delimeter, str)
     table.insert(res, string.sub(str, start))
     return res
 end
+--把数组以分隔符拼接回字符串
 hSys.implode = function(delimeter, table)
     local str
     for _, v in ipairs(table) do
