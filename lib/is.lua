@@ -169,19 +169,19 @@ end
 his.unit = function(whichUnit, otherUnit)
     return whichUnit == otherUnit
 end
---是否敌人
+--是否敌人单位
 his.enemy = function(whichUnit, otherUnit)
     return cj.IsUnitEnemy(whichUnit, cj.GetOwningPlayer(otherUnit))
 end
---是否友军
+--是否友军单位
 his.ally = function(whichUnit, otherUnit)
     return cj.IsUnitAlly(whichUnit, cj.GetOwningPlayer(otherUnit))
 end
---是否敌人
+--是否敌人玩家
 his.enemyPlayer = function(whichUnit, whichPlayer)
     return cj.IsUnitEnemy(whichUnit, whichPlayer)
 end
---是否友军
+--是否友军玩家
 his.allyPlayer = function(whichUnit, whichPlayer)
     return cj.IsUnitAlly(whichUnit, whichPlayer)
 end
