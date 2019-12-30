@@ -11,7 +11,7 @@ print_stack = function(...)
     -- print(debug.traceback("Stack trace"))
 end
 
---打印utf8->ansi编码
+--打印utf8->ansi编码,此方法可以打印出中文
 print_mb = function(str)
     console.write(str)
 end
@@ -51,7 +51,7 @@ print_r = function(t)
     print()
 end
 
---打印对象table
+--打印对象table,此方法可以打印出中文
 print_mbr = function(t)
     local print_r_cache = {}
     local function sub_print_r(tt, indent)
