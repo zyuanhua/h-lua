@@ -72,7 +72,7 @@ hitem.getSlk = function(itOrId)
     return slk
 end
 -- 获取物品的图标路径
-hitem.getAvatar = function(itOrId)
+hitem.getArt = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.Art
@@ -81,7 +81,7 @@ hitem.getAvatar = function(itOrId)
     end
 end
 -- 获取物品的模型路径
-hitem.getAvatar = function(itOrId)
+hitem.getFile = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.file
@@ -191,12 +191,12 @@ hitem.getOverlie = function(itOrId)
     end
 end
 -- 获取物品的重量（默认为0）
-hitem.getWeight = function(it, charges)
-    local slk = hitem.getSlk(it)
+hitem.getWeight = function(itOrId, charges)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        if (charges == nil and type(it) == "userdata") then
+        if (charges == nil and type(itOrId) == "userdata") then
             --如果没有传次数，这里会直接获取物品的次数，请注意
-            charges = hitem.getCharges(it)
+            charges = hitem.getCharges(itOrId)
         end
         return (slk.WEIGHT or 0) * charges
     else
@@ -204,8 +204,8 @@ hitem.getWeight = function(it, charges)
     end
 end
 -- 获取物品的属性加成
-hitem.getAttribute = function(it)
-    local slk = hitem.getSlk(it)
+hitem.getAttribute = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.ATTRIBUTE or {}
     else
@@ -253,7 +253,7 @@ hitem.getEmptySlot = function(whichUnit)
     return qty
 end
 
--- 设置单位拥有拆分物品的技能
+-- 使得单位拥有拆分物品的技能
 hitem.setAllowSeparate = function(whichUnit)
     --物品拆分
     cj.UnitAddAbility(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
