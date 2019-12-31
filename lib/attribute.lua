@@ -1212,6 +1212,7 @@ hattr.huntUnit = function(bean)
                 value = fromUnitKnocking,
                 percent = fromUnitKnockingOdds,
             })
+            heffect.toUnit("war3mapImported\\eff_crit.mdx",bean.toUnit, 0)
         end
         if (isViolence) then
             --@触发魔法暴击事件
