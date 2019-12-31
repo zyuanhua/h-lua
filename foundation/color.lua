@@ -61,7 +61,7 @@ hColor.sea = function(str)
 end
 
 hColor.purpleLight = function(str)
-    return hColor.mixed(str, "99ff70")
+    return hColor.mixed(str, "ee82ee")
 end
 
 hColor.purple = function(str)
