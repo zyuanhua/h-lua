@@ -67,7 +67,7 @@ hunit.addExp = function(u, val, showEffect)
         showEffect = false
     end
     cj.AddHeroXP(u, val, showEffect)
-    htextTag.style(htextTag.create2Unit(u, "+" .. val .. " Exp", 7, "c4c4ff", 0, 1.70, 60.00), "toggle", 0, 0.20)
+    htextTag.style(htextTag.create2Unit(u, "+" .. val .. " Exp", 7, "c4c4ff", 1, 1.70, 60.00), "toggle", 0, 0.20)
 end
 
 -- 设置单位的生命周期

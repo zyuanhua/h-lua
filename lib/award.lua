@@ -34,7 +34,7 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
         hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, whichUnit)
     end
     if (floatStr ~= "") then
-        local ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 0, 1.70, 60.00)
+        local ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 1, 1.70, 60.00)
         cj.SetTextTagPos(
             ttg,
             cj.GetUnitX(whichUnit) - (string.len(floatStr) - ttgColorLen) * 7 * 0.5,
