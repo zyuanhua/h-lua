@@ -59,20 +59,20 @@ hunit.setCurManaPercent = function(u, val)
 end
 
 --增加单位的经验值
-hunit.addExp = function(u, val,showEffect)
-    if(u == nil or val == nil)then
+hunit.addExp = function(u, val, showEffect)
+    if (u == nil or val == nil) then
         return
     end
-    if(type(showEffect) ~= 'boolean')then
+    if (type(showEffect) ~= "boolean") then
         showEffect = false
     end
-    cj.AddHeroXP(u , val, showEffect)
-    htextTag.style(htextTag.create2Unit(u, val.."Exp", 7, "c4c4ff", 0, 1.70, 60.00), "toggle", 0, 0.20)
+    cj.AddHeroXP(u, val, showEffect)
+    htextTag.style(htextTag.create2Unit(u, "+" .. val .. "Exp", 7, "c4c4ff", 0, 1.70, 60.00), "toggle", 0, 0.20)
 end
 
 -- 设置单位的生命周期
 hunit.setPeriod = function(u, life)
-    cj.UnitApplyTimedLifeBJ(life, hSys.getObjId('BTLF'), u)
+    cj.UnitApplyTimedLifeBJ(life, hSys.getObjId("BTLF"), u)
 end
 
 --获取单位面向角度
@@ -123,23 +123,23 @@ hunit.create = function(bean)
         bean.qty = 1
     end
     if (bean.whichPlayer == nil) then
-        print('create unit fail -pl')
+        print("create unit fail -pl")
         return
     end
     if (bean.unitId == nil) then
-        print('create unit fail -id')
+        print("create unit fail -id")
         return
     end
     if (bean.qty <= 0) then
-        print('create unit fail -qty')
+        print("create unit fail -qty")
         return
     end
     if (bean.x == nil and bean.y == nil and bean.loc == nil) then
-        print('create unit fail -place')
+        print("create unit fail -place")
         return
     end
     if (bean.unitId == nil) then
-        print('create unit id')
+        print("create unit id")
         return
     end
     bean.unitId = hSys.getObjId(bean.unitId)
@@ -216,7 +216,7 @@ hunit.create = function(bean)
         end
         --是否可选
         if (bean.isUnSelectable ~= nil and bean.isUnSelectable == true) then
-            cj.UnitAddAbility(u, 'Aloc')
+            cj.UnitAddAbility(u, "Aloc")
         end
         --是否暂停
         if (bean.isPause ~= nil and bean.isPause == true) then
@@ -228,7 +228,7 @@ hunit.create = function(bean)
         end
         --影子，无敌蝗虫暂停
         if (bean.isShadow ~= nil and bean.isShadow == true) then
-            cj.UnitAddAbility(u, 'Aloc')
+            cj.UnitAddAbility(u, "Aloc")
             cj.PauseUnit(u, true)
             cj.SetUnitInvulnerable(u, true)
         end
@@ -247,7 +247,7 @@ hunit.create = function(bean)
             life = bean.life,
             during = bean.during,
             isOpenPunish = bean.isOpenPunish,
-            isShadow = bean.isShadow,
+            isShadow = bean.isShadow
         }
     end
     if (g ~= nil) then
@@ -319,11 +319,14 @@ hunit.setUserData = function(u, val, during)
     val = math.ceil(val)
     cj.SetUnitUserData(u, val)
     if (during > 0) then
-        htime.setTimeout(during, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.SetUnitUserData(u, oldData)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.SetUnitUserData(u, oldData)
+            end
+        )
     end
 end
 
@@ -337,11 +340,14 @@ hunit.del = function(targetUnit, during)
     if (during == nil or during <= 0) then
         cj.RemoveUnit(targetUnit)
     else
-        htime.setTimeout(during, function(t, td)
-            htime.delTimer(t)
-            htime.delDialog(td)
-            cj.RemoveUnit(targetUnit)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delTimer(t)
+                htime.delDialog(td)
+                cj.RemoveUnit(targetUnit)
+            end
+        )
     end
 end
 -- 杀死单位，延时during秒
@@ -349,11 +355,14 @@ hunit.kill = function(targetUnit, during)
     if (during == nil or during <= 0) then
         cj.KillUnit(targetUnit)
     else
-        htime.setTimeout(during, function(t, td)
-            htime.delTimer(t)
-            htime.delDialog(td)
-            cj.KillUnit(targetUnit)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delTimer(t)
+                htime.delDialog(td)
+                cj.KillUnit(targetUnit)
+            end
+        )
     end
 end
 -- 爆毁单位，延时during秒
@@ -362,19 +371,22 @@ hunit.exploded = function(targetUnit, during)
         cj.SetUnitExploded(targetUnit, true)
         cj.KillUnit(targetUnit)
     else
-        htime.setTimeout(during, function(t, td)
-            htime.delTimer(t)
-            htime.delDialog(td)
-            cj.SetUnitExploded(targetUnit, true)
-            cj.KillUnit(targetUnit)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delTimer(t)
+                htime.delDialog(td)
+                cj.SetUnitExploded(targetUnit, true)
+                cj.KillUnit(targetUnit)
+            end
+        )
     end
 end
 
 --设置单位可飞，用于设置单位飞行高度之前
 hunit.setCanFly = function(u)
-    cj.UnitAddAbility(u, 'Amrf')
-    cj.UnitRemoveAbility(u, 'Amrf')
+    cj.UnitAddAbility(u, "Amrf")
+    cj.UnitRemoveAbility(u, "Amrf")
 end
 
 --在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
@@ -387,25 +399,32 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
                 hskill.invulnerable(u, invulnerable)
             end
             -- @触发复活事件
-            hevent.triggerEvent({
-                triggerKey = "reborn",
-                triggerUnit = u
-            })
-        else
-            htime.setTimeout(delay, function(t, td)
-                htime.delTimer(t)
-                htime.delDialog(td)
-                cj.ReviveHero(u, x, y, true)
-                hattr.resetAttrGroups(u)
-                if (invulnerable > 0) then
-                    hskill.invulnerable(u, invulnerable)
-                end
-                -- @触发复活事件
-                hevent.triggerEvent({
+            hevent.triggerEvent(
+                {
                     triggerKey = "reborn",
                     triggerUnit = u
-                })
-            end)
+                }
+            )
+        else
+            htime.setTimeout(
+                delay,
+                function(t, td)
+                    htime.delTimer(t)
+                    htime.delDialog(td)
+                    cj.ReviveHero(u, x, y, true)
+                    hattr.resetAttrGroups(u)
+                    if (invulnerable > 0) then
+                        hskill.invulnerable(u, invulnerable)
+                    end
+                    -- @触发复活事件
+                    hevent.triggerEvent(
+                        {
+                            triggerKey = "reborn",
+                            triggerUnit = u
+                        }
+                    )
+                end
+            )
         end
     end
 end
