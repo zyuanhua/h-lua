@@ -1564,11 +1564,10 @@ hattr.huntUnit = function(bean)
         local attackDebuff = hattr.get(bean.fromUnit, "attack_debuff")
         local skillBuff = hattr.get(bean.fromUnit, "skill_buff")
         local skillDebuff = hattr.get(bean.fromUnit, "skill_debuff")
-        print_mbr(attackDebuff)
         if (bean.huntKind == "attack") then
             for bk, b in pairs(attackBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, {bk = "+" .. b.val})
+                    hattr.set(bean.fromUnit, b.during, {[bk] = "+" .. b.val})
                     if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
                         for _, mv in pairs(b.model) do
                             heffect.bindUnit(mv, bean.fromUnit, "origin", b.during)
@@ -1578,7 +1577,7 @@ hattr.huntUnit = function(bean)
             end
             for bk, b in pairs(attackDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.toUnit, b.during, {bk = "-" .. b.val})
+                    hattr.set(bean.toUnit, b.during, {[bk] = "-" .. b.val})
                     if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
                         for _, mv in pairs(b.model) do
                             heffect.bindUnit(mv, bean.toUnit, "origin", b.during)
@@ -1590,7 +1589,7 @@ hattr.huntUnit = function(bean)
         if (bean.huntKind == "skill") then
             for bk, b in pairs(skillBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, {bk = "+" .. b.val})
+                    hattr.set(bean.fromUnit, b.during, {[bk] = "+" .. b.val})
                     if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
                         for _, mv in pairs(b.model) do
                             heffect.bindUnit(mv, bean.fromUnit, "origin", b.during)
@@ -1600,7 +1599,7 @@ hattr.huntUnit = function(bean)
             end
             for bk, b in pairs(skillDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.toUnit, b.during, {bk = "-" .. b.val})
+                    hattr.set(bean.toUnit, b.during, {[bk] = "-" .. b.val})
                     if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
                         for _, mv in pairs(b.model) do
                             heffect.bindUnit(mv, bean.toUnit, "origin", b.during)
