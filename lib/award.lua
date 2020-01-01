@@ -8,42 +8,39 @@ haward.setShareRange = function(range)
 end
 -- 奖励单位（经验黄金木头）
 haward.forUnit = function(whichUnit, exp, gold, lumber)
-    local floatStr = ""
-    local realExp = exp
-    local realGold = gold
-    local realLumber = lumber
-    local index = 0
-    local ttgColorLen = 0
-    local ttg
-    local p
     if (whichUnit == nil) then
         return
     end
-    p = cj.GetOwningPlayer(whichUnit)
-    index = hplayer.index(p)
-    realGold = cj.R2I(gold * hplayer.getGoldRatio(p) / 100.00)
-    realLumber = cj.R2I(lumber * hplayer.getLumberRatio(p) / 100.00)
-    realExp = cj.R2I(exp * hplayer.getExpRatio(p) / 100.00)
+    local p = cj.GetOwningPlayer(whichUnit)
+    local index = hplayer.index(p)
+    local realGold = cj.R2I(gold * hplayer.getGoldRatio(p) / 100.00)
+    local realLumber = cj.R2I(lumber * hplayer.getLumberRatio(p) / 100.00)
+    local realExp = cj.R2I(exp * hplayer.getExpRatio(p) / 100.00)
     if (realExp >= 1 and his.hero(whichUnit)) then
-        cj.AddHeroXP(whichUnit, realExp, true)
-        floatStr = floatStr .. "|cffc4c4ff" .. realExp .. "Exp" .. "|r"
-        ttgColorLen = ttgColorLen + 12
+        hunit.addExp(whichUnit, realExp, true)
     end
+    local floatStr = ""
+    local ttgColorLen = 0
     if (realGold >= 1) then
         hplayer.addGold(p, realGold)
-        floatStr = floatStr .. " |cffffcc00" .. realGold .. "G" .. "|r"
+        floatStr = floatStr .. " |cffffcc00+" .. realGold .. " Gold" .. "|r"
         ttgColorLen = ttgColorLen + 13
         hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, whichUnit)
     end
     if (realLumber >= 1) then
         hplayer.addLumber(p, realLumber)
-        floatStr = floatStr .. " |cff80ff80" .. realLumber .. "L" .. "|r"
+        floatStr = floatStr .. " |cff80ff80+" .. realLumber .. " Lumber" .. "|r"
         ttgColorLen = ttgColorLen + 13
         hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, whichUnit)
     end
-    ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 0, 1.70, 60.00)
-    cj.SetTextTagPos(ttg, cj.GetUnitX(whichUnit) - (string.len(floatStr) - ttgColorLen) * 7 * 0.5, cj.GetUnitY(whichUnit), 50)
-    htextTag.style(ttg, "toggle", 0, 0.23)
+    local ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 0, 1.70, 60.00)
+    cj.SetTextTagPos(
+        ttg,
+        cj.GetUnitX(whichUnit) - (string.len(floatStr) - ttgColorLen) * 7 * 0.5,
+        cj.GetUnitY(whichUnit),
+        50
+    )
+    htextTag.style(ttg, "toggle", 0, 0.25)
 end
 -- 奖励单位经验
 haward.forUnitExp = function(whichUnit, exp)
@@ -60,39 +57,44 @@ end
 
 -- 平分奖励英雄组（经验黄金木头）
 haward.forGroup = function(whichUnit, exp, gold, lumber)
-    local cutExp = 0
-    local cutGold = 0
-    local cutLumber = 0
-    local g = hgroup.createByUnit(whichUnit, haward.shareRange, function()
-        local flag = true
-        if (his.hero(cj.GetFilterUnit()) == false) then
-            flag = false
+    local g =
+        hgroup.createByUnit(
+        whichUnit,
+        haward.shareRange,
+        function()
+            local flag = true
+            if (his.hero(cj.GetFilterUnit()) == false) then
+                flag = false
+            end
+            if (his.ally(whichUnit, cj.GetFilterUnit()) == false) then
+                flag = false
+            end
+            if (his.alive(cj.GetFilterUnit()) == false) then
+                flag = false
+            end
+            if (his.building(cj.GetFilterUnit()) == true) then
+                flag = false
+            end
+            return flag
         end
-        if (his.ally(whichUnit, cj.GetFilterUnit()) == false) then
-            flag = false
-        end
-        if (his.alive(cj.GetFilterUnit()) == false) then
-            flag = false
-        end
-        if (his.building(cj.GetFilterUnit()) == true) then
-            flag = false
-        end
-        return flag
-    end)
+    )
     local gCount = hgroup.count(g)
     if (gCount <= 0) then
         return
     end
-    cutExp = cj.R2I(exp / gCount)
-    cutGold = cj.R2I(gold / gCount)
-    cutLumber = cj.R2I(lumber / gCount)
+    local cutExp = cj.R2I(exp / gCount)
+    local cutGold = cj.R2I(gold / gCount)
+    local cutLumber = cj.R2I(lumber / gCount)
     if (exp > 0 and cutExp < 1) then
         cutExp = 1
     end
-    cj.ForGroup(g, function()
-        local u = cj.GetEnumUnit()
-        haward.forUnit(u, cutExp, cutGold, cutLumber)
-    end)
+    cj.ForGroup(
+        g,
+        function()
+            local u = cj.GetEnumUnit()
+            haward.forUnit(u, cutExp, cutGold, cutLumber)
+        end
+    )
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end

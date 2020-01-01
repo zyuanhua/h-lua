@@ -58,6 +58,18 @@ hunit.setCurManaPercent = function(u, val)
     hunit.setCurLife(math.floor(hunit.getMaxMana(u) * val * 0.01))
 end
 
+--增加单位的经验值
+hunit.addExp = function(u, val,showEffect)
+    if(u == nil or val == nil)then
+        return
+    end
+    if(type(showEffect) ~= 'boolean')then
+        showEffect = false
+    end
+    cj.AddHeroXP(u , val, showEffect)
+    htextTag.style(htextTag.create2Unit(u, val.."Exp", 7, "c4c4ff", 0, 1.70, 60.00), "toggle", 0, 0.20)
+end
+
 -- 设置单位的生命周期
 hunit.setPeriod = function(u, life)
     cj.UnitApplyTimedLifeBJ(life, hSys.getObjId('BTLF'), u)
