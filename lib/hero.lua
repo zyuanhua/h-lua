@@ -57,6 +57,9 @@ hhero.getPrevLevel = function(u)
     end
     return hRuntime.hero[u].prevLevel or 0
 end
+hhero.getCurLevel = function(u)
+    return cj.GetHeroLevel(u) or 1
+end
 --- 设置英雄当前的等级
 hhero.setCurLevel = function(u, newLevel, showEffect)
     if (type(showEffect) ~= "boolean") then
