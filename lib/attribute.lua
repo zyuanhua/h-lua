@@ -746,7 +746,11 @@ hattr.set = function(whichUnit, during, data)
                         end
                         for effect, ev in pairs(bv) do
                             if (hRuntime.attribute[whichUnit][attr][buff][effect] == nil) then
-                                hRuntime.attribute[whichUnit][attr][buff][effect] = {}
+                                if(effect == "model")then
+                                    hRuntime.attribute[whichUnit][attr][buff][effect] = {}
+                                else
+                                    hRuntime.attribute[whichUnit][attr][buff][effect] = 0
+                                end
                             end
                             local opr = string.sub(ev, 1, 1)
                             ev = string.sub(ev, 2, string.len(ev))
@@ -765,11 +769,14 @@ end
 
 --- 通用get
 hattr.get = function(whichUnit, attr)
-    if (whichUnit == nil or attr == nil) then
+    if (whichUnit == nil) then
         return nil
     end
     if (hRuntime.attribute[whichUnit] == nil) then
         hattr.registerAll(whichUnit)
+    end
+    if(attr == nil)then
+        return hRuntime.attribute[whichUnit]
     end
     return hRuntime.attribute[whichUnit][attr]
 end
@@ -1411,20 +1418,25 @@ hattr.huntUnit = function(bean)
         local attackDebuff = hattr.get(bean.fromUnit, 'attack_debuff')
         local skillBuff = hattr.get(bean.fromUnit, 'skill_buff')
         local skillDebuff = hattr.get(bean.fromUnit, 'skill_debuff')
+        print_mbr(attackDebuff)
         if (bean.huntKind == 'attack') then
             for _, b in pairs(attackBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { k = '+' .. b.val })
-                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
-                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
+                    if (type(b.model) == 'table' and hSys.getTableLen(b.model) > 0) then
+                        for _,mv in pairs(b.model) do
+                            heffect.bindUnit(mv, bean.fromUnit, "origin", b.during)
+                        end
                     end
                 end
             end
             for _, b in pairs(attackDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, { k = '-' .. b.val })
-                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
-                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
+                    hattr.set(bean.toUnit, b.during, { k = '-' .. b.val })
+                    if (type(b.model) == 'table' and hSys.getTableLen(b.model) > 0) then
+                        for _,mv in pairs(b.model) do
+                            heffect.bindUnit(mv, bean.toUnit, "origin", b.during)
+                        end
                     end
                 end
             end
@@ -1433,16 +1445,20 @@ hattr.huntUnit = function(bean)
             for _, b in pairs(skillBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { k = '+' .. b.val })
-                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
-                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
+                    if (type(b.model) == 'table' and hSys.getTableLen(b.model) > 0) then
+                        for _,mv in pairs(b.model) do
+                            heffect.bindUnit(mv, bean.fromUnit, "origin", b.during)
+                        end
                     end
                 end
             end
             for _, b in pairs(skillDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, { k = '-' .. b.val })
-                    if (type(b.model) == 'string' and string.len(b.model) > 0) then
-                        heffect.toUnit(b.model, bean.fromUnit, "origin", b.during)
+                    hattr.set(bean.toUnit, b.during, { k = '-' .. b.val })
+                    if (type(b.model) == 'table' and hSys.getTableLen(b.model) > 0) then
+                        for _,mv in pairs(b.model) do
+                            heffect.bindUnit(mv, bean.toUnit, "origin", b.during)
+                        end
                     end
                 end
             end
