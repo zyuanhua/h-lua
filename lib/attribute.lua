@@ -10,23 +10,6 @@ local hattr = {
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
     DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId("AInv"), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
-    threeBuff = {
-        --- 每一点三围对属性的影响，默认会写一些，可以通过 setThreeBuff 方法来改变系统构成
-        --- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
-        str = {
-            life = 10, -- 每点力量提升10生命（默认例子）
-            life_back = 0.1 -- 每点力量提升0.1生命恢复（默认例子）
-        },
-        agi = {
-            attack_white = 1, -- 每点敏捷提升1白字攻击（默认例子）
-            attack_speed = 0.02 -- 每点敏捷提升0.02攻击速度（默认例子）
-        },
-        int = {
-            attack_green = 1, -- 每点智力提升1绿字攻击（默认例子）
-            mana = 6, -- 每点智力提升6魔法（默认例子）
-            mana_back = 0.05 -- 每点力量提升0.05生命恢复（默认例子）
-        }
-    }
 }
 
 --- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（百度谷歌[卡血牌bug]，了解原理）
@@ -108,26 +91,7 @@ end
 --- 设置三围的影响
 hattr.setThreeBuff = function(buff)
     if (type(buff) == "table") then
-        hattr.threeBuff = {
-            str = {},
-            agi = {},
-            int = {}
-        }
-        for k, v in pairs(buff.str) do
-            if (type(v) == "number") then
-                hattr.threeBuff.str[k] = v
-            end
-        end
-        for k, v in pairs(buff.agi) do
-            if (type(v) == "number") then
-                hattr.threeBuff.agi[k] = v
-            end
-        end
-        for k, v in pairs(buff.int) do
-            if (type(v) == "number") then
-                hattr.threeBuff.int[k] = v
-            end
-        end
+        hRuntime.attributeThreeBuff = buff
     end
 end
 --- 为单位注册属性系统所需要的基础技能
@@ -679,12 +643,17 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
                 local setting = {}
-                for k, v in pairs(hattr.threeBuff[string.gsub(attr, "_green", "")]) do
-                    setting[k] = "+" .. diff * v
+                for k, v in pairs(hRuntime.attributeThreeBuff[string.gsub(attr, "_green", "")]) do
+                    local tempV = diff * v
+                    if (tempV < 0) then
+                        setting[k] = "-" .. math.abs(tempV)
+                    elseif (tempV > 0) then
+                        setting[k] = "+" .. tempV
+                    end
                 end
                 hattr.set(whichUnit, 0, setting)
             elseif (his.hero(whichUnit) and hSys.inArray(attr, {"str_white", "agi_white", "int_white"})) then
-                --- 生命恢复 魔法恢复
+                --- 绿字力量 敏捷 智力
                 if (attr == "str_white") then
                     cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
                 elseif (attr == "agi_white") then
@@ -693,19 +662,24 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
                 end
                 local setting = {}
-                for k, v in pairs(hattr.threeBuff[string.gsub(attr, "_white", "")]) do
-                    setting[k] = "+" .. diff * v
+                for k, v in pairs(hRuntime.attributeThreeBuff[string.gsub(attr, "_white", "")]) do
+                    local tempV = diff * v
+                    if (tempV < 0) then
+                        setting[k] = "-" .. math.abs(tempV)
+                    elseif (tempV > 0) then
+                        setting[k] = "+" .. tempV
+                    end
                 end
                 hattr.set(whichUnit, 0, setting)
             elseif (attr == "life_back" or attr == "mana_back") then
-                --- 生命源 魔法源(current)
+                --- 生命恢复 魔法恢复
                 if (math.abs(futureVal) > 0.02 and hSys.inArray(whichUnit, hRuntime.attributeGroup[attr]) == false) then
                     table.insert(hRuntime.attributeGroup[attr], whichUnit)
                 elseif (math.abs(futureVal) < 0.02) then
                     hSys.rmArray(whichUnit, hRuntime.attributeGroup[attr])
                 end
             elseif (attr == "life_source_current" or attr == "mana_source_current") then
-                --- 硬直
+                --- 生命源 魔法源(current)
                 local attrSource = string.gsub(attr, "_current", "", 1)
                 if (futureVal > hRuntime.attribute[whichUnit][attrSource]) then
                     futureVal = hRuntime.attribute[whichUnit][attrSource]
@@ -717,7 +691,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     hSys.rmArray(whichUnit, hRuntime.attributeGroup[attrSource])
                 end
             elseif (attr == "punish" and hunit.isOpenPunish(whichUnit)) then
-                --- 硬直(current)
+                --- 硬直
                 if (currentVal > 0) then
                     local tempPercent = futureVal / currentVal
                     hRuntime.attribute[whichUnit].punish_current =
@@ -726,6 +700,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     hRuntime.attribute[whichUnit].punish_current = futureVal
                 end
             elseif (attr == "punish_current" and hunit.isOpenPunish(whichUnit)) then
+                --- 硬直(current)
                 if (futureVal > hRuntime.attribute[whichUnit].punish) then
                     hRuntime.attribute[whichUnit].punish_current = hRuntime.attribute[whichUnit].punish
                 end
