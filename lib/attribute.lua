@@ -358,7 +358,8 @@ end
     during = 0.0 大于0生效；小于等于0时无限持续时间
 ]]
 hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
-    if (type(val) == "string") then
+    local valType = type(val)
+    if (valType == "string" or valType == "table") then
         -- string
         if (opr == "+") then
             -- 添加
@@ -420,7 +421,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 )
             end
         end
-    elseif (type(val) == "number") then
+    elseif (valType == "number") then
         -- number
         local diff = 0
         if (opr == "+") then
@@ -517,17 +518,11 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
             elseif (attr == "attack_range") then
-                --- 攻击范围
+                --- 攻击范围(仅仅是自动警示范围)
                 if (futureVal < hattr.min_attack_range) then
                     futureVal = hattr.min_attack_range
                 elseif (futureVal > hattr.max_attack_range) then
                     futureVal = hattr.max_attack_range
-                end
-                for _, ability in pairs(hslk_global.attr.attack_green.add) do
-                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-                end
-                for _, ability in pairs(hslk_global.attr.attack_green.sub) do
-                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
                 if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
                     futureVal = futureVal * 0.5
@@ -727,7 +722,7 @@ hattr.set = function(whichUnit, during, data)
                     (attr == "attack_buff" or attr == "attack_debuff" or attr == "skill_buff" or attr == "skill_debuff" or
                         attr == "attack_effect" or
                         attr == "skill_effect")
-                then
+                 then
                     for buff, bv in pairs(v) do
                         if (hRuntime.attribute[whichUnit][attr][buff] == nil) then
                             hRuntime.attribute[whichUnit][attr][buff] = {}

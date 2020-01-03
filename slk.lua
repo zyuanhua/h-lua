@@ -567,7 +567,7 @@ end
 call SaveInteger(hash_hslk, StringHash("attr_attack_speed_sub"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #护甲
-local obj = slk.ability.AIsx:new("attr_defend_add_" .. i)
+local obj = slk.ability.AId1:new("attr_defend_add_" .. i)
 obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#护甲+" .. val
 obj.Art = ""
@@ -579,7 +579,7 @@ end
 call SaveInteger(hash_hslk, StringHash("attr_defend_add"), <?=val?>, '<?=obj:get_id()?>')
 <?
 -- #负护甲
-local obj = slk.ability.AIsx:new("attr_defend_sub_" .. i)
+local obj = slk.ability.AId1:new("attr_defend_sub_" .. i)
 obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#护甲-" .. val
 obj.Art = ""
@@ -637,7 +637,7 @@ call SaveInteger(hash_hslk, StringHash("attr_life_sub"), <?=val?>, '<?=obj:get_i
 end
 
 -- #回避
-local obj = slk.ability.AIlu:new("attr_avoid_add")
+local obj = slk.ability.AIlf:new("attr_avoid_add")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#回避+"
 obj.Art = ""
@@ -647,7 +647,7 @@ obj.DataA2 = -10000000
 ?>
 call SaveInteger(hash_hslk, StringHash("attr_avoid_add"), 0, '<?=obj:get_id()?>')
 <?
-local obj = slk.ability.AIlu:new("attr_avoid_sub")
+local obj = slk.ability.AIlf:new("attr_avoid_sub")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "属性系统#回避-"
 obj.Art = ""
