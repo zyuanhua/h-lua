@@ -288,6 +288,7 @@ hattr.registerAll = function(whichUnit)
         natural_ghost = 0.0,
         natural_metal = 0.0,
         natural_dragon = 0.0,
+        natural_insect = 0.0,
         natural_fire_oppose = 0.0,
         natural_soil_oppose = 0.0,
         natural_water_oppose = 0.0,
@@ -301,6 +302,7 @@ hattr.registerAll = function(whichUnit)
         natural_ghost_oppose = 0.0,
         natural_metal_oppose = 0.0,
         natural_dragon_oppose = 0.0,
+        natural_insect_oppose = 0.0,
         --
         attack_buff = {}, -- array
         attack_debuff = {}, -- array
@@ -868,6 +870,7 @@ end
         ghost   鬼
         metal   金
         dragon  龙
+        insect  虫
      * bean.breakArmorType 无视的类型：{ 'defend', 'resistance', 'avoid' }
      * 沉默时，爆炸、闪电链、击飞会失效，其他不受影响
 ]]
@@ -1084,6 +1087,8 @@ hattr.huntUnit = function(bean)
             hattr.get(bean.fromUnit, "natural_metal") - hattr.get(bean.toUnit, "natural_metal_oppose") + 10
         local fromUnitNaturalDragon =
             hattr.get(bean.fromUnit, "natural_dragon") - hattr.get(bean.toUnit, "natural_dragon_oppose") + 10
+        local fromUnitNaturalInsect =
+            hattr.get(bean.fromUnit, "natural_insect") - hattr.get(bean.toUnit, "natural_insect_oppose") + 10
         if (fromUnitNaturalFire < -100) then
             fromUnitNaturalFire = -100
         end
@@ -1122,6 +1127,9 @@ hattr.huntUnit = function(bean)
         end
         if (fromUnitNaturalDragon < -100) then
             fromUnitNaturalDragon = -100
+        end
+        if (fromUnitNaturalInsect < -100) then
+            fromUnitNaturalInsect = -100
         end
         if (hSys.inArray("fire", bean.huntType) and fromUnitNaturalFire ~= 0) then
             realDamagePercent = realDamagePercent + fromUnitNaturalFire * 0.01
@@ -1187,6 +1195,11 @@ hattr.huntUnit = function(bean)
             realDamagePercent = realDamagePercent + fromUnitNaturalDragon * 0.01
             realDamageString = realDamageString .. "龙"
             realDamageStringColor = "7cbd60"
+        end
+        if (hSys.inArray("insect", bean.huntType) and fromUnitNaturalInsect ~= 0) then
+            realDamagePercent = realDamagePercent + fromUnitNaturalInsect * 0.01
+            realDamageString = realDamageString .. "虫"
+            realDamageStringColor = "ba55d3"
         end
     end
     -- 计算伤害增幅
