@@ -4,7 +4,7 @@ local hskill = {
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
-    BUFF_SWIM = hSys.getObjId('BPSE'),
+    BUFF_SWIM = hSys.getObjId("BPSE")
 }
 
 hskill.set = function(handle, key, val)
@@ -35,9 +35,12 @@ hskill.add = function(whichUnit, ability_id, during)
         cj.UnitMakeAbilityPermanent(whichUnit, true, id)
     else
         cj.UnitAddAbility(whichUnit, id)
-        htime.setTimeout(during, function(t, td)
-            cj.UnitRemoveAbility(whichUnit, id)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                cj.UnitRemoveAbility(whichUnit, id)
+            end
+        )
     end
 end
 
@@ -48,9 +51,12 @@ hskill.del = function(whichUnit, ability_id, during)
         cj.UnitRemoveAbility(whichUnit, id)
     else
         cj.UnitRemoveAbility(whichUnit, id)
-        htime.setTimeout(during, function(t, td)
-            cj.UnitAddAbility(whichUnit, id)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                cj.UnitAddAbility(whichUnit, id)
+            end
+        )
     end
 end
 
@@ -58,6 +64,18 @@ end
 hskill.forever = function(whichUnit, ability_id)
     local id = hSys.getObjId(ability_id)
     cj.UnitMakeAbilityPermanent(whichUnit, true, id)
+end
+
+-- 是否拥有技能
+hskill.has = function(whichUnit, ability_id)
+    if (whichUnit == nil or ability_id == nil) then
+        return false
+    end
+    local id = hSys.getObjId(ability_id)
+    if (cj.GetUnitAbilityLevel(whichUnit, id) >= 1) then
+        return true
+    end
+    return false
 end
 
 --- 造成伤害
@@ -75,9 +93,10 @@ end
 ]]
 hskill.damage = function(bean)
     -- 文本显示
-    bean.realDamageString = bean.realDamageString or ''
+    bean.realDamageString = bean.realDamageString or ""
     bean.realDamageStringColor = bean.realDamageStringColor or nil
-    htextTag.style(htextTag.create2Unit(
+    htextTag.style(
+        htextTag.create2Unit(
             bean.toUnit,
             bean.realDamageString .. math.floor(bean.realDamage),
             6.00,
@@ -85,58 +104,70 @@ hskill.damage = function(bean)
             1,
             1.1,
             11.00
-    ), "toggle", -0.05, 0)
+        ),
+        "toggle",
+        -0.05,
+        0
+    )
     hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
     hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), bean.realDamage)
     hplayer.addBeDamage(cj.GetOwningPlayer(bean.toUnit), bean.realDamage)
     hunit.subCurLife(bean.toUnit, bean.realDamage)
-    if (type(bean.huntEff) == 'string' and string.len(bean.huntEff) > 0) then
+    if (type(bean.huntEff) == "string" and string.len(bean.huntEff) > 0) then
         heffect.toXY(bean.huntEff, cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), 0)
     end
     -- @触发伤害事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.damage,
-        triggerUnit = bean.fromUnit,
-        targetUnit = bean.toUnit,
-        sourceUnit = bean.fromUnit,
-        damage = bean.damage,
-        realDamage = bean.realDamage,
-        damageKind = bean.huntKind,
-        damageType = bean.huntType,
-    })
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.damage,
+            triggerUnit = bean.fromUnit,
+            targetUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            damage = bean.damage,
+            realDamage = bean.realDamage,
+            damageKind = bean.huntKind,
+            damageType = bean.huntType
+        }
+    )
     -- @触发被伤害事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beDamage,
-        triggerUnit = bean.toUnit,
-        sourceUnit = bean.fromUnit,
-        damage = bean.damage,
-        realDamage = bean.realDamage,
-        damageKind = bean.huntKind,
-        damageType = bean.huntType,
-    })
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beDamage,
+            triggerUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            damage = bean.damage,
+            realDamage = bean.realDamage,
+            damageKind = bean.huntKind,
+            damageType = bean.huntType
+        }
+    )
     if (bean.huntKind == "attack") then
         -- @触发攻击事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.attack,
-            triggerUnit = bean.fromUnit,
-            attacker = bean.fromUnit,
-            targetUnit = bean.toUnit,
-            damage = bean.damage,
-            realDamage = bean.realDamage,
-            damageKind = bean.huntKind,
-            damageType = bean.huntType,
-        })
+        hevent.triggerEvent(
+            {
+                triggerKey = heventKeyMap.attack,
+                triggerUnit = bean.fromUnit,
+                attacker = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = bean.damage,
+                realDamage = bean.realDamage,
+                damageKind = bean.huntKind,
+                damageType = bean.huntType
+            }
+        )
         -- @触发被攻击事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.beAttack,
-            triggerUnit = bean.fromUnit,
-            attacker = bean.fromUnit,
-            targetUnit = bean.toUnit,
-            damage = bean.damage,
-            realDamage = bean.realDamage,
-            damageKind = bean.huntKind,
-            damageType = bean.huntType,
-        })
+        hevent.triggerEvent(
+            {
+                triggerKey = heventKeyMap.beAttack,
+                triggerUnit = bean.fromUnit,
+                attacker = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = bean.damage,
+                realDamage = bean.realDamage,
+                damageKind = bean.huntKind,
+                damageType = bean.huntType
+            }
+        )
     end
 end
 
@@ -145,32 +176,39 @@ end
 hskill.broken = function(u, sourceUnit, damage)
     sourceUnit = sourceUnit or nil
     damage = damage or 0
-    local cu = hunit.create({
-        id = hskill.SKILL_TOKEN,
-        whichPlayer = hplayer.player_passive,
-        x = cj.GetUnitX(u),
-        y = cj.GetUnitY(u),
-    })
+    local cu =
+        hunit.create(
+        {
+            id = hskill.SKILL_TOKEN,
+            whichPlayer = hplayer.player_passive,
+            x = cj.GetUnitX(u),
+            y = cj.GetUnitY(u)
+        }
+    )
     cj.UnitAddAbility(cu, hskill.SKILL_BREAK)
     cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK, 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.3)
     if (sourceUnit ~= nil) then
         -- @触发打断事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.broken,
-            triggerUnit = sourceUnit,
-            targetUnit = u,
-            damage = damage,
-        })
+        hevent.triggerEvent(
+            {
+                triggerKey = heventKeyMap.broken,
+                triggerUnit = sourceUnit,
+                targetUnit = u,
+                damage = damage
+            }
+        )
     end
     -- @触发被打断事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beBroken,
-        triggerUnit = u,
-        sourceUnit = sourceUnit,
-        damage = damage,
-    })
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beBroken,
+            triggerUnit = u,
+            sourceUnit = sourceUnit,
+            damage = damage
+        }
+    )
 end
 
 ---眩晕
@@ -189,12 +227,15 @@ hskill.swim = function(u, during, sourceUnit, damage)
             htextTag.style(htextTag.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
         end
     end
-    local cu = hunit.create({
-        id = hskill.SKILL_TOKEN,
-        whichPlayer = hplayer.player_passive,
-        x = cj.GetUnitX(u),
-        y = cj.GetUnitY(u),
-    })
+    local cu =
+        hunit.create(
+        {
+            id = hskill.SKILL_TOKEN,
+            whichPlayer = hplayer.player_passive,
+            x = cj.GetUnitX(u),
+            y = cj.GetUnitY(u)
+        }
+    )
     cj.UnitAddAbility(cu, hskill.SKILL_SWIM)
     cj.SetUnitAbilityLevel(cu, hskill.SKILL_SWIM, 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
@@ -202,28 +243,39 @@ hskill.swim = function(u, during, sourceUnit, damage)
     his.set(cu, "isSwim", true)
     if (sourceUnit ~= nil) then
         -- @触发眩晕事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.swim,
-            triggerUnit = sourceUnit,
-            targetUnit = u,
-            damage = damage,
-            during = during,
-        })
+        hevent.triggerEvent(
+            {
+                triggerKey = heventKeyMap.swim,
+                triggerUnit = sourceUnit,
+                targetUnit = u,
+                damage = damage,
+                during = during
+            }
+        )
     end
     -- @触发被眩晕事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beSwim,
-        triggerUnit = u,
-        sourceUnit = sourceUnit,
-        damage = damage,
-        during = during,
-    })
-    hskill.set(u, "swimTimer", htime.setTimeout(during, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
-        his.set(cu, "isSwim", false)
-    end))
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beSwim,
+            triggerUnit = u,
+            sourceUnit = sourceUnit,
+            damage = damage,
+            during = during
+        }
+    )
+    hskill.set(
+        u,
+        "swimTimer",
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
+                his.set(cu, "isSwim", false)
+            end
+        )
+    )
 end
 
 ---沉默
@@ -236,18 +288,26 @@ hskill.silent = function(u, during, sourceUnit, damage)
     if (hRuntime.skill.silentTrigger == nil) then
         hRuntime.skill.silentTrigger = cj.CreateTrigger()
         bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        cj.TriggerAddAction(hRuntime.skill.silentTrigger, function()
-            local u1 = cj.GetTriggerUnit()
-            if (hSys.inArray(u1, hRuntime.skill.silentUnits)) then
-                cj.IssueImmediateOrder(u1, "stop")
+        cj.TriggerAddAction(
+            hRuntime.skill.silentTrigger,
+            function()
+                local u1 = cj.GetTriggerUnit()
+                if (hSys.inArray(u1, hRuntime.skill.silentUnits)) then
+                    cj.IssueImmediateOrder(u1, "stop")
+                end
             end
-        end)
+        )
     end
     local level = hskill.get(u, "silentLevel", 0) + 1
     if (level <= 1) then
         htextTag.style(htextTag.ttg2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
-        htextTag.style(htextTag.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(
+            htextTag.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00),
+            "scale",
+            0,
+            0.2
+        )
     end
     hskill.set(u, "silentLevel", level)
     if (hSys.inArray(u, hRuntime.skill.silentUnits) == false) then
@@ -258,34 +318,41 @@ hskill.silent = function(u, during, sourceUnit, damage)
     his.set(u, "isSilent", true)
     if (sourceUnit ~= nil) then
         -- @触发沉默事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.silent,
-            triggerUnit = sourceUnit,
-            targetUnit = u,
-            damage = damage,
-            during = during,
-        })
+        hevent.triggerEvent(
+            {
+                triggerKey = heventKeyMap.silent,
+                triggerUnit = sourceUnit,
+                targetUnit = u,
+                damage = damage,
+                during = during
+            }
+        )
     end
     -- @触发被沉默事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beSilent,
-        triggerUnit = u,
-        sourceUnit = sourceUnit,
-        damage = damage,
-        during = during,
-    })
-    htime.setTimeout(during, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        hskill.set(u, "silentLevel", hskill.get(u, "silentLevel") - 1)
-        if (hskill.get(u, "silentLevel") <= 0) then
-            heffect.del(hskill.get(u, "silentEffect"))
-            if (hSys.inArray(u, hRuntime.skill.silentUnits)) then
-                hSys.rmArray(u, hRuntime.skill.silentUnits)
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beSilent,
+            triggerUnit = u,
+            sourceUnit = sourceUnit,
+            damage = damage,
+            during = during
+        }
+    )
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            hskill.set(u, "silentLevel", hskill.get(u, "silentLevel") - 1)
+            if (hskill.get(u, "silentLevel") <= 0) then
+                heffect.del(hskill.get(u, "silentEffect"))
+                if (hSys.inArray(u, hRuntime.skill.silentUnits)) then
+                    hSys.rmArray(u, hRuntime.skill.silentUnits)
+                end
+                his.set(u, "isSilent", false)
             end
-            his.set(u, "isSilent", false)
         end
-    end)
+    )
 end
 
 ---缴械
@@ -298,18 +365,26 @@ hskill.unarm = function(u, during, sourceUnit, damage)
     if (hRuntime.skill.unarmTrigger == nil) then
         hRuntime.skill.unarmTrigger = cj.CreateTrigger()
         bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(hRuntime.skill.unarmTrigger, function()
-            local u1 = cj.GetTriggerUnit()
-            if (hSys.inArray(u1, hRuntime.skill.unarmUnits)) then
-                cj.IssueImmediateOrder(u1, "stop")
+        cj.TriggerAddAction(
+            hRuntime.skill.unarmTrigger,
+            function()
+                local u1 = cj.GetTriggerUnit()
+                if (hSys.inArray(u1, hRuntime.skill.unarmUnits)) then
+                    cj.IssueImmediateOrder(u1, "stop")
+                end
             end
-        end)
+        )
     end
     local level = hskill.get(u, "unarmLevel") + 1
     if (level <= 1) then
         htextTag.style(htextTag.ttg2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
-        htextTag.style(htextTag.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(
+            htextTag.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00),
+            "scale",
+            0,
+            0.2
+        )
     end
     hskill.set(u, "unarmLevel", level)
     if (hSys.inArray(u, hRuntime.skill.unarmUnits) == false) then
@@ -320,34 +395,41 @@ hskill.unarm = function(u, during, sourceUnit, damage)
     his.set(u, "isUnArm", true)
     if (sourceUnit ~= nil) then
         -- @触发缴械事件
-        hevent.triggerEvent({
-            triggerKey = heventKeyMap.unarm,
-            triggerUnit = sourceUnit,
-            targetUnit = u,
-            damage = damage,
-            during = during,
-        })
+        hevent.triggerEvent(
+            {
+                triggerKey = heventKeyMap.unarm,
+                triggerUnit = sourceUnit,
+                targetUnit = u,
+                damage = damage,
+                during = during
+            }
+        )
     end
     -- @触发被缴械事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beUnarm,
-        triggerUnit = u,
-        sourceUnit = sourceUnit,
-        damage = damage,
-        during = during,
-    })
-    htime.setTimeout(during, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel") - 1)
-        if (hskill.get(u, "unarmLevel") <= 0) then
-            heffect.del(hskill.get(u, "unarmEffect"))
-            if (hSys.inArray(u, hRuntime.skill.unarmUnits)) then
-                hSys.rmArray(u, hRuntime.skill.unarmUnits)
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beUnarm,
+            triggerUnit = u,
+            sourceUnit = sourceUnit,
+            damage = damage,
+            during = during
+        }
+    )
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel") - 1)
+            if (hskill.get(u, "unarmLevel") <= 0) then
+                heffect.del(hskill.get(u, "unarmEffect"))
+                if (hSys.inArray(u, hRuntime.skill.unarmUnits)) then
+                    hSys.rmArray(u, hRuntime.skill.unarmUnits)
+                end
+                his.set(u, "isUnArm", false)
             end
-            his.set(u, "isUnArm", false)
         end
-    end)
+    )
 end
 
 ---回避
@@ -355,13 +437,16 @@ hskill.avoid = function(whichUnit)
     cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
     cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
     cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
-    htime.setTimeout(0.00, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
-        cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
-        cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
-    end)
+    htime.setTimeout(
+        0.00,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
+            cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
+            cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
+        end
+    )
 end
 
 ---无敌
@@ -370,14 +455,17 @@ hskill.invulnerable = function(whichUnit, during)
         return
     end
     if (during < 0) then
-        during = 0.00  -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
+        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
     end
     cj.SetUnitInvulnerable(whichUnit, true)
-    htime.setTimeout(during, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        cj.SetUnitInvulnerable(whichUnit, false)
-    end)
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.SetUnitInvulnerable(whichUnit, false)
+        end
+    )
 end
 ---群体无敌
 hskill.invulnerableGroup = function(whichGroup, during)
@@ -385,18 +473,27 @@ hskill.invulnerableGroup = function(whichGroup, during)
         return
     end
     if (during < 0) then
-        during = 0.00  -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
+        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
     end
-    cj.ForGroup(whichGroup, function()
-        cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
-    end)
-    htime.setTimeout(during, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        cj.ForGroup(whichGroup, function()
-            cj.SetUnitInvulnerable(cj.GetEnumUnit(), false)
-        end)
-    end)
+    cj.ForGroup(
+        whichGroup,
+        function()
+            cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
+        end
+    )
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.ForGroup(
+                whichGroup,
+                function()
+                    cj.SetUnitInvulnerable(cj.GetEnumUnit(), false)
+                end
+            )
+        end
+    )
 end
 ---暂停效果
 hskill.pause = function(whichUnit, during, pauseColor)
@@ -404,7 +501,7 @@ hskill.pause = function(whichUnit, during, pauseColor)
         return
     end
     if (during < 0) then
-        during = 0.01  -- 假如没有设置时间，默认打断效果
+        during = 0.01 -- 假如没有设置时间，默认打断效果
     end
     local prevTimer = hskill.get(whichUnit, "pauseTimer")
     local prevTimeRemaining = 0
@@ -428,15 +525,22 @@ hskill.pause = function(whichUnit, during, pauseColor)
     end
     cj.SetUnitTimeScalePercent(whichUnit, 0.00)
     cj.PauseUnit(whichUnit, true)
-    hskill.set(whichUnit, "pauseTimer", htime.setTimeout(during + prevTimeRemaining, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        cj.PauseUnit(whichUnit, false)
-        if (string.len(pauseColor) ~= nil) then
-            cj.SetUnitVertexColorBJ(whichUnit, 100, 100, 100, 0)
-        end
-        cj.SetUnitTimeScalePercent(whichUnit, 100.00)
-    end))
+    hskill.set(
+        whichUnit,
+        "pauseTimer",
+        htime.setTimeout(
+            during + prevTimeRemaining,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.PauseUnit(whichUnit, false)
+                if (string.len(pauseColor) ~= nil) then
+                    cj.SetUnitVertexColorBJ(whichUnit, 100, 100, 100, 0)
+                end
+                cj.SetUnitTimeScalePercent(whichUnit, 100.00)
+            end
+        )
+    )
 end
 
 ---为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
@@ -447,11 +551,14 @@ hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
         if (abilityLevel > 0) then
             cj.SetUnitAbilityLevel(whichUnit, whichAbility, abilityLevel)
         end
-        htime.setTimeout(during, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.UnitRemoveAbility(whichUnit, whichAbility)
-        end)
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.UnitRemoveAbility(whichUnit, whichAbility)
+            end
+        )
     end
 end
 
@@ -516,23 +623,27 @@ hskill.lightningChain = function(codename, qty, change, range, isRepeat, bean)
     if (bean.model ~= nil) then
         heffect.toUnit(bean.model, bean.toUnit, "origin", 0.5)
     end
-    hskill.damage({
-        fromUnit = bean.fromUnit,
-        toUnit = bean.toUnit,
-        damage = bean.damage,
-        realDamage = bean.realDamage,
-        huntKind = "special",
-        huntType = { "magic", "thunder" },
-    })
+    hskill.damage(
+        {
+            fromUnit = bean.fromUnit,
+            toUnit = bean.toUnit,
+            damage = bean.damage,
+            realDamage = bean.realDamage,
+            huntKind = "special",
+            huntType = {"magic", "thunder"}
+        }
+    )
     -- @触发被闪电链事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beLightningChain,
-        triggerUnit = bean.toUnit,
-        sourceUnit = bean.fromUnit,
-        damage = bean.damage,
-        range = range,
-        index = bean.index,
-    })
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beLightningChain,
+            triggerUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            damage = bean.damage,
+            range = range,
+            index = bean.index
+        }
+    )
     if (qty > 0) then
         if (isRepeat ~= true) then
             if (bean.repeatGroup == nil) then
@@ -540,25 +651,30 @@ hskill.lightningChain = function(codename, qty, change, range, isRepeat, bean)
             end
             cj.GroupAddUnit(bean.repeatGroup, bean.toUnit)
         end
-        local g = hgroup.createByUnit(bean.toUnit, range, function()
-            local flag = true
-            if (his.death(cj.GetFilterUnit())) then
-                flag = false
+        local g =
+            hgroup.createByUnit(
+            bean.toUnit,
+            range,
+            function()
+                local flag = true
+                if (his.death(cj.GetFilterUnit())) then
+                    flag = false
+                end
+                if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
+                    flag = false
+                end
+                if (his.isBuilding(cj.GetFilterUnit())) then
+                    flag = false
+                end
+                if (bean.toUnit == cj.GetFilterUnit()) then
+                    flag = false
+                end
+                if (isRepeat ~= true and hgroup.isIn(bean.repeatGroup, cj.GetFilterUnit())) then
+                    flag = false
+                end
+                return flag
             end
-            if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
-                flag = false
-            end
-            if (his.isBuilding(cj.GetFilterUnit())) then
-                flag = false
-            end
-            if (bean.toUnit == cj.GetFilterUnit()) then
-                flag = false
-            end
-            if (isRepeat ~= true and hgroup.isIn(bean.repeatGroup, cj.GetFilterUnit())) then
-                flag = false
-            end
-            return flag
-        end)
+        )
         if (hgroup.isEmpty(g)) then
             return
         end
@@ -566,11 +682,14 @@ hskill.lightningChain = function(codename, qty, change, range, isRepeat, bean)
         bean.damage = bean.damage * (1 + change)
         cj.GroupClear(g)
         cj.DestroyGroup(g)
-        htime.setTimeout(0.35, function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            hskill.lightningChain(codename, qty, change, range, isRepeat, bean)
-        end)
+        htime.setTimeout(
+            0.35,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                hskill.lightningChain(codename, qty, change, range, isRepeat, bean)
+            end
+        )
     else
         if (bean.repeatGroup ~= nil) then
             cj.GroupClear(bean.repeatGroup)
@@ -589,14 +708,17 @@ hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
     UnitAddAbility(u, modelTo)
     UnitRemoveAbility(u, modelTo)
     hattr.reRegister(u)
-    htime.setTimeout(during, function(t, td)
-        htime.delDialog(td)
-        htime.delTimer(t)
-        heffect.toUnit(eff, u, 1.5)
-        UnitAddAbility(u, modelFrom)
-        UnitRemoveAbility(u, modelFrom)
-        hattr.reRegister(u)
-    end)
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            heffect.toUnit(eff, u, 1.5)
+            UnitAddAbility(u, modelFrom)
+            UnitRemoveAbility(u, modelFrom)
+            hattr.reRegister(u)
+        end
+    )
     -- 根据data影响属性
     hattr.set(u, during, attrData)
 end
@@ -625,9 +747,13 @@ hskill.crackFly = function(distance, high, during, bean)
     end
     hskill.unarm(bean.toUnit, during, nil, 0, 0)
     hskill.silent(bean.toUnit, during, nil, 0, 0)
-    hattr.set(bean.toUnit, during, {
-        move = '-1044'
-    })
+    hattr.set(
+        bean.toUnit,
+        during,
+        {
+            move = "-1044"
+        }
+    )
     hunit.setCanFly(bean.toUnit)
     cj.SetUnitPathing(bean.toUnit, false)
     local originHigh = cj.GetUnitFlyHeight(bean.toUnit)
@@ -635,67 +761,80 @@ hskill.crackFly = function(distance, high, during, bean)
     local originDeg = hlogic.getDegBetweenUnit(bean.fromUnit, bean.toUnit)
     local cost = 0
     -- @触发被击飞事件
-    hevent.triggerEvent({
-        triggerKey = heventKeyMap.beCrackFly,
-        triggerUnit = bean.toUnit,
-        sourceUnit = bean.fromUnit,
-        damage = bean.damage,
-        high = high,
-        distance = distance,
-    })
-    htime.setInterval(0.05, function(t, td)
-        local xy = 0
-        local z = 0
-        local timerSetTime = htime.getSetTime(t)
-        if (cost > during) then
-            hskill.damage({
-                fromUnit = bean.fromUnit,
-                toUnit = bean.toUnit,
-                damage = bean.damage,
-                realDamage = bean.damage,
-                huntEff = bean.huntEff,
-                huntKind = bean.huntKind,
-                huntType = bean.huntType,
-            })
-            cj.SetUnitFlyHeight(bean.toUnit, originHigh, 10000)
-            cj.SetUnitPathing(bean.toUnit, true)
-            his.set(bean.toUnit, "isCrackFly", false)
-            if (his.water(bean.toUnit) == true) then
-                -- 如果是水面，创建水花
-                heffect.toUnit("Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl", bean.toUnit, 0)
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.beCrackFly,
+            triggerUnit = bean.toUnit,
+            sourceUnit = bean.fromUnit,
+            damage = bean.damage,
+            high = high,
+            distance = distance
+        }
+    )
+    htime.setInterval(
+        0.05,
+        function(t, td)
+            local xy = 0
+            local z = 0
+            local timerSetTime = htime.getSetTime(t)
+            if (cost > during) then
+                hskill.damage(
+                    {
+                        fromUnit = bean.fromUnit,
+                        toUnit = bean.toUnit,
+                        damage = bean.damage,
+                        realDamage = bean.damage,
+                        huntEff = bean.huntEff,
+                        huntKind = bean.huntKind,
+                        huntType = bean.huntType
+                    }
+                )
+                cj.SetUnitFlyHeight(bean.toUnit, originHigh, 10000)
+                cj.SetUnitPathing(bean.toUnit, true)
+                his.set(bean.toUnit, "isCrackFly", false)
+                if (his.water(bean.toUnit) == true) then
+                    -- 如果是水面，创建水花
+                    heffect.toUnit("Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl", bean.toUnit, 0)
+                else
+                    -- 如果是地面，创建沙尘
+                    heffect.toUnit(
+                        "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl",
+                        bean.toUnit,
+                        0
+                    )
+                end
+                htime.delDialog(td)
+                htime.delTimer(t)
+                return
+            end
+            cost = cost + timerSetTime
+            if (cost < during * 0.35) then
+                xy = distance / (during * 0.5 / timerSetTime)
+                z = high / (during * 0.35 / timerSetTime)
+                if (xy > 0) then
+                    local pxy =
+                        hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
+                    cj.SetUnitFacing(bean.toUnit, originFacing)
+                    cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
+                end
+                if (z > 0) then
+                    cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) + z, z / timerSetTime)
+                end
             else
-                -- 如果是地面，创建沙尘
-                heffect.toUnit("Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl", bean.toUnit, 0)
-            end
-            htime.delDialog(td)
-            htime.delTimer(t)
-            return
-        end
-        cost = cost + timerSetTime
-        if (cost < during * 0.35) then
-            xy = distance / (during * 0.5 / timerSetTime)
-            z = high / (during * 0.35 / timerSetTime)
-            if (xy > 0) then
-                local pxy = hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
-                cj.SetUnitFacing(bean.toUnit, originFacing)
-                cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
-            end
-            if (z > 0) then
-                cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) + z, z / timerSetTime)
-            end
-        else
-            xy = distance / (during * 0.5 / timerSetTime)
-            z = high / (during * 0.65 / timerSetTime)
-            if (xy > 0) then
-                local pxy = hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
-                cj.SetUnitFacing(bean.toUnit, originFacing)
-                cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
-            end
-            if (z > 0) then
-                cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) - z, z / timerSetTime)
+                xy = distance / (during * 0.5 / timerSetTime)
+                z = high / (during * 0.65 / timerSetTime)
+                if (xy > 0) then
+                    local pxy =
+                        hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
+                    cj.SetUnitFacing(bean.toUnit, originFacing)
+                    cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
+                end
+                if (z > 0) then
+                    cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) - z, z / timerSetTime)
+                end
             end
         end
-    end)
+    )
 end
 
 --[[
@@ -727,59 +866,72 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
     cj.SetUnitInvulnerable(mover, true)
     cj.SetUnitPathing(mover, false)
     local duringInc = 0
-    htime.setInterval(lock_var_period, function(t, td)
-        duringInc = duringInc + cj.TimerGetTimeout(t)
-        local x = cj.GetUnitX(mover)
-        local y = cj.GetUnitY(mover)
-        local hxy = hlogic.polarProjection(x, y, speed, hlogic.getDegBetweenXY(x, y, targetX, targetY))
-        cj.SetUnitPosition(mover, hxy.x, hxy.y)
-        if (meff ~= nil) then
-            heffect.toXY(meff, x, y, 0.5)
-        end
-        if (bean.damage > 0) then
-            local g = hgroup.createByUnit(mover, range, function()
-                local flag = true
-                if (his.death(cj.GetFilterUnit())) then
-                    flag = false
+    htime.setInterval(
+        lock_var_period,
+        function(t, td)
+            duringInc = duringInc + cj.TimerGetTimeout(t)
+            local x = cj.GetUnitX(mover)
+            local y = cj.GetUnitY(mover)
+            local hxy = hlogic.polarProjection(x, y, speed, hlogic.getDegBetweenXY(x, y, targetX, targetY))
+            cj.SetUnitPosition(mover, hxy.x, hxy.y)
+            if (meff ~= nil) then
+                heffect.toXY(meff, x, y, 0.5)
+            end
+            if (bean.damage > 0) then
+                local g =
+                    hgroup.createByUnit(
+                    mover,
+                    range,
+                    function()
+                        local flag = true
+                        if (his.death(cj.GetFilterUnit())) then
+                            flag = false
+                        end
+                        if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
+                            flag = false
+                        end
+                        if (his.isBuilding(cj.GetFilterUnit())) then
+                            flag = false
+                        end
+                        if (isRepeat ~= true and hgroup.isIn(repeatGroup, cj.GetFilterUnit())) then
+                            flag = false
+                        end
+                        return flag
+                    end
+                )
+                cj.ForGroup(
+                    g,
+                    function()
+                        hskill.damage(
+                            {
+                                damage = bean.damage,
+                                fromUnit = bean.fromUnit,
+                                toUnit = cj.GetEnumUnit(),
+                                huntEff = bean.huntEff,
+                                huntKind = bean.huntKind,
+                                huntType = bean.huntType
+                            }
+                        )
+                    end
+                )
+                cj.GroupClear(g)
+                cj.DestroyGroup(g)
+            end
+            local distance = hlogic.getDegBetweenXY(x, y, targetX, targetY)
+            if (distance < speed or distance <= 0 or speed <= 0 or his.death(mover) == true or duringInc > 6) then
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.SetUnitInvulnerable(mover, false)
+                cj.SetUnitPathing(mover, true)
+                cj.SetUnitPosition(mover, targetX, targetY)
+                cj.SetUnitVertexColorBJ(mover, 100, 100, 100, 0)
+                if (repeatGroup ~= nil) then
+                    cj.GroupClear(repeatGroup)
+                    cj.DestroyGroup(repeatGroup)
                 end
-                if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
-                    flag = false
-                end
-                if (his.isBuilding(cj.GetFilterUnit())) then
-                    flag = false
-                end
-                if (isRepeat ~= true and hgroup.isIn(repeatGroup, cj.GetFilterUnit())) then
-                    flag = false
-                end
-                return flag
-            end)
-            cj.ForGroup(g, function()
-                hskill.damage({
-                    damage = bean.damage,
-                    fromUnit = bean.fromUnit,
-                    toUnit = cj.GetEnumUnit(),
-                    huntEff = bean.huntEff,
-                    huntKind = bean.huntKind,
-                    huntType = bean.huntType,
-                })
-            end)
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
-        end
-        local distance = hlogic.getDegBetweenXY(x, y, targetX, targetY)
-        if (distance < speed or distance <= 0 or speed <= 0 or his.death(mover) == true or duringInc > 6) then
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.SetUnitInvulnerable(mover, false)
-            cj.SetUnitPathing(mover, true)
-            cj.SetUnitPosition(mover, targetX, targetY)
-            cj.SetUnitVertexColorBJ(mover, 100, 100, 100, 0)
-            if (repeatGroup ~= nil) then
-                cj.GroupClear(repeatGroup)
-                cj.DestroyGroup(repeatGroup)
             end
         end
-    end)
+    )
 end
 
 return hskill

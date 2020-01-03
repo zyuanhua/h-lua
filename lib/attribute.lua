@@ -9,7 +9,7 @@ local hattr = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId("AInv"), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId("AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
 }
 
 --- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（百度谷歌[卡血牌bug]，了解原理）
@@ -22,17 +22,6 @@ hattr.setLM = function(u, abilityId, qty)
         cj.UnitAddAbility(u, abilityId)
         cj.SetUnitAbilityLevel(u, abilityId, 2)
         cj.UnitRemoveAbility(u, abilityId)
-        i = i + 1
-    end
-end
---- 为单位添加N个同样的视野技能
-hattr.setSightAbility = function(u, abilityId, qty)
-    if (qty <= 0) then
-        return
-    end
-    local i = 1
-    while (i <= qty) do
-        cj.UnitAddAbility(u, abilityId)
         i = i + 1
     end
 end
@@ -462,9 +451,8 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             -- ability
             local tempVal = 0
             local level = 0
-            --- 生命 | 魔法
             if (attr == "life" or attr == "mana") then
-                --- 移动
+                --- 生命 | 魔法
                 if (futureVal >= hattr["max_" .. attr]) then
                     if (currentVal >= hattr["max_" .. attr]) then
                         diff = 0
@@ -496,7 +484,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
             elseif (attr == "move") then
-                --- 白字攻击
+                --- 移动
                 if (futureVal < 0) then
                     cj.SetUnitMoveSpeed(whichUnit, 0)
                 else
@@ -507,7 +495,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
             elseif (attr == "attack_white") then
-                --- 攻击范围
+                --- 白字攻击
                 local max = 100000000
                 if (futureVal > max or futureVal < -max) then
                     diff = 0
@@ -529,7 +517,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
             elseif (attr == "attack_range") then
-                --- 视野
+                --- 攻击范围
                 if (futureVal < hattr.min_attack_range) then
                     futureVal = hattr.min_attack_range
                 elseif (futureVal > hattr.max_attack_range) then
@@ -546,7 +534,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
                 cj.SetUnitAcquireRange(whichUnit, futureVal * 1.1)
             elseif (attr == "sight") then
-                --- 绿字攻击 攻击速度 护甲
+                --- 视野
                 if (futureVal < -hattr.max_sight) then
                     futureVal = -hattr.max_sight
                 elseif (futureVal > hattr.max_sight) then
@@ -585,7 +573,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
             elseif (hSys.inArray(attr, {"attack_green", "attack_speed", "defend"})) then
-                --- 绿字力量 绿字敏捷 绿字智力
+                --- 绿字攻击 攻击速度 护甲
                 if (futureVal < -99999999) then
                     futureVal = -99999999
                 elseif (futureVal > 99999999) then
@@ -615,7 +603,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
             elseif (his.hero(whichUnit) and hSys.inArray(attr, {"str_green", "agi_green", "int_green"})) then
-                --- 白字力量 敏捷 智力
+                --- 绿字力量 绿字敏捷 绿字智力
                 if (futureVal < -99999999) then
                     futureVal = -99999999
                 elseif (futureVal > 99999999) then
@@ -655,7 +643,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
                 hattr.set(whichUnit, 0, setting)
             elseif (his.hero(whichUnit) and hSys.inArray(attr, {"str_white", "agi_white", "int_white"})) then
-                --- 绿字力量 敏捷 智力
+                --- 白字力量 敏捷 智力
                 if (attr == "str_white") then
                     cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
                 elseif (attr == "agi_white") then
@@ -739,7 +727,7 @@ hattr.set = function(whichUnit, during, data)
                     (attr == "attack_buff" or attr == "attack_debuff" or attr == "skill_buff" or attr == "skill_debuff" or
                         attr == "attack_effect" or
                         attr == "skill_effect")
-                 then
+                then
                     for buff, bv in pairs(v) do
                         if (hRuntime.attribute[whichUnit][attr][buff] == nil) then
                             hRuntime.attribute[whichUnit][attr][buff] = {}
@@ -804,7 +792,7 @@ hattr.reRegister = function(whichUnit)
     local attackSpeed = hRuntime.attribute[whichUnit].attack_speed
     local defend = hRuntime.attribute[whichUnit].defend
     -- 注册技能
-    registerAll(whichUnit)
+    hattr.registerAll(whichUnit)
     -- 弥补属性
     cj.SetHeroStr(whichUnit, cj.R2I(strWhite), true)
     cj.SetHeroAgi(whichUnit, cj.R2I(agiWhite), true)
