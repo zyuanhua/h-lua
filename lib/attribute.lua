@@ -75,9 +75,6 @@ hattr.setAttackWhite = function(u, itemId, qty)
     if (u == nil or itemId == nil or qty <= 0) then
         return
     end
-    print_r(hslk_global.attr.item_attack_white)
-    print("itemId=" .. itemId)
-    print("qty=" .. qty)
     hattr.setAttackWhitePrivate(u, itemId, qty)
 end
 --- 设置三围的影响
