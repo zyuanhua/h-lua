@@ -429,6 +429,7 @@ end
         y = nil, --哪个坐标Y（可选）
         whichLoc = nil, --哪个点（可选，不推荐）
         during = 0, --持续时间（可选，创建给单位要注意powerUp物品的问题）
+        slotIndex = 0-5, -- 如果创建给单位，可以同时设置物品栏的位置（可选）
     }
     !单位模式下，during持续时间是无效的
 ]]
@@ -472,6 +473,9 @@ hitem.create = function(bean)
     }
     if (type == "unit") then
         hitem.detector(bean.whichUnit, it)
+        if (bean.slotIndex ~= nil and bean.slotIndex >= 0 and bean.slotIndex <= 5) then
+            cj.UnitDropItemSlot(bean.whichUnit, it, bean.slotIndex)
+        end
     else
         if (during > 0) then
             htime.setTimeout(
@@ -519,7 +523,8 @@ hitem.copy = function(origin, target)
                 {
                     itemId = hitem.getId(it),
                     charges = hitem.getCharges(it),
-                    whichUnit = target
+                    whichUnit = target,
+                    slotIndex = i
                 }
             )
         end
