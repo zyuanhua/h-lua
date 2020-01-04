@@ -47,7 +47,7 @@ end
 -- 删除技能
 hskill.del = function(whichUnit, ability_id, during)
     local id = hSys.getObjId(ability_id)
-    if (during <= 0) then
+    if (during == nil or during <= 0) then
         cj.UnitRemoveAbility(whichUnit, id)
     else
         cj.UnitRemoveAbility(whichUnit, id)
