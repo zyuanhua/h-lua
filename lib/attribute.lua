@@ -75,6 +75,9 @@ hattr.setAttackWhite = function(u, itemId, qty)
     if (u == nil or itemId == nil or qty <= 0) then
         return
     end
+    print_r(hslk_global.attr.item_attack_white)
+    print("itemId=" .. itemId)
+    print("qty=" .. qty)
     hattr.setAttackWhitePrivate(u, itemId, qty)
 end
 --- 设置三围的影响
@@ -467,12 +470,9 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         diff = hattr["min_" .. attr] - currentVal
                     end
                 end
-                tempVal = math.floor(diff)
+                tempVal = math.floor(math.abs(diff))
                 local max = 100000000
                 if (tempVal ~= 0) then
-                    if (diff < 0) then
-                        tempVal = math.abs(tempVal)
-                    end
                     while (max >= 1) do
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
@@ -501,11 +501,8 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 if (futureVal > max or futureVal < -max) then
                     diff = 0
                 end
-                tempVal = math.floor(diff)
+                tempVal = math.floor(math.abs(diff))
                 if (tempVal ~= 0) then
-                    if (diff < 0) then
-                        tempVal = math.abs(tempVal)
-                    end
                     while (max >= 1) do
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
@@ -541,12 +538,9 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 for _, ability in pairs(hslk_global.attr.sight.sub) do
                     cj.UnitRemoveAbility(whichUnit, ability)
                 end
-                tempVal = math.floor(futureVal)
+                tempVal = math.floor(math.abs(futureVal))
                 local sightTotal = hSys.cloneTable(hslk_global.attr.sightTotal)
                 if (tempVal ~= 0) then
-                    if (diff < 0) then
-                        tempVal = math.abs(tempVal)
-                    end
                     while (true) do
                         local isFound = false
                         for _, v in pairs(sightTotal) do
@@ -580,12 +574,9 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 for _, ability in pairs(hslk_global.attr[attr].sub) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
-                tempVal = math.floor(futureVal)
+                tempVal = math.floor(math.abs(futureVal))
                 local max = 100000000
                 if (tempVal ~= 0) then
-                    if (diff < 0) then
-                        tempVal = math.abs(tempVal)
-                    end
                     while (max >= 1) do
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
@@ -610,12 +601,9 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 for _, ability in pairs(hslk_global.attr[attr].sub) do
                     cj.SetUnitAbilityLevel(whichUnit, ability, 1)
                 end
-                tempVal = math.floor(futureVal)
+                tempVal = math.floor(math.abs(futureVal))
                 local max = 100000000
                 if (tempVal ~= 0) then
-                    if (diff < 0) then
-                        tempVal = math.abs(tempVal)
-                    end
                     while (max >= 1) do
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
