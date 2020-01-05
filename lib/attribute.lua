@@ -334,9 +334,9 @@ hattr.registerAll = function(whichUnit)
     }
     -- 智力英雄的攻击默认为魔法，力量敏捷为物理
     if (hRuntime.attribute[whichUnit].primary == "INT") then
-        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_HUNT_TYPE.magic}
+        hRuntime.attribute[whichUnit].attack_hunt_type = { CONST_HUNT_TYPE.magic }
     else
-        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_HUNT_TYPE.physical}
+        hRuntime.attribute[whichUnit].attack_hunt_type = { CONST_HUNT_TYPE.physical }
     end
 end
 
@@ -411,7 +411,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
         if (opr == "+") then
             -- 添加
             local hkey = hSys.table2MD5(val)
-            table.insert(params[attr], {hash = hkey, table = val})
+            table.insert(params[attr], { hash = hkey, table = val })
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
@@ -586,7 +586,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         end
                     end
                 end
-            elseif (hSys.inArray(attr, {"attack_green", "attack_speed", "defend"})) then
+            elseif (hSys.inArray(attr, { "attack_green", "attack_speed", "defend" })) then
                 --- 绿字攻击 攻击速度 护甲
                 if (futureVal < -99999999) then
                     futureVal = -99999999
@@ -613,7 +613,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         max = math.floor(max / 10)
                     end
                 end
-            elseif (his.hero(whichUnit) and hSys.inArray(attr, {"str_green", "agi_green", "int_green"})) then
+            elseif (his.hero(whichUnit) and hSys.inArray(attr, { "str_green", "agi_green", "int_green" })) then
                 --- 绿字力量 绿字敏捷 绿字智力
                 if (futureVal < -99999999) then
                     futureVal = -99999999
@@ -650,7 +650,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
                 hattr.set(whichUnit, 0, setting)
-            elseif (his.hero(whichUnit) and hSys.inArray(attr, {"str_white", "agi_white", "int_white"})) then
+            elseif (his.hero(whichUnit) and hSys.inArray(attr, { "str_white", "agi_white", "int_white" })) then
                 --- 白字力量 敏捷 智力
                 if (attr == "str_white") then
                     cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
@@ -692,8 +692,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 --- 硬直
                 if (currentVal > 0) then
                     local tempPercent = futureVal / currentVal
-                    hRuntime.attribute[whichUnit].punish_current =
-                        tempPercent * hRuntime.attribute[whichUnit].punish_current
+                    hRuntime.attribute[whichUnit].punish_current = tempPercent * hRuntime.attribute[whichUnit].punish_current
                 else
                     hRuntime.attribute[whichUnit].punish_current = futureVal
                 end
@@ -930,7 +929,7 @@ hattr.huntUnit = function(bean)
     end
     -- 计算攻击者的攻击里物理攻击和魔法攻击的占比
     local attackSum = hattr.get(bean.fromUnit, "attack_white") + hattr.get(bean.fromUnit, "attack_green")
-    local fromUnitHuntPercent = {physical = 0, magic = 0}
+    local fromUnitHuntPercent = { physical = 0, magic = 0 }
     if (attackSum > 0) then
         fromUnitHuntPercent.physical = hattr.get(bean.fromUnit, "attack_white") / attackSum
         fromUnitHuntPercent.magic = hattr.get(bean.fromUnit, "attack_green") / attackSum
@@ -995,9 +994,9 @@ hattr.huntUnit = function(bean)
     if (hSys.inArray(CONST_HUNT_TYPE.physical, bean.huntType) == true) then
         realDamageStringColor = CONST_HUNT_TYPE_MAP.physical.color
         if
-            (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
-                math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)
-         then
+        (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
+            math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)
+        then
             realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking * 0.01
             toUnitAvoid = -100 -- 触发暴击，回避减100%
             isKnocking = true
@@ -1007,9 +1006,9 @@ hattr.huntUnit = function(bean)
     if (hSys.inArray(CONST_HUNT_TYPE.magic, bean.huntType) == true) then
         realDamageStringColor = CONST_HUNT_TYPE_MAP.magic.color
         if
-            (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
-                math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)
-         then
+        (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
+            math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)
+        then
             realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence * 0.01
             toUnitAvoid = -100 -- 触发暴击，回避减100%
             isViolence = true
@@ -1017,9 +1016,9 @@ hattr.huntUnit = function(bean)
     end
     -- 计算回避 X 命中
     if
-        (bean.huntKind == CONST_HUNT_KIND.attack and toUnitAvoid - fromUnitAim > 0 and
-            math.random(1, 100) <= toUnitAvoid - fromUnitAim)
-     then
+    (bean.huntKind == CONST_HUNT_KIND.attack and toUnitAvoid - fromUnitAim > 0 and
+        math.random(1, 100) <= toUnitAvoid - fromUnitAim)
+    then
         isAvoid = true
         realDamage = 0
         htextTag.style(htextTag.ttg2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
@@ -1046,8 +1045,7 @@ hattr.huntUnit = function(bean)
         -- 自然属性
         local fromUnitNatural = {}
         for k, natural in pairs(CONST_HUNT_TYPE_NATURE) do
-            fromUnitNatural[natural] =
-                hattr.get(bean.fromUnit, "natural_" .. natural) -
+            fromUnitNatural[natural] = hattr.get(bean.fromUnit, "natural_" .. natural) -
                 hattr.get(bean.toUnit, "natural_" .. natural .. "_oppose") +
                 10
             if (fromUnitNatural[natural] < -100) then
@@ -1189,8 +1187,7 @@ hattr.huntUnit = function(bean)
         local split = hattr.get(bean.fromUnit, "split") - hattr.get(bean.toUnit, "split_oppose")
         local split_range = hattr.get(bean.fromUnit, "split_range")
         if (bean.huntKind == CONST_HUNT_KIND.attack and split > 0) then
-            local g =
-                hgroup.createByUnit(
+            local g = hgroup.createByUnit(
                 bean.toUnit,
                 split_range,
                 function()
@@ -1219,7 +1216,7 @@ hattr.huntUnit = function(bean)
                                 fromUnit = bean.fromUnit,
                                 toUnit = u,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real},
+                                huntType = { CONST_HUNT_TYPE.real },
                                 damage = realDamage * split * 0.01,
                                 realDamage = realDamage * split * 0.01,
                                 realDamageString = "分裂",
@@ -1287,8 +1284,7 @@ hattr.huntUnit = function(bean)
             )
         end
         -- 技能吸血
-        local hemophagia_skill =
-            hattr.get(bean.toUnit, "hemophagia_skill") - hattr.get(bean.toUnit, "hemophagia_skill_oppose")
+        local hemophagia_skill = hattr.get(bean.toUnit, "hemophagia_skill") - hattr.get(bean.toUnit, "hemophagia_skill_oppose")
         if (bean.huntKind == CONST_HUNT_KIND.skill and hemophagia_skill > 0) then
             hunit.addLife(bean.fromUnit, realDamage * hemophagia_skill * 0.01)
             heffect.toUnit(
@@ -1321,9 +1317,9 @@ hattr.huntUnit = function(bean)
         -- 硬直
         local punish_during = 5.00
         if
-            (realDamage > 3 and his.alive(bean.toUnit) and his.punish(bean.toUnit) == false and
-                hunit.isOpenPunish(bean.toUnit))
-         then
+        (realDamage > 3 and his.alive(bean.toUnit) and his.punish(bean.toUnit) == false and
+            hunit.isOpenPunish(bean.toUnit))
+        then
             hattr.set(
                 bean.toUnit,
                 0,
@@ -1376,8 +1372,7 @@ hattr.huntUnit = function(bean)
             )
         end
         -- 反射
-        local toUnitHuntRebound =
-            hattr.get(bean.toUnit, "hunt_rebound") - hattr.get(bean.fromUnit, "hunt_rebound_oppose")
+        local toUnitHuntRebound = hattr.get(bean.toUnit, "hunt_rebound") - hattr.get(bean.fromUnit, "hunt_rebound_oppose")
         if (toUnitHuntRebound > 0) then
             hunit.subCurLife(bean.fromUnit, realDamage * toUnitHuntRebound * 0.01)
             htextTag.style(
@@ -1413,7 +1408,7 @@ hattr.huntUnit = function(bean)
         if (bean.huntKind == CONST_HUNT_KIND.attack) then
             for _, b in pairs(attackBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(bean.fromUnit, b.during, {[b.attr] = "+" .. b.val})
+                    hattr.set(bean.fromUnit, b.during, { [b.attr] = "+" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
                         heffect.bindUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
@@ -1421,7 +1416,7 @@ hattr.huntUnit = function(bean)
             end
             for _, b in pairs(attackDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(bean.toUnit, b.during, {[b.attr] = "-" .. b.val})
+                    hattr.set(bean.toUnit, b.during, { [b.attr] = "-" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
                         heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
                     end
@@ -1431,7 +1426,7 @@ hattr.huntUnit = function(bean)
         if (bean.huntKind == CONST_HUNT_KIND.skill) then
             for _, b in pairs(skillBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, {[b.attr] = "+" .. b.val})
+                    hattr.set(bean.fromUnit, b.during, { [b.attr] = "+" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
                         heffect.bindUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
@@ -1439,7 +1434,7 @@ hattr.huntUnit = function(bean)
             end
             for _, b in pairs(skillDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.toUnit, b.during, {[b.attr] = "-" .. b.val})
+                    hattr.set(bean.toUnit, b.during, { [b.attr] = "-" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
                         heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
                     end
@@ -1461,7 +1456,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                huntType = { CONST_HUNT_TYPE.real }
                             }
                         )
                     elseif (b.attr == "swim") then
@@ -1474,7 +1469,7 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                huntType = { CONST_HUNT_TYPE.real }
                             }
                         )
                     elseif (b.attr == "silent") then
@@ -1487,7 +1482,7 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                huntType = { CONST_HUNT_TYPE.real }
                             }
                         )
                     elseif (b.attr == "unarm") then
@@ -1500,7 +1495,7 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                huntType = { CONST_HUNT_TYPE.real }
                             }
                         )
                     elseif (b.attr == "fetter") then
@@ -1513,7 +1508,7 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                huntType = { CONST_HUNT_TYPE.real }
                             }
                         )
                     elseif (b.attr == "bomb") then
@@ -1526,7 +1521,7 @@ hattr.huntUnit = function(bean)
                                 whichUnit = bean.toUnit,
                                 sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                huntType = { CONST_HUNT_TYPE.real }
                             }
                         )
                     elseif (b.attr == "lightning_chain") then
@@ -1544,7 +1539,7 @@ hattr.huntUnit = function(bean)
                                 isRepeat = false,
                                 sourceUnit = b.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.thunder}
+                                huntType = { CONST_HUNT_TYPE.thunder }
                             }
                         )
                     elseif (b.attr == "crack_fly") then
@@ -1559,7 +1554,7 @@ hattr.huntUnit = function(bean)
                                 high = b.high,
                                 during = b.during,
                                 huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.thunder}
+                                huntType = { CONST_HUNT_TYPE.thunder }
                             }
                         )
                     end
