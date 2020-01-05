@@ -1,19 +1,30 @@
 print_stack = function(...)
-    local out = { '[TRACE]' }
-    local n = select('#', ...)
+    local out = {"[TRACE]"}
+    local n = select("#", ...)
     for i = 1, n, 1 do
         local v = select(i, ...)
         out[#out + 1] = tostring(v)
     end
-    out[#out + 1] = '\n'
+    out[#out + 1] = "\n"
     out[#out + 1] = debug.traceback("", 2)
-    print(table.concat(out, ' '))
+    print(table.concat(out, " "))
     -- print(debug.traceback("Stack trace"))
 end
 
 --打印utf8->ansi编码,此方法可以打印出中文
 print_mb = function(str)
     console.write(str)
+end
+
+--错误调试
+print_err = function(val)
+    if (type(val) == "string") then
+        print_mb("[h-lua-err]" .. val)
+    else
+        print("*****h-lua-err*****")
+        print_mbr(val)
+        print("*****---------*****")
+    end
 end
 
 --打印对象table

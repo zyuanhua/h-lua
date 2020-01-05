@@ -194,7 +194,7 @@ hattr.registerAll = function(whichUnit)
     --init
     local unitId = hSys.getObjChar(cj.GetUnitTypeId(whichUnit))
     if (hslk_global.unitsKV[unitId] == nil) then
-        print_mb("未注册 hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
+        print_err("未注册 hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
         return
     end
     hRuntime.attribute[whichUnit] = {
@@ -298,43 +298,45 @@ hattr.registerAll = function(whichUnit)
         skill_buff = {}, -- array
         skill_debuff = {}, -- array
         -- 特殊特效
-        attack_effect = {
-            swim = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            broken = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            silent = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            unarm = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            fetter = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            bomb = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            lightning_chain = {odds = 0.0, val = 0.0, during = 0.0, model = nil, qty = 0, reduce = 0.0},
-            crack_fly = {odds = 0.0, val = 0.0, during = 0.0, model = nil, distance = 0, high = 0.0}
-        },
-        skill_effect = {
-            swim = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            broken = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            silent = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            unarm = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            fetter = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            bomb = {odds = 0.0, val = 0.0, during = 0.0, model = nil},
-            lightning_chain = {odds = 0.0, val = 0.0, during = 0.0, model = nil, qty = 0, reduce = 0.0},
-            crack_fly = {odds = 0.0, val = 0.0, during = 0.0, model = nil, distance = 0, high = 0.0}
-        }
+        attack_effect = {},
+        skill_effect = {}
         --[[
             buff/debuff例子
             attack_buff = {
                 攻击伤害时buff=20%几率增加自身 1.5% 的攻击速度 3 秒
-                attack_speed = { odds = 20.0, val = 1.5, during = 3.0, model = nil },
+                add = { --这个add表示添加这一种效果，而不是数值的增减
+                    { attr="attack_speed", odds = 20.0, val = 1.5, during = 3.0, model = nil },
+                },
+                sub = { --这个sub表示删除这一种效果，如果效果不存在，而无动作
+                    { attr="attack_speed", odds = 20.0, val = 1.5, during = 3.0, model = nil },
+                }
             }
             skill_debuff = {
                 技能伤害时buff=13%几率减少目标 3.5% 的攻击速度 4.4 秒，特效是 war3mapImported\\ExplosionBIG.mdl
-                move = { odds = 13.0, val = 3.5, during = 4.4, model = 'war3mapImported\\ExplosionBIG.mdl' },
+                add = {
+                    { attr="move",odds = 13.0, val = 3.5, during = 4.4, model = 'war3mapImported\\ExplosionBIG.mdl' },
+                },
+                sub = { --这个sub表示删除这一种效果，如果效果不存在，而无动作
+                    { attr="move",odds = 13.0, val = 3.5, during = 4.4, model = 'war3mapImported\\ExplosionBIG.mdl' },
+                }
             }
+            attack_effect / skill_effect同理,effect只能设定下列的值，会在属性系统自动调用：
+                {attr="swim",odds = 0.0, val = 0.0, during = 0.0, model = nil},
+                {attr="broken",odds = 0.0, val = 0.0, during = 0.0, model = nil},
+                {attr="silent",odds = 0.0, val = 0.0, during = 0.0, model = nil},
+                {attr="unarm",odds = 0.0, val = 0.0, during = 0.0, model = nil},
+                {attr="fetter",odds = 0.0, val = 0.0, during = 0.0, model = nil},
+                {attr="bomb",odds = 0.0, val = 0.0, during = 0.0, model = nil},
+                {attr="lightning_chain",odds = 0.0, val = 0.0, during = 0.0, model = nil, qty = 0, reduce = 0.0},
+                {attr="crack_fly",odds = 0.0, val = 0.0, during = 0.0, model = nil, distance = 0, high = 0.0}
+            * 至于是否同一种效果，是根据你设定的值自动计算出来的
         ]]
     }
     -- 智力英雄的攻击默认为魔法，力量敏捷为物理
     if (hRuntime.attribute[whichUnit].primary == "INT") then
-        hRuntime.attribute[whichUnit].attack_hunt_type = {"magic"}
+        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_HUNT_TYPE.magic}
     else
-        hRuntime.attribute[whichUnit].attack_hunt_type = {"physical"}
+        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_HUNT_TYPE.physical}
     end
 end
 
@@ -359,8 +361,8 @@ end
 ]]
 hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
     local valType = type(val)
-    if (valType == "string" or valType == "table") then
-        -- string
+    if (valType == "string") then
+        -- string类型只有+-=
         if (opr == "+") then
             -- 添加
             table.insert(params[attr], val)
@@ -403,22 +405,48 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 )
             end
-        elseif (opr == "#") then
-            -- 高级混合计算，常见于几率等、持续时间
-            -- 两指比较，最大值 + (最小值 * 0.35)
-            local old = hSys.cloneTable(params[attr])
-            local max = math.max(old, val)
-            local min = math.min(old, val)
-            params[attr] = max + min * 0.35
+        end
+    elseif (valType == "table") then
+        -- table类型只有+-没有别的
+        if (opr == "+") then
+            -- 添加
+            local hkey = hSys.table2MD5(val)
+            table.insert(params[attr], {hash = hkey, table = val})
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        hattr.setHandle(params, whichUnit, attr, "=", old, 0)
+                        hattr.setHandle(params, whichUnit, attr, "-", val, 0)
                     end
                 )
+            end
+        elseif (opr == "-") then
+            -- 减少
+            local hkey = hSys.table2MD5(val)
+            local hasKey = false
+            print_mbr(params[attr])
+            for k, v in pairs(params[attr]) do
+                if (v.hash == hkey) then
+                    params[attr][k] = nil
+                    hasKey = true
+                    break
+                end
+            end
+            if (hasKey == true) then
+                table.sort(params[attr])
+                print_mbr(params[attr])
+                if (dur > 0) then
+                    htime.setTimeout(
+                        dur,
+                        function(t, td)
+                            htime.delDialog(td)
+                            htime.delTimer(t)
+                            hattr.setHandle(params, whichUnit, attr, "+", val, 0)
+                        end
+                    )
+                end
             end
         end
     elseif (valType == "number") then
@@ -688,7 +716,7 @@ hattr.set = function(whichUnit, during, data)
     end
     -- 处理data
     if (type(data) ~= "table") then
-        print("data必须为table")
+        print_err("data必须为table")
         return
     end
     for attr, v in pairs(data) do
@@ -702,39 +730,18 @@ hattr.set = function(whichUnit, during, data)
                 end
                 hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, opr, val, during)
             elseif (type(v) == "table") then
-                -- 特效
-                if
-                    (attr == "attack_buff" or attr == "attack_debuff" or attr == "skill_buff" or attr == "skill_debuff" or
-                        attr == "attack_effect" or
-                        attr == "skill_effect")
-                 then
-                    for buff, bv in pairs(v) do
-                        if (hRuntime.attribute[whichUnit][attr][buff] == nil) then
-                            hRuntime.attribute[whichUnit][attr][buff] = {}
+                -- table型，如特效，buff等
+                if (v.add ~= nil and type(v.add) == "table") then
+                    for _, buff in pairs(v.add) do
+                        if (buff == nil) then
+                            print_err("table effect loss[buff]!")
+                            break
                         end
-                        for effect, ev in pairs(bv) do
-                            if (hRuntime.attribute[whichUnit][attr][buff][effect] == nil) then
-                                if (effect == "model") then
-                                    hRuntime.attribute[whichUnit][attr][buff][effect] = {}
-                                else
-                                    hRuntime.attribute[whichUnit][attr][buff][effect] = 0
-                                end
-                            end
-                            local opr = string.sub(ev, 1, 1)
-                            ev = string.sub(ev, 2, string.len(ev))
-                            local val = tonumber(ev)
-                            if (val == nil) then
-                                val = ev
-                            end
-                            hattr.setHandle(
-                                hRuntime.attribute[whichUnit][attr][buff],
-                                whichUnit,
-                                effect,
-                                opr,
-                                val,
-                                during
-                            )
+                        if (type(buff) ~= "table") then
+                            print_err("type(buff) must be a table!")
+                            break
                         end
+                        hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "+", buff, during)
                     end
                 end
             end
@@ -852,40 +859,40 @@ hattr.huntUnit = function(bean)
     local isKnocking = false
     local isViolence = false
     if (bean.damage <= 0.125) then
-        print("伤害太小被忽略")
+        print_err("伤害太小被忽略")
         return
     end
     if (bean.fromUnit == nil) then
-        print("伤害源不存在")
+        print_err("伤害源不存在")
         return
     end
     if (bean.toUnit == nil) then
-        print("目标不存在")
+        print_err("目标不存在")
         return
     end
     if (his.alive(bean.toUnit) == false) then
-        print("目标已死亡")
+        print_err("目标已死亡")
         return
     end
     -- 判断伤害方式
-    if (bean.huntKind == "attack") then
+    if (bean.huntKind == CONST_HUNT_KIND.attack) then
         if (his.unarm(bean.fromUnit) == true) then
             return
         end
         bean.huntType = hattr.get(bean.fromUnit, "attack_hunt_type")
-    elseif (bean.huntKind == "skill") then
+    elseif (bean.huntKind == CONST_HUNT_KIND.skill) then
         if (his.silent(bean.fromUnit) == true) then
             return
         end
-    elseif (bean.huntKind == "item") then
-    elseif (bean.huntKind == "special") then
+    elseif (bean.huntKind == CONST_HUNT_KIND.item) then
+    elseif (bean.huntKind == CONST_HUNT_KIND.special) then
     else
-        print("伤害单位错误：huntKind")
+        print_err("伤害单位错误：huntKind")
         return
     end
     -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
     if (his.invincible(bean.toUnit) == true or math.random(1, 100) < hattr.get(bean.toUnit, "invincible")) then
-        if (hSys.inArray("absolute", bean.huntType) == false) then
+        if (hSys.inArray(CONST_HUNT_TYPE.absolute, bean.huntType) == false) then
             return
         end
     end
@@ -973,36 +980,44 @@ hattr.huntUnit = function(bean)
         )
     end
     -- 如果遇到真实伤害，无法回避
-    if (hSys.inArray("real", bean.huntType) == true) then
+    if (hSys.inArray(CONST_HUNT_TYPE.real, bean.huntType) == true) then
         toUnitAvoid = -99999
-        realDamageString = realDamageString .. "真实"
+        realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP.real.label
+        realDamageStringColor = CONST_HUNT_TYPE_MAP.real.color
     end
     -- 如果遇到绝对伤害，无法回避，无视无敌
-    if (hSys.inArray("absolute", bean.huntType) == true) then
+    if (hSys.inArray(CONST_HUNT_TYPE.absolute, bean.huntType) == true) then
         toUnitAvoid = -99999
-        realDamageString = realDamageString .. "绝对"
+        realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP.absolute.label
+        realDamageStringColor = CONST_HUNT_TYPE_MAP.absolute.color
     end
     -- 计算物理暴击
-    if
-        (hSys.inArray("physical", bean.huntType) == true and (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
-            math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose))
-     then
-        realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking * 0.01
-        toUnitAvoid = -100 -- 触发暴击，回避减100%
-        isKnocking = true
+    if (hSys.inArray(CONST_HUNT_TYPE.physical, bean.huntType) == true) then
+        realDamageStringColor = CONST_HUNT_TYPE_MAP.physical.color
+        if
+            (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
+                math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)
+         then
+            realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking * 0.01
+            toUnitAvoid = -100 -- 触发暴击，回避减100%
+            isKnocking = true
+        end
     end
     -- 计算魔法暴击
-    if
-        (hSys.inArray("magic", bean.huntType) == true and (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
-            math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose))
-     then
-        realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence * 0.01
-        toUnitAvoid = -100 -- 触发暴击，回避减100%
-        isViolence = true
+    if (hSys.inArray(CONST_HUNT_TYPE.magic, bean.huntType) == true) then
+        realDamageStringColor = CONST_HUNT_TYPE_MAP.magic.color
+        if
+            (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
+                math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)
+         then
+            realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence * 0.01
+            toUnitAvoid = -100 -- 触发暴击，回避减100%
+            isViolence = true
+        end
     end
     -- 计算回避 X 命中
     if
-        (bean.huntKind == "attack" and toUnitAvoid - fromUnitAim > 0 and
+        (bean.huntKind == CONST_HUNT_KIND.attack and toUnitAvoid - fromUnitAim > 0 and
             math.random(1, 100) <= toUnitAvoid - fromUnitAim)
      then
         isAvoid = true
@@ -1029,145 +1044,20 @@ hattr.huntUnit = function(bean)
     -- 计算自然属性
     if (realDamage > 0) then
         -- 自然属性
-        local fromUnitNaturalFire =
-            hattr.get(bean.fromUnit, "natural_fire") - hattr.get(bean.toUnit, "natural_fire_oppose") + 10
-        local fromUnitNaturalSoil =
-            hattr.get(bean.fromUnit, "natural_soil") - hattr.get(bean.toUnit, "natural_soil_oppose") + 10
-        local fromUnitNaturalWater =
-            hattr.get(bean.fromUnit, "natural_water") - hattr.get(bean.toUnit, "natural_water_oppose") + 10
-        local fromUnitNaturalIce =
-            hattr.get(bean.fromUnit, "natural_ice") - hattr.get(bean.toUnit, "natural_ice_oppose") + 10
-        local fromUnitNaturalWind =
-            hattr.get(bean.fromUnit, "natural_wind") - hattr.get(bean.toUnit, "natural_wind_oppose") + 10
-        local fromUnitNaturalLight =
-            hattr.get(bean.fromUnit, "natural_light") - hattr.get(bean.toUnit, "natural_light_oppose") + 10
-        local fromUnitNaturalDark =
-            hattr.get(bean.fromUnit, "natural_dark") - hattr.get(bean.toUnit, "natural_dark_oppose") + 10
-        local fromUnitNaturalWood =
-            hattr.get(bean.fromUnit, "natural_wood") - hattr.get(bean.toUnit, "natural_wood_oppose") + 10
-        local fromUnitNaturalThunder =
-            hattr.get(bean.fromUnit, "natural_thunder") - hattr.get(bean.toUnit, "natural_thunder_oppose") + 10
-        local fromUnitNaturalPoison =
-            hattr.get(bean.fromUnit, "natural_poison") - hattr.get(bean.toUnit, "natural_poison_oppose") + 10
-        local fromUnitNaturalGhost =
-            hattr.get(bean.fromUnit, "natural_ghost") - hattr.get(bean.toUnit, "natural_ghost_oppose") + 10
-        local fromUnitNaturalMetal =
-            hattr.get(bean.fromUnit, "natural_metal") - hattr.get(bean.toUnit, "natural_metal_oppose") + 10
-        local fromUnitNaturalDragon =
-            hattr.get(bean.fromUnit, "natural_dragon") - hattr.get(bean.toUnit, "natural_dragon_oppose") + 10
-        local fromUnitNaturalInsect =
-            hattr.get(bean.fromUnit, "natural_insect") - hattr.get(bean.toUnit, "natural_insect_oppose") + 10
-        if (fromUnitNaturalFire < -100) then
-            fromUnitNaturalFire = -100
-        end
-        if (fromUnitNaturalSoil < -100) then
-            fromUnitNaturalSoil = -100
-        end
-        if (fromUnitNaturalWater < -100) then
-            fromUnitNaturalWater = -100
-        end
-        if (fromUnitNaturalIce < -100) then
-            fromUnitNaturalIce = -100
-        end
-        if (fromUnitNaturalWind < -100) then
-            fromUnitNaturalWind = -100
-        end
-        if (fromUnitNaturalLight < -100) then
-            fromUnitNaturalLight = -100
-        end
-        if (fromUnitNaturalDark < -100) then
-            fromUnitNaturalDark = -100
-        end
-        if (fromUnitNaturalWood < -100) then
-            fromUnitNaturalWood = -100
-        end
-        if (fromUnitNaturalThunder < -100) then
-            fromUnitNaturalThunder = -100
-        end
-        if (fromUnitNaturalPoison < -100) then
-            fromUnitNaturalPoison = -100
-        end
-        if (fromUnitNaturalGhost < -100) then
-            fromUnitNaturalGhost = -100
-        end
-        if (fromUnitNaturalMetal < -100) then
-            fromUnitNaturalMetal = -100
-        end
-        if (fromUnitNaturalDragon < -100) then
-            fromUnitNaturalDragon = -100
-        end
-        if (fromUnitNaturalInsect < -100) then
-            fromUnitNaturalInsect = -100
-        end
-        if (hSys.inArray("fire", bean.huntType) and fromUnitNaturalFire ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalFire * 0.01
-            realDamageString = realDamageString .. "火"
-            realDamageStringColor = "f45454"
-        end
-        if (hSys.inArray("soil", bean.huntType) and fromUnitNaturalSoil ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalSoil * 0.01
-            realDamageString = realDamageString .. "土"
-            realDamageStringColor = "dbb745"
-        end
-        if (hSys.inArray("water", bean.huntType) and fromUnitNaturalWater ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalWater * 0.01
-            realDamageString = realDamageString .. "水"
-            realDamageStringColor = "85adee"
-        end
-        if (hSys.inArray("ice", bean.huntType) and fromUnitNaturalIce ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalIce * 0.01
-            realDamageString = realDamageString .. "冰"
-            realDamageStringColor = "85f4f4"
-        end
-        if (hSys.inArray("wind", bean.huntType) and fromUnitNaturalWind ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalWind * 0.01
-            realDamageString = realDamageString .. "风"
-            realDamageStringColor = "b6d7a8"
-        end
-        if (hSys.inArray("light", bean.huntType) and fromUnitNaturalLight ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalLight * 0.01
-            realDamageString = realDamageString .. "光"
-            realDamageStringColor = "f9f99c"
-        end
-        if (hSys.inArray("dark", bean.huntType) and fromUnitNaturalDark ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalDark * 0.01
-            realDamageString = realDamageString .. "暗"
-            realDamageStringColor = "383434"
-        end
-        if (hSys.inArray("wood", bean.huntType) and fromUnitNaturalWood ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalWood * 0.01
-            realDamageString = realDamageString .. "木"
-            realDamageStringColor = "7cbd60"
-        end
-        if (hSys.inArray("thunder", bean.huntType) and fromUnitNaturalThunder ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalThunder * 0.01
-            realDamageString = realDamageString .. "雷"
-            realDamageStringColor = "7cbd60"
-        end
-        if (hSys.inArray("poison", bean.huntType) and fromUnitNaturalPoison ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalPoison * 0.01
-            realDamageString = realDamageString .. "毒"
-            realDamageStringColor = "45f7f7"
-        end
-        if (hSys.inArray("ghost", bean.huntType) and fromUnitNaturalGhost ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalGhost * 0.01
-            realDamageString = realDamageString .. "鬼"
-            realDamageStringColor = "383434"
-        end
-        if (hSys.inArray("metal", bean.huntType) and fromUnitNaturalMetal ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalMetal * 0.01
-            realDamageString = realDamageString .. "金"
-            realDamageStringColor = "f9f99c"
-        end
-        if (hSys.inArray("dragon", bean.huntType) and fromUnitNaturalDragon ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalDragon * 0.01
-            realDamageString = realDamageString .. "龙"
-            realDamageStringColor = "7cbd60"
-        end
-        if (hSys.inArray("insect", bean.huntType) and fromUnitNaturalInsect ~= 0) then
-            realDamagePercent = realDamagePercent + fromUnitNaturalInsect * 0.01
-            realDamageString = realDamageString .. "虫"
-            realDamageStringColor = "ba55d3"
+        local fromUnitNatural = {}
+        for k, natural in pairs(CONST_HUNT_TYPE_NATURE) do
+            fromUnitNatural[natural] =
+                hattr.get(bean.fromUnit, "natural_" .. natural) -
+                hattr.get(bean.toUnit, "natural_" .. natural .. "_oppose") +
+                10
+            if (fromUnitNatural[natural] < -100) then
+                fromUnitNatural[natural] = -100
+            end
+            if (hSys.inArray(natural, bean.huntType) and fromUnitNatural[natural] ~= 0) then
+                realDamagePercent = realDamagePercent + fromUnitNatural[natural] * 0.01
+                realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP[natural].label
+                realDamageStringColor = CONST_HUNT_TYPE_MAP[natural].color
+            end
         end
     end
     -- 计算伤害增幅
@@ -1175,7 +1065,7 @@ hattr.huntUnit = function(bean)
         realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
     end
     -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (hSys.inArray("physical", bean.huntType) and toUnitDefend > 0) then
+    if (hSys.inArray(CONST_HUNT_TYPE.physical, bean.huntType) and toUnitDefend > 0) then
         toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
         -- 计算护甲
         if (toUnitDefend > 0) then
@@ -1220,7 +1110,7 @@ hattr.huntUnit = function(bean)
     -- 上面都是先行计算 ------------------
 
     -- 造成伤害
-    print("realDamage:" .. realDamage)
+    print_err("realDamage:" .. realDamage)
     if (realDamage > 0.25) then
         if (isKnocking) then
             --@触发物理暴击事件
@@ -1298,7 +1188,7 @@ hattr.huntUnit = function(bean)
         -- 分裂
         local split = hattr.get(bean.fromUnit, "split") - hattr.get(bean.toUnit, "split_oppose")
         local split_range = hattr.get(bean.fromUnit, "split_range")
-        if (bean.huntKind == "attack" and split > 0) then
+        if (bean.huntKind == CONST_HUNT_KIND.attack and split > 0) then
             local g =
                 hgroup.createByUnit(
                 bean.toUnit,
@@ -1328,8 +1218,8 @@ hattr.huntUnit = function(bean)
                             {
                                 fromUnit = bean.fromUnit,
                                 toUnit = u,
-                                huntKind = "special",
-                                huntType = {"real"},
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real},
                                 damage = realDamage * split * 0.01,
                                 realDamage = realDamage * split * 0.01,
                                 realDamageString = "分裂",
@@ -1367,7 +1257,7 @@ hattr.huntUnit = function(bean)
         end
         -- 吸血
         local hemophagia = hattr.get(bean.toUnit, "hemophagia") - hattr.get(bean.toUnit, "hemophagia_oppose")
-        if (bean.huntKind == "attack" and hemophagia > 0) then
+        if (bean.huntKind == CONST_HUNT_KIND.attack and hemophagia > 0) then
             hunit.addLife(bean.fromUnit, realDamage * hemophagia * 0.01)
             heffect.toUnit(
                 "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
@@ -1399,7 +1289,7 @@ hattr.huntUnit = function(bean)
         -- 技能吸血
         local hemophagia_skill =
             hattr.get(bean.toUnit, "hemophagia_skill") - hattr.get(bean.toUnit, "hemophagia_skill_oppose")
-        if (bean.huntKind == "skill" and hemophagia_skill > 0) then
+        if (bean.huntKind == CONST_HUNT_KIND.skill and hemophagia_skill > 0) then
             hunit.addLife(bean.fromUnit, realDamage * hemophagia_skill * 0.01)
             heffect.toUnit(
                 "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
@@ -1520,46 +1410,38 @@ hattr.huntUnit = function(bean)
         local attackDebuff = hattr.get(bean.fromUnit, "attack_debuff")
         local skillBuff = hattr.get(bean.fromUnit, "skill_buff")
         local skillDebuff = hattr.get(bean.fromUnit, "skill_debuff")
-        if (bean.huntKind == "attack") then
-            for bk, b in pairs(attackBuff) do
-                if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, {[bk] = "+" .. b.val})
-                    if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
-                        for _, mv in pairs(b.model) do
-                            heffect.bindUnit(mv, bean.fromUnit, "origin", b.during)
-                        end
+        if (bean.huntKind == CONST_HUNT_KIND.attack) then
+            for _, b in pairs(attackBuff) do
+                if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
+                    hattr.set(bean.fromUnit, b.during, {[b.attr] = "+" .. b.val})
+                    if (type(b.model) == "string" and string.len(b.model) > 0) then
+                        heffect.bindUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
                 end
             end
-            for bk, b in pairs(attackDebuff) do
-                if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.toUnit, b.during, {[bk] = "-" .. b.val})
-                    if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
-                        for _, mv in pairs(b.model) do
-                            heffect.bindUnit(mv, bean.toUnit, "origin", b.during)
-                        end
+            for _, b in pairs(attackDebuff) do
+                if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
+                    hattr.set(bean.toUnit, b.during, {[b.attr] = "-" .. b.val})
+                    if (type(b.model) == "string" and string.len(b.model) > 0) then
+                        heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
                     end
                 end
             end
         end
-        if (bean.huntKind == "skill") then
-            for bk, b in pairs(skillBuff) do
+        if (bean.huntKind == CONST_HUNT_KIND.skill) then
+            for _, b in pairs(skillBuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.fromUnit, b.during, {[bk] = "+" .. b.val})
-                    if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
-                        for _, mv in pairs(b.model) do
-                            heffect.bindUnit(mv, bean.fromUnit, "origin", b.during)
-                        end
+                    hattr.set(bean.fromUnit, b.during, {[b.attr] = "+" .. b.val})
+                    if (type(b.model) == "string" and string.len(b.model) > 0) then
+                        heffect.bindUnit(b.model, bean.fromUnit, "origin", b.during)
                     end
                 end
             end
-            for bk, b in pairs(skillDebuff) do
+            for _, b in pairs(skillDebuff) do
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
-                    hattr.set(bean.toUnit, b.during, {[bk] = "-" .. b.val})
-                    if (type(b.model) == "table" and hSys.getTableLen(b.model) > 0) then
-                        for _, mv in pairs(b.model) do
-                            heffect.bindUnit(mv, bean.toUnit, "origin", b.during)
-                        end
+                    hattr.set(bean.toUnit, b.during, {[b.attr] = "-" .. b.val})
+                    if (type(b.model) == "string" and string.len(b.model) > 0) then
+                        heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
                     end
                 end
             end
@@ -1567,379 +1449,115 @@ hattr.huntUnit = function(bean)
         -- effect
         local attackEffect = hattr.get(bean.fromUnit, "attack_effect")
         local skillEffect = hattr.get(bean.fromUnit, "skill_effect")
-        -- 眩晕 swim
-        -- flag
-        local isSwim = false
-        local isBroken = false
-        local isSilent = false
-        local isUnarm = false
-        local isFetter = false
-        local isBomb = false
-        local isLightningChain = false
-        local isCrackFly = false
-        -- data
-        local swimEffect = {
-            attack = hSys.cloneTable(attackEffect.swim),
-            skill = hSys.cloneTable(skillEffect.swim)
-        }
-        local brokenEffect = {
-            attack = hSys.cloneTable(attackEffect.broken),
-            skill = hSys.cloneTable(skillEffect.broken)
-        }
-        local silentEffect = {
-            attack = hSys.cloneTable(attackEffect.silent),
-            skill = hSys.cloneTable(skillEffect.silent)
-        }
-        local unarmEffect = {
-            attack = hSys.cloneTable(attackEffect.unarm),
-            skill = hSys.cloneTable(skillEffect.unarm)
-        }
-        local fetterEffect = {
-            attack = hSys.cloneTable(attackEffect.fetter),
-            skill = hSys.cloneTable(skillEffect.fetter)
-        }
-        local bombEffect = {
-            attack = hSys.cloneTable(attackEffect.bomb),
-            skill = hSys.cloneTable(skillEffect.bomb)
-        }
-        local lightningChainEffect = {
-            attack = hSys.cloneTable(attackEffect.lightning_chain),
-            skill = hSys.cloneTable(skillEffect.lightning_chain)
-        }
-        local crackFlyEffect = {
-            attack = hSys.cloneTable(attackEffect.crack_fly),
-            skill = hSys.cloneTable(skillEffect.crack_fly)
-        }
-        -- oppose
-        local swimOppose = hattr.get(bean.toUnit, "swim_oppose")
-        local brokenOppose = hattr.get(bean.toUnit, "broken_oppose")
-        local silentOppose = hattr.get(bean.toUnit, "silent_oppose")
-        local unarmOppose = hattr.get(bean.toUnit, "unarm_oppose")
-        local fetterOppose = hattr.get(bean.toUnit, "fetter_oppose")
-        local bombOppose = hattr.get(bean.toUnit, "bomb_oppose")
+        if (bean.huntKind == CONST_HUNT_KIND.attack) then
+            for _, b in pairs(attackEffect) do
+                if (b.val >= 0 and b.during > 0 and b.odds > 0) then
+                    if (b.attr == "broken") then
+                        --打断
+                        hskill.broken(
+                            {
+                                whichUnit = bean.toUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                sourceUnit = bean.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real}
+                            }
+                        )
+                    elseif (b.attr == "swim") then
+                        --眩晕
+                        hskill.swim(
+                            {
+                                whichUnit = bean.toUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = bean.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real}
+                            }
+                        )
+                    elseif (b.attr == "silent") then
+                        --沉默
+                        hskill.silent(
+                            {
+                                whichUnit = bean.toUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = bean.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real}
+                            }
+                        )
+                    elseif (b.attr == "unarm") then
+                        --缴械
+                        hskill.unarm(
+                            {
+                                whichUnit = bean.toUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = bean.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real}
+                            }
+                        )
+                    elseif (b.attr == "fetter") then
+                        --缚足
+                        hskill.fetter(
+                            {
+                                whichUnit = bean.toUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = bean.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real}
+                            }
+                        )
+                    elseif (b.attr == "bomb") then
+                        --爆破
+                        hskill.bomb(
+                            {
+                                odds = b.odds,
+                                damage = b.val,
+                                range = b.range,
+                                whichUnit = bean.toUnit,
+                                sourceUnit = bean.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.real}
+                            }
+                        )
+                    elseif (b.attr == "lightning_chain") then
+                        --闪电链
+                        hskill.lightningChain(
+                            {
+                                damage = b.val,
+                                whichUnit = b.toUnit,
+                                prevUnit = b.fromUnit,
+                                lightningType = b.lightning_type,
+                                qty = b.qty,
+                                change = b.change,
+                                range = 400,
+                                isRepeat = false,
+                                sourceUnit = b.fromUnit,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.thunder}
+                            }
+                        )
+                    elseif (b.attr == "crack_fly") then
+                        --击飞
+                        hskill.crackFly(bean.toUnit, b.during, b.odds, b.val, bean.fromUnit)
+                    end
+                    if (type(b.model) == "string" and string.len(b.model) > 0) then
+                        heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
+                    end
+                end
+            end
+        end
         local lightningChainOppose = hattr.get(bean.toUnit, "lightning_chain_oppose")
         local crackFlyOppose = hattr.get(bean.toUnit, "crack_fly_oppose")
-
-        if (bean.huntKind == "attack") then
-            swimEffect.attack.odds = swimEffect.attack.odds * (1 - swimOppose * 0.01)
-            swimEffect.attack.during = swimEffect.attack.during * (1 - swimOppose * 0.01)
-            swimEffect.attack.val = swimEffect.attack.val * (1 - swimOppose * 0.01)
-            brokenEffect.attack.odds = brokenEffect.attack.odds * (1 - brokenOppose * 0.01)
-            brokenEffect.attack.val = brokenEffect.attack.val * (1 - brokenOppose * 0.01)
-            silentEffect.attack.odds = silentEffect.attack.odds * (1 - silentOppose * 0.01)
-            silentEffect.attack.during = silentEffect.attack.during * (1 - silentOppose * 0.01)
-            silentEffect.attack.val = silentEffect.attack.val * (1 - silentOppose * 0.01)
-            unarmEffect.attack.odds = unarmEffect.attack.odds * (1 - unarmOppose * 0.01)
-            unarmEffect.attack.during = unarmEffect.attack.during * (1 - unarmOppose * 0.01)
-            unarmEffect.attack.val = unarmEffect.attack.val * (1 - unarmOppose * 0.01)
-            fetterEffect.attack.odds = fetterEffect.attack.odds * (1 - fetterOppose * 0.01)
-            fetterEffect.attack.during = fetterEffect.attack.during * (1 - fetterOppose * 0.01)
-            fetterEffect.attack.val = fetterEffect.attack.val * (1 - fetterOppose * 0.01)
-            bombEffect.attack.odds = bombEffect.attack.odds * (1 - bombOppose * 0.01)
-            bombEffect.attack.val = bombEffect.attack.val * (1 - bombOppose * 0.01)
-            lightningChainEffect.attack.odds = lightningChainEffect.attack.odds * (1 - lightningChainOppose * 0.01)
-            lightningChainEffect.attack.val = lightningChainEffect.attack.val * (1 - lightningChainOppose * 0.01)
-            crackFlyEffect.attack.odds = crackFlyEffect.attack.odds * (1 - crackFlyOppose * 0.01)
-            crackFlyEffect.attack.val = crackFlyEffect.attack.val * (1 - crackFlyOppose * 0.01)
-            --
-            if
-                (swimEffect.attack.odds > 0 and swimEffect.attack.during >= 0.01 and
-                    Math.random(1, 100) <= swimEffect.attack.odds)
-             then
-                isSwim = true
-            end
-            if (brokenEffect.attack.odds > 0 and Math.random(1, 100) <= brokenEffect.attack.odds) then
-                isBroken = true
-            end
-            if
-                (silentEffect.attack.odds > 0 and silentEffect.attack.during >= 0.01 and
-                    Math.random(1, 100) <= silentEffect.attack.odds)
-             then
-                isSilent = true
-            end
-            if
-                (unarmEffect.attack.odds > 0 and unarmEffect.attack.during >= 0.01 and
-                    Math.random(1, 100) <= unarmEffect.attack.odds)
-             then
-                isUnarm = true
-            end
-            if
-                (fetterEffect.attack.odds > 0 and fetterEffect.attack.during >= 0.01 and
-                    Math.random(1, 100) <= fetterEffect.attack.odds)
-             then
-                isFetter = true
-            end
-            if (bombEffect.attack.odds > 0 and Math.random(1, 100) <= bombEffect.attack.odds) then
-                isBomb = true
-            end
-            if
-                (lightningChainEffect.attack.odds > 0 and lightningChainEffect.attack.qty > 0 and
-                    Math.random(1, 100) <= lightningChainEffect.attack.odds)
-             then
-                isLightningChain = true
-            end
-            if
-                (crackFlyEffect.attack.odds > 0 and
-                    (crackFlyEffect.attack.distance > 0 or crackFlyEffect.attack.high > 0) and
-                    Math.random(1, 100) <= crackFlyEffect.attack.odds)
-             then
-                isCrackFly = true
-            end
-        end
-        if (bean.huntKind == "skill") then
-            swimEffect.skill.odds = swimEffect.skill.odds * (1 - swimOppose * 0.01)
-            swimEffect.skill.during = swimEffect.skill.during * (1 - swimOppose * 0.01)
-            swimEffect.skill.val = swimEffect.skill.val * (1 - swimOppose * 0.01)
-            brokenEffect.skill.odds = brokenEffect.skill.odds * (1 - brokenOppose * 0.01)
-            brokenEffect.skill.val = brokenEffect.skill.val * (1 - brokenOppose * 0.01)
-            silentEffect.skill.odds = silentEffect.skill.odds * (1 - silentOppose * 0.01)
-            silentEffect.skill.during = silentEffect.skill.during * (1 - silentOppose * 0.01)
-            silentEffect.skill.val = silentEffect.skill.val * (1 - silentOppose * 0.01)
-            unarmEffect.skill.odds = unarmEffect.skill.odds * (1 - unarmOppose * 0.01)
-            unarmEffect.skill.during = unarmEffect.skill.during * (1 - unarmOppose * 0.01)
-            unarmEffect.skill.val = unarmEffect.skill.val * (1 - unarmOppose * 0.01)
-            fetterEffect.skill.odds = fetterEffect.skill.odds * (1 - fetterOppose * 0.01)
-            fetterEffect.skill.during = fetterEffect.skill.during * (1 - fetterOppose * 0.01)
-            fetterEffect.skill.val = fetterEffect.skill.val * (1 - fetterOppose * 0.01)
-            bombEffect.skill.odds = bombEffect.skill.odds * (1 - bombOppose * 0.01)
-            bombEffect.skill.val = bombEffect.skill.val * (1 - bombOppose * 0.01)
-            lightningChainEffect.skill.odds = lightningChainEffect.skill.odds * (1 - lightningChainOppose * 0.01)
-            lightningChainEffect.skill.val = lightningChainEffect.skill.val * (1 - lightningChainOppose * 0.01)
-            crackFlyEffect.skill.odds = crackFlyEffect.skill.odds * (1 - crackFlyOppose * 0.01)
-            crackFlyEffect.skill.val = crackFlyEffect.skill.val * (1 - crackFlyOppose * 0.01)
-            --
-            if
-                (swimEffect.skill.odds > 0 and swimEffect.skill.during >= 0.01 and
-                    Math.random(1, 100) <= swimEffect.skill.odds)
-             then
-                isSwim = true
-            end
-            if (brokenEffect.skill.odds > 0 and Math.random(1, 100) <= brokenEffect.skill.odds) then
-                isBroken = true
-            end
-            if
-                (silentEffect.skill.odds > 0 and silentEffect.skill.during >= 0.01 and
-                    Math.random(1, 100) <= silentEffect.skill.odds)
-             then
-                isSilent = true
-            end
-            if
-                (unarmEffect.skill.odds > 0 and unarmEffect.skill.during >= 0.01 and
-                    Math.random(1, 100) <= unarmEffect.skill.odds)
-             then
-                isUnarm = true
-            end
-            if
-                (fetterEffect.skill.odds > 0 and fetterEffect.skill.during >= 0.01 and
-                    Math.random(1, 100) <= fetterEffect.skill.odds)
-             then
-                isFetter = true
-            end
-            if (bombEffect.skill.odds > 0 and Math.random(1, 100) <= bombEffect.skill.odds) then
-                isBomb = true
-            end
-            if
-                (lightningChainEffect.skill.odds > 0 and lightningChainEffect.skill.qty > 0 and
-                    Math.random(1, 100) <= lightningChainEffect.skill.odds)
-             then
-                isLightningChain = true
-            end
-            if
-                (crackFlyEffect.skill.odds > 0 and (crackFlyEffect.skill.distance > 0 or crackFlyEffect.skill.high > 0) and
-                    Math.random(1, 100) <= crackFlyEffect.skill.odds)
-             then
-                isCrackFly = true
-            end
-        end
-        -- 眩晕
-        if (isSwim) then
-            hskill.swim(bean.toUnit, swimEffect.during, bean.fromUnit, swimEffect.val, swimEffect.odds)
-            if (swimEffect.val > 0) then
-                hskill.damage(
-                    {
-                        fromUnit = bean.fromUnit,
-                        toUnit = bean.toUnit,
-                        damage = swimEffect.val,
-                        realDamage = swimEffect.val,
-                        realDamageString = "眩晕",
-                        huntKind = "special",
-                        huntType = {"real"}
-                    }
-                )
-            end
-            if (swimEffect.model ~= nil) then
-                heffect.toUnit(swimEffect.model, bean.toUnit, "origin", 0.5)
-            end
-        end
-        -- 打断
-        if (isBroken) then
-            hskill.broken(bean.toUnit, bean.fromUnit, brokenEffect.val, brokenEffect.odds)
-            if (brokenEffect.val > 0) then
-                hskill.damage(
-                    {
-                        fromUnit = bean.fromUnit,
-                        toUnit = bean.toUnit,
-                        damage = brokenEffect.val,
-                        realDamage = brokenEffect.val,
-                        realDamageString = "打断",
-                        huntKind = "special",
-                        huntType = {"real"}
-                    }
-                )
-            end
-            if (brokenEffect.model ~= nil) then
-                heffect.toUnit(brokenEffect.model, bean.toUnit, "origin", 0.5)
-            end
-        end
-        -- 沉默
-        if (isSilent) then
-            hskill.silent(bean.toUnit, silentEffect.during, bean.fromUnit, silentEffect.val, silentEffect.odds)
-            if (silentEffect.val > 0) then
-                hskill.damage(
-                    {
-                        fromUnit = bean.fromUnit,
-                        toUnit = bean.toUnit,
-                        damage = silentEffect.val,
-                        realDamage = silentEffect.val,
-                        realDamageString = "沉默",
-                        huntKind = "special",
-                        huntType = {"magic"}
-                    }
-                )
-            end
-            if (silentEffect.model ~= nil) then
-                heffect.toUnit(silentEffect.model, bean.toUnit, "origin", 0.5)
-            end
-        end
-        -- 缴械
-        if (isUnarm) then
-            hskill.unarm(bean.toUnit, unarmEffect.during, bean.fromUnit, unarmEffect.val, unarmEffect.odds)
-            if (unarmEffect.val > 0) then
-                hskill.damage(
-                    {
-                        fromUnit = bean.fromUnit,
-                        toUnit = bean.toUnit,
-                        damage = unarmEffect.val,
-                        realDamage = unarmEffect.val,
-                        realDamageString = "缴械",
-                        huntKind = "special",
-                        huntType = {"magic"}
-                    }
-                )
-            end
-            if (unarmEffect.model ~= nil) then
-                heffect.toUnit(unarmEffect.model, bean.toUnit, "origin", 0.5)
-            end
-        end
-        -- 缚足
-        if (isFetter) then
-            hattr.set(
-                bean.toUnit,
-                fetterEffect.during,
-                {
-                    move = "-1000"
-                }
-            )
-            if (fetterEffect.val > 0) then
-                hskill.damage(
-                    {
-                        fromUnit = bean.fromUnit,
-                        toUnit = bean.toUnit,
-                        damage = fetterEffect.val,
-                        realDamage = fetterEffect.val,
-                        realDamageString = "缚足",
-                        huntKind = "special",
-                        huntType = {"magic"}
-                    }
-                )
-            end
-            if (fetterEffect.model ~= nil) then
-                heffect.toUnit(fetterEffect.model, bean.toUnit, "origin", 0.5)
-            end
-            -- @触发缚足事件
-            hevent.triggerEvent(
-                {
-                    triggerKey = heventKeyMap.fetter,
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
-                    damage = fetterEffect.val,
-                    during = fetterEffect.during
-                }
-            )
-            -- @触发被缚足事件
-            hevent.triggerEvent(
-                {
-                    triggerKey = heventKeyMap.beFetter,
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
-                    damage = fetterEffect.val,
-                    during = fetterEffect.during
-                }
-            )
-        end
-        -- 爆破
-        if (isBomb) then
-            if (bombEffect.val > 0) then
-                local tempGroup =
-                    hgroup.createByUnit(
-                    bean.toUnit,
-                    bombEffect.range,
-                    function()
-                        local flag = true
-                        if (his.ally(whichUnit, cj.GetFilterUnit())) then
-                            flag = false
-                        end
-                        if (his.death(cj.GetFilterUnit())) then
-                            flag = false
-                        end
-                        if (his.building(cj.GetFilterUnit())) then
-                            flag = false
-                        end
-                        return flag
-                    end
-                )
-                -- @触发爆破事件
-                hevent.triggerEvent(
-                    {
-                        triggerKey = heventKeyMap.bomb,
-                        triggerUnit = bean.fromUnit,
-                        targetUnit = bean.toUnit,
-                        damage = bombEffect.val,
-                        range = bombEffect.range
-                    }
-                )
-                cj.ForGroup(
-                    tempGroup,
-                    function()
-                        hskill.damage(
-                            {
-                                fromUnit = bean.fromUnit,
-                                toUnit = cj.GetEnumUnit(),
-                                damage = bombEffect.val,
-                                realDamage = bombEffect.val,
-                                huntKind = "special",
-                                huntType = {"real"}
-                            }
-                        )
-                        -- @触发被爆破事件
-                        hevent.triggerEvent(
-                            {
-                                triggerKey = heventKeyMap.beBomb,
-                                triggerUnit = cj.GetEnumUnit(),
-                                sourceUnit = bean.fromUnit,
-                                damage = bombEffect.val,
-                                range = bombEffect.range
-                            }
-                        )
-                    end
-                )
-                cj.GroupClear(tempGroup)
-                cj.DestroyGroup(tempGroup)
-            end
-            if (bombEffect.model ~= nil) then
-                heffect.toUnit(bombEffect.model, bean.toUnit, "origin", 0.5)
-            end
-        end
         -- 闪电链
         if (isLightningChain) then
             hskill.lightningChain(
@@ -1977,8 +1595,8 @@ hattr.huntUnit = function(bean)
                     toUnit = bean.toUnit,
                     damage = crackFlyEffect.val,
                     huntEff = crackFlyEffect.model,
-                    huntKind = "special",
-                    huntType = {"physical"}
+                    huntKind = CONST_HUNT_KIND.special,
+                    huntType = {CONST_HUNT_TYPE.physical}
                 }
             )
             if (crackFlyEffect.model ~= nil) then

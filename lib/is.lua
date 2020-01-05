@@ -6,7 +6,7 @@ his.set = function(handle, key, val)
         return
     end
     if (type(val) ~= "boolean") then
-        print("his.set not boolean")
+        print_err("his.set not boolean")
         return
     end
     if (hRuntime.is[handle] == nil) then

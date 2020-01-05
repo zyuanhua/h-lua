@@ -40,15 +40,15 @@ end
 ]]--
 hweather.create = function(bean)
     if (bean.w == nil or bean.h == nil or bean.w <= 0 or bean.h <= 0) then
-        print("hweather.create -w-h")
+        print_err("hweather.create -w-h")
         return nil
     end
     if (bean.x == nil or bean.y == nil) then
-        print("hweather.create -x-y")
+        print_err("hweather.create -x-y")
         return nil
     end
     if (bean.type == nil) then
-        print("hweather.create -type")
+        print_err("hweather.create -type")
         return nil
     end
     local r = hrect.createLoc(bean.x, bean.y, bean.w, bean.h)

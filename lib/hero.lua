@@ -93,7 +93,7 @@ hhero.setPlayerAllowQty = function(whichPlayer, max)
     if (max > 0 and max <= 7) then
         heros.player_allow_qty[whichPlayer] = max
     else
-        print("hhero.setPlayerMaxQty error")
+        print_err("hhero.setPlayerMaxQty error")
     end
 end
 --- 获取玩家最大英雄数量
@@ -219,7 +219,7 @@ end
 --- 构建选择单位给玩家（clickQty 击）
 hhero.buildClick = function(during, clickQty)
     if (during <= 20) then
-        print("建立点击选英雄模式必须设定during大于20秒")
+        print_err("建立点击选英雄模式必须设定during大于20秒")
         return
     end
     if (clickQty == nil or clickQty <= 1) then
@@ -403,7 +403,7 @@ end
 --- 构建选择单位给玩家（商店物品）
 hhero.buildTavern = function(during)
     if (during <= 20) then
-        print("建立酒馆选英雄模式必须设定during大于20秒")
+        print_err("建立酒馆选英雄模式必须设定during大于20秒")
         return
     end
     during = during + 1
@@ -421,7 +421,7 @@ hhero.buildTavern = function(during)
             local unitId = hRuntime.heroBuildSelection[itemId].unitId
             local tavern = hRuntime.heroBuildSelection[itemId].tavern
             if (unitId == nil or tavern == nil) then
-                print("hhero.buildTavern-tgr_sell=nil")
+                print_err("hhero.buildTavern-tgr_sell=nil")
                 return
             end
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
@@ -452,7 +452,7 @@ hhero.buildTavern = function(during)
                 local unitId = hRuntime.heroBuildSelection[itemId].unitId
                 local tavern = hRuntime.heroBuildSelection[itemId].tavern
                 if (unitId == nil or tavern == nil) then
-                    print("hhero.buildTavern-tgr_random=nil")
+                    print_err("hhero.buildTavern-tgr_random=nil")
                     return
                 end
                 txt = txt .. " " .. hslk_global.heroesKV[unitId].Name

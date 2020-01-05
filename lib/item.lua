@@ -56,7 +56,7 @@ hitem.getSlk = function(itOrId)
     local slk
     local itId
     if (itOrId == nil) then
-        print("itOrId is nil")
+        print_err("itOrId is nil")
         return nil
     end
     if (type(itOrId) == "string") then
@@ -300,7 +300,7 @@ end
 ]]
 hitem.detector = function(whichUnit, it)
     if (whichUnit == nil or it == nil) then
-        print("detector params nil")
+        print_err("detector params nil")
     end
     local newWeight = hattr.get(whichUnit, "weight_current") + hitem.getWeight(it)
     --1
@@ -339,9 +339,6 @@ hitem.detector = function(whichUnit, it)
                 --如果有极限值,并且原有的物品未达上限
                 local tempCharges = hitem.getCharges(tempIt)
                 if (tempCharges < overlie) then
-                    print("currentCharges=" .. currentCharges)
-                    print("tempCharges=" .. tempCharges)
-                    print("overlie=" .. overlie)
                     if ((currentCharges + tempCharges) <= overlie) then
                         --条件：如果旧物品足以容纳所有的新物品个数
                         --使旧物品使用次数增加，新物品删掉
@@ -435,7 +432,7 @@ end
 ]]
 hitem.create = function(bean)
     if (bean.itemId == nil) then
-        print("hitem create -it-id")
+        print_err("hitem create -it-id")
         return
     end
     if (bean.charges == nil) then
@@ -462,7 +459,7 @@ hitem.create = function(bean)
         it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
         type = hitem.TYPE.LOCATION
     else
-        print("hitem create -site")
+        print_err("hitem create -site")
         return
     end
     cj.SetItemCharges(it, charges)

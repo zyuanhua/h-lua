@@ -4,6 +4,9 @@ require "foundation.debug"
 -- 加载json
 require "foundation.json"
 
+-- 加载md5
+require "foundation.md5"
+
 -- 加载runtime
 require "foundation.runtime"
 

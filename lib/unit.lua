@@ -123,23 +123,23 @@ hunit.create = function(bean)
         bean.qty = 1
     end
     if (bean.whichPlayer == nil) then
-        print("create unit fail -pl")
+        print_err("create unit fail -pl")
         return
     end
     if (bean.unitId == nil) then
-        print("create unit fail -id")
+        print_err("create unit fail -id")
         return
     end
     if (bean.qty <= 0) then
-        print("create unit fail -qty")
+        print_err("create unit fail -qty")
         return
     end
     if (bean.x == nil and bean.y == nil and bean.loc == nil) then
-        print("create unit fail -place")
+        print_err("create unit fail -place")
         return
     end
     if (bean.unitId == nil) then
-        print("create unit id")
+        print_err("create unit id")
         return
     end
     bean.unitId = hSys.getObjId(bean.unitId)
@@ -266,7 +266,7 @@ hunit.getSlk = function(uOrUid)
     local slk
     local uid
     if (uOrUid == nil) then
-        print("uOrUid is nil")
+        print_err("uOrUid is nil")
         return nil
     end
     if (type(uOrUid) == "string") then

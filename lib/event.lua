@@ -896,7 +896,7 @@ end
 --- getTargetUnit 获取被闪电链单位
 --- getDamage 获取闪电链伤害
 --- getRange 获取闪电链范围
---- getQty 获取闪电链数量
+--- getIndex 获取单位是第几个被电到的
 hevent.onLightningChain = function(whichUnit, action)
     local evtKey = heventKeyMap.lightningChain
     return hevent.onEventByHandle(evtKey, whichUnit, action)

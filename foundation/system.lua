@@ -21,10 +21,8 @@ hSys.getObjChar = function(id)
     if (id == nil) then
         print_stack()
     end
-    return string.char(id // 0x1000000) 
-        .. string.char(id // 0x10000 % 0x100) 
-        .. string.char(id // 0x100 % 0x100) 
-        .. string.char(id % 0x100)
+    return string.char(id // 0x1000000) ..
+        string.char(id // 0x10000 % 0x100) .. string.char(id // 0x100 % 0x100) .. string.char(id % 0x100)
 end
 --获取一个table的正确长度
 hSys.getTableLen = function(table)
@@ -79,6 +77,20 @@ hSys.mergeTable = function(table1, table2)
         end
     end
     return tempTable
+end
+--将一个table平铺成为一个可以代表它的唯一md5 key
+hSys.table2MD5 = function(t)
+    local j = ""
+    if (table ~= nil) then
+        table.sort(t)
+        j = json.stringify(t)
+    end
+    if (j == nil) then
+        j = ""
+    end
+    local key = md5.sumhexa(j)
+    print(key)
+    return key
 end
 --在数组内
 hSys.inArray = function(val, arr)
