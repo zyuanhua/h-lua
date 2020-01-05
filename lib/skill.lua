@@ -78,6 +78,136 @@ hskill.has = function(whichUnit, ability_id)
     return false
 end
 
+--回避
+hskill.avoid = function(whichUnit)
+    cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
+    cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
+    cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
+    htime.setTimeout(
+        0.00,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
+            cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
+            cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
+        end
+    )
+end
+
+--无敌
+hskill.invulnerable = function(whichUnit, during)
+    if (whichUnit == nil) then
+        return
+    end
+    if (during < 0) then
+        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
+    end
+    cj.SetUnitInvulnerable(whichUnit, true)
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.SetUnitInvulnerable(whichUnit, false)
+        end
+    )
+end
+--群体无敌
+hskill.invulnerableGroup = function(whichGroup, during)
+    if (whichGroup == nil) then
+        return
+    end
+    if (during < 0) then
+        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
+    end
+    cj.ForGroup(
+        whichGroup,
+        function()
+            cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
+        end
+    )
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            cj.ForGroup(
+                whichGroup,
+                function()
+                    cj.SetUnitInvulnerable(cj.GetEnumUnit(), false)
+                end
+            )
+        end
+    )
+end
+--暂停效果
+hskill.pause = function(whichUnit, during, pauseColor)
+    if (whichUnit == nil) then
+        return
+    end
+    if (during < 0) then
+        during = 0.01 -- 假如没有设置时间，默认打断效果
+    end
+    local prevTimer = hskill.get(whichUnit, "pauseTimer")
+    local prevTimeRemaining = 0
+    if (prevTimer ~= nil) then
+        prevTimeRemaining = cj.TimerGetRemaining(prevTimer)
+        if (prevTimeRemaining > 0) then
+            htime.delTimer(prevTimer)
+            hskill.set(whichUnit, "pauseTimer", nil)
+        else
+            prevTimeRemaining = 0
+        end
+    end
+    if (pauseColor == "black") then
+        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 30, 0)
+    elseif (pauseColor == "blue") then
+        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 200, 0)
+    elseif (pauseColor == "red") then
+        bj.SetUnitVertexColorBJ(whichUnit, 200, 30, 30, 0)
+    elseif (pauseColor == "green") then
+        bj.SetUnitVertexColorBJ(whichUnit, 30, 200, 30, 0)
+    end
+    cj.SetUnitTimeScalePercent(whichUnit, 0.00)
+    cj.PauseUnit(whichUnit, true)
+    hskill.set(
+        whichUnit,
+        "pauseTimer",
+        htime.setTimeout(
+            during + prevTimeRemaining,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.PauseUnit(whichUnit, false)
+                if (string.len(pauseColor) ~= nil) then
+                    cj.SetUnitVertexColorBJ(whichUnit, 100, 100, 100, 0)
+                end
+                cj.SetUnitTimeScalePercent(whichUnit, 100.00)
+            end
+        )
+    )
+end
+
+--为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
+hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
+    if (whichUnit ~= nil and whichAbility ~= nil and during > 0.03) then
+        cj.UnitAddAbility(whichUnit, whichAbility)
+        cj.UnitMakeAbilityPermanent(whichUnit, true, whichAbility)
+        if (abilityLevel > 0) then
+            cj.SetUnitAbilityLevel(whichUnit, whichAbility, abilityLevel)
+        end
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.UnitRemoveAbility(whichUnit, whichAbility)
+            end
+        )
+    end
+end
+
 --- 造成伤害
 --[[
     bean = {
@@ -706,6 +836,7 @@ end
         whichUnit = nil, --目标单位（挑选，单位时会自动选择与此单位同盟的单位）
         whichGroup = nil, --目标单位组（挑选，优先级更高）
         sourceUnit = nil, --伤害来源单位（可选）
+        odds = 100, --几率（可选）
         model = nil --目标位置特效（可选）
         modelSingle = nil --个体的特效（可选）
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
@@ -713,12 +844,13 @@ end
     }
 ]]
 hskill.bomb = function(bean)
-    if (bean.damage == nil or beam.damage <= 0) then
+    if (bean.damage == nil or bean.damage <= 0) then
         return
     end
     if (bean.sourceUnit == nil) then
         return
     end
+    local odds = bean.odds or 100
     local range = bean.range or 1
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
     local huntType = bean.huntType or {CONST_HUNT_TYPE.real}
@@ -748,29 +880,39 @@ hskill.bomb = function(bean)
         print_err("lost bomb target")
         return
     end
-    -- @触发爆破事件
-    if (bean.sourceUnit ~= nil and bean.whichUnit) then
-        hevent.triggerEvent(
-            {
-                triggerKey = heventKeyMap.bomb,
-                triggerUnit = bean.sourceUnit,
-                targetUnit = bean.whichUnit,
-                damage = bean.damage,
-                range = range
-            }
-        )
-    end
     cj.ForGroup(
         whichGroup,
         function()
+            --计算抵抗
+            local oppose = hattr.get(cj.GetEnumUnit(), "bomb_oppose")
+            local tempOdds = odds - oppose --(%)
+            local damage = bean.damage
+            if (tempOdds <= 0) then
+                return
+            else
+                if (math.random(1, 1000) > tempOdds * 10) then
+                    return
+                end
+                damage = damage * (1 - oppose * 0.01)
+            end
             hskill.damage(
                 {
                     fromUnit = bean.sourceUnit,
                     toUnit = cj.GetEnumUnit(),
-                    damage = bean.damage,
+                    damage = damage,
                     realDamage = range,
                     huntKind = huntKind,
                     huntType = huntType
+                }
+            )
+            -- @触发爆破事件
+            hevent.triggerEvent(
+                {
+                    triggerKey = heventKeyMap.bomb,
+                    triggerUnit = bean.sourceUnit,
+                    targetUnit = cj.GetEnumUnit(),
+                    damage = bean.damage,
+                    range = range
                 }
             )
             -- @触发被爆破事件
@@ -795,12 +937,13 @@ end
         damage = 0, --伤害（必须有，小于等于0直接无效）
         whichUnit = [unit], --第一个的目标单位（必须有）
         prevUnit = [unit], --上一个的目标单位（必须有，用于构建两点间闪电特效）
+        sourceUnit = nil, --伤害来源单位（必须有）
         lightningType = [hlightning.type], -- 闪电效果类型（可选 详情查看 hlightning.type
+        odds = 100, --几率（可选）
         qty = 1, --传递的最大单位数（可选，默认1）
         change = 0, --增减率（可选，默认不增不减为0，范围建议[-1.00，1.00]）
         range = 300, --寻找下一目标的作用范围（可选，默认300）
         isRepeat = false, --是否允许同一个单位重复打击（临近2次不会同一个）
-        sourceUnit = nil, --伤害来源单位（可选）
         model = nil, --目标位置特效（可选）
         huntKind = CONST_HUNT_KIND.skill, --伤害的种类（可选）
         huntType = {"thunder"}, --伤害的类型,注意是table（可选）
@@ -815,7 +958,19 @@ hskill.lightningChain = function(bean)
     if (bean.sourceUnit == nil) then
         return
     end
+    local odds = bean.odds or 100
     local damage = bean.damage
+    --计算抵抗
+    local oppose = hattr.get(u, "lightning_chain_oppose")
+    odds = odds - oppose --(%)
+    if (odds <= 0) then
+        return
+    else
+        if (math.random(1, 1000) > odds * 10) then
+            return
+        end
+        damage = damage * (1 - oppose * 0.01)
+    end
     local whichUnit = bean.whichUnit
     local prevUnit = bean.prevUnit
     local lightningType = bean.lightningType or hlightning.type.shan_dian_lian_ci
@@ -905,7 +1060,7 @@ hskill.lightningChain = function(bean)
             return
         end
         bean.whichUnit = cj.FirstOfGroup(g)
-        bean.damage = damage * (1 + change)
+        bean.damage = bean.damage * (1 + change)
         cj.GroupClear(g)
         cj.DestroyGroup(g)
         htime.setTimeout(
@@ -924,243 +1079,96 @@ hskill.lightningChain = function(bean)
     end
 end
 
----回避
-hskill.avoid = function(whichUnit)
-    cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
-    cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
-    cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
-    htime.setTimeout(
-        0.00,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
-            cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
-            cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
-        end
-    )
-end
-
----无敌
-hskill.invulnerable = function(whichUnit, during)
-    if (whichUnit == nil) then
-        return
-    end
-    if (during < 0) then
-        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
-    end
-    cj.SetUnitInvulnerable(whichUnit, true)
-    htime.setTimeout(
-        during,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.SetUnitInvulnerable(whichUnit, false)
-        end
-    )
-end
----群体无敌
-hskill.invulnerableGroup = function(whichGroup, during)
-    if (whichGroup == nil) then
-        return
-    end
-    if (during < 0) then
-        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
-    end
-    cj.ForGroup(
-        whichGroup,
-        function()
-            cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
-        end
-    )
-    htime.setTimeout(
-        during,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.ForGroup(
-                whichGroup,
-                function()
-                    cj.SetUnitInvulnerable(cj.GetEnumUnit(), false)
-                end
-            )
-        end
-    )
-end
----暂停效果
-hskill.pause = function(whichUnit, during, pauseColor)
-    if (whichUnit == nil) then
-        return
-    end
-    if (during < 0) then
-        during = 0.01 -- 假如没有设置时间，默认打断效果
-    end
-    local prevTimer = hskill.get(whichUnit, "pauseTimer")
-    local prevTimeRemaining = 0
-    if (prevTimer ~= nil) then
-        prevTimeRemaining = cj.TimerGetRemaining(prevTimer)
-        if (prevTimeRemaining > 0) then
-            htime.delTimer(prevTimer)
-            hskill.set(whichUnit, "pauseTimer", nil)
-        else
-            prevTimeRemaining = 0
-        end
-    end
-    if (pauseColor == "black") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 30, 0)
-    elseif (pauseColor == "blue") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 200, 0)
-    elseif (pauseColor == "red") then
-        bj.SetUnitVertexColorBJ(whichUnit, 200, 30, 30, 0)
-    elseif (pauseColor == "green") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 200, 30, 0)
-    end
-    cj.SetUnitTimeScalePercent(whichUnit, 0.00)
-    cj.PauseUnit(whichUnit, true)
-    hskill.set(
-        whichUnit,
-        "pauseTimer",
-        htime.setTimeout(
-            during + prevTimeRemaining,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                cj.PauseUnit(whichUnit, false)
-                if (string.len(pauseColor) ~= nil) then
-                    cj.SetUnitVertexColorBJ(whichUnit, 100, 100, 100, 0)
-                end
-                cj.SetUnitTimeScalePercent(whichUnit, 100.00)
-            end
-        )
-    )
-end
-
----为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
-hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
-    if (whichUnit ~= nil and whichAbility ~= nil and during > 0.03) then
-        cj.UnitAddAbility(whichUnit, whichAbility)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, whichAbility)
-        if (abilityLevel > 0) then
-            cj.SetUnitAbilityLevel(whichUnit, whichAbility, abilityLevel)
-        end
-        htime.setTimeout(
-            during,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                cj.UnitRemoveAbility(whichUnit, whichAbility)
-            end
-        )
-    end
-end
-
---- 自定义技能 - 对单位/对XY/对点
---[[
-    bean = {
-        whichPlayer,
-        skillId,
-        orderString,
-        x,y 创建位置
-        targetX,targetY 对XY时可选
-        targetLoc, 对点时可选
-        targetUnit, 对单位时可选
-        life, 马甲生命周期
-    }
-]]
-hskill.diy = function(bean)
-    if (bean.whichPlayer == nil or bean.skillId == nil or bean.orderString == nil) then
-        return
-    end
-    if (bean.x == nil or bean.y == nil) then
-        return
-    end
-    local life = bean.life
-    if (bean.life == nil or bean.life < 2.00) then
-        life = 2.00
-    end
-    local token = cj.CreateUnit(bean.whichPlayer, hskill.SKILL_TOKEN, x, y, bj_UNIT_FACING)
-    cj.UnitAddAbility(token, bean.skillId)
-    if (bean.targetUnit ~= nil) then
-        cj.IssueTargetOrderById(token, bean.orderId, bean.targetUnit)
-    elseif (bean.targetX ~= nil and bean.targetY ~= nil) then
-        cj.IssuePointOrder(token, bean.orderString, bean.targetX, bean.targetY)
-    elseif (bean.targetLoc ~= nil) then
-        cj.IssuePointOrderLoc(token, bean.orderString, bean.targetLoc)
-    else
-        cj.IssueImmediateOrder(token, bean.orderString)
-    end
-    hunit.del(token, life)
-end
-
---[[
-    变身[参考 h-lua变身技能模板]
-    * modelFrom 技能模板 参考 h-lua SLK
-    * modelTo 技能模板 参考 h-lua SLK
-]]
-hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
-    heffect.toUnit(eff, u, 1.5)
-    UnitAddAbility(u, modelTo)
-    UnitRemoveAbility(u, modelTo)
-    hattr.reRegister(u)
-    htime.setTimeout(
-        during,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            heffect.toUnit(eff, u, 1.5)
-            UnitAddAbility(u, modelFrom)
-            UnitRemoveAbility(u, modelFrom)
-            hattr.reRegister(u)
-        end
-    )
-    -- 根据data影响属性
-    hattr.set(u, during, attrData)
-end
-
 --[[
     击飞
-    distance 击退距离
-    high 击飞高度
+    bean = {
+        damage = 0, --伤害（必须有，但是这里可以等于0）
+        whichUnit = [unit], --第一个的目标单位（必须有）
+        sourceUnit = [unit], --伤害来源单位（必须有）
+        odds = 100, --几率（可选,默认100）
+        distance = 0, --击退距离，可选，默认0
+        high = 100, --击飞高度，可选，默认100
+        during = 0.5, --击飞过程持续时间，可选，默认0.5秒
+        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
+        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+    }
 ]]
-hskill.crackFly = function(distance, high, during, bean)
-    if (bean.fromUnit == nil or bean.toUnit == nil) then
+hskill.crackFly = function(bean)
+    if (bean.damage == nil or bean.damage < 0) then
         return
     end
-    -- 不二次击飞
+    if (bean.whichUnit == nil or bean.sourceUnit == nil) then
+        return
+    end
+    local odds = bean.odds or 100
+    local damage = bean.damage
+    --计算抵抗
+    local oppose = hattr.get(u, "crack_fly_oppose")
+    odds = odds - oppose --(%)
+    if (odds <= 0) then
+        return
+    else
+        if (math.random(1, 1000) > odds * 10) then
+            return
+        end
+        if (damage > 0) then
+            damage = damage * (1 - oppose * 0.01)
+        end
+    end
+    local distance = bean.distance or 0
+    local high = bean.high or 100
+    local during = bean.during or 0.5
+    if (during < 0.5) then
+        during = 0.5
+    end
+    --不二次击飞
     if (his.get(bean.toUnit, "isCrackFly") == true) then
         return
     end
     his.set(bean.toUnit, "isCrackFly", true)
-    if (during < 0.5) then
-        during = 0.5
-    end
-    -- 镜头放大模式下，距离缩小一半
+    --镜头放大模式下，距离缩小一半
     if (hcamera.getModel(cj.GetOwningPlayer(bean.toUnit)) == "zoomin") then
         distance = distance * 0.5
         high = high * 0.5
     end
-    hskill.unarm(bean.toUnit, during, nil, 0, 0)
-    hskill.silent(bean.toUnit, during, nil, 0, 0)
+    local tempObj = {
+        odds = 99999,
+        whichUnit = bean.whichUnit,
+        during = during
+    }
+    hskill.unarm(tempObj)
+    hskill.silent(tempObj)
     hattr.set(
         bean.toUnit,
         during,
         {
-            move = "-1044"
+            move = "-9999"
         }
     )
-    hunit.setCanFly(bean.toUnit)
-    cj.SetUnitPathing(bean.toUnit, false)
-    local originHigh = cj.GetUnitFlyHeight(bean.toUnit)
-    local originFacing = hunit.getFacing(bean.toUnit)
-    local originDeg = hlogic.getDegBetweenUnit(bean.fromUnit, bean.toUnit)
+    hunit.setCanFly(bean.whichUnit)
+    cj.SetUnitPathing(bean.whichUnit, false)
+    local originHigh = cj.GetUnitFlyHeight(bean.whichUnit)
+    local originFacing = hunit.getFacing(bean.whichUnit)
+    local originDeg = hlogic.getDegBetweenUnit(bean.sourceUnit, bean.whichUnit)
     local cost = 0
+    -- @触发击飞事件
+    hevent.triggerEvent(
+        {
+            triggerKey = heventKeyMap.crackFly,
+            triggerUnit = bean.sourceUnit,
+            targetUnit = bean.whichUnit,
+            damage = damage,
+            high = high,
+            distance = distance
+        }
+    )
     -- @触发被击飞事件
     hevent.triggerEvent(
         {
             triggerKey = heventKeyMap.beCrackFly,
-            triggerUnit = bean.toUnit,
-            sourceUnit = bean.fromUnit,
-            damage = bean.damage,
+            triggerUnit = bean.whichUnit,
+            sourceUnit = bean.sourceUnit,
+            damage = damage,
             high = high,
             distance = distance
         }
@@ -1168,14 +1176,14 @@ hskill.crackFly = function(distance, high, during, bean)
     htime.setInterval(
         0.05,
         function(t, td)
-            local xy = 0
+            local dist = 0
             local z = 0
             local timerSetTime = htime.getSetTime(t)
             if (cost > during) then
                 hskill.damage(
                     {
                         fromUnit = bean.fromUnit,
-                        toUnit = bean.toUnit,
+                        toUnit = bean.whichUnit,
                         damage = bean.damage,
                         realDamage = bean.damage,
                         huntEff = bean.huntEff,
@@ -1183,48 +1191,54 @@ hskill.crackFly = function(distance, high, during, bean)
                         huntType = bean.huntType
                     }
                 )
-                cj.SetUnitFlyHeight(bean.toUnit, originHigh, 10000)
-                cj.SetUnitPathing(bean.toUnit, true)
-                his.set(bean.toUnit, "isCrackFly", false)
-                if (his.water(bean.toUnit) == true) then
+                cj.SetUnitFlyHeight(bean.whichUnit, originHigh, 10000)
+                cj.SetUnitPathing(bean.whichUnit, true)
+                his.set(bean.whichUnit, "isCrackFly", false)
+                -- 默认是地面，创建沙尘
+                local tempEff = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
+                if (his.water(bean.whichUnit) == true) then
                     -- 如果是水面，创建水花
-                    heffect.toUnit("Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl", bean.toUnit, 0)
-                else
-                    -- 如果是地面，创建沙尘
-                    heffect.toUnit(
-                        "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl",
-                        bean.toUnit,
-                        0
-                    )
+                    tempEff = "Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl"
                 end
+                heffect.whichUnit(tempEff, bean.whichUnit, 0)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 return
             end
             cost = cost + timerSetTime
             if (cost < during * 0.35) then
-                xy = distance / (during * 0.5 / timerSetTime)
+                dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.35 / timerSetTime)
-                if (xy > 0) then
+                if (dist > 0) then
                     local pxy =
-                        hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
-                    cj.SetUnitFacing(bean.toUnit, originFacing)
-                    cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
+                        hlogic.polarProjection(
+                        cj.GetUnitX(bean.whichUnit),
+                        cj.GetUnitY(bean.whichUnit),
+                        dist,
+                        originDeg
+                    )
+                    cj.SetUnitFacing(bean.whichUnit, originFacing)
+                    cj.SetUnitPosition(bean.whichUnit, pxy.x, pxy.y)
                 end
                 if (z > 0) then
-                    cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) + z, z / timerSetTime)
+                    cj.SetUnitFlyHeight(bean.whichUnit, cj.GetUnitFlyHeight(bean.whichUnit) + z, z / timerSetTime)
                 end
             else
-                xy = distance / (during * 0.5 / timerSetTime)
+                dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.65 / timerSetTime)
-                if (xy > 0) then
+                if (dist > 0) then
                     local pxy =
-                        hlogic.polarProjection(cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), xy, originDeg)
-                    cj.SetUnitFacing(bean.toUnit, originFacing)
-                    cj.SetUnitPosition(bean.toUnit, pxy.x, pxy.y)
+                        hlogic.polarProjection(
+                        cj.GetUnitX(bean.whichUnit),
+                        cj.GetUnitY(bean.whichUnit),
+                        dist,
+                        originDeg
+                    )
+                    cj.SetUnitFacing(bean.whichUnit, originFacing)
+                    cj.SetUnitPosition(bean.whichUnit, pxy.x, pxy.y)
                 end
                 if (z > 0) then
-                    cj.SetUnitFlyHeight(bean.toUnit, cj.GetUnitFlyHeight(bean.toUnit) - z, z / timerSetTime)
+                    cj.SetUnitFlyHeight(bean.whichUnit, cj.GetUnitFlyHeight(bean.whichUnit) - z, z / timerSetTime)
                 end
             end
         end
@@ -1326,6 +1340,69 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
             end
         end
     )
+end
+
+--[[
+    变身[参考 h-lua变身技能模板]
+    * modelFrom 技能模板 参考 h-lua SLK
+    * modelTo 技能模板 参考 h-lua SLK
+]]
+hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
+    heffect.toUnit(eff, u, 1.5)
+    UnitAddAbility(u, modelTo)
+    UnitRemoveAbility(u, modelTo)
+    hattr.reRegister(u)
+    htime.setTimeout(
+        during,
+        function(t, td)
+            htime.delDialog(td)
+            htime.delTimer(t)
+            heffect.toUnit(eff, u, 1.5)
+            UnitAddAbility(u, modelFrom)
+            UnitRemoveAbility(u, modelFrom)
+            hattr.reRegister(u)
+        end
+    )
+    -- 根据data影响属性
+    hattr.set(u, during, attrData)
+end
+
+--- 自定义技能 - 对单位/对XY/对点
+--[[
+    bean = {
+        whichPlayer,
+        skillId,
+        orderString,
+        x,y 创建位置
+        targetX,targetY 对XY时可选
+        targetLoc, 对点时可选
+        targetUnit, 对单位时可选
+        life, 马甲生命周期
+    }
+]]
+hskill.diy = function(bean)
+    if (bean.whichPlayer == nil or bean.skillId == nil or bean.orderString == nil) then
+        return
+    end
+    if (bean.x == nil or bean.y == nil) then
+        return
+    end
+    local life = bean.life
+    if (bean.life == nil or bean.life < 2.00) then
+        life = 2.00
+    end
+    local token = cj.CreateUnit(bean.whichPlayer, hskill.SKILL_TOKEN, x, y, bj_UNIT_FACING)
+    cj.UnitAddAbility(token, bean.skillId)
+    if (bean.targetUnit ~= nil) then
+        cj.IssueTargetOrderById(token, bean.orderId, bean.targetUnit)
+    elseif (bean.targetX ~= nil and bean.targetY ~= nil) then
+        cj.IssuePointOrder(token, bean.orderString, bean.targetX, bean.targetY)
+    elseif (bean.targetLoc ~= nil) then
+        cj.IssuePointOrderLoc(token, bean.orderString, bean.targetLoc)
+    else
+        cj.IssueImmediateOrder(token, bean.orderString)
+    end
+    hunit.del(token, life)
 end
 
 return hskill

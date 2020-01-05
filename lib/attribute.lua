@@ -1533,6 +1533,7 @@ hattr.huntUnit = function(bean)
                         --闪电链
                         hskill.lightningChain(
                             {
+                                odds = b.odds,
                                 damage = b.val,
                                 whichUnit = b.toUnit,
                                 prevUnit = b.fromUnit,
@@ -1548,71 +1549,25 @@ hattr.huntUnit = function(bean)
                         )
                     elseif (b.attr == "crack_fly") then
                         --击飞
-                        hskill.crackFly(bean.toUnit, b.during, b.odds, b.val, bean.fromUnit)
+                        hskill.crackFly(
+                            {
+                                odds = b.odds,
+                                damage = b.val,
+                                whichUnit = b.toUnit,
+                                sourceUnit = b.fromUnit,
+                                distance = b.distance,
+                                high = b.high,
+                                during = b.during,
+                                huntKind = CONST_HUNT_KIND.special,
+                                huntType = {CONST_HUNT_TYPE.thunder}
+                            }
+                        )
                     end
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
                         heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
                     end
                 end
             end
-        end
-        local lightningChainOppose = hattr.get(bean.toUnit, "lightning_chain_oppose")
-        local crackFlyOppose = hattr.get(bean.toUnit, "crack_fly_oppose")
-        -- 闪电链
-        if (isLightningChain) then
-            hskill.lightningChain(
-                bean.model,
-                lightningChainEffect.qty,
-                lightningChainEffect.reduce,
-                lightningChainEffect.range,
-                false,
-                {
-                    fromUnit = bean.fromUnit,
-                    toUnit = bean.toUnit,
-                    damage = lightningChainEffect.val
-                }
-            )
-            -- @触发闪电链事件
-            hevent.triggerEvent(
-                {
-                    triggerKey = heventKeyMap.lightningChain,
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
-                    damage = lightningChainEffect.val,
-                    range = lightningChainEffect.range,
-                    qty = lightningChainEffect.qty
-                }
-            )
-        end
-        -- 击飞
-        if (isCrackFly) then
-            hskill.crackFly(
-                crackFlyEffect.distance,
-                crackFlyEffect.high,
-                crackFlyEffect.during,
-                {
-                    fromUnit = bean.fromUnit,
-                    toUnit = bean.toUnit,
-                    damage = crackFlyEffect.val,
-                    huntEff = crackFlyEffect.model,
-                    huntKind = CONST_HUNT_KIND.special,
-                    huntType = {CONST_HUNT_TYPE.physical}
-                }
-            )
-            if (crackFlyEffect.model ~= nil) then
-                heffect.toUnit(crackFlyEffect.model, bean.toUnit, "origin", 0.5)
-            end
-            -- @触发击飞事件
-            hevent.triggerEvent(
-                {
-                    triggerKey = heventKeyMap.crackFly,
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
-                    damage = crackFlyEffect.val,
-                    high = crackFlyEffect.high,
-                    distance = crackFlyEffect.distance
-                }
-            )
         end
     end
 end
