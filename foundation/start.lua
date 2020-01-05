@@ -58,7 +58,7 @@ hLuaStart = {
         cj.TriggerAddAction(triggerDeath, function()
             local u = cj.GetTriggerUnit()
             local killer = hevent.getLastDamageUnit(u)
-            if(killer ~= nil)then
+            if (killer ~= nil) then
                 hplayer.addKill(cj.GetOwningPlayer(killer), 1)
             end
             -- @触发死亡事件
@@ -87,9 +87,9 @@ hLuaStart = {
             -- 排除单位类型
             local uid = cj.GetUnitTypeId(u)
             if (uid == hslk_global.unit_token
-                    or uid == hslk_global.unit_hero_tavern_token
-                    or uid == hslk_global.unit_hero_death_token
-                    or uid == hslk_global.unit_hero_tavern
+                or uid == hslk_global.unit_hero_tavern_token
+                or uid == hslk_global.unit_hero_death_token
+                or uid == hslk_global.unit_hero_tavern
             ) then
                 return
             end
@@ -149,10 +149,10 @@ hLuaStart = {
                             hattr.set(u, 0, { life_source_current = '-' .. fill })
                             hunit.addCurLife(u, fill)
                             htextTag.style(
-                                    htextTag.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
-                                    "scale",
-                                    0,
-                                    0.2
+                                htextTag.ttg2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
+                                "scale",
+                                0,
+                                0.2
                             )
                         end
                     end
@@ -169,10 +169,10 @@ hLuaStart = {
                             hattr.set(u, 0, { mana_source_current = '-' .. fill })
                             hunit.addCurMana(u, fill)
                             htextTag.style(
-                                    htextTag.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
-                                    "scale",
-                                    0,
-                                    0.2
+                                htextTag.ttg2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
+                                "scale",
+                                0,
+                                0.2
                             )
                         end
                     end

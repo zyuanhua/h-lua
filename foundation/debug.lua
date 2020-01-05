@@ -1,5 +1,5 @@
 print_stack = function(...)
-    local out = {"[TRACE]"}
+    local out = { "[TRACE]" }
     local n = select("#", ...)
     for i = 1, n, 1 do
         local v = select(i, ...)

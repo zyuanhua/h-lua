@@ -35,13 +35,12 @@ local bit_or, bit_and, bit_not, bit_xor, bit_rshift, bit_lshift
 
 local ok, bit = pcall(require, "bit")
 if ok then
-    bit_or, bit_and, bit_not, bit_xor, bit_rshift, bit_lshift =
-        bit.bor,
-        bit.band,
-        bit.bnot,
-        bit.bxor,
-        bit.rshift,
-        bit.lshift
+    bit_or, bit_and, bit_not, bit_xor, bit_rshift, bit_lshift = bit.bor,
+    bit.band,
+    bit.bnot,
+    bit.bxor,
+    bit.rshift,
+    bit.lshift
 else
     ok, bit = pcall(require, "bit32")
 
@@ -228,7 +227,7 @@ end
 -- cut up a string in little-endian ints of given size
 local function cut_le_str(s, ...)
     local o, r = 1, {}
-    local args = {...}
+    local args = { ... }
     for i = 1, #args do
         table.insert(r, str2lei(sub(s, o, o + args[i] - 1)))
         o = o + args[i]
@@ -437,8 +436,7 @@ local function md5_finish(self)
         padLen = 64
     end
 
-    local s =
-        char(128) ..
+    local s = char(128) ..
         rep(char(0), padLen - 1) .. lei2str(bit_and(8 * msgLen, 0xFFFFFFFF)) .. lei2str(math.floor(msgLen / 0x20000000))
     md5_update(self, s)
 

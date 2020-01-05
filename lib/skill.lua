@@ -324,7 +324,7 @@ hskill.broken = function(bean)
     local damage = bean.damage or 0
     local sourceUnit = bean.sourceUnit or nil
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or {CONST_HUNT_TYPE.real}
+    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
     --计算抵抗
     local oppose = hattr.get(u, "broken_oppose")
     odds = odds - oppose --(%)
@@ -336,8 +336,7 @@ hskill.broken = function(bean)
         end
         damage = damage * (1 - oppose * 0.01)
     end
-    local cu =
-        hunit.create(
+    local cu = hunit.create(
         {
             id = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
@@ -409,7 +408,7 @@ hskill.swim = function(bean)
     local damage = bean.damage or 0
     local sourceUnit = bean.sourceUnit or nil
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or {CONST_HUNT_TYPE.real}
+    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
     --计算抵抗
     local oppose = hattr.get(u, "swim_oppose")
     odds = odds - oppose --(%)
@@ -433,8 +432,7 @@ hskill.swim = function(bean)
             htextTag.style(htextTag.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
         end
     end
-    local cu =
-        hunit.create(
+    local cu = hunit.create(
         {
             id = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
@@ -456,7 +454,7 @@ hskill.swim = function(bean)
                 realDamage = damage,
                 realDamageString = "眩晕",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                huntType = { CONST_HUNT_TYPE.real }
             }
         )
     end
@@ -522,7 +520,7 @@ hskill.silent = function(bean)
     local damage = bean.damage or 0
     local sourceUnit = bean.sourceUnit or nil
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or {CONST_HUNT_TYPE.real}
+    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
     --计算抵抗
     local oppose = hattr.get(u, "silent_oppose")
     odds = odds - oppose --(%)
@@ -578,7 +576,7 @@ hskill.silent = function(bean)
                 realDamage = damage,
                 realDamageString = "沉默",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                huntType = { CONST_HUNT_TYPE.real }
             }
         )
     end
@@ -646,7 +644,7 @@ hskill.unarm = function(bean)
     local damage = bean.damage or 0
     local sourceUnit = bean.sourceUnit or nil
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or {CONST_HUNT_TYPE.real}
+    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
     --计算抵抗
     local oppose = hattr.get(u, "unarm_oppose")
     odds = odds - oppose --(%)
@@ -702,7 +700,7 @@ hskill.unarm = function(bean)
                 realDamage = damage,
                 realDamageString = "缴械",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                huntType = { CONST_HUNT_TYPE.real }
             }
         )
     end
@@ -770,7 +768,7 @@ hskill.fetter = function(bean)
     local damage = bean.damage or 0
     local sourceUnit = bean.sourceUnit or nil
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or {CONST_HUNT_TYPE.real}
+    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
     --计算抵抗
     local oppose = hattr.get(u, "fetter_oppose")
     odds = odds - oppose --(%)
@@ -800,7 +798,7 @@ hskill.fetter = function(bean)
                 realDamage = damage,
                 realDamageString = "缚足",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                huntType = { CONST_HUNT_TYPE.real }
             }
         )
     end
@@ -853,13 +851,12 @@ hskill.bomb = function(bean)
     local odds = bean.odds or 100
     local range = bean.range or 1
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.huntType or {CONST_HUNT_TYPE.real}
+    local huntType = bean.huntType or { CONST_HUNT_TYPE.real }
     local whichGroup
     if (bean.whichGroup ~= nil) then
         whichGroup = bean.whichGroup
     elseif (bean.whichUnit ~= nil) then
-        whichGroup =
-            hgroup.createByUnit(
+        whichGroup = hgroup.createByUnit(
             bean.whichUnit,
             range,
             function()
@@ -979,7 +976,7 @@ hskill.lightningChain = function(bean)
     local range = bean.range or 300
     local isRepeat = bean.isRepeat or false
     local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.huntType or {"thunder"}
+    local huntType = bean.huntType or { "thunder" }
     qty = qty - 1
     if (qty < 0) then
         qty = 0
@@ -1032,8 +1029,7 @@ hskill.lightningChain = function(bean)
             end
             cj.GroupAddUnit(bean.repeatGroup, whichUnit)
         end
-        local g =
-            hgroup.createByUnit(
+        local g = hgroup.createByUnit(
             bean.toUnit,
             range,
             function()
@@ -1210,8 +1206,7 @@ hskill.crackFly = function(bean)
                 dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.35 / timerSetTime)
                 if (dist > 0) then
-                    local pxy =
-                        hlogic.polarProjection(
+                    local pxy = hlogic.polarProjection(
                         cj.GetUnitX(bean.whichUnit),
                         cj.GetUnitY(bean.whichUnit),
                         dist,
@@ -1227,8 +1222,7 @@ hskill.crackFly = function(bean)
                 dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.65 / timerSetTime)
                 if (dist > 0) then
-                    local pxy =
-                        hlogic.polarProjection(
+                    local pxy = hlogic.polarProjection(
                         cj.GetUnitX(bean.whichUnit),
                         cj.GetUnitY(bean.whichUnit),
                         dist,
@@ -1286,8 +1280,7 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
                 heffect.toXY(meff, x, y, 0.5)
             end
             if (bean.damage > 0) then
-                local g =
-                    hgroup.createByUnit(
+                local g = hgroup.createByUnit(
                     mover,
                     range,
                     function()

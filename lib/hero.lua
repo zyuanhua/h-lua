@@ -4,8 +4,8 @@ local hhero = {
     player_current_qty = {}, -- 玩家当前单位数量,默认0
     player_units = {}, -- 玩家当前单位
     build_token = hslk_global.unit_hero_tavern_token,
-    build_params = {id = hslk_global.unit_hero_tavern, x = 0, y = 0, distance = 128.0, per_row = 2, allow_qty = 11},
-    hero_born_params = {x = 250, y = 250}
+    build_params = { id = hslk_global.unit_hero_tavern, x = 0, y = 0, distance = 128.0, per_row = 2, allow_qty = 11 },
+    hero_born_params = { x = 250, y = 250 }
 }
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     local p = cj.Player(i - 1)
@@ -23,15 +23,11 @@ cj.TriggerAddAction(
         if (diffLv < 1) then
             return
         end
-        hattr.set(
-            u,
-            0,
-            {
-                str_white = "=" .. cj.GetHeroStr(u, false),
-                agi_white = "=" .. cj.GetHeroAgi(u, false),
-                int_white = "=" .. cj.GetHeroInt(u, false)
-            }
-        )
+        hattr.set(u, 0, {
+            str_white = "=" .. cj.GetHeroStr(u, false),
+            agi_white = "=" .. cj.GetHeroAgi(u, false),
+            int_white = "=" .. cj.GetHeroInt(u, false)
+        })
         -- @触发升级事件
         hevent.triggerEvent(
             {
@@ -116,15 +112,12 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
             cj.PauseUnit(u, false)
         elseif (type == "tavern") then
             -- 酒馆方式(单位ID)
-            u =
-                hunit.create(
-                {
-                    whichPlayer = whichPlayer,
-                    unitId = sItem,
-                    x = hhero.hero_born_params.x,
-                    y = hhero.hero_born_params.y
-                }
-            )
+            u = hunit.create({
+                whichPlayer = whichPlayer,
+                unitId = sItem,
+                x = hhero.hero_born_params.x,
+                y = hhero.hero_born_params.y
+            })
             if (hhero.player_current_qty[whichPlayer] >= hhero.player_allow_qty[whichPlayer]) then
                 hmessage.echoXY0(whichPlayer, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
             else
@@ -132,12 +125,12 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
                     whichPlayer,
                     "您选择了 " ..
                         "|cffffff80" ..
-                            cj.GetUnitName(u) ..
-                                "|r,还要选 " ..
-                                    math.floor(
-                                        hhero.player_allow_qty[whichPlayer] - hhero.player_current_qty[whichPlayer]
-                                    ) ..
-                                        " 个",
+                        cj.GetUnitName(u) ..
+                        "|r,还要选 " ..
+                        math.floor(
+                            hhero.player_allow_qty[whichPlayer] - hhero.player_current_qty[whichPlayer]
+                        ) ..
+                        " 个",
                     0
                 )
             end
@@ -171,8 +164,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         local y = hRuntime.heroBuildSelection[u].y
         hRuntime.heroBuildSelection[u] = nil
         hunit.del(u, 0)
-        local u_new =
-            hunit.create(
+        local u_new = hunit.create(
             {
                 whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                 unitId = heroId,
@@ -243,8 +235,7 @@ hhero.buildClick = function(during, clickQty)
             else
                 x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
             end
-            local u =
-                hunit.create(
+            local u = hunit.create(
                 {
                     whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     unitId = heroId,
@@ -267,8 +258,7 @@ hhero.buildClick = function(during, clickQty)
     -- evt
     local tgr_random = cj.CreateTrigger()
     local tgr_repick = cj.CreateTrigger()
-    local tgr_click =
-        hevent.onSelection(
+    local tgr_click = hevent.onSelection(
         nil,
         clickQty,
         function()
@@ -296,8 +286,8 @@ hhero.buildClick = function(during, clickQty)
                     p,
                     "您选择了 " ..
                         "|cffffff80" ..
-                            cj.GetUnitName(u) ..
-                                "|r,还要选 " .. math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个",
+                        cj.GetUnitName(u) ..
+                        "|r,还要选 " .. math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个",
                     0
                 )
             end
@@ -353,8 +343,7 @@ hhero.buildClick = function(during, clickQty)
     -- token
     for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
         local p = cj.Player(i - 1)
-        local u =
-            hunit.create(
+        local u = hunit.create(
             {
                 whichPlayer = p,
                 unitId = hhero.build_token,
@@ -511,8 +500,7 @@ hhero.buildTavern = function(during)
                 else
                     x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
                 end
-                tavern =
-                    hunit.create(
+                tavern = hunit.create(
                     {
                         whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                         unitId = hhero.build_params.id,
@@ -541,8 +529,7 @@ hhero.buildTavern = function(during)
     -- token
     for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
         local p = cj.Player(i - 1)
-        local u =
-            hunit.create(
+        local u = hunit.create(
             {
                 whichPlayer = p,
                 unitId = hhero.build_token,

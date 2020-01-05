@@ -32,7 +32,7 @@ henemy.setShareSight = function(b)
 end
 --- 获取敌人是否共享视野
 henemy.isShareSight = function()
-    if(type(henemy.shareSight) == 'boolean')then
+    if (type(henemy.shareSight) == 'boolean') then
         return henemy.shareSight
     end
     return false

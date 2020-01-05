@@ -397,7 +397,7 @@ hitem.detector = function(whichUnit, it)
     else
         --todo 没有满格，也检查身上的物品是否可以合成
         if (false) then
-        --6物品合成检测
+            --6物品合成检测
         end
     end
     if (isFullSlot) then

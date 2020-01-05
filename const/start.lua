@@ -1,4 +1,3 @@
-
 require "const.attribute"
 require "const.huntKind"
 require "const.huntType"

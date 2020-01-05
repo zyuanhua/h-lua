@@ -114,10 +114,10 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         end
         if (buildType == 1) then
             local tempUnit = cj.CreateUnit(
-                    cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                    units[math.random(1, #units)],
-                    x, y,
-                    bj_UNIT_FACING
+                cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                units[math.random(1, #units)],
+                x, y,
+                bj_UNIT_FACING
             )
             table.insert(hRuntime.env[whichRect], tempUnit)
         elseif (buildType == 2) then
