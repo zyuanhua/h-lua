@@ -429,13 +429,12 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             print_mbr(params[attr])
             for k, v in pairs(params[attr]) do
                 if (v.hash == hkey) then
-                    params[attr][k] = nil
+                    table.remove(params[attr], k)
                     hasKey = true
                     break
                 end
             end
             if (hasKey == true) then
-                table.sort(params[attr])
                 print_mbr(params[attr])
                 if (dur > 0) then
                     htime.setTimeout(
