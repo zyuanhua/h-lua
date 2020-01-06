@@ -210,7 +210,7 @@ end
 
 --- 造成伤害
 --[[
-    bean = {
+    options = {
         fromUnit = nil, --伤害来源
         toUnit = nil, --目标单位
         damage = 0, --初始伤害
@@ -221,16 +221,16 @@ end
         huntEff = "", --伤害特效
     }
 ]]
-hskill.damage = function(bean)
+hskill.damage = function(options)
     -- 文本显示
-    bean.realDamageString = bean.realDamageString or ""
-    bean.realDamageStringColor = bean.realDamageStringColor or nil
+    options.realDamageString = options.realDamageString or ""
+    options.realDamageStringColor = options.realDamageStringColor or nil
     htextTag.style(
         htextTag.create2Unit(
-            bean.toUnit,
-            bean.realDamageString .. math.floor(bean.realDamage),
+            options.toUnit,
+            options.realDamageString .. math.floor(options.realDamage),
             6.00,
-            bean.realDamageStringColor,
+            options.realDamageStringColor,
             1,
             1.1,
             11.00
@@ -239,63 +239,63 @@ hskill.damage = function(bean)
         -0.05,
         0
     )
-    hevent.setLastDamageUnit(bean.toUnit, bean.fromUnit)
-    hplayer.addDamage(cj.GetOwningPlayer(bean.fromUnit), bean.realDamage)
-    hplayer.addBeDamage(cj.GetOwningPlayer(bean.toUnit), bean.realDamage)
-    hunit.subCurLife(bean.toUnit, bean.realDamage)
-    if (type(bean.huntEff) == "string" and string.len(bean.huntEff) > 0) then
-        heffect.toXY(bean.huntEff, cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), 0)
+    hevent.setLastDamageUnit(options.toUnit, options.fromUnit)
+    hplayer.addDamage(cj.GetOwningPlayer(options.fromUnit), options.realDamage)
+    hplayer.addBeDamage(cj.GetOwningPlayer(options.toUnit), options.realDamage)
+    hunit.subCurLife(options.toUnit, options.realDamage)
+    if (type(options.huntEff) == "string" and string.len(options.huntEff) > 0) then
+        heffect.toXY(options.huntEff, cj.GetUnitX(options.toUnit), cj.GetUnitY(options.toUnit), 0)
     end
     -- @触发伤害事件
     hevent.triggerEvent(
         {
             triggerKey = heventKeyMap.damage,
-            triggerUnit = bean.fromUnit,
-            targetUnit = bean.toUnit,
-            sourceUnit = bean.fromUnit,
-            damage = bean.damage,
-            realDamage = bean.realDamage,
-            damageKind = bean.huntKind,
-            damageType = bean.huntType
+            triggerUnit = options.fromUnit,
+            targetUnit = options.toUnit,
+            sourceUnit = options.fromUnit,
+            damage = options.damage,
+            realDamage = options.realDamage,
+            damageKind = options.huntKind,
+            damageType = options.huntType
         }
     )
     -- @触发被伤害事件
     hevent.triggerEvent(
         {
             triggerKey = heventKeyMap.beDamage,
-            triggerUnit = bean.toUnit,
-            sourceUnit = bean.fromUnit,
-            damage = bean.damage,
-            realDamage = bean.realDamage,
-            damageKind = bean.huntKind,
-            damageType = bean.huntType
+            triggerUnit = options.toUnit,
+            sourceUnit = options.fromUnit,
+            damage = options.damage,
+            realDamage = options.realDamage,
+            damageKind = options.huntKind,
+            damageType = options.huntType
         }
     )
-    if (bean.huntKind == CONST_HUNT_KIND.attack) then
+    if (options.huntKind == CONST_HUNT_KIND.attack) then
         -- @触发攻击事件
         hevent.triggerEvent(
             {
                 triggerKey = heventKeyMap.attack,
-                triggerUnit = bean.fromUnit,
-                attacker = bean.fromUnit,
-                targetUnit = bean.toUnit,
-                damage = bean.damage,
-                realDamage = bean.realDamage,
-                damageKind = bean.huntKind,
-                damageType = bean.huntType
+                triggerUnit = options.fromUnit,
+                attacker = options.fromUnit,
+                targetUnit = options.toUnit,
+                damage = options.damage,
+                realDamage = options.realDamage,
+                damageKind = options.huntKind,
+                damageType = options.huntType
             }
         )
         -- @触发被攻击事件
         hevent.triggerEvent(
             {
                 triggerKey = heventKeyMap.beAttack,
-                triggerUnit = bean.fromUnit,
-                attacker = bean.fromUnit,
-                targetUnit = bean.toUnit,
-                damage = bean.damage,
-                realDamage = bean.realDamage,
-                damageKind = bean.huntKind,
-                damageType = bean.huntType
+                triggerUnit = options.fromUnit,
+                attacker = options.fromUnit,
+                targetUnit = options.toUnit,
+                damage = options.damage,
+                realDamage = options.realDamage,
+                damageKind = options.huntKind,
+                damageType = options.huntType
             }
         )
     end
@@ -303,7 +303,7 @@ end
 
 --[[
     打断 ! 注意这个方法对中立被动无效
-    bean = {
+    options = {
         whichUnit = unit, --目标单位，必须
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
@@ -312,19 +312,19 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.broken = function(bean)
-    if (bean.whichUnit == nil) then
+hskill.broken = function(options)
+    if (options.whichUnit == nil) then
         return
     end
-    if (bean.damage ~= nil and bean.sourceUnit == nil) then
+    if (options.damage ~= nil and options.sourceUnit == nil) then
         return
     end
-    local u = bean.whichUnit
-    local odds = bean.odds or 100
-    local damage = bean.damage or 0
-    local sourceUnit = bean.sourceUnit or nil
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
+    local u = options.whichUnit
+    local odds = options.odds or 100
+    local damage = options.damage or 0
+    local sourceUnit = options.sourceUnit or nil
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "broken_oppose")
     odds = odds - oppose --(%)
@@ -336,7 +336,8 @@ hskill.broken = function(bean)
         end
         damage = damage * (1 - oppose * 0.01)
     end
-    local cu = hunit.create(
+    local cu =
+        hunit.create(
         {
             id = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
@@ -385,7 +386,7 @@ end
 
 --[[
     眩晕! 注意这个方法对中立被动无效
-    bean = {
+    options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
         odds = 100, --几率，可选
@@ -395,20 +396,20 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.swim = function(bean)
-    if (bean.whichUnit == nil or bean.during == nil or bean.during <= 0) then
+hskill.swim = function(options)
+    if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (bean.damage ~= nil and bean.sourceUnit == nil) then
+    if (options.damage ~= nil and options.sourceUnit == nil) then
         return
     end
-    local u = bean.whichUnit
-    local during = bean.during
-    local odds = bean.odds or 100
-    local damage = bean.damage or 0
-    local sourceUnit = bean.sourceUnit or nil
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
+    local u = options.whichUnit
+    local during = options.during
+    local odds = options.odds or 100
+    local damage = options.damage or 0
+    local sourceUnit = options.sourceUnit or nil
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "swim_oppose")
     odds = odds - oppose --(%)
@@ -432,7 +433,8 @@ hskill.swim = function(bean)
             htextTag.style(htextTag.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
         end
     end
-    local cu = hunit.create(
+    local cu =
+        hunit.create(
         {
             id = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
@@ -454,7 +456,7 @@ hskill.swim = function(bean)
                 realDamage = damage,
                 realDamageString = "眩晕",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = { CONST_HUNT_TYPE.real }
+                huntType = {CONST_HUNT_TYPE.real}
             }
         )
     end
@@ -497,7 +499,7 @@ end
 
 --[[
     沉默! 注意这个方法对中立被动无效
-    bean = {
+    options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
         odds = 100, --几率，可选
@@ -507,20 +509,20 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.silent = function(bean)
-    if (bean.whichUnit == nil or bean.during == nil or bean.during <= 0) then
+hskill.silent = function(options)
+    if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (bean.damage ~= nil and bean.sourceUnit == nil) then
+    if (options.damage ~= nil and options.sourceUnit == nil) then
         return
     end
-    local u = bean.whichUnit
-    local during = bean.during
-    local odds = bean.odds or 100
-    local damage = bean.damage or 0
-    local sourceUnit = bean.sourceUnit or nil
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
+    local u = options.whichUnit
+    local during = options.during
+    local odds = options.odds or 100
+    local damage = options.damage or 0
+    local sourceUnit = options.sourceUnit or nil
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "silent_oppose")
     odds = odds - oppose --(%)
@@ -576,7 +578,7 @@ hskill.silent = function(bean)
                 realDamage = damage,
                 realDamageString = "沉默",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = { CONST_HUNT_TYPE.real }
+                huntType = {CONST_HUNT_TYPE.real}
             }
         )
     end
@@ -621,7 +623,7 @@ end
 
 --[[
     缴械! 注意这个方法对中立被动无效
-    bean = {
+    options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
         odds = 100, --几率，可选
@@ -631,20 +633,20 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.unarm = function(bean)
-    if (bean.whichUnit == nil or bean.during == nil or bean.during <= 0) then
+hskill.unarm = function(options)
+    if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (bean.damage ~= nil and bean.sourceUnit == nil) then
+    if (options.damage ~= nil and options.sourceUnit == nil) then
         return
     end
-    local u = bean.whichUnit
-    local during = bean.during
-    local odds = bean.odds or 100
-    local damage = bean.damage or 0
-    local sourceUnit = bean.sourceUnit or nil
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
+    local u = options.whichUnit
+    local during = options.during
+    local odds = options.odds or 100
+    local damage = options.damage or 0
+    local sourceUnit = options.sourceUnit or nil
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "unarm_oppose")
     odds = odds - oppose --(%)
@@ -700,7 +702,7 @@ hskill.unarm = function(bean)
                 realDamage = damage,
                 realDamageString = "缴械",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = { CONST_HUNT_TYPE.real }
+                huntType = {CONST_HUNT_TYPE.real}
             }
         )
     end
@@ -745,7 +747,7 @@ end
 
 --[[
     缚足! 注意这个方法对中立被动无效
-    bean = {
+    options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
         odds = 100, --几率，可选
@@ -755,20 +757,20 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.fetter = function(bean)
-    if (bean.whichUnit == nil or bean.during == nil or bean.during <= 0) then
+hskill.fetter = function(options)
+    if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (bean.damage ~= nil and bean.sourceUnit == nil) then
+    if (options.damage ~= nil and options.sourceUnit == nil) then
         return
     end
-    local u = bean.whichUnit
-    local during = bean.during
-    local odds = bean.odds or 100
-    local damage = bean.damage or 0
-    local sourceUnit = bean.sourceUnit or nil
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.sourceUnit or { CONST_HUNT_TYPE.real }
+    local u = options.whichUnit
+    local during = options.during
+    local odds = options.odds or 100
+    local damage = options.damage or 0
+    local sourceUnit = options.sourceUnit or nil
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "fetter_oppose")
     odds = odds - oppose --(%)
@@ -798,7 +800,7 @@ hskill.fetter = function(bean)
                 realDamage = damage,
                 realDamageString = "缚足",
                 huntKind = CONST_HUNT_KIND.skill,
-                huntType = { CONST_HUNT_TYPE.real }
+                huntType = {CONST_HUNT_TYPE.real}
             }
         )
     end
@@ -828,7 +830,7 @@ end
 
 --[[
     爆破
-    bean = {
+    options = {
         damage = 0, --伤害（必须有，小于等于0直接无效）
         range = 1, --范围（可选）
         whichUnit = nil, --目标单位（挑选，单位时会自动选择与此单位同盟的单位）
@@ -841,27 +843,28 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.bomb = function(bean)
-    if (bean.damage == nil or bean.damage <= 0) then
+hskill.bomb = function(options)
+    if (options.damage == nil or options.damage <= 0) then
         return
     end
-    if (bean.sourceUnit == nil) then
+    if (options.sourceUnit == nil) then
         return
     end
-    local odds = bean.odds or 100
-    local range = bean.range or 1
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.huntType or { CONST_HUNT_TYPE.real }
+    local odds = options.odds or 100
+    local range = options.range or 1
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.huntType or {CONST_HUNT_TYPE.real}
     local whichGroup
-    if (bean.whichGroup ~= nil) then
-        whichGroup = bean.whichGroup
-    elseif (bean.whichUnit ~= nil) then
-        whichGroup = hgroup.createByUnit(
-            bean.whichUnit,
+    if (options.whichGroup ~= nil) then
+        whichGroup = options.whichGroup
+    elseif (options.whichUnit ~= nil) then
+        whichGroup =
+            hgroup.createByUnit(
+            options.whichUnit,
             range,
             function()
                 local flag = true
-                if (his.enemy(bean.whichUnit, cj.GetFilterUnit())) then
+                if (his.enemy(options.whichUnit, cj.GetFilterUnit())) then
                     flag = false
                 end
                 if (his.death(cj.GetFilterUnit())) then
@@ -883,7 +886,7 @@ hskill.bomb = function(bean)
             --计算抵抗
             local oppose = hattr.get(cj.GetEnumUnit(), "bomb_oppose")
             local tempOdds = odds - oppose --(%)
-            local damage = bean.damage
+            local damage = options.damage
             if (tempOdds <= 0) then
                 return
             else
@@ -894,7 +897,7 @@ hskill.bomb = function(bean)
             end
             hskill.damage(
                 {
-                    fromUnit = bean.sourceUnit,
+                    fromUnit = options.sourceUnit,
                     toUnit = cj.GetEnumUnit(),
                     damage = damage,
                     realDamage = range,
@@ -906,9 +909,9 @@ hskill.bomb = function(bean)
             hevent.triggerEvent(
                 {
                     triggerKey = heventKeyMap.bomb,
-                    triggerUnit = bean.sourceUnit,
+                    triggerUnit = options.sourceUnit,
                     targetUnit = cj.GetEnumUnit(),
-                    damage = bean.damage,
+                    damage = options.damage,
                     range = range
                 }
             )
@@ -917,8 +920,8 @@ hskill.bomb = function(bean)
                 {
                     triggerKey = heventKeyMap.beBomb,
                     triggerUnit = cj.GetEnumUnit(),
-                    sourceUnit = bean.sourceUnit,
-                    damage = bean.damage,
+                    sourceUnit = options.sourceUnit,
+                    damage = options.damage,
                     range = range
                 }
             )
@@ -930,7 +933,7 @@ end
 
 --[[
     闪电链
-    bean = {
+    options = {
         damage = 0, --伤害（必须有，小于等于0直接无效）
         whichUnit = [unit], --第一个的目标单位（必须有）
         prevUnit = [unit], --上一个的目标单位（必须有，用于构建两点间闪电特效）
@@ -948,15 +951,15 @@ end
         repeatGroup = [group],--隐藏的参数，用于暗地里记录单位是否被电过
     }
 ]]
-hskill.lightningChain = function(bean)
-    if (bean.whichUnit == nil or bean.prevUnit == nil or bean.damage == nil or bean.damage <= 0) then
+hskill.lightningChain = function(options)
+    if (options.whichUnit == nil or options.prevUnit == nil or options.damage == nil or options.damage <= 0) then
         return
     end
-    if (bean.sourceUnit == nil) then
+    if (options.sourceUnit == nil) then
         return
     end
-    local odds = bean.odds or 100
-    local damage = bean.damage
+    local odds = options.odds or 100
+    local damage = options.damage
     --计算抵抗
     local oppose = hattr.get(u, "lightning_chain_oppose")
     odds = odds - oppose --(%)
@@ -968,31 +971,31 @@ hskill.lightningChain = function(bean)
         end
         damage = damage * (1 - oppose * 0.01)
     end
-    local whichUnit = bean.whichUnit
-    local prevUnit = bean.prevUnit
-    local lightningType = bean.lightningType or hlightning.type.shan_dian_lian_ci
-    local qty = bean.qty or 1
-    local change = bean.change or 0
-    local range = bean.range or 300
-    local isRepeat = bean.isRepeat or false
-    local huntKind = bean.huntKind or CONST_HUNT_KIND.skill
-    local huntType = bean.huntType or { "thunder" }
+    local whichUnit = options.whichUnit
+    local prevUnit = options.prevUnit
+    local lightningType = options.lightningType or hlightning.type.shan_dian_lian_ci
+    local qty = options.qty or 1
+    local change = options.change or 0
+    local range = options.range or 300
+    local isRepeat = options.isRepeat or false
+    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
+    local huntType = options.huntType or {"thunder"}
     qty = qty - 1
     if (qty < 0) then
         qty = 0
     end
-    if (bean.index == nil) then
-        bean.index = 1
+    if (options.index == nil) then
+        options.index = 1
     else
-        bean.index = bean.index + 1
+        options.index = options.index + 1
     end
     hlightning.unit2unit(lightningType, prevUnit, whichUnit, 0.25)
-    if (bean.model ~= nil) then
-        heffect.toUnit(bean.model, whichUnit, "origin", 0.5)
+    if (options.model ~= nil) then
+        heffect.toUnit(options.model, whichUnit, "origin", 0.5)
     end
     hskill.damage(
         {
-            fromUnit = bean.sourceUnit,
+            fromUnit = options.sourceUnit,
             toUnit = whichUnit,
             damage = damage,
             realDamage = damage,
@@ -1004,11 +1007,11 @@ hskill.lightningChain = function(bean)
     hevent.triggerEvent(
         {
             triggerKey = heventKeyMap.lightningChain,
-            triggerUnit = bean.sourceUnit,
+            triggerUnit = options.sourceUnit,
             targetUnit = whichUnit,
             damage = damage,
             range = range,
-            index = bean.index
+            index = options.index
         }
     )
     -- @触发被闪电链事件
@@ -1016,28 +1019,29 @@ hskill.lightningChain = function(bean)
         {
             triggerKey = heventKeyMap.beLightningChain,
             triggerUnit = whichUnit,
-            sourceUnit = bean.sourceUnit,
+            sourceUnit = options.sourceUnit,
             damage = damage,
             range = range,
-            index = bean.index
+            index = options.index
         }
     )
     if (qty > 0) then
         if (isRepeat ~= true) then
-            if (bean.repeatGroup == nil) then
-                bean.repeatGroup = cj.CreateGroup()
+            if (options.repeatGroup == nil) then
+                options.repeatGroup = cj.CreateGroup()
             end
-            cj.GroupAddUnit(bean.repeatGroup, whichUnit)
+            cj.GroupAddUnit(options.repeatGroup, whichUnit)
         end
-        local g = hgroup.createByUnit(
-            bean.toUnit,
+        local g =
+            hgroup.createByUnit(
+            options.toUnit,
             range,
             function()
                 local flag = true
                 if (his.death(cj.GetFilterUnit())) then
                     flag = false
                 end
-                if (his.ally(cj.GetFilterUnit(), bean.sourceUnit)) then
+                if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
                     flag = false
                 end
                 if (his.isBuilding(cj.GetFilterUnit())) then
@@ -1046,7 +1050,7 @@ hskill.lightningChain = function(bean)
                 if (his.unit(whichUnit, cj.GetFilterUnit())) then
                     flag = false
                 end
-                if (isRepeat ~= true and hgroup.isIn(bean.repeatGroup, cj.GetFilterUnit())) then
+                if (isRepeat ~= true and hgroup.isIn(options.repeatGroup, cj.GetFilterUnit())) then
                     flag = false
                 end
                 return flag
@@ -1055,8 +1059,8 @@ hskill.lightningChain = function(bean)
         if (hgroup.isEmpty(g)) then
             return
         end
-        bean.whichUnit = cj.FirstOfGroup(g)
-        bean.damage = bean.damage * (1 + change)
+        options.whichUnit = cj.FirstOfGroup(g)
+        options.damage = options.damage * (1 + change)
         cj.GroupClear(g)
         cj.DestroyGroup(g)
         htime.setTimeout(
@@ -1064,20 +1068,20 @@ hskill.lightningChain = function(bean)
             function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hskill.lightningChain(bean)
+                hskill.lightningChain(options)
             end
         )
     else
-        if (bean.repeatGroup ~= nil) then
-            cj.GroupClear(bean.repeatGroup)
-            cj.DestroyGroup(bean.repeatGroup)
+        if (options.repeatGroup ~= nil) then
+            cj.GroupClear(options.repeatGroup)
+            cj.DestroyGroup(options.repeatGroup)
         end
     end
 end
 
 --[[
     击飞
-    bean = {
+    options = {
         damage = 0, --伤害（必须有，但是这里可以等于0）
         whichUnit = [unit], --第一个的目标单位（必须有）
         sourceUnit = [unit], --伤害来源单位（必须有）
@@ -1089,15 +1093,15 @@ end
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.crackFly = function(bean)
-    if (bean.damage == nil or bean.damage < 0) then
+hskill.crackFly = function(options)
+    if (options.damage == nil or options.damage < 0) then
         return
     end
-    if (bean.whichUnit == nil or bean.sourceUnit == nil) then
+    if (options.whichUnit == nil or options.sourceUnit == nil) then
         return
     end
-    local odds = bean.odds or 100
-    local damage = bean.damage
+    local odds = options.odds or 100
+    local damage = options.damage
     --计算抵抗
     local oppose = hattr.get(u, "crack_fly_oppose")
     odds = odds - oppose --(%)
@@ -1111,48 +1115,48 @@ hskill.crackFly = function(bean)
             damage = damage * (1 - oppose * 0.01)
         end
     end
-    local distance = bean.distance or 0
-    local high = bean.high or 100
-    local during = bean.during or 0.5
+    local distance = options.distance or 0
+    local high = options.high or 100
+    local during = options.during or 0.5
     if (during < 0.5) then
         during = 0.5
     end
     --不二次击飞
-    if (his.get(bean.toUnit, "isCrackFly") == true) then
+    if (his.get(options.toUnit, "isCrackFly") == true) then
         return
     end
-    his.set(bean.toUnit, "isCrackFly", true)
+    his.set(options.toUnit, "isCrackFly", true)
     --镜头放大模式下，距离缩小一半
-    if (hcamera.getModel(cj.GetOwningPlayer(bean.toUnit)) == "zoomin") then
+    if (hcamera.getModel(cj.GetOwningPlayer(options.toUnit)) == "zoomin") then
         distance = distance * 0.5
         high = high * 0.5
     end
     local tempObj = {
         odds = 99999,
-        whichUnit = bean.whichUnit,
+        whichUnit = options.whichUnit,
         during = during
     }
     hskill.unarm(tempObj)
     hskill.silent(tempObj)
     hattr.set(
-        bean.toUnit,
+        options.toUnit,
         during,
         {
             move = "-9999"
         }
     )
-    hunit.setCanFly(bean.whichUnit)
-    cj.SetUnitPathing(bean.whichUnit, false)
-    local originHigh = cj.GetUnitFlyHeight(bean.whichUnit)
-    local originFacing = hunit.getFacing(bean.whichUnit)
-    local originDeg = hlogic.getDegBetweenUnit(bean.sourceUnit, bean.whichUnit)
+    hunit.setCanFly(options.whichUnit)
+    cj.SetUnitPathing(options.whichUnit, false)
+    local originHigh = cj.GetUnitFlyHeight(options.whichUnit)
+    local originFacing = hunit.getFacing(options.whichUnit)
+    local originDeg = hlogic.getDegBetweenUnit(options.sourceUnit, options.whichUnit)
     local cost = 0
     -- @触发击飞事件
     hevent.triggerEvent(
         {
             triggerKey = heventKeyMap.crackFly,
-            triggerUnit = bean.sourceUnit,
-            targetUnit = bean.whichUnit,
+            triggerUnit = options.sourceUnit,
+            targetUnit = options.whichUnit,
             damage = damage,
             high = high,
             distance = distance
@@ -1162,8 +1166,8 @@ hskill.crackFly = function(bean)
     hevent.triggerEvent(
         {
             triggerKey = heventKeyMap.beCrackFly,
-            triggerUnit = bean.whichUnit,
-            sourceUnit = bean.sourceUnit,
+            triggerUnit = options.whichUnit,
+            sourceUnit = options.sourceUnit,
             damage = damage,
             high = high,
             distance = distance
@@ -1178,25 +1182,25 @@ hskill.crackFly = function(bean)
             if (cost > during) then
                 hskill.damage(
                     {
-                        fromUnit = bean.fromUnit,
-                        toUnit = bean.whichUnit,
-                        damage = bean.damage,
-                        realDamage = bean.damage,
-                        huntEff = bean.huntEff,
-                        huntKind = bean.huntKind,
-                        huntType = bean.huntType
+                        fromUnit = options.fromUnit,
+                        toUnit = options.whichUnit,
+                        damage = options.damage,
+                        realDamage = options.damage,
+                        huntEff = options.huntEff,
+                        huntKind = options.huntKind,
+                        huntType = options.huntType
                     }
                 )
-                cj.SetUnitFlyHeight(bean.whichUnit, originHigh, 10000)
-                cj.SetUnitPathing(bean.whichUnit, true)
-                his.set(bean.whichUnit, "isCrackFly", false)
+                cj.SetUnitFlyHeight(options.whichUnit, originHigh, 10000)
+                cj.SetUnitPathing(options.whichUnit, true)
+                his.set(options.whichUnit, "isCrackFly", false)
                 -- 默认是地面，创建沙尘
                 local tempEff = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
-                if (his.water(bean.whichUnit) == true) then
+                if (his.water(options.whichUnit) == true) then
                     -- 如果是水面，创建水花
                     tempEff = "Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl"
                 end
-                heffect.whichUnit(tempEff, bean.whichUnit, 0)
+                heffect.whichUnit(tempEff, options.whichUnit, 0)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 return
@@ -1206,33 +1210,35 @@ hskill.crackFly = function(bean)
                 dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.35 / timerSetTime)
                 if (dist > 0) then
-                    local pxy = hlogic.polarProjection(
-                        cj.GetUnitX(bean.whichUnit),
-                        cj.GetUnitY(bean.whichUnit),
+                    local pxy =
+                        hlogic.polarProjection(
+                        cj.GetUnitX(options.whichUnit),
+                        cj.GetUnitY(options.whichUnit),
                         dist,
                         originDeg
                     )
-                    cj.SetUnitFacing(bean.whichUnit, originFacing)
-                    cj.SetUnitPosition(bean.whichUnit, pxy.x, pxy.y)
+                    cj.SetUnitFacing(options.whichUnit, originFacing)
+                    cj.SetUnitPosition(options.whichUnit, pxy.x, pxy.y)
                 end
                 if (z > 0) then
-                    cj.SetUnitFlyHeight(bean.whichUnit, cj.GetUnitFlyHeight(bean.whichUnit) + z, z / timerSetTime)
+                    cj.SetUnitFlyHeight(options.whichUnit, cj.GetUnitFlyHeight(options.whichUnit) + z, z / timerSetTime)
                 end
             else
                 dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.65 / timerSetTime)
                 if (dist > 0) then
-                    local pxy = hlogic.polarProjection(
-                        cj.GetUnitX(bean.whichUnit),
-                        cj.GetUnitY(bean.whichUnit),
+                    local pxy =
+                        hlogic.polarProjection(
+                        cj.GetUnitX(options.whichUnit),
+                        cj.GetUnitY(options.whichUnit),
                         dist,
                         originDeg
                     )
-                    cj.SetUnitFacing(bean.whichUnit, originFacing)
-                    cj.SetUnitPosition(bean.whichUnit, pxy.x, pxy.y)
+                    cj.SetUnitFacing(options.whichUnit, originFacing)
+                    cj.SetUnitPosition(options.whichUnit, pxy.x, pxy.y)
                 end
                 if (z > 0) then
-                    cj.SetUnitFlyHeight(bean.whichUnit, cj.GetUnitFlyHeight(bean.whichUnit) - z, z / timerSetTime)
+                    cj.SetUnitFlyHeight(options.whichUnit, cj.GetUnitFlyHeight(options.whichUnit) - z, z / timerSetTime)
                 end
             end
         end
@@ -1247,9 +1253,9 @@ end
     meff, 移动特效
     range, 伤害范围
     isRepeat, 是否允许重复伤害
-    bean 伤害bean
+    options 伤害options
 ]]
-hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, bean)
+hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, options)
     local lock_var_period = 0.02
     local repeatGroup
     if (mover == nil or targetX == nil or targetY == nil) then
@@ -1279,8 +1285,9 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
             if (meff ~= nil) then
                 heffect.toXY(meff, x, y, 0.5)
             end
-            if (bean.damage > 0) then
-                local g = hgroup.createByUnit(
+            if (options.damage > 0) then
+                local g =
+                    hgroup.createByUnit(
                     mover,
                     range,
                     function()
@@ -1288,7 +1295,7 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
                         if (his.death(cj.GetFilterUnit())) then
                             flag = false
                         end
-                        if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
+                        if (his.ally(cj.GetFilterUnit(), options.fromUnit)) then
                             flag = false
                         end
                         if (his.isBuilding(cj.GetFilterUnit())) then
@@ -1305,12 +1312,12 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, be
                     function()
                         hskill.damage(
                             {
-                                damage = bean.damage,
-                                fromUnit = bean.fromUnit,
+                                damage = options.damage,
+                                fromUnit = options.fromUnit,
                                 toUnit = cj.GetEnumUnit(),
-                                huntEff = bean.huntEff,
-                                huntKind = bean.huntKind,
-                                huntType = bean.huntType
+                                huntEff = options.huntEff,
+                                huntKind = options.huntKind,
+                                huntType = options.huntType
                             }
                         )
                     end
@@ -1362,7 +1369,7 @@ end
 
 --- 自定义技能 - 对单位/对XY/对点
 --[[
-    bean = {
+    options = {
         whichPlayer,
         skillId,
         orderString,
@@ -1373,27 +1380,27 @@ end
         life, 马甲生命周期
     }
 ]]
-hskill.diy = function(bean)
-    if (bean.whichPlayer == nil or bean.skillId == nil or bean.orderString == nil) then
+hskill.diy = function(options)
+    if (options.whichPlayer == nil or options.skillId == nil or options.orderString == nil) then
         return
     end
-    if (bean.x == nil or bean.y == nil) then
+    if (options.x == nil or options.y == nil) then
         return
     end
-    local life = bean.life
-    if (bean.life == nil or bean.life < 2.00) then
+    local life = options.life
+    if (options.life == nil or options.life < 2.00) then
         life = 2.00
     end
-    local token = cj.CreateUnit(bean.whichPlayer, hskill.SKILL_TOKEN, x, y, bj_UNIT_FACING)
-    cj.UnitAddAbility(token, bean.skillId)
-    if (bean.targetUnit ~= nil) then
-        cj.IssueTargetOrderById(token, bean.orderId, bean.targetUnit)
-    elseif (bean.targetX ~= nil and bean.targetY ~= nil) then
-        cj.IssuePointOrder(token, bean.orderString, bean.targetX, bean.targetY)
-    elseif (bean.targetLoc ~= nil) then
-        cj.IssuePointOrderLoc(token, bean.orderString, bean.targetLoc)
+    local token = cj.CreateUnit(options.whichPlayer, hskill.SKILL_TOKEN, x, y, bj_UNIT_FACING)
+    cj.UnitAddAbility(token, options.skillId)
+    if (options.targetUnit ~= nil) then
+        cj.IssueTargetOrderById(token, options.orderId, options.targetUnit)
+    elseif (options.targetX ~= nil and options.targetY ~= nil) then
+        cj.IssuePointOrder(token, options.orderString, options.targetX, options.targetY)
+    elseif (options.targetLoc ~= nil) then
+        cj.IssuePointOrderLoc(token, options.orderString, options.targetLoc)
     else
-        cj.IssueImmediateOrder(token, bean.orderString)
+        cj.IssueImmediateOrder(token, options.orderString)
     end
     hunit.del(token, life)
 end
