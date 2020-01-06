@@ -1405,8 +1405,10 @@ hattr.huntUnit = function(bean)
         local attackDebuff = hattr.get(bean.fromUnit, "attack_debuff")
         local skillBuff = hattr.get(bean.fromUnit, "skill_buff")
         local skillDebuff = hattr.get(bean.fromUnit, "skill_debuff")
+        print_mbr(attackDebuff)
         if (bean.huntKind == CONST_HUNT_KIND.attack) then
-            for _, b in pairs(attackBuff) do
+            for _, buff in pairs(attackBuff) do
+                local b = buff.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
                     hattr.set(bean.fromUnit, b.during, { [b.attr] = "+" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
@@ -1414,7 +1416,8 @@ hattr.huntUnit = function(bean)
                     end
                 end
             end
-            for _, b in pairs(attackDebuff) do
+            for _, buff in pairs(attackDebuff) do
+                local b = buff.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
                     hattr.set(bean.toUnit, b.during, { [b.attr] = "-" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
@@ -1424,7 +1427,8 @@ hattr.huntUnit = function(bean)
             end
         end
         if (bean.huntKind == CONST_HUNT_KIND.skill) then
-            for _, b in pairs(skillBuff) do
+            for _, buff in pairs(skillBuff) do
+                local b = buff.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.fromUnit, b.during, { [b.attr] = "+" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
@@ -1432,7 +1436,8 @@ hattr.huntUnit = function(bean)
                     end
                 end
             end
-            for _, b in pairs(skillDebuff) do
+            for _, buff in pairs(skillDebuff) do
+                local b = buff.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 100) <= b.odds) then
                     hattr.set(bean.toUnit, b.during, { [b.attr] = "-" .. b.val })
                     if (type(b.model) == "string" and string.len(b.model) > 0) then
