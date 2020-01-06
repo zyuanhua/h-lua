@@ -78,20 +78,6 @@ hSys.mergeTable = function(table1, table2)
     end
     return tempTable
 end
---将一个table平铺成为一个可以代表它的唯一md5 key
-hSys.table2MD5 = function(t)
-    local j = ""
-    if (table ~= nil) then
-        table.sort(t)
-        j = json.stringify(t)
-    end
-    if (j == nil) then
-        j = ""
-    end
-    local key = md5.sumhexa(j)
-    print(key)
-    return key
-end
 --在数组内
 hSys.inArray = function(val, arr)
     local isin = false
@@ -117,11 +103,28 @@ hSys.rmArray = function(val, arr, qty)
         end
     end
 end
-
+--生成MD5
+hSys.MD5 = function(t)
+    if (type(t) == "string") then
+        return md5.sumhexa(t)
+    elseif (type(t) == "table") then
+        local j = ""
+        if (table ~= nil) then
+            table.sort(t)
+            j = json.stringify(t)
+        end
+        if (j == nil) then
+            j = ""
+        end
+        return md5.sumhexa(j)
+    end
+    print_err("MD5 fail!")
+    return
+end
 --转义
 hSys.addslashes = function(s)
-    local in_char = { "\\", '"', "/", "\b", "\f", "\n", "\r", "\t" }
-    local out_char = { "\\", '"', "/", "b", "f", "n", "r", "t" }
+    local in_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
+    local out_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     for i, c in ipairs(in_char) do
         s = s:gsub(c, "\\" .. out_char[i])
     end
@@ -129,8 +132,8 @@ hSys.addslashes = function(s)
 end
 --反转义
 hSys.stripslashes = function(s)
-    local in_char = { "\\", '"', "/", "b", "f", "n", "r", "t" }
-    local out_char = { "\\", '"', "/", "\b", "\f", "\n", "\r", "\t" }
+    local in_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
+    local out_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
 
     for i, c in ipairs(in_char) do
         s = s:gsub("\\" .. c, out_char[i])
