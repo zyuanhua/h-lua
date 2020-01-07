@@ -71,7 +71,7 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                             if (type(data[row][col].icon) == "string") then
                                 isSetIcon = true
                                 cj.MultiboardSetItemIcon(item, data[row][col].icon)
-                                width = width + 1
+                                width = width + 3
                             end
                             cj.MultiboardSetItemStyle(item, isSetValue, isSetIcon)
                             if (widthCol[col] == nil) then
