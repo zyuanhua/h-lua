@@ -22,7 +22,7 @@ local hitem = {
         UNIT = "unit",
         LOCATION = "location"
     },
-    DEFAULT_SKILL_ITEM_SLOT = string.char2id"AInv"), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
+    DEFAULT_SKILL_ITEM_SLOT = hstring.char2id("AInv"), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
     DEFAULT_SKILL_ITEM_SEPARATE = hslk_global.skill_item_separate -- 默认拆分物品技能
 }
 
@@ -48,7 +48,7 @@ end
 
 -- 获取物品ID字符串
 hitem.getId = function(it)
-    return string.id2charcj.GetItemTypeId(it))
+    return hstring.id2char(cj.GetItemTypeId(it))
 end
 
 -- 获取物品SLK数据集
@@ -62,7 +62,7 @@ hitem.getSlk = function(itOrId)
     if (type(itOrId) == "string") then
         itId = itOrId
     elseif (type(itOrId) == "number") then
-        itId = string.id2charitOrId)
+        itId = hstring.id2char(itOrId)
     else
         itId = hitem.getId(itOrId)
     end
@@ -397,7 +397,7 @@ hitem.detector = function(whichUnit, it)
     else
         --todo 没有满格，也检查身上的物品是否可以合成
         if (false) then
-            --6物品合成检测
+        --6物品合成检测
         end
     end
     if (isFullSlot) then
@@ -443,8 +443,8 @@ hitem.create = function(bean)
     end
     local charges = bean.charges
     local during = bean.during or 0
-    if(type(bean.itemId) == "string")then
-        bean.itemId = string.char2idbean.itemId)
+    if (type(bean.itemId) == "string") then
+        bean.itemId = hstring.char2id(bean.itemId)
     end
     -- 优先级 坐标 > 单位 > 点
     local it
@@ -581,7 +581,7 @@ hitem.init = function()
         hitem.PRIVATE_TRIGGER.pickup,
         function()
             local it = cj.GetManipulatedItem()
-            local itId = string.id2charcj.GetItemTypeId(it))
+            local itId = hstring.id2char(cj.GetItemTypeId(it))
             if (hslk_global.itemsKV[itId] == nil) then
                 -- 排除掉没有注册的物品。例如框架内自带的一些物品
                 return
@@ -642,7 +642,7 @@ hitem.init = function()
         function()
             local u = cj.GetTriggerUnit()
             local it = cj.GetManipulatedItem()
-            local itId = string.id2charcj.GetItemTypeId(it))
+            local itId = hstring.id2char(cj.GetItemTypeId(it))
             local faceId = hitem.getFaceId(itId)
             local orderId = cj.OrderId("dropitem")
             local charges = cj.GetItemCharges(it)

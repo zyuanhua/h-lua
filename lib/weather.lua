@@ -1,18 +1,18 @@
 local hweather = {
     --天气ID
-    sun = string.char2id'LRaa'), --日光
-    moon = string.char2id'LRma'), --月光
-    shield = string.char2id'MEds'), --紫光盾
-    rain = string.char2id'RAlr'), --雨
-    rainstorm = string.char2id'RAhr'), --大雨
-    snow = string.char2id'SNls'), --雪
-    snowstorm = string.char2id'SNhs'), --大雪
-    wind = string.char2id'WOlw'), --风
-    windstorm = string.char2id'WNcw'), --大风
-    mistwhite = string.char2id'FDwh'), --白雾
-    mistgreen = string.char2id'FDgh'), --绿雾
-    mistblue = string.char2id'FDbh'), --蓝雾
-    mistred = string.char2id'FDrh'), --红雾
+    sun = hstring.char2id('LRaa'), --日光
+    moon = hstring.char2id('LRma'), --月光
+    shield = hstring.char2id('MEds'), --紫光盾
+    rain = hstring.char2id('RAlr'), --雨
+    rainstorm = hstring.char2id('RAhr'), --大雨
+    snow = hstring.char2id('SNls'), --雪
+    snowstorm = hstring.char2id('SNhs'), --大雪
+    wind = hstring.char2id('WOlw'), --风
+    windstorm = hstring.char2id('WNcw'), --大风
+    mistwhite = hstring.char2id('FDwh'), --白雾
+    mistgreen = hstring.char2id('FDgh'), --绿雾
+    mistblue = hstring.char2id('FDbh'), --蓝雾
+    mistred = hstring.char2id('FDrh'), --红雾
 }
 
 --删除天气

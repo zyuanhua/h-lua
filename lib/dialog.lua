@@ -19,7 +19,7 @@ hdialog.create = function(whichPlayer, options, call)
     local d = cj.DialogCreate()
     local btnKv = {}
     cj.DialogSetMessage(d, options.title)
-    if (#options.buttons == table.len(options.buttons)) then
+    if (#options.buttons == htable.len(options.buttons)) then
         for i = 1, #options.buttons, 1 do
             if (type(options.buttons[i]) == "table") then
                 local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))
@@ -52,8 +52,10 @@ hdialog.create = function(whichPlayer, options, call)
     cj.TriggerRegisterDialogEvent(dtg, d)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYERS, 1 do
-            if (cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER
-                and cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING) then
+            if
+                (cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER and
+                    cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)
+             then
                 whichPlayer = hplayer.players[i]
                 break
             end

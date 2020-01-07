@@ -4,7 +4,7 @@ local hskill = {
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
-    BUFF_SWIM = string.char2id"BPSE")
+    BUFF_SWIM = hstring.char2id("BPSE")
 }
 
 hskill.set = function(handle, key, val)
@@ -29,7 +29,7 @@ end
 
 -- 添加技能
 hskill.add = function(whichUnit, ability_id, during)
-    local id = string.char2idability_id)
+    local id = hstring.char2id(ability_id)
     if (during == nil or during <= 0) then
         cj.UnitAddAbility(whichUnit, id)
         cj.UnitMakeAbilityPermanent(whichUnit, true, id)
@@ -46,7 +46,7 @@ end
 
 -- 删除技能
 hskill.del = function(whichUnit, ability_id, during)
-    local id = string.char2idability_id)
+    local id = hstring.char2id(ability_id)
     if (during == nil or during <= 0) then
         cj.UnitRemoveAbility(whichUnit, id)
     else
@@ -62,7 +62,7 @@ end
 
 -- 设置技能的永久使用性
 hskill.forever = function(whichUnit, ability_id)
-    local id = string.char2idability_id)
+    local id = hstring.char2id(ability_id)
     cj.UnitMakeAbilityPermanent(whichUnit, true, id)
 end
 
@@ -71,7 +71,7 @@ hskill.has = function(whichUnit, ability_id)
     if (whichUnit == nil or ability_id == nil) then
         return false
     end
-    local id = string.char2idability_id)
+    local id = hstring.char2id(ability_id)
     if (cj.GetUnitAbilityLevel(whichUnit, id) >= 1) then
         return true
     end
@@ -554,7 +554,7 @@ hskill.silent = function(options)
             hRuntime.skill.silentTrigger,
             function()
                 local u1 = cj.GetTriggerUnit()
-                if (table.includes(u1, hRuntime.skill.silentUnits)) then
+                if (htable.includes(u1, hRuntime.skill.silentUnits)) then
                     cj.IssueImmediateOrder(u1, "stop")
                 end
             end
@@ -575,7 +575,7 @@ hskill.silent = function(options)
         heffect.bindUnit(options.model, u, "origin", during)
     end
     hskill.set(u, "silentLevel", level)
-    if (table.includes(u, hRuntime.skill.silentUnits) == false) then
+    if (htable.includes(u, hRuntime.skill.silentUnits) == false) then
         table.insert(hRuntime.skill.silentUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "head", -1)
         hskill.set(u, "silentEffect", eff)
@@ -624,8 +624,8 @@ hskill.silent = function(options)
             hskill.set(u, "silentLevel", hskill.get(u, "silentLevel") - 1)
             if (hskill.get(u, "silentLevel") <= 0) then
                 heffect.del(hskill.get(u, "silentEffect"))
-                if (table.includes(u, hRuntime.skill.silentUnits)) then
-                    table.delete(u, hRuntime.skill.silentUnits)
+                if (htable.includes(u, hRuntime.skill.silentUnits)) then
+                    htable.delete(u, hRuntime.skill.silentUnits)
                 end
                 his.set(u, "isSilent", false)
             end
@@ -682,7 +682,7 @@ hskill.unarm = function(options)
             hRuntime.skill.unarmTrigger,
             function()
                 local u1 = cj.GetTriggerUnit()
-                if (table.includes(u1, hRuntime.skill.unarmUnits)) then
+                if (htable.includes(u1, hRuntime.skill.unarmUnits)) then
                     cj.IssueImmediateOrder(u1, "stop")
                 end
             end
@@ -703,7 +703,7 @@ hskill.unarm = function(options)
         heffect.bindUnit(options.model, u, "origin", during)
     end
     hskill.set(u, "unarmLevel", level)
-    if (table.includes(u, hRuntime.skill.unarmUnits) == false) then
+    if (htable.includes(u, hRuntime.skill.unarmUnits) == false) then
         table.insert(hRuntime.skill.unarmUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "weapon", -1)
         hskill.set(u, "unarmEffect", level)
@@ -752,8 +752,8 @@ hskill.unarm = function(options)
             hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel") - 1)
             if (hskill.get(u, "unarmLevel") <= 0) then
                 heffect.del(hskill.get(u, "unarmEffect"))
-                if (table.includes(u, hRuntime.skill.unarmUnits)) then
-                    table.delete(u, hRuntime.skill.unarmUnits)
+                if (htable.includes(u, hRuntime.skill.unarmUnits)) then
+                    htable.delete(u, hRuntime.skill.unarmUnits)
                 end
                 his.set(u, "isUnArm", false)
             end

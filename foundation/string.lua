@@ -1,5 +1,7 @@
+hstring = {}
+
 --获取一个对象的id
-string.char2id = function(idChar)
+hstring.char2id = function(idChar)
     if (idChar == nil) then
         print_stack()
     end
@@ -16,7 +18,7 @@ string.char2id = function(idChar)
 end
 
 --获取一个对象的id字符串
-string.id2char = function(id)
+hstring.id2char = function(id)
     if (id == nil) then
         print_stack()
     end
@@ -25,7 +27,7 @@ string.id2char = function(id)
 end
 
 --获取字符串真实长度
-string.mb_len = function(inputstr)
+hstring.mb_len = function(inputstr)
     local lenInByte = #inputstr
     local width = 0
     local i = 1
@@ -42,7 +44,6 @@ string.mb_len = function(inputstr)
             byteCount = 4 --4字节字符
         end
         local char = string.sub(inputstr, i, i + byteCount - 1)
-        print(char)
         i = i + byteCount -- 重置下一字节的索引
         width = width + 1 -- 字符的个数（长度）
     end
@@ -50,7 +51,7 @@ string.mb_len = function(inputstr)
 end
 
 --生成MD5
-string.md5 = function(t)
+hstring.md5 = function(t)
     if (type(t) == "string") then
         return md5.sumhexa(t)
     elseif (type(t) == "table") then
@@ -69,7 +70,7 @@ string.md5 = function(t)
 end
 
 --转义
-string.addslashes = function(s)
+hstring.addslashes = function(s)
     local in_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
     local out_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     for i, c in ipairs(in_char) do
@@ -79,7 +80,7 @@ string.addslashes = function(s)
 end
 
 --反转义
-string.stripslashes = function(s)
+hstring.stripslashes = function(s)
     local in_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     local out_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
 
@@ -90,7 +91,7 @@ string.stripslashes = function(s)
 end
 
 --base64编码
-string.base64Encode = function(source_str)
+hstring.base64Encode = function(source_str)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local s64 = ""
     local str = source_str
@@ -123,7 +124,7 @@ string.base64Encode = function(source_str)
 end
 
 --base64解码
-string.base64Decode = function(str64)
+hstring.base64Decode = function(str64)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local temp = {}
     for i = 1, 64 do
@@ -166,7 +167,7 @@ string.base64Decode = function(str64)
 end
 
 --把字符串以分隔符打散为数组
-string.explode = function(delimeter, str)
+hstring.explode = function(delimeter, str)
     local res = {}
     local start, start_pos, end_pos = 1, 1, 1
     while true do
@@ -182,7 +183,7 @@ string.explode = function(delimeter, str)
 end
 
 --把数组以分隔符拼接回字符串
-string.implode = function(delimeter, table)
+hstring.implode = function(delimeter, table)
     local str
     for _, v in ipairs(table) do
         if (str == nil) then

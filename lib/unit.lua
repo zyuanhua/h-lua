@@ -72,7 +72,7 @@ end
 
 -- 设置单位的生命周期
 hunit.setPeriod = function(u, life)
-    cj.UnitApplyTimedLifeBJ(life, string.char2id"BTLF"), u)
+    cj.UnitApplyTimedLifeBJ(life, hstring.char2id("BTLF"), u)
 end
 
 --获取单位面向角度
@@ -143,7 +143,7 @@ hunit.create = function(bean)
         return
     end
     if(type(bean.unitId) == "string")then
-        bean.unitId = string.char2idbean.unitId)
+        bean.unitId = hstring.char2id(bean.unitId)
     end
     local u
     local facing
@@ -261,7 +261,7 @@ end
 
 -- 获取单位ID字符串
 hunit.getId = function(u)
-    return string.id2charcj.GetUnitTypeId(u))
+    return hstring.id2char(cj.GetUnitTypeId(u))
 end
 -- 获取单位SLK数据集
 hunit.getSlk = function(uOrUid)
@@ -274,7 +274,7 @@ hunit.getSlk = function(uOrUid)
     if (type(uOrUid) == "string") then
         uid = uOrUid
     elseif (type(uOrUid) == "number") then
-        uid = string.id2charuOrUid)
+        uid = hstring.id2char(uOrUid)
     else
         uid = hunit.getId(uOrUid)
     end

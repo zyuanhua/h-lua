@@ -53,25 +53,42 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                     --设置行列数
                     cj.MultiboardSetRowCount(hRuntime.multiBoard[pi].borads[key], totalRow)
                     cj.MultiboardSetColumnCount(hRuntime.multiBoard[pi].borads[key], totalCol)
+                    local widthCol = {}
                     for row = 1, totalRow, 1 do
                         for col = 1, totalCol, 1 do
                             local item = cj.MultiboardGetItem(hRuntime.multiBoard[pi].borads[key], row - 1, col - 1)
                             local isSetValue = false
                             local isSetIcon = false
                             local width = 0
-                            if (data[row][col].value ~= nil) then
+                            local valueType = type(data[row][col].value)
+                            if (valueType == "string" or valueType == "number") then
                                 isSetValue = true
+                                if (valueType == "number") then
+                                    data[row][col].value = tostring(data[row][col].value)
+                                end
                                 cj.MultiboardSetItemValue(item, data[row][col].value)
-                                width = width + string.mb_len(data[row][col].value)
+                                width = width + hstring.mb_len(data[row][col].value)
                             end
-                            if (data[row][col].icon ~= nil) then
+                            if (type(data[row][col].icon) == "string") then
                                 isSetIcon = true
                                 cj.MultiboardSetItemIcon(item, data[row][col].icon)
                                 width = width + 1
                             end
-                            print("width=" .. col .. "/" .. width)
                             cj.MultiboardSetItemStyle(item, isSetValue, isSetIcon)
-                            cj.MultiboardSetItemWidth(item, width / 100)
+                            if (widthCol[col] == nil) then
+                                widthCol[col] = 0
+                            end
+                            if (width > widthCol[col]) then
+                                widthCol[col] = width
+                            end
+                        end
+                    end
+                    for row = 1, totalRow, 1 do
+                        for col = 1, totalCol, 1 do
+                            cj.MultiboardSetItemWidth(
+                                cj.MultiboardGetItem(hRuntime.multiBoard[pi].borads[key], row - 1, col - 1),
+                                widthCol[col] / 125
+                            )
                         end
                     end
                     --显示
