@@ -1,7 +1,6 @@
-htable = {}
 
 --获取一个table的正确长度
-htable.len = function(table)
+table.len = function(table)
     local len = 0
     for _, _ in pairs(table) do
         len = len + 1
@@ -10,7 +9,7 @@ htable.len = function(table)
 end
 
 --随机在数组内取一个
-htable.random = function(arr)
+table.random = function(arr)
     local keys = {}
     for k, _ in pairs(arr) do
         table.insert(keys, k)
@@ -21,7 +20,7 @@ htable.random = function(arr)
 end
 
 --克隆table
-htable.clone = function(org)
+table.clone = function(org)
     local function copy(org1, res)
         for k, v in pairs(org1) do
             if type(v) ~= "table" then
@@ -38,15 +37,15 @@ htable.clone = function(org)
 end
 
 --合并table
-htable.merge = function(table1, table2)
+table.merge = function(table1, table2)
     local tempTable = {}
     if (table1 ~= nil) then
-        tempTable = htable.clone(table1)
+        tempTable = table.clone(table1)
     end
     if (table2 == nil) then
         return tempTable
     end
-    if (htable.len(table2) == #table2) then
+    if (table.len(table2) == #table2) then
         for _, v in ipairs(table2) do
             table.insert(tempTable, v)
         end
@@ -59,7 +58,7 @@ htable.merge = function(table1, table2)
 end
 
 --在数组内
-htable.includes = function(val, arr)
+table.includes = function(val, arr)
     local isin = false
     for k, v in pairs(arr) do
         if (v == val) then
@@ -71,7 +70,7 @@ htable.includes = function(val, arr)
 end
 
 --删除数组一次某个值(qty次,默认删除全部)
-htable.delete = function(val, arr, qty)
+table.delete = function(val, arr, qty)
     qty = qty or -1
     local q = 0
     for k, v in pairs(arr) do

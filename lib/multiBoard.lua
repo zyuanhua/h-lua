@@ -67,7 +67,7 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                                     data[row][col].value = tostring(data[row][col].value)
                                 end
                                 cj.MultiboardSetItemValue(item, data[row][col].value)
-                                width = width + hstring.mb_len(data[row][col].value)
+                                width = width + string.mb_len(data[row][col].value)
                             end
                             if (type(data[row][col].icon) == "string") then
                                 isSetIcon = true

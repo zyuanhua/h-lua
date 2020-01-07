@@ -1,7 +1,6 @@
-hstring = {}
 
 --获取一个对象的id
-hstring.char2id = function(idChar)
+string.char2id = function(idChar)
     if (idChar == nil) then
         print_stack()
     end
@@ -18,7 +17,7 @@ hstring.char2id = function(idChar)
 end
 
 --获取一个对象的id字符串
-hstring.id2char = function(id)
+string.id2char = function(id)
     if (id == nil) then
         print_stack()
     end
@@ -27,7 +26,7 @@ hstring.id2char = function(id)
 end
 
 --获取字符串真实长度
-hstring.mb_len = function(inputstr)
+string.mb_len = function(inputstr)
     local lenInByte = #inputstr
     local width = 0
     local i = 1
@@ -51,7 +50,7 @@ hstring.mb_len = function(inputstr)
 end
 
 --生成MD5
-hstring.md5 = function(t)
+string.md5 = function(t)
     if (type(t) == "string") then
         return md5.sumhexa(t)
     elseif (type(t) == "table") then
@@ -70,7 +69,7 @@ hstring.md5 = function(t)
 end
 
 --转义
-hstring.addslashes = function(s)
+string.addslashes = function(s)
     local in_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
     local out_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     for i, c in ipairs(in_char) do
@@ -80,7 +79,7 @@ hstring.addslashes = function(s)
 end
 
 --反转义
-hstring.stripslashes = function(s)
+string.stripslashes = function(s)
     local in_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     local out_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
 
@@ -91,7 +90,7 @@ hstring.stripslashes = function(s)
 end
 
 --base64编码
-hstring.base64Encode = function(source_str)
+string.base64Encode = function(source_str)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local s64 = ""
     local str = source_str
@@ -124,7 +123,7 @@ hstring.base64Encode = function(source_str)
 end
 
 --base64解码
-hstring.base64Decode = function(str64)
+string.base64Decode = function(str64)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local temp = {}
     for i = 1, 64 do
@@ -167,7 +166,7 @@ hstring.base64Decode = function(str64)
 end
 
 --把字符串以分隔符打散为数组
-hstring.explode = function(delimeter, str)
+string.explode = function(delimeter, str)
     local res = {}
     local start, start_pos, end_pos = 1, 1, 1
     while true do
@@ -183,7 +182,7 @@ hstring.explode = function(delimeter, str)
 end
 
 --把数组以分隔符拼接回字符串
-hstring.implode = function(delimeter, table)
+string.implode = function(delimeter, table)
     local str
     for _, v in ipairs(table) do
         if (str == nil) then

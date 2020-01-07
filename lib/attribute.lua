@@ -9,7 +9,7 @@ local hattr = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    DEFAULT_SKILL_ITEM_SLOT = hstring.char2id("AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
 }
 
 --- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（百度谷歌[卡血牌bug]，了解原理）
@@ -192,7 +192,7 @@ end
 hattr.registerAll = function(whichUnit)
     hattr.regAllAbility(whichUnit)
     --init
-    local unitId = hstring.id2char(cj.GetUnitTypeId(whichUnit))
+    local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
     if (hslk_global.unitsKV[unitId] == nil) then
         print_err("未注册 hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
         return
@@ -378,8 +378,8 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             end
         elseif (opr == "-") then
             -- 减少
-            if (htable.includes(val, params[attr])) then
-                htable.delete(val, params[attr], 1)
+            if (table.includes(val, params[attr])) then
+                table.delete(val, params[attr], 1)
                 if (dur > 0) then
                     htime.setTimeout(
                         dur,
@@ -393,7 +393,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             end
         elseif (opr == "=") then
             -- 设定
-            local old = htable.clone(params[attr])
+            local old = table.clone(params[attr])
             params[attr] = val
             if (dur > 0) then
                 htime.setTimeout(
@@ -410,7 +410,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
         -- table类型只有+-没有别的
         if (opr == "+") then
             -- 添加
-            local hkey = hstring.md5(val)
+            local hkey = string.md5(val)
             table.insert(params[attr], {hash = hkey, table = val})
             if (dur > 0) then
                 htime.setTimeout(
@@ -424,7 +424,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             end
         elseif (opr == "-") then
             -- 减少
-            local hkey = hstring.md5(val)
+            local hkey = string.md5(val)
             local hasKey = false
             print_mbr(params[attr])
             for k, v in pairs(params[attr]) do
@@ -563,14 +563,14 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     cj.UnitRemoveAbility(whichUnit, ability)
                 end
                 tempVal = math.floor(math.abs(futureVal))
-                local sightTotal = htable.clone(hslk_global.attr.sightTotal)
+                local sightTotal = table.clone(hslk_global.attr.sightTotal)
                 if (tempVal ~= 0) then
                     while (true) do
                         local isFound = false
                         for _, v in pairs(sightTotal) do
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
-                                htable.delete(v, sightTotal)
+                                table.delete(v, sightTotal)
                                 if (diff > 0) then
                                     cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
                                 else
@@ -585,7 +585,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         end
                     end
                 end
-            elseif (htable.includes(attr, {"attack_green", "attack_speed", "defend"})) then
+            elseif (table.includes(attr, {"attack_green", "attack_speed", "defend"})) then
                 --- 绿字攻击 攻击速度 护甲
                 if (futureVal < -99999999) then
                     futureVal = -99999999
@@ -612,7 +612,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         max = math.floor(max / 10)
                     end
                 end
-            elseif (his.hero(whichUnit) and htable.includes(attr, {"str_green", "agi_green", "int_green"})) then
+            elseif (his.hero(whichUnit) and table.includes(attr, {"str_green", "agi_green", "int_green"})) then
                 --- 绿字力量 绿字敏捷 绿字智力
                 if (futureVal < -99999999) then
                     futureVal = -99999999
@@ -649,7 +649,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     end
                 end
                 hattr.set(whichUnit, 0, setting)
-            elseif (his.hero(whichUnit) and htable.includes(attr, {"str_white", "agi_white", "int_white"})) then
+            elseif (his.hero(whichUnit) and table.includes(attr, {"str_white", "agi_white", "int_white"})) then
                 --- 白字力量 敏捷 智力
                 if (attr == "str_white") then
                     cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
@@ -670,10 +670,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 hattr.set(whichUnit, 0, setting)
             elseif (attr == "life_back" or attr == "mana_back") then
                 --- 生命恢复 魔法恢复
-                if (math.abs(futureVal) > 0.02 and htable.includes(whichUnit, hRuntime.attributeGroup[attr]) == false) then
+                if (math.abs(futureVal) > 0.02 and table.includes(whichUnit, hRuntime.attributeGroup[attr]) == false) then
                     table.insert(hRuntime.attributeGroup[attr], whichUnit)
                 elseif (math.abs(futureVal) < 0.02) then
-                    htable.delete(whichUnit, hRuntime.attributeGroup[attr])
+                    table.delete(whichUnit, hRuntime.attributeGroup[attr])
                 end
             elseif (attr == "life_source_current" or attr == "mana_source_current") then
                 --- 生命源 魔法源(current)
@@ -682,10 +682,10 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     futureVal = hRuntime.attribute[whichUnit][attrSource]
                     hRuntime.attribute[whichUnit][attr] = futureVal
                 end
-                if (math.abs(futureVal) > 1 and htable.includes(whichUnit, hRuntime.attributeGroup[attrSource]) == false) then
+                if (math.abs(futureVal) > 1 and table.includes(whichUnit, hRuntime.attributeGroup[attrSource]) == false) then
                     table.insert(hRuntime.attributeGroup[attrSource], whichUnit)
                 elseif (math.abs(futureVal) < 1) then
-                    htable.delete(whichUnit, hRuntime.attributeGroup[attrSource])
+                    table.delete(whichUnit, hRuntime.attributeGroup[attrSource])
                 end
             elseif (attr == "punish" and hunit.isOpenPunish(whichUnit)) then
                 --- 硬直
@@ -903,7 +903,7 @@ hattr.huntUnit = function(bean)
     end
     -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
     if (his.invincible(bean.toUnit) == true or math.random(1, 100) < hattr.get(bean.toUnit, "invincible")) then
-        if (htable.includes(CONST_HUNT_TYPE.absolute, bean.huntType) == false) then
+        if (table.includes(CONST_HUNT_TYPE.absolute, bean.huntType) == false) then
             return
         end
     end
@@ -952,21 +952,21 @@ hattr.huntUnit = function(bean)
     -- 判断无视装甲类型
     if (bean.breakArmorType) then
         realDamageString = realDamageString .. "无视"
-        if (htable.includes("defend", bean.breakArmorType)) then
+        if (table.includes("defend", bean.breakArmorType)) then
             if (toUnitDefend > 0) then
                 toUnitDefend = 0
             end
             realDamageString = realDamageString .. "护甲"
             realDamageStringColor = "f97373"
         end
-        if (htable.includes("resistance", bean.breakArmorType)) then
+        if (table.includes("resistance", bean.breakArmorType)) then
             if (toUnitResistance > 0) then
                 toUnitResistance = 0
             end
             realDamageString = realDamageString .. "魔抗"
             realDamageStringColor = "6fa8dc"
         end
-        if (htable.includes("avoid", bean.breakArmorType)) then
+        if (table.includes("avoid", bean.breakArmorType)) then
             toUnitAvoid = -100
             realDamageString = realDamageString .. "回避"
             realDamageStringColor = "76a5af"
@@ -991,19 +991,19 @@ hattr.huntUnit = function(bean)
         )
     end
     -- 如果遇到真实伤害，无法回避
-    if (htable.includes(CONST_HUNT_TYPE.real, bean.huntType) == true) then
+    if (table.includes(CONST_HUNT_TYPE.real, bean.huntType) == true) then
         toUnitAvoid = -99999
         realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP.real.label
         realDamageStringColor = CONST_HUNT_TYPE_MAP.real.color
     end
     -- 如果遇到绝对伤害，无法回避，无视无敌
-    if (htable.includes(CONST_HUNT_TYPE.absolute, bean.huntType) == true) then
+    if (table.includes(CONST_HUNT_TYPE.absolute, bean.huntType) == true) then
         toUnitAvoid = -99999
         realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP.absolute.label
         realDamageStringColor = CONST_HUNT_TYPE_MAP.absolute.color
     end
     -- 计算物理暴击
-    if (htable.includes(CONST_HUNT_TYPE.physical, bean.huntType) == true) then
+    if (table.includes(CONST_HUNT_TYPE.physical, bean.huntType) == true) then
         realDamageStringColor = CONST_HUNT_TYPE_MAP.physical.color
         if
             (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
@@ -1015,7 +1015,7 @@ hattr.huntUnit = function(bean)
         end
     end
     -- 计算魔法暴击
-    if (htable.includes(CONST_HUNT_TYPE.magic, bean.huntType) == true) then
+    if (table.includes(CONST_HUNT_TYPE.magic, bean.huntType) == true) then
         realDamageStringColor = CONST_HUNT_TYPE_MAP.magic.color
         if
             (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
@@ -1064,7 +1064,7 @@ hattr.huntUnit = function(bean)
             if (fromUnitNatural[natural] < -100) then
                 fromUnitNatural[natural] = -100
             end
-            if (htable.includes(natural, bean.huntType) and fromUnitNatural[natural] ~= 0) then
+            if (table.includes(natural, bean.huntType) and fromUnitNatural[natural] ~= 0) then
                 realDamagePercent = realDamagePercent + fromUnitNatural[natural] * 0.01
                 realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP[natural].label
                 realDamageStringColor = CONST_HUNT_TYPE_MAP[natural].color
@@ -1076,7 +1076,7 @@ hattr.huntUnit = function(bean)
         realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
     end
     -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (htable.includes(CONST_HUNT_TYPE.physical, bean.huntType) and toUnitDefend > 0) then
+    if (table.includes(CONST_HUNT_TYPE.physical, bean.huntType) and toUnitDefend > 0) then
         toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
         -- 计算护甲
         if (toUnitDefend > 0) then
@@ -1086,7 +1086,7 @@ hattr.huntUnit = function(bean)
         end
     end
     -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
-    if (htable.includes("maigc", bean.huntType) and toUnitResistance > 0) then
+    if (table.includes("maigc", bean.huntType) and toUnitResistance > 0) then
         toUnitResistance = toUnitResistance * fromUnitHuntPercent.magic
         -- 计算魔抗
         if (toUnitResistance ~= 0) then

@@ -20,7 +20,7 @@ hlightning.del = function(lightning)
     cj.DestroyLightning(lightning)
 end
 hlightning.xyz2xyz = function(lightningType, x1, y1, z1, x2, y2, z2, during)
-    local lightning = cj.AddLightningEx(hstring.char2id(lightningType), true, x1, y1, z1, x2, y2, z2)
+    local lightning = cj.AddLightningEx(string.char2id(lightningType), true, x1, y1, z1, x2, y2, z2)
     if (during > 0) then
         htime.setTimeout(during, function(t, td)
             htime.delDialog(td)
