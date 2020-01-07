@@ -56,6 +56,7 @@ hattr = hattribute
 hitem = require "lib.item" -- 物品
 hdialog = require "lib.dialog" -- 对话框
 hleaderBoard = require "lib.leaderBoard" -- 排行榜
+hmultiBoard = require "lib.multiBoard" -- 多面板
 
 -- 最后的初始化run
 -- last init

@@ -13,7 +13,7 @@ end
     根据玩家创建排行榜
     key 排行榜唯一key
     refreshFrequency 刷新频率
-    yourFunc 设置数据的回调,可以获取到该排行榜和玩家的index索引,设置标题
+    yourFunc 设置数据的回调,可以获取到该排行榜和玩家的index索引
 ]]
 hleaderBoard.create = function(key, refreshFrequency, yourFunc)
     if (hRuntime.leaderBoard[key] == nil) then

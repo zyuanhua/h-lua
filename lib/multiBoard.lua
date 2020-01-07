@@ -1,39 +1,66 @@
--- [[多面版/多列榜]]
+-- [[多面板/多列榜]]
 local hmultiboard = {}
 
-hmultiboard.LeaderboardResize = function(lb)
-    local size = cj.LeaderboardGetItemCount(lb)
-    if cj.LeaderboardGetLabelText(lb) == "" then
-        size = size - 1
-    end
-    cj.LeaderboardSetSizeByItemCount(lb, size)
-end
-
 --[[
-    根据玩家创建排行榜
-    key 排行榜唯一key
+    根据玩家创建多面板,多面板是可以每个玩家看到的都不一样的
+    key 多面板唯一key
     refreshFrequency 刷新频率
-    yourFunc 设置数据的回调,可以获取到该排行榜和玩家的index索引,设置标题
+    yourData 设置数据的回调,你需要设置数据传回到create中来，拼凑多面板数据，二维数组，行列模式
 ]]
-hleaderBoard.create = function(key, refreshFrequency, yourFunc)
-    if (hRuntime.multiBoard[key] == nil) then
-        cj.DestroyLeaderboard(hRuntime.leaderBoard[key])
-        hRuntime.multiBoard[key] = cj.CreateLeaderboard()
-    end
-    cj.LeaderboardSetLabel(hRuntime.leaderBoard[key], "排行榜")
-    htime.setInterval(refreshFrequency, function(t, td)
-        for i = 1, hplayer.qty_max, 1 do
-            if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[i]) then
-                cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[i])
+hmultiBoard.create = function(key, refreshFrequency, yourData)
+    --判断玩家各自的多面板属性
+    for pi = 1, hplayer.qty_max, 1 do
+        local p = hplayer.players[pi]
+        if (his.playing(p)) then
+            if (hRuntime.multiBoard[pi] == nil) then
+                hRuntime.multiBoard[pi] = {
+                    visible = true,
+                    timer = nil,
+                    borads = {}
+                }
             end
-            if (his.playing(hplayer.players[i])) then
-                cj.PlayerSetLeaderboard(hplayer.players[i], hRuntime.leaderBoard[key])
-                yourFunc(hRuntime.leaderBoard[key], i)
+            if (hRuntime.multiBoard[pi].borads[key] == nil) then
+                cj.DestroyMultiboard(hRuntime.leaderBoard[pi].borads[key])
+                hRuntime.multiBoard[pi].borads[key] = cj.CreateMultiboard()
+                cj.MultiboardSetTitleText(hRuntime.multiBoard[pi].borads[key], "多面板")
             end
-            hleaderBoard.LeaderboardResize(hRuntime.leaderBoard[key])
         end
-    end)
+        hRuntime.multiBoard[pi].timer =
+            htime.setInterval(
+            refreshFrequency,
+            function(t, td)
+                --检查玩家是否隐藏了多面板 -mbv
+                if (hRuntime.multiBoard[pi].visible ~= true) then
+                    if (cj.GetLocalPlayer() == p) then
+                        cj.MultiboardDisplay(hRuntime.leaderBoard[pi].borads[key], false)
+                    end
+                    --而且隐藏就没必要展示数据了，后续流程中止
+                    return
+                end
+                local data = yourData()
+                local row = #data
+                local col = 0
+                if (row > 0) then
+                    col = #data[1]
+                end
+                print(row)
+                print(col)
+                if (row <= 0 or col <= 0) then
+                    print_err("Multiboard:-row -col")
+                    return
+                end
+                --设置行列数
+                cj.MultiboardSetRowCount(hRuntime.leaderBoard[pi].borads[key], row)
+                cj.MultiboardSetColumnCount(hRuntime.leaderBoard[pi].borads[key], col)
+                
+                --显示
+                if (cj.GetLocalPlayer() == p) then
+                    cj.MultiboardDisplay(hRuntime.leaderBoard[pi].borads[key], true)
+                end
+            end
+        )
+    end
     cj.LeaderboardDisplay(hRuntime.leaderBoard[key], true)
 end
 
-return hleaderBoard
+return hmultiBoard

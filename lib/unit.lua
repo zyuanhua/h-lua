@@ -310,7 +310,10 @@ hunit.getAttackRange = function(uOrUid)
         return 100
     end
 end
-
+-- 获取单位的名称
+hunit.getName = function(u)
+    return cj.GetUnitName(u)
+end
 -- 获取单位的自定义值
 hunit.getUserData = function(u)
     return cj.GetUnitUserData(u)
