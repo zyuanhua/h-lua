@@ -443,20 +443,23 @@ hitem.create = function(bean)
     end
     local charges = bean.charges
     local during = bean.during or 0
+    if(type(bean.itemId) == "string")then
+        bean.itemId = hSys.getObjId(bean.itemId)
+    end
     -- 优先级 坐标 > 单位 > 点
     local it
     local type
     if (bean.x ~= nil and bean.y ~= nil) then
-        it = cj.CreateItem(hSys.getObjId(bean.itemId), bean.x, bean.y)
+        it = cj.CreateItem(bean.itemId, bean.x, bean.y)
         type = hitem.TYPE.COORDINATE
     elseif (bean.whichUnitPosition ~= nil) then
-        it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
+        it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
         type = hitem.TYPE.POSITION
     elseif (bean.whichUnit ~= nil) then
-        it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
+        it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
         type = hitem.TYPE.UNIT
     elseif (bean.whichLoc ~= nil) then
-        it = cj.CreateItem(hSys.getObjId(bean.itemId), cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
+        it = cj.CreateItem(bean.itemId, cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
         type = hitem.TYPE.LOCATION
     else
         print_err("hitem create -site")

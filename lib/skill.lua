@@ -340,7 +340,7 @@ hskill.broken = function(options)
     local cu =
         hunit.create(
         {
-            id = hskill.SKILL_TOKEN,
+            unitId = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
             x = cj.GetUnitX(u),
             y = cj.GetUnitY(u)
@@ -441,7 +441,7 @@ hskill.swim = function(options)
     local cu =
         hunit.create(
         {
-            id = hskill.SKILL_TOKEN,
+            unitId = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
             x = cj.GetUnitX(u),
             y = cj.GetUnitY(u)

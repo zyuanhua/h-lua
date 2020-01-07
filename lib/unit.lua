@@ -142,7 +142,9 @@ hunit.create = function(bean)
         print_err("create unit id")
         return
     end
-    bean.unitId = hSys.getObjId(bean.unitId)
+    if(type(bean.unitId) == "string")then
+        bean.unitId = hSys.getObjId(bean.unitId)
+    end
     local u
     local facing
     local x
