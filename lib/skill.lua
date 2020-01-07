@@ -308,6 +308,7 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
+        model = nil, --特效，可选
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -349,6 +350,9 @@ hskill.broken = function(options)
     cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK, 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.3)
+    if (type(options.model) == "string" and string.len(options.model) > 0) then
+        heffect.bindUnit(options.model, u, "origin", during)
+    end
     if (damage > 0) then
         hskill.damage(
             {
@@ -392,6 +396,7 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
+        model = nil, --特效，可选
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -447,6 +452,9 @@ hskill.swim = function(options)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.4)
     his.set(cu, "isSwim", true)
+    if (type(options.model) == "string" and string.len(options.model) > 0) then
+        heffect.bindUnit(options.model, u, "origin", during)
+    end
     if (damage > 0) then
         hskill.damage(
             {
@@ -505,6 +513,7 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
+        model = nil, --特效，可选
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -561,6 +570,9 @@ hskill.silent = function(options)
             0,
             0.2
         )
+    end
+    if (type(options.model) == "string" and string.len(options.model) > 0) then
+        heffect.bindUnit(options.model, u, "origin", during)
     end
     hskill.set(u, "silentLevel", level)
     if (hSys.inArray(u, hRuntime.skill.silentUnits) == false) then
@@ -629,6 +641,7 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
+        model = nil, --特效，可选
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -685,6 +698,9 @@ hskill.unarm = function(options)
             0,
             0.2
         )
+    end
+    if (type(options.model) == "string" and string.len(options.model) > 0) then
+        heffect.bindUnit(options.model, u, "origin", during)
     end
     hskill.set(u, "unarmLevel", level)
     if (hSys.inArray(u, hRuntime.skill.unarmUnits) == false) then
@@ -753,6 +769,7 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
+        model = nil, --特效，可选
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -784,6 +801,9 @@ hskill.fetter = function(options)
         damage = damage * (1 - oppose * 0.01)
     end
     htextTag.style(htextTag.create2Unit(u, "缚足", 6.00, "ffa500", 10, 1.00, 10.00), "scale", 0, 0.2)
+    if (type(options.model) == "string" and string.len(options.model) > 0) then
+        heffect.bindUnit(options.model, u, "origin", during)
+    end
     hattr.set(
         u,
         during,
@@ -1091,6 +1111,7 @@ end
         distance = 0, --击退距离，可选，默认0
         high = 100, --击飞高度，可选，默认100
         during = 0.5, --击飞过程持续时间，可选，默认0.5秒
+        model = nil, --特效（可选）
         huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
         huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -1148,6 +1169,9 @@ hskill.crackFly = function(options)
         }
     )
     htextTag.style(htextTag.create2Unit(options.whichUnit, "击飞", 6.00, "808000", 10, 1.00, 10.00), "scale", 0, 0.2)
+    if (type(options.model) == "string" and string.len(options.model) > 0) then
+        heffect.bindUnit(options.model, options.whichUnit, "origin", during)
+    end
     hunit.setCanFly(options.whichUnit)
     cj.SetUnitPathing(options.whichUnit, false)
     local originHigh = cj.GetUnitFlyHeight(options.whichUnit)

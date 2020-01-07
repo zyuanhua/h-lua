@@ -1468,6 +1468,7 @@ hattr.huntUnit = function(bean)
                                 odds = b.odds,
                                 damage = b.val,
                                 sourceUnit = bean.fromUnit,
+                                model = b.model,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.real}
                             }
@@ -1481,6 +1482,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
+                                model = b.model,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.real}
                             }
@@ -1494,6 +1496,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
+                                model = b.model,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.real}
                             }
@@ -1507,6 +1510,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
+                                model = b.model,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.real}
                             }
@@ -1520,6 +1524,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
+                                model = b.model,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.real}
                             }
@@ -1533,6 +1538,8 @@ hattr.huntUnit = function(bean)
                                 range = b.range,
                                 whichUnit = bean.toUnit,
                                 sourceUnit = bean.fromUnit,
+                                model = b.model,
+                                modelSingle = b.modelSingle,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.real}
                             }
@@ -1566,13 +1573,11 @@ hattr.huntUnit = function(bean)
                                 distance = b.distance,
                                 high = b.high,
                                 during = b.during,
+                                model = b.model,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.thunder}
                             }
                         )
-                    end
-                    if (type(b.model) == "string" and string.len(b.model) > 0) then
-                        heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
                     end
                 end
             end
