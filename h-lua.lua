@@ -28,7 +28,6 @@ require "slkInit"
 hdzapi = require "lib.dzapi"
 
 -- 加载h-lua库
-hlogic = require "lib.logic" -- 逻辑
 htime = require "lib.time" -- 时间/计时器
 his = require "lib.is" -- 条件判断
 hmessage = require "lib.message" -- 消息

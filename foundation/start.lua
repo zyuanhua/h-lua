@@ -16,6 +16,9 @@ require "foundation.table"
 -- 加载string
 require "foundation.string"
 
+-- 加载math
+require "foundation.math"
+
 -- 加载color
 require "foundation.color"
 

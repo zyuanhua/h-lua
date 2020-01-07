@@ -207,7 +207,7 @@ struct hSkill
             if(xy>0)then
                 set hxy.x = GetUnitX(toUnit)
                 set hxy.y = GetUnitY(toUnit)
-                set hxy = hlogic.polarProjection(hxy, xy, originDeg)
+                set hxy = math.polarProjection(hxy, xy, originDeg)
                 call SetUnitFacing( toUnit, originFacing )
                 call SetUnitPosition( toUnit, hxy.x, hxy.y )
             endif
@@ -220,7 +220,7 @@ struct hSkill
             if(xy>0)then
                 set hxy.x = GetUnitX(toUnit)
                 set hxy.y = GetUnitY(toUnit)
-                set hxy = hlogic.polarProjection(hxy, xy, originDeg)
+                set hxy = math.polarProjection(hxy, xy, originDeg)
                 call SetUnitFacing( toUnit, originFacing )
                 call SetUnitPosition( toUnit, hxy.x, hxy.y )
             endif
@@ -294,7 +294,7 @@ struct hSkill
         call htime.setReal(t,1,duringInc+TimerGetTimeout(t))
         set hxy.x = GetLocationX(loc)
         set hxy.y = GetLocationY(loc)
-        set hxy = hlogic.polarProjection(hxy, speed, hlogic.getDegBetweenLoc(loc, targetLoc))
+        set hxy = math.polarProjection(hxy, speed, math.getDegBetweenLoc(loc, targetLoc))
         call SetUnitPosition( u, hxy.x, hxy.y )
         if(htime.getString(t,5) != null)then
             call heffect.toLoc(htime.getString(t,5),loc,0.5)
@@ -322,7 +322,7 @@ struct hSkill
             call DestroyGroup(g)
             set g = null
         endif
-        set distance = hlogic.getDistanceBetweenLoc(loc, targetLoc)
+        set distance = math.getDistanceBetweenLoc(loc, targetLoc)
         call RemoveLocation(loc)
         if(distance<speed or distance<=0 or speed<=0 or IsUnitDeadBJ(u)==true or duringInc>5) then
             call SetUnitInvulnerable( u, false )
@@ -415,14 +415,14 @@ struct hSkill
             endif
             if(targetLoc==null)then
                 set loc2 = GetUnitLoc(targetUnit)
-                set targetLoc = PolarProjectionBJ( loc , offsetDistance , hlogic.getDegBetweenLoc(loc, loc2) )
+                set targetLoc = PolarProjectionBJ( loc , offsetDistance , math.getDegBetweenLoc(loc, loc2) )
                 call RemoveLocation(loc2)
                 set loc2 = null
                 call htime.setLoc( t , 18 , targetLoc ) //save
             endif
             //移动
-            call SetUnitFacing(shutter, hlogic.getDegBetweenLoc(loc, targetLoc))
-            set loc2 = PolarProjectionBJ(loc, speed, hlogic.getDegBetweenLoc(loc, targetLoc))
+            call SetUnitFacing(shutter, math.getDegBetweenLoc(loc, targetLoc))
+            set loc2 = PolarProjectionBJ(loc, speed, math.getDegBetweenLoc(loc, targetLoc))
             call SetUnitPositionLoc( shutter, loc2 )
             call RemoveLocation(loc2)
             set loc2 = null
@@ -431,7 +431,7 @@ struct hSkill
                 call heffect.toLoc( htime.getString(t, 8 ) , loc, 0.5 )
             endif
             //计算单轮距离是否到终点
-            set distance = hlogic.getDistanceBetweenLoc( loc, targetLoc )
+            set distance = math.getDistanceBetweenLoc( loc, targetLoc )
             call RemoveLocation(loc)
             set loc = null
             //

@@ -317,7 +317,7 @@ hskill.broken = function(options)
     if (options.whichUnit == nil) then
         return
     end
-    if (options.damage ~= nil and options.sourceUnit == nil) then
+    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
         return
     end
     local u = options.whichUnit
@@ -405,7 +405,7 @@ hskill.swim = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.sourceUnit == nil) then
+    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
         return
     end
     local u = options.whichUnit
@@ -522,7 +522,7 @@ hskill.silent = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.sourceUnit == nil) then
+    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
         return
     end
     local u = options.whichUnit
@@ -650,7 +650,7 @@ hskill.unarm = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.sourceUnit == nil) then
+    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
         return
     end
     local u = options.whichUnit
@@ -778,7 +778,7 @@ hskill.fetter = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.sourceUnit == nil) then
+    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
         return
     end
     local u = options.whichUnit
@@ -1176,7 +1176,7 @@ hskill.crackFly = function(options)
     cj.SetUnitPathing(options.whichUnit, false)
     local originHigh = cj.GetUnitFlyHeight(options.whichUnit)
     local originFacing = hunit.getFacing(options.whichUnit)
-    local originDeg = hlogic.getDegBetweenUnit(options.sourceUnit, options.whichUnit)
+    local originDeg = math.getDegBetweenUnit(options.sourceUnit, options.whichUnit)
     local cost = 0
     -- @触发击飞事件
     hevent.triggerEvent(
@@ -1238,7 +1238,7 @@ hskill.crackFly = function(options)
                 z = high / (during * 0.35 / timerSetTime)
                 if (dist > 0) then
                     local pxy =
-                        hlogic.polarProjection(
+                        math.polarProjection(
                         cj.GetUnitX(options.whichUnit),
                         cj.GetUnitY(options.whichUnit),
                         dist,
@@ -1255,7 +1255,7 @@ hskill.crackFly = function(options)
                 z = high / (during * 0.65 / timerSetTime)
                 if (dist > 0) then
                     local pxy =
-                        hlogic.polarProjection(
+                        math.polarProjection(
                         cj.GetUnitX(options.whichUnit),
                         cj.GetUnitY(options.whichUnit),
                         dist,
@@ -1338,7 +1338,6 @@ hskill.swimGroup = function(options)
     cj.ForGroup(
         g,
         function()
-            local u = cj.GetEnumUnit()
             hskill.swim(
                 {
                     odds = odds,
@@ -1391,7 +1390,7 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, op
             duringInc = duringInc + cj.TimerGetTimeout(t)
             local x = cj.GetUnitX(mover)
             local y = cj.GetUnitY(mover)
-            local hxy = hlogic.polarProjection(x, y, speed, hlogic.getDegBetweenXY(x, y, targetX, targetY))
+            local hxy = math.polarProjection(x, y, speed, math.getDegBetweenXY(x, y, targetX, targetY))
             cj.SetUnitPosition(mover, hxy.x, hxy.y)
             if (meff ~= nil) then
                 heffect.toXY(meff, x, y, 0.5)
@@ -1436,7 +1435,7 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, op
                 cj.GroupClear(g)
                 cj.DestroyGroup(g)
             end
-            local distance = hlogic.getDegBetweenXY(x, y, targetX, targetY)
+            local distance = math.getDegBetweenXY(x, y, targetX, targetY)
             if (distance < speed or distance <= 0 or speed <= 0 or his.death(mover) == true or duringInc > 6) then
                 htime.delDialog(td)
                 htime.delTimer(t)

@@ -4401,10 +4401,10 @@ endif
 		endif
 		call htime.setInteger(t,0,during+1)
 		if(hcamera.model=="zoomin")then
-			if(hlogic.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>125)then
+			if(math.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>125)then
 				return
 			endif
-		elseif(hlogic.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>250)then
+		elseif(math.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>250)then
 			return
 		endif
 		call htime.delTimer(t)
@@ -4439,7 +4439,7 @@ endif
 		if(hjass_global_item!=null and GetIssuedOrderId() == OrderId("smart"))then
 			set charges = GetItemCharges(hjass_global_item)
 			if(hcamera.model=="zoomin")then
-				if(hlogic.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>75)then
+				if(math.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>75)then
 					call SaveInteger(hash_item,GetHandleId(u),StringHash("_ITEMPICKUPCHECK_"),GetHandleId(hjass_global_item))
 					set t = htime.setInterval(0.10,function thistype.itemPickupCheck)
 					call htime.setInteger(t,0,0)
@@ -4449,7 +4449,7 @@ endif
                     set u = null
 					return
 				endif
-			elseif(hlogic.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>150)then
+			elseif(math.getDistanceBetweenXY(GetItemX(hjass_global_item),GetItemY(hjass_global_item),GetUnitX(u),GetUnitY(u))>150)then
 				call SaveInteger(hash_item,GetHandleId(u),StringHash("_ITEMPICKUPCHECK_"),GetHandleId(hjass_global_item))
 				set t = htime.setInterval(0.1,function thistype.itemPickupCheck)
 				call htime.setInteger(t,0,0)

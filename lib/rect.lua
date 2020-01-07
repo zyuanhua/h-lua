@@ -175,7 +175,7 @@ hrect.lock = function(bean)
             while (cj.IsUnitGroupEmptyBJ(lockGroup) == false) do
                 local u = cj.FirstOfGroup(lockGroup)
                 cj.GroupRemoveUnit(lockGroup, u)
-                if (~table.includes(u, inGroups)) then
+                if (table.includes(u, inGroups) == false) then
                     table.insert(inGroups, u)
                 end
             end
@@ -190,7 +190,7 @@ hrect.lock = function(bean)
             local yy = cj.GetUnitY(u)
             if (bean.type == "square") then
                 if (his.borderRect(lockRect, xx, yy) == true) then
-                    deg = hlogic.getDegBetweenXY(x, y, xx, yy)
+                    deg = math.getDegBetweenXY(x, y, xx, yy)
                     if (deg == 0 or deg == 180 or deg == -180) then
                         -- 横
                         distance = w
@@ -224,13 +224,13 @@ hrect.lock = function(bean)
                     end
                 end
             elseif (bean.type == "circle") then
-                if (hlogic.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
-                    deg = hlogic.getDegBetweenXY(x, y, xx, yy)
+                if (math.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
+                    deg = math.getDegBetweenXY(x, y, xx, yy)
                     distance = math.min(w / 2, h / 2)
                 end
             end
             if (distance > 0.0) then
-                local polar = hlogic.polarProjection(x, y, distance, deg)
+                local polar = math.polarProjection(x, y, distance, deg)
                 local loc = cj.Location(polar.x, polar.y)
                 cj.SetUnitPositionLoc(u, loc)
                 cj.RemoveLocation(loc)

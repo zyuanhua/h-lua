@@ -4,7 +4,7 @@ local haward = {
 }
 -- 设置共享范围
 haward.setShareRange = function(range)
-    haward.shareRange = hlogic.round(range)
+    haward.shareRange = math.round(range)
 end
 -- 奖励单位（经验黄金木头）
 haward.forUnit = function(whichUnit, exp, gold, lumber)
