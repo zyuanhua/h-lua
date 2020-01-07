@@ -571,7 +571,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
                                 table.delete(v, sightTotal)
-                                if (diff > 0) then
+                                if (futureVal > 0) then
                                     cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
                                 else
                                     cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.sub[v])
@@ -604,7 +604,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     while (max >= 1) do
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
-                        if (diff > 0) then
+                        if (futureVal > 0) then
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max], level + 1)
                         else
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max], level + 1)
@@ -631,7 +631,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     while (max >= 1) do
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
-                        if (diff > 0) then
+                        if (futureVal > 0) then
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max], level + 1)
                         else
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max], level + 1)

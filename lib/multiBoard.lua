@@ -45,7 +45,6 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                     if (totalRow > 0) then
                         totalCol = #data[1]
                     end
-                    print_mbr(data)
                     if (totalRow <= 0 or totalCol <= 0) then
                         print_err("Multiboard:-totalRow -totalCol")
                         return
@@ -87,7 +86,7 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                         for col = 1, totalCol, 1 do
                             cj.MultiboardSetItemWidth(
                                 cj.MultiboardGetItem(hRuntime.multiBoard[pi].borads[key], row - 1, col - 1),
-                                widthCol[col] / 125
+                                widthCol[col] / 130
                             )
                         end
                     end
