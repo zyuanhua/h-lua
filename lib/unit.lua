@@ -276,7 +276,7 @@ hunit.getSlk = function(uOrUid)
     elseif (type(uOrUid) == "number") then
         uid = hSys.getObjChar(uOrUid)
     else
-        uid = hunit.getId(u)
+        uid = hunit.getId(uOrUid)
     end
     if (hslk_global.unitsKV[uid] ~= nil) then
         slk = hslk_global.unitsKV[uid]
