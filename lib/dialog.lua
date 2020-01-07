@@ -19,7 +19,7 @@ hdialog.create = function(whichPlayer, options, call)
     local d = cj.DialogCreate()
     local btnKv = {}
     cj.DialogSetMessage(d, options.title)
-    if (#options.buttons == hSys.getTableLen(options.buttons)) then
+    if (#options.buttons == table.len(options.buttons)) then
         for i = 1, #options.buttons, 1 do
             if (type(options.buttons[i]) == "table") then
                 local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))

@@ -10,8 +10,8 @@ require "foundation.md5"
 -- 加载runtime
 require "foundation.runtime"
 
--- 加载system
-require "foundation.system"
+-- 加载table
+require "foundation.table"
 
 -- 加载string
 require "foundation.string"

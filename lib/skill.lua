@@ -554,7 +554,7 @@ hskill.silent = function(options)
             hRuntime.skill.silentTrigger,
             function()
                 local u1 = cj.GetTriggerUnit()
-                if (hSys.inArray(u1, hRuntime.skill.silentUnits)) then
+                if (table.includes(u1, hRuntime.skill.silentUnits)) then
                     cj.IssueImmediateOrder(u1, "stop")
                 end
             end
@@ -575,7 +575,7 @@ hskill.silent = function(options)
         heffect.bindUnit(options.model, u, "origin", during)
     end
     hskill.set(u, "silentLevel", level)
-    if (hSys.inArray(u, hRuntime.skill.silentUnits) == false) then
+    if (table.includes(u, hRuntime.skill.silentUnits) == false) then
         table.insert(hRuntime.skill.silentUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "head", -1)
         hskill.set(u, "silentEffect", eff)
@@ -624,8 +624,8 @@ hskill.silent = function(options)
             hskill.set(u, "silentLevel", hskill.get(u, "silentLevel") - 1)
             if (hskill.get(u, "silentLevel") <= 0) then
                 heffect.del(hskill.get(u, "silentEffect"))
-                if (hSys.inArray(u, hRuntime.skill.silentUnits)) then
-                    hSys.rmArray(u, hRuntime.skill.silentUnits)
+                if (table.includes(u, hRuntime.skill.silentUnits)) then
+                    table.delete(u, hRuntime.skill.silentUnits)
                 end
                 his.set(u, "isSilent", false)
             end
@@ -682,7 +682,7 @@ hskill.unarm = function(options)
             hRuntime.skill.unarmTrigger,
             function()
                 local u1 = cj.GetTriggerUnit()
-                if (hSys.inArray(u1, hRuntime.skill.unarmUnits)) then
+                if (table.includes(u1, hRuntime.skill.unarmUnits)) then
                     cj.IssueImmediateOrder(u1, "stop")
                 end
             end
@@ -703,7 +703,7 @@ hskill.unarm = function(options)
         heffect.bindUnit(options.model, u, "origin", during)
     end
     hskill.set(u, "unarmLevel", level)
-    if (hSys.inArray(u, hRuntime.skill.unarmUnits) == false) then
+    if (table.includes(u, hRuntime.skill.unarmUnits) == false) then
         table.insert(hRuntime.skill.unarmUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "weapon", -1)
         hskill.set(u, "unarmEffect", level)
@@ -752,8 +752,8 @@ hskill.unarm = function(options)
             hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel") - 1)
             if (hskill.get(u, "unarmLevel") <= 0) then
                 heffect.del(hskill.get(u, "unarmEffect"))
-                if (hSys.inArray(u, hRuntime.skill.unarmUnits)) then
-                    hSys.rmArray(u, hRuntime.skill.unarmUnits)
+                if (table.includes(u, hRuntime.skill.unarmUnits)) then
+                    table.delete(u, hRuntime.skill.unarmUnits)
                 end
                 his.set(u, "isUnArm", false)
             end
