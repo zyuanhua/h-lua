@@ -553,10 +553,10 @@ hskill.silent = function(options)
     end
     local level = hskill.get(u, "silentLevel", 0) + 1
     if (level <= 1) then
-        htextTag.style(htextTag.ttg2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.create2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
         htextTag.style(
-            htextTag.ttg2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00),
+            htextTag.create2Unit(u, math.floor(level) .. "重沉默", 6.00, "ee82ee", 10, 1.00, 10.00),
             "scale",
             0,
             0.2
@@ -677,10 +677,10 @@ hskill.unarm = function(options)
     end
     local level = hskill.get(u, "unarmLevel") + 1
     if (level <= 1) then
-        htextTag.style(htextTag.ttg2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.create2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
         htextTag.style(
-            htextTag.ttg2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00),
+            htextTag.create2Unit(u, math.floor(level) .. "重缴械", 6.00, "ffe4e1", 10, 1.00, 10.00),
             "scale",
             0,
             0.2
@@ -783,7 +783,7 @@ hskill.fetter = function(options)
         during = during * (1 - oppose * 0.01)
         damage = damage * (1 - oppose * 0.01)
     end
-    htextTag.style(htextTag.ttg2Unit(u, "缚足", 6.00, "ffa500", 10, 1.00, 10.00), "scale", 0, 0.2)
+    htextTag.style(htextTag.create2Unit(u, "缚足", 6.00, "ffa500", 10, 1.00, 10.00), "scale", 0, 0.2)
     hattr.set(
         u,
         during,
@@ -876,6 +876,7 @@ hskill.bomb = function(options)
                 return flag
             end
         )
+        htextTag.style(htextTag.create2Unit(options.whichUnit, "爆破", 6.00, "FF6347", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
         print_err("lost bomb target")
         return
@@ -990,6 +991,7 @@ hskill.lightningChain = function(options)
         options.index = options.index + 1
     end
     hlightning.unit2unit(lightningType, prevUnit, whichUnit, 0.25)
+    htextTag.style(htextTag.create2Unit(whichUnit, "电链", 6.00, "87cefa", 10, 1.00, 10.00), "scale", 0, 0.2)
     if (options.model ~= nil) then
         heffect.toUnit(options.model, whichUnit, "origin", 0.5)
     end
@@ -1145,6 +1147,7 @@ hskill.crackFly = function(options)
             move = "-9999"
         }
     )
+    htextTag.style(htextTag.create2Unit(options.whichUnit, "击飞", 6.00, "808000", 10, 1.00, 10.00), "scale", 0, 0.2)
     hunit.setCanFly(options.whichUnit)
     cj.SetUnitPathing(options.whichUnit, false)
     local originHigh = cj.GetUnitFlyHeight(options.whichUnit)
@@ -1243,6 +1246,88 @@ hskill.crackFly = function(options)
             end
         end
     )
+end
+
+--[[
+    范围眩晕
+    options = {
+        range = 0, --眩晕范围（必须有）
+        during = 0, --眩晕持续时间（必须有）
+        odds = 100, --对每个单位的独立几率（可选,默认100）
+        model = "", --特效（可选，只有在匹配模式下才会生效，使用单位组请额外补充特效）
+        whichGroup = [group], --目标单位组（可选）
+        whichUnit = [unit], --目标单位（可选）
+        whichLoc = [location], --目标点（可选）
+        x = [point], --目标坐标X（可选）
+        y = [point], --目标坐标Y（可选）
+        filter = [function], --区配模型下必须有
+        damage = 0, --伤害（可选，但是这里可以等于0）
+        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
+        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
+        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+    }
+]]
+hskill.swimGroup = function(options)
+    local range = options.range or 0
+    local during = options.during or 0
+    local damage = options.damage or 0
+    if (range <= 0 or during <= 0) then
+        return
+    end
+    if (damage > 0 or options.sourceUnit == nil) then
+        return
+    end
+    local odds = options.odds or 100
+    local model = options.model or "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl"
+    local x, y
+    if (options.x ~= nil or options.y ~= nil) then
+        x = options.x
+        y = options.y
+    elseif (options.whichUnit ~= nil) then
+        x = cj.GetUnitX(options.whichUnit)
+        y = cj.GetUnitY(options.whichUnit)
+    elseif (options.whichLoc ~= nil) then
+        x = cj.GetLocatonX(options.whichLoc)
+        y = cj.GetLocatonY(options.whichLoc)
+    end
+    local g
+    if (options.whichGroup ~= nil) then
+        g = options.whichGroup
+    elseif (x ~= nil or y ~= nil) then
+        local filter = options.filter
+        if (type(filter) ~= "function") then
+            print_err("filter must be function")
+            return
+        end
+        heffect.toXY(model, x, y, 0)
+        g = hgroup.createByXY(x, y, range, filter)
+    end
+    if (g == nil) then
+        print_err("swim group has not target")
+        return
+    end
+    if (hgroup.count(g) <= 0) then
+        return
+    end
+    cj.ForGroup(
+        g,
+        function()
+            local u = cj.GetEnumUnit()
+            hskill.swim(
+                {
+                    odds = odds,
+                    whichUnit = cj.GetEnumUnit(),
+                    during = during,
+                    damage = damage,
+                    sourceUnit = options.sourceUnit,
+                    huntKind = options.huntKind,
+                    huntType = options.huntType
+                }
+            )
+        end
+    )
+    cj.GroupClear(g)
+    cj.DestroyGroup(g)
 end
 
 --[[

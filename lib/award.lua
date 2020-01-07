@@ -59,7 +59,8 @@ end
 
 -- 平分奖励英雄组（经验黄金木头）
 haward.forGroup = function(whichUnit, exp, gold, lumber)
-    local g = hgroup.createByUnit(
+    local g =
+        hgroup.createByUnit(
         whichUnit,
         haward.shareRange,
         function()

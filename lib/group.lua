@@ -70,7 +70,7 @@ end
 
 -- 创建单位组,以某个单位为中心radius距离
 hgroup.createByUnit = function(u, radius, filterFunc)
-    return hgroup.createByXY(cj.GetUnitX(loc), cj.GetUnitY(loc), radius, filterFunc)
+    return hgroup.createByXY(cj.GetUnitX(u), cj.GetUnitY(u), radius, filterFunc)
 end
 
 -- 创建单位组,以区域为范围选择

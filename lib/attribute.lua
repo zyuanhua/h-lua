@@ -742,6 +742,18 @@ hattr.set = function(whichUnit, during, data)
                         end
                         hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "+", buff, during)
                     end
+                elseif (v.sub ~= nil and type(v.sub) == "table") then
+                    for _, buff in pairs(v.sub) do
+                        if (buff == nil) then
+                            print_err("table effect loss[buff]!")
+                            break
+                        end
+                        if (type(buff) ~= "table") then
+                            print_err("type(buff) must be a table!")
+                            break
+                        end
+                        hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "-", buff, during)
+                    end
                 end
             end
         end
@@ -1021,7 +1033,7 @@ hattr.huntUnit = function(bean)
      then
         isAvoid = true
         realDamage = 0
-        htextTag.style(htextTag.ttg2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.create2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
         -- @触发回避事件
         hevent.triggerEvent(
             {
@@ -1445,7 +1457,9 @@ hattr.huntUnit = function(bean)
         if (effect ~= nil) then
             for _, etc in pairs(effect) do
                 local b = etc.table
-                if (b.val >= 0 and b.during > 0 and b.odds > 0) then
+                b.val = b.val or 0
+                b.odds = b.odds or 0
+                if (b.odds > 0) then
                     if (b.attr == "broken") then
                         --打断
                         hskill.broken(
