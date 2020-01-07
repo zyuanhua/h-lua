@@ -6,9 +6,12 @@ hgroup.count = function(whichGroup)
         return 0
     end
     local count = 0
-    cj.ForGroup(whichGroup, function()
-        count = count + 1
-    end)
+    cj.ForGroup(
+        whichGroup,
+        function()
+            count = count + 1
+        end
+    )
     return count
 end
 
@@ -25,9 +28,12 @@ hgroup.isEmpty = function(whichGroup)
         return true
     end
     local isUnitGroupEmptyResult = true
-    cj.ForGroup(whichGroup, function()
-        isUnitGroupEmptyResult = false
-    end)
+    cj.ForGroup(
+        whichGroup,
+        function()
+            isUnitGroupEmptyResult = false
+        end
+    )
     return isUnitGroupEmptyResult
 end
 
@@ -44,25 +50,27 @@ hgroup.removeUnit = function(whichGroup, whichUnit)
     end
 end
 
--- 创建单位组,以loc点为中心radius距离
-hgroup.createByLoc = function(loc, radius, filterFunc)
+-- 创建单位组,以(x,y)点为中心radius距离
+hgroup.createByXY = function(x, y, radius, filterFunc)
     -- 镜头放大模式下，范围缩小一半
     if (hcamera.model == "zoomin") then
         radius = radius * 0.5
     end
     local bx = cj.Condition(filterFunc)
     local g = cj.CreateGroup()
-    cj.GroupEnumUnitsInRangeOfLoc(g, loc, radius, bx)
+    cj.GroupEnumUnitsInRange(g, x, y, radius, bx)
     cj.DestroyBoolExpr(bx)
     return g
 end
 
+-- 创建单位组,以loc点为中心radius距离
+hgroup.createByLoc = function(loc, radius, filterFunc)
+    return hgroup.createByXY(cj.GetLocationX(loc), cj.GetLocationY(loc), radius, filterFunc)
+end
+
 -- 创建单位组,以某个单位为中心radius距离
 hgroup.createByUnit = function(u, radius, filterFunc)
-    local loc = cj.GetUnitLoc(u)
-    local g = hgroup.createByLoc(loc, radius, filterFunc)
-    cj.RemoveLocation(loc)
-    return g
+    return hgroup.createByXY(cj.GetUnitX(loc), cj.GetUnitY(loc), radius, filterFunc)
 end
 
 -- 创建单位组,以区域为范围选择
