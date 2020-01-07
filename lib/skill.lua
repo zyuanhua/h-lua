@@ -1296,9 +1296,11 @@ hskill.swimGroup = function(options)
     local during = options.during or 0
     local damage = options.damage or 0
     if (range <= 0 or during <= 0) then
+        print_err("hskill.swimGroup:-range -during")
         return
     end
-    if (damage > 0 or options.sourceUnit == nil) then
+    if (damage > 0 and options.sourceUnit == nil) then
+        print_err("hskill.swimGroup:-sourceUnit")
         return
     end
     local odds = options.odds or 100

@@ -21,19 +21,31 @@ hleaderBoard.create = function(key, refreshFrequency, yourFunc)
         hRuntime.leaderBoard[key] = cj.CreateLeaderboard()
     end
     cj.LeaderboardSetLabel(hRuntime.leaderBoard[key], "排行榜")
-    htime.setInterval(refreshFrequency, function(t, td)
-        for i = 1, hplayer.qty_max, 1 do
-            if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[i]) then
-                cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[i])
+    htime.setInterval(
+        refreshFrequency,
+        function(t, td)
+            for i = 1, hplayer.qty_max, 1 do
+                if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[i]) then
+                    cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[i])
+                end
+                if (his.playing(hplayer.players[i])) then
+                    cj.PlayerSetLeaderboard(hplayer.players[i], hRuntime.leaderBoard[key])
+                    yourFunc(hRuntime.leaderBoard[key], i)
+                end
+                hleaderBoard.LeaderboardResize(hRuntime.leaderBoard[key])
             end
-            if (his.playing(hplayer.players[i])) then
-                cj.PlayerSetLeaderboard(hplayer.players[i], hRuntime.leaderBoard[key])
-                yourFunc(hRuntime.leaderBoard[key], i)
-            end
-            hleaderBoard.LeaderboardResize(hRuntime.leaderBoard[key])
         end
-    end)
+    )
     cj.LeaderboardDisplay(hRuntime.leaderBoard[key], true)
+end
+
+--设置排行榜的标题
+hleaderBoard.setTitle = function(whichBoard, title)
+    cj.LeaderboardSetLabel(whichBoard, title)
+end
+
+hleaderBoard.setPlayerData = function(whichBoard, whichPlayer, data)
+    cj.LeaderboardAddItem(whichBoard, cj.GetPlayerName(whichPlayer), data, whichPlayer)
 end
 
 return hleaderBoard
