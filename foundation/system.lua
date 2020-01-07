@@ -1,29 +1,5 @@
 hSys = {}
 
---获取一个对象的id
-hSys.getObjId = function(idChar)
-    if (idChar == nil) then
-        print_stack()
-    end
-    local len = string.len(idChar)
-    local id = 0
-    for i = 1, len, 1 do
-        if (i == 1) then
-            id = string.byte(idChar, i)
-        else
-            id = id * 256 + string.byte(idChar, i)
-        end
-    end
-    return id
-end
---获取一个对象的id字符串
-hSys.getObjChar = function(id)
-    if (id == nil) then
-        print_stack()
-    end
-    return string.char(id // 0x1000000) ..
-        string.char(id // 0x10000 % 0x100) .. string.char(id // 0x100 % 0x100) .. string.char(id % 0x100)
-end
 --获取一个table的正确长度
 hSys.getTableLen = function(table)
     local len = 0

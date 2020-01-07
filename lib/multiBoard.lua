@@ -62,13 +62,14 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                             if (data[row][col].value ~= nil) then
                                 isSetValue = true
                                 cj.MultiboardSetItemValue(item, data[row][col].value)
-                                width = width + string.len(data[row][col].value)
+                                width = width + string.mb_len(data[row][col].value)
                             end
                             if (data[row][col].icon ~= nil) then
                                 isSetIcon = true
                                 cj.MultiboardSetItemIcon(item, data[row][col].icon)
-                                width = width + 2
+                                width = width + 1
                             end
+                            print("width=" .. col .. "/" .. width)
                             cj.MultiboardSetItemStyle(item, isSetValue, isSetIcon)
                             cj.MultiboardSetItemWidth(item, width / 100)
                         end

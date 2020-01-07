@@ -4,7 +4,7 @@ local hskill = {
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
-    BUFF_SWIM = hSys.getObjId("BPSE")
+    BUFF_SWIM = string.char2id"BPSE")
 }
 
 hskill.set = function(handle, key, val)
@@ -29,7 +29,7 @@ end
 
 -- 添加技能
 hskill.add = function(whichUnit, ability_id, during)
-    local id = hSys.getObjId(ability_id)
+    local id = string.char2idability_id)
     if (during == nil or during <= 0) then
         cj.UnitAddAbility(whichUnit, id)
         cj.UnitMakeAbilityPermanent(whichUnit, true, id)
@@ -46,7 +46,7 @@ end
 
 -- 删除技能
 hskill.del = function(whichUnit, ability_id, during)
-    local id = hSys.getObjId(ability_id)
+    local id = string.char2idability_id)
     if (during == nil or during <= 0) then
         cj.UnitRemoveAbility(whichUnit, id)
     else
@@ -62,7 +62,7 @@ end
 
 -- 设置技能的永久使用性
 hskill.forever = function(whichUnit, ability_id)
-    local id = hSys.getObjId(ability_id)
+    local id = string.char2idability_id)
     cj.UnitMakeAbilityPermanent(whichUnit, true, id)
 end
 
@@ -71,7 +71,7 @@ hskill.has = function(whichUnit, ability_id)
     if (whichUnit == nil or ability_id == nil) then
         return false
     end
-    local id = hSys.getObjId(ability_id)
+    local id = string.char2idability_id)
     if (cj.GetUnitAbilityLevel(whichUnit, id) >= 1) then
         return true
     end

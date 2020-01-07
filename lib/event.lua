@@ -274,7 +274,7 @@ end
 hevent.getTriggerSkill = function()
     local skill = hRuntime.eventTgr[cj.GetTriggeringTrigger()].triggerSkill or nil
     if (skill ~= nil) then
-        skill = hSys.getObjChar(skill)
+        skill = string.id2charskill)
     end
     return skill
 end

@@ -9,7 +9,7 @@ local hattr = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    DEFAULT_SKILL_ITEM_SLOT = hSys.getObjId("AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    DEFAULT_SKILL_ITEM_SLOT = string.char2id"AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
 }
 
 --- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（百度谷歌[卡血牌bug]，了解原理）
@@ -192,7 +192,7 @@ end
 hattr.registerAll = function(whichUnit)
     hattr.regAllAbility(whichUnit)
     --init
-    local unitId = hSys.getObjChar(cj.GetUnitTypeId(whichUnit))
+    local unitId = string.id2charcj.GetUnitTypeId(whichUnit))
     if (hslk_global.unitsKV[unitId] == nil) then
         print_err("未注册 hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
         return

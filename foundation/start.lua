@@ -13,6 +13,9 @@ require "foundation.runtime"
 -- 加载system
 require "foundation.system"
 
+-- 加载string
+require "foundation.string"
+
 -- 加载color
 require "foundation.color"
 
