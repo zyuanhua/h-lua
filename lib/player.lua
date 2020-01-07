@@ -103,7 +103,8 @@ hplayer.defeat = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
     end
-    local g = hgroup.createByRect(
+    local g =
+        hgroup.createByRect(
         cj.GetWorldBounds(),
         function()
             return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
@@ -430,7 +431,9 @@ hplayer.init = function()
         triggerApmUnit,
         function()
             local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
-            hRuntime.player[p].apm = hRuntime.player[p].apm + 1
+            if (hRuntime.player[p] ~= nil) then
+                hRuntime.player[p].apm = hRuntime.player[p].apm + 1
+            end
         end
     )
     cj.TriggerAddAction(
@@ -440,7 +443,8 @@ hplayer.init = function()
             local g
             hRuntime.player[p].status = p, hplayer.player_status.leave
             hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
-            g = hgroup.createByRect(
+            g =
+                hgroup.createByRect(
                 cj.GetWorldBounds(),
                 function()
                     local b = false
@@ -570,8 +574,10 @@ hplayer.init = function()
         hRuntime.player[hplayer.players[i]].damage = 0
         hRuntime.player[hplayer.players[i]].beDamage = 0
         hRuntime.player[hplayer.players[i]].kill = 0
-        if ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER)
-            and (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)) then
+        if
+            ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and
+                (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING))
+         then
             -- his
             his.set(hplayer.players[i], "isComputer", false)
             --
