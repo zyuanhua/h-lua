@@ -549,7 +549,7 @@ obj.Name = "属性系统#攻击速度+" .. val
 obj.Art = ""
 obj.levels = 10
 for j = 0, 9 do
-obj["DataA" .. (j+1)] = 1*val*j
+obj["DataA" .. (j+1)] = 0.01*val*j
 end
 ?>
 call SaveInteger(hash_hslk, StringHash("attr_attack_speed_add"), <?=val?>, '<?=obj:get_id()?>')
@@ -561,7 +561,7 @@ obj.Name = "属性系统#攻击速度-" .. val
 obj.Art = ""
 obj.levels = 10
 for j = 0, 9 do
-obj["DataA" .. (j+1)] = -1*val*j
+obj["DataA" .. (j+1)] = -0.01*val*j
 end
 ?>
 call SaveInteger(hash_hslk, StringHash("attr_attack_speed_sub"), <?=val?>, '<?=obj:get_id()?>')
