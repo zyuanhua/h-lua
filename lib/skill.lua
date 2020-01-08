@@ -506,7 +506,7 @@ hskill.swim = function(options)
 end
 
 --[[
-    沉默! 注意这个方法对中立被动无效
+    沉默
     options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
@@ -634,7 +634,7 @@ hskill.silent = function(options)
 end
 
 --[[
-    缴械! 注意这个方法对中立被动无效
+    缴械
     options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
@@ -762,7 +762,7 @@ hskill.unarm = function(options)
 end
 
 --[[
-    缚足! 注意这个方法对中立被动无效
+    缚足
     options = {
         whichUnit = unit, --目标单位，必须
         during = 0, --持续时间，必须
