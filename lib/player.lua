@@ -431,7 +431,7 @@ hplayer.init = function()
         triggerApmUnit,
         function()
             local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
-            if (hRuntime.player[p] ~= nil) then
+            if (his.playing(p) == true and his.playerSite(p) == true and his.computer(p) == false) then
                 hRuntime.player[p].apm = hRuntime.player[p].apm + 1
             end
         end

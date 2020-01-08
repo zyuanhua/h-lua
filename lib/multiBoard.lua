@@ -65,8 +65,11 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                                 if (valueType == "number") then
                                     data[row][col].value = tostring(data[row][col].value)
                                 end
-                                cj.MultiboardSetItemValue(item, data[row][col].value)
                                 width = width + string.mb_len(data[row][col].value)
+                                if ((row - 1) == pi) then
+                                    data[row][col].value = hColor.yellow(data[row][col].value)
+                                end
+                                cj.MultiboardSetItemValue(item, data[row][col].value)
                             end
                             if (type(data[row][col].icon) == "string") then
                                 isSetIcon = true
@@ -98,6 +101,11 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
             )
         end
     end
+end
+
+--设置标题
+hmultiBoard.setTitle = function(whichBoard, title)
+    cj.MultiboardSetTitleText(whichBoard, title)
 end
 
 return hmultiBoard

@@ -87,11 +87,20 @@ bj.CustomDefeatDialogBJ = function(whichPlayer, message)
     bj.VolumeGroupSetVolumeForPlayerBJ(whichPlayer, SOUND_VOLUMEGROUP_UI, 1.0)
     bj.StartSoundForPlayerBJ(whichPlayer, cg.bj_defeatDialogSound)
 end
+bj.CustomDefeatQuitBJ = function()
+    if cg.bj_isSinglePlayer then
+        cj.PauseGame(false)
+    end
+
+    -- Bump the difficulty back up to the default.
+    cj.SetGameDifficulty(cj.GetDefaultDifficulty())
+    cj.EndGame(true)
+end
 bj.CustomVictoryDialogBJ = function(whichPlayer)
     local t
     local d = cj.DialogCreate()
 
-    cj.DialogSetMessage(d, GetLocalizedString("GAMEOVER_VICTORY_MSG"))
+    cj.DialogSetMessage(d, cj.GetLocalizedString("GAMEOVER_VICTORY_MSG"))
     t = cj.CreateTrigger()
     cj.TriggerRegisterDialogButtonEvent(t, cj.DialogAddButton(d, cj.GetLocalizedString("GAMEOVER_CONTINUE"), cj.GetLocalizedHotkey("GAMEOVER_CONTINUE")))
     cj.TriggerAddAction(t, function()
@@ -107,9 +116,9 @@ bj.CustomVictoryDialogBJ = function(whichPlayer)
             cj.ChangeLevel(cg.bj_changeLevelMapName, cg.bj_changeLevelShowScores)
         end
     end)
-    t = CreateTrigger()
+    t = cj.CreateTrigger()
     cj.TriggerRegisterDialogButtonEvent(t, cj.DialogAddButton(d, cj.GetLocalizedString("GAMEOVER_QUIT_MISSION"), cj.GetLocalizedHotkey("GAMEOVER_QUIT_MISSION")))
-    cj.TriggerAddAction(t, CustomVictoryQuitBJ)
+    cj.TriggerAddAction(t, bj.CustomDefeatQuitBJ)
 
     if cj.GetLocalPlayer() == whichPlayer then
         cj.EnableUserControl(true)
