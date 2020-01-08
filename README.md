@@ -28,8 +28,10 @@
     │   ├── attritube - 属性KV
     │   ├── hero - 英雄KV
     │   ├── hotKey - 热键KV
-    │   ├── itemKey - 物品KV
-    │   ├── unitKey - 单位KV
+    │   ├── huntKind - 伤害种类
+    │   ├── huntType - 伤害类型
+    │   ├── item - 物品KV
+    │   ├── unit - 单位KV
     │   └── start.lua - 开始准备
     ├── foundation - 基础文件
     │   ├── foundation - 基础文件
@@ -41,8 +43,11 @@
     │   ├── debug.lua - 调试
     │   ├── f9.lua - 框架任务
     │   ├── json.lua - json库
+    │   ├── math.lua - 计算库
+    │   ├── md5.lua - MD5
     │   ├── runtime.lua - 运行时数据集
-    │   ├── system.lua - 系统默认函数
+    │   ├── string.lua - 字符串库
+    │   ├── table.lua - 表库
     │   └── start.lua - 开始准备
     └── lib
         ├── attrbute.lua - 基础/拓展/伤害特效/自然/单位关联，万能属性系统，比h-vjass的更加自由及强大
@@ -60,10 +65,9 @@
         ├── item.lua - 物品模块，与属性系统无缝结合，合成/分拆等功能
         ├── leaderBoard.lua 排行榜模块，用于简易构建排行榜
         ├── lightning.lua - 闪电链
-        ├── logic.lua - 逻辑模块
         ├── mark.lua - 遮罩模块
-        ├── message.lua - 消息模块(注意漂浮字模块与hvjass不同，是一个独立的ttg模块)
-        ├── multiboard.lua - 多面板，包含自带的属性系统
+        ├── message.lua - 消息模块(注意漂浮字模块与h-vjass不同，是一个独立的ttg模块)
+        ├── multiBoard.lua - 多面板
         ├── player.lua - 玩家
         ├── rect.lua - 区域
         ├── skill.lua - 高级技能
