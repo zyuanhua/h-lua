@@ -973,16 +973,18 @@ end
     }
 ]]
 hskill.lightningChain = function(options)
-    if (options.whichUnit == nil or options.prevUnit == nil or options.damage == nil or options.damage <= 0) then
+    if (options.damage == nil or options.damage <= 0) then
+        print_err("lightningChain -damage")
         return
     end
-    if (options.sourceUnit == nil) then
+    if (options.whichUnit == nil or options.prevUnit == nil or options.sourceUnit == nil) then
+        print_err("lightningChain -unit")
         return
     end
     local odds = options.odds or 100
     local damage = options.damage
     --计算抵抗
-    local oppose = hattr.get(u, "lightning_chain_oppose")
+    local oppose = hattr.get(options.whichUnit, "lightning_chain_oppose")
     odds = odds - oppose --(%)
     if (odds <= 0) then
         return
