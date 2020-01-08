@@ -1076,17 +1076,17 @@ hattr.huntUnit = function(bean)
         realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
     end
     -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (table.includes(CONST_HUNT_TYPE.physical, bean.huntType) and toUnitDefend > 0) then
+    if (table.includes(CONST_HUNT_TYPE.physical, bean.huntType) and toUnitDefend ~= 0) then
         toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
         -- 计算护甲
         if (toUnitDefend > 0) then
             realDamagePercent = realDamagePercent - toUnitDefend / (toUnitDefend + 200)
         else
-            realDamagePercent = realDamagePercent + -toUnitDefend / (-toUnitDefend + 100)
+            realDamagePercent = realDamagePercent + (-toUnitDefend / (-toUnitDefend + 100))
         end
     end
     -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
-    if (table.includes("maigc", bean.huntType) and toUnitResistance > 0) then
+    if (table.includes(CONST_HUNT_TYPE.magic, bean.huntType) and toUnitResistance ~= 0) then
         toUnitResistance = toUnitResistance * fromUnitHuntPercent.magic
         -- 计算魔抗
         if (toUnitResistance ~= 0) then
