@@ -57,6 +57,7 @@ hhero.getPrevLevel = function(u)
     end
     return hRuntime.hero[u].prevLevel or 0
 end
+--获取英雄当前等级
 hhero.getCurLevel = function(u)
     return cj.GetHeroLevel(u) or 1
 end

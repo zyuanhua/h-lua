@@ -44,6 +44,7 @@ hleaderBoard.setTitle = function(whichBoard, title)
     cj.LeaderboardSetLabel(whichBoard, title)
 end
 
+--设置玩家的数据
 hleaderBoard.setPlayerData = function(whichBoard, whichPlayer, data)
     cj.LeaderboardAddItem(whichBoard, cj.GetPlayerName(whichPlayer), data, whichPlayer)
 end
