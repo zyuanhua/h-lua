@@ -186,6 +186,18 @@ bj.AbortCinematicFadeBJ = function()
         cj.DestroyTimer(cg.bj_cineFadeFinishTimer)
     end
 end
+bj.PercentToInt = function(percentage, max)
+    local result = cj.R2I(percentage * cj.I2R(max) * 0.01)
+    if result < 0 then
+        result = 0
+    elseif result > max then
+        result = max
+    end
+    return result
+end
+bj.PercentTo255 = function(percentage)
+    return bj.PercentToInt(percentage, 255)
+end
 bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
     bj.AbortCinematicFadeBJ()
     cj.SetCineFilterTexture(tex)
@@ -193,13 +205,13 @@ bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0
     cj.SetCineFilterTexMapFlags(TEXMAP_FLAG_NONE)
     cj.SetCineFilterStartUV(0, 0, 1, 1)
     cj.SetCineFilterEndUV(0, 0, 1, 1)
-    cj.SetCineFilterStartColor(cj.PercentTo255(red0), cj.PercentTo255(green0), cj.PercentTo255(blue0), cj.PercentTo255(100 - trans0))
-    cj.SetCineFilterEndColor(cj.PercentTo255(red1), cj.PercentTo255(green1), cj.PercentTo255(blue1), cj.PercentTo255(100 - trans1))
+    cj.SetCineFilterStartColor(bj.PercentTo255(red0), bj.PercentTo255(green0), bj.PercentTo255(blue0), bj.PercentTo255(100 - trans0))
+    cj.SetCineFilterEndColor(bj.PercentTo255(red1), bj.PercentTo255(green1), bj.PercentTo255(blue1), bj.PercentTo255(100 - trans1))
     cj.SetCineFilterDuration(duration)
     cj.DisplayCineFilter(true)
 end
 bj.SetUnitVertexColorBJ = function(whichUnit, red, green, blue, transparency)
-    cj.SetUnitVertexColor(whichUnit, cj.PercentTo255(red), cj.PercentTo255(green), cj.PercentTo255(blue), cj.PercentTo255(100.0 - transparency))
+    cj.SetUnitVertexColor(whichUnit, bj.PercentTo255(red), bj.PercentTo255(green), bj.PercentTo255(blue), bj.PercentTo255(100.0 - transparency))
 end
 bj.CreateQuestBJ = function(questType, title, description, iconPath)
     local required = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_REQ_UNDISCOVERED

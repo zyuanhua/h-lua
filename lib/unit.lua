@@ -72,7 +72,7 @@ end
 
 -- 设置单位的生命周期
 hunit.setPeriod = function(u, life)
-    cj.UnitApplyTimedLifeBJ(life, string.char2id("BTLF"), u)
+    cj.UnitApplyTimedLife(u, string.char2id("BTLF"), life)
 end
 
 --获取单位面向角度
@@ -142,7 +142,7 @@ hunit.create = function(bean)
         print_err("create unit id")
         return
     end
-    if(type(bean.unitId) == "string")then
+    if (type(bean.unitId) == "string") then
         bean.unitId = string.char2id(bean.unitId)
     end
     local u
