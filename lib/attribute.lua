@@ -1550,14 +1550,15 @@ hattr.huntUnit = function(bean)
                             {
                                 odds = b.odds,
                                 damage = b.val,
-                                whichUnit = b.toUnit,
-                                prevUnit = b.fromUnit,
                                 lightningType = b.lightning_type,
                                 qty = b.qty,
                                 change = b.change,
-                                range = 400,
+                                range = b.range or 500,
+                                model = b.model,
                                 isRepeat = false,
-                                sourceUnit = b.fromUnit,
+                                whichUnit = bean.toUnit,
+                                prevUnit = bean.fromUnit,
+                                sourceUnit = bean.fromUnit,
                                 huntKind = CONST_HUNT_KIND.special,
                                 huntType = {CONST_HUNT_TYPE.thunder}
                             }
@@ -1568,8 +1569,8 @@ hattr.huntUnit = function(bean)
                             {
                                 odds = b.odds,
                                 damage = b.val,
-                                whichUnit = b.toUnit,
-                                sourceUnit = b.fromUnit,
+                                whichUnit = bean.toUnit,
+                                sourceUnit = bean.fromUnit,
                                 distance = b.distance,
                                 high = b.high,
                                 during = b.during,

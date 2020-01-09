@@ -13,36 +13,51 @@ local hlightning = {
         ma_fa_liao_kao = "LEAS", -- 闪电效果 - 魔法镣铐
         fa_li_ran_shao = "MBUR", -- 闪电效果 - 法力燃烧
         mo_li_zhi_yan = "MFPB", -- 闪电效果 - 魔力之焰
-        ling_hun_suo_lian = "SPLK", -- 闪电效果 - 灵魂锁链
+        ling_hun_suo_lian = "SPLK" -- 闪电效果 - 灵魂锁链
     }
 }
+--删除闪电
 hlightning.del = function(lightning)
     cj.DestroyLightning(lightning)
 end
+
+--xyz对xyz创建闪电
 hlightning.xyz2xyz = function(lightningType, x1, y1, z1, x2, y2, z2, during)
-    local lightning = cj.AddLightningEx(string.char2id(lightningType), true, x1, y1, z1, x2, y2, z2)
-    if (during > 0) then
-        htime.setTimeout(during, function(t, td)
+    local lightning = cj.AddLightningEx(lightningType, true, x1, y1, z1, x2, y2, z2)
+    during = during or 0.25
+    htime.setTimeout(
+        during,
+        function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
             hlightning.del(lightning)
-        end)
-    end
+        end
+    )
     return lightning
 end
+
+--点对点创建闪电
 hlightning.loc2loc = function(lightningType, loc1, loc2, during)
     return hlightning.xyz2xyz(
         lightningType,
-        cj.GetLocationX(loc1), cj.GetLocationY(loc1), cj.GetLocationZ(loc1),
-        cj.GetLocationX(loc2), cj.GetLocationY(loc2), cj.GetLocationZ(loc2),
-        during)
+        cj.GetLocationX(loc1),
+        cj.GetLocationY(loc1),
+        cj.GetLocationZ(loc1),
+        cj.GetLocationX(loc2),
+        cj.GetLocationY(loc2),
+        cj.GetLocationZ(loc2),
+        during
+    )
 end
+
+--单位对单位创建闪电
 hlightning.unit2unit = function(lightningType, unit1, unit2, during)
-    return hlightning.xyz2xyz(
-        lightningType,
-        cj.GetUnitX(unit1), cj.GetUnitY(unit1), cj.GetUnitFlyHeight(unit1),
-        cj.GetUnitX(unit2), cj.GetUnitY(unit2), cj.GetUnitFlyHeight(unit2),
-        during)
+    local loc1 = cj.GetUnitLoc(unit1)
+    local loc2 = cj.GetUnitLoc(unit2)
+    local l = hlightning.loc2loc(lightningType, loc1, loc2, during)
+    cj.RemoveLocation(loc1)
+    cj.RemoveLocation(loc2)
+    return l
 end
 
 return hlightning

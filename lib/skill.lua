@@ -977,9 +977,16 @@ hskill.lightningChain = function(options)
         print_err("lightningChain -damage")
         return
     end
-    if (options.whichUnit == nil or options.prevUnit == nil or options.sourceUnit == nil) then
-        print_err("lightningChain -unit")
+    if (options.whichUnit == nil) then
+        print_err("lightningChain -whichUnit")
         return
+    end
+    if (options.sourceUnit == nil) then
+        print_err("lightningChain -sourceUnit")
+        return
+    end
+    if (options.prevUnit == nil) then
+        options.prevUnit = options.sourceUnit
     end
     local odds = options.odds or 100
     local damage = options.damage
@@ -997,25 +1004,25 @@ hskill.lightningChain = function(options)
     local whichUnit = options.whichUnit
     local prevUnit = options.prevUnit
     local lightningType = options.lightningType or hlightning.type.shan_dian_lian_ci
-    local qty = options.qty or 1
     local change = options.change or 0
-    local range = options.range or 300
+    local range = options.range or 500
     local isRepeat = options.isRepeat or false
     local huntKind = options.huntKind or CONST_HUNT_KIND.skill
     local huntType = options.huntType or {"thunder"}
-    qty = qty - 1
-    if (qty < 0) then
-        qty = 0
+    options.qty = options.qty or 1
+    options.qty = options.qty - 1
+    if (options.qty < 0) then
+        options.qty = 0
     end
     if (options.index == nil) then
         options.index = 1
     else
         options.index = options.index + 1
     end
-    hlightning.unit2unit(lightningType, prevUnit, whichUnit, 0.25)
+    hlightning.unit2unit(lightningType, prevUnit, whichUnit, 1.25)
     htextTag.style(htextTag.create2Unit(whichUnit, "电链", 6.00, "87cefa", 10, 1.00, 10.00), "scale", 0, 0.2)
     if (options.model ~= nil) then
-        heffect.toUnit(options.model, whichUnit, "origin", 0.5)
+        heffect.bindUnit(options.model, whichUnit, "origin", 0.5)
     end
     hskill.damage(
         {
@@ -1049,7 +1056,7 @@ hskill.lightningChain = function(options)
             index = options.index
         }
     )
-    if (qty > 0) then
+    if (options.qty > 0) then
         if (isRepeat ~= true) then
             if (options.repeatGroup == nil) then
                 options.repeatGroup = cj.CreateGroup()
@@ -1058,7 +1065,7 @@ hskill.lightningChain = function(options)
         end
         local g =
             hgroup.createByUnit(
-            options.toUnit,
+            whichUnit,
             range,
             function()
                 local flag = true
@@ -1068,7 +1075,7 @@ hskill.lightningChain = function(options)
                 if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
                     flag = false
                 end
-                if (his.isBuilding(cj.GetFilterUnit())) then
+                if (his.building(cj.GetFilterUnit())) then
                     flag = false
                 end
                 if (his.unit(whichUnit, cj.GetFilterUnit())) then
@@ -1085,16 +1092,20 @@ hskill.lightningChain = function(options)
         end
         options.whichUnit = cj.FirstOfGroup(g)
         options.damage = options.damage * (1 + change)
+        options.prevUnit = whichUnit
+        options.odds = 9999 --闪电链只要开始能延续下去就是100%几率了
         cj.GroupClear(g)
         cj.DestroyGroup(g)
-        htime.setTimeout(
-            0.35,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hskill.lightningChain(options)
-            end
-        )
+        if (options.damage > 0) then
+            htime.setTimeout(
+                0.35,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    hskill.lightningChain(options)
+                end
+            )
+        end
     else
         if (options.repeatGroup ~= nil) then
             cj.GroupClear(options.repeatGroup)
@@ -1410,7 +1421,7 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, op
                         if (his.ally(cj.GetFilterUnit(), options.fromUnit)) then
                             flag = false
                         end
-                        if (his.isBuilding(cj.GetFilterUnit())) then
+                        if (his.building(cj.GetFilterUnit())) then
                             flag = false
                         end
                         if (isRepeat ~= true and hgroup.isIn(repeatGroup, cj.GetFilterUnit())) then
