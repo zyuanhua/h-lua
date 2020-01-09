@@ -737,7 +737,7 @@ hattr.set = function(whichUnit, during, data)
                             break
                         end
                         if (type(buff) ~= "table") then
-                            print_err("type(buff) must be a table!")
+                            print_err("add type(buff) must be a table!")
                             break
                         end
                         hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "+", buff, during)
@@ -749,7 +749,7 @@ hattr.set = function(whichUnit, during, data)
                             break
                         end
                         if (type(buff) ~= "table") then
-                            print_err("type(buff) must be a table!")
+                            print_err("sub type(buff) must be a table!")
                             break
                         end
                         hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "-", buff, during)
