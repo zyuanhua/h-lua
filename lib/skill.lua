@@ -1090,7 +1090,7 @@ hskill.lightningChain = function(options)
         if (hgroup.isEmpty(g)) then
             return
         end
-        options.whichUnit = cj.FirstOfGroup(g)
+        options.whichUnit = hgroup.getClosest(g, cj.GetUnitX(whichUnit), cj.GetUnitY(whichUnit))
         options.damage = options.damage * (1 + change)
         options.prevUnit = whichUnit
         options.odds = 9999 --闪电链只要开始能延续下去就是100%几率了

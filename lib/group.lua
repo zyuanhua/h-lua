@@ -123,6 +123,31 @@ hgroup.animate = function(whichGroup, animateStr)
     cj.DestroyGroup(g)
 end
 
+-- 获取单位组内离选定的(x,y)最近的单位
+hgroup.getClosest = function(whichGroup, x, y)
+    if (whichGroup == nil or x == nil or y == nil) then
+        return
+    end
+    if (hgroup.count(whichGroup) == 0) then
+        return
+    end
+    local closeDist = 99999
+    local closeUnit
+    cj.ForGroup(
+        whichGroup,
+        function()
+            local u = cj.GetEnumUnit()
+            local tx = cj.GetUnitX(u)
+            local ty = cj.GetUnitY(u)
+            local dist = math.getDistanceBetweenXY(x, y, tx, ty)
+            if (dist < closeDist) then
+                closeUnit = u
+            end
+        end
+    )
+    return closeUnit
+end
+
 -- 清空单位组
 -- isDestroy 是否同时删除单位组
 -- isDestroyUnit 是否同时删除单位组里面的单位
