@@ -239,8 +239,10 @@ hskill.damage = function(options)
         -0.05,
         0
     )
-    hevent.setLastDamageUnit(options.toUnit, options.fromUnit)
-    hplayer.addDamage(cj.GetOwningPlayer(options.fromUnit), options.realDamage)
+    if (options.fromUnit ~= nil) then
+        hevent.setLastDamageUnit(options.toUnit, options.fromUnit)
+        hplayer.addDamage(cj.GetOwningPlayer(options.fromUnit), options.realDamage)
+    end
     hplayer.addBeDamage(cj.GetOwningPlayer(options.toUnit), options.realDamage)
     hunit.subCurLife(options.toUnit, options.realDamage)
     if (type(options.huntEff) == "string" and string.len(options.huntEff) > 0) then
