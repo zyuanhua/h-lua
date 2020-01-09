@@ -19,10 +19,10 @@ end
 
 hskill.get = function(handle, key, defaultVal)
     if (handle == nil or key == nil) then
-        return defaultVal or nil
+        return defaultVal
     end
-    if (hRuntime.skill[handle] == nil) then
-        return defaultVal or nil
+    if (hRuntime.skill[handle] == nil or hRuntime.skill[handle][key] == nil) then
+        return defaultVal
     end
     return hRuntime.skill[handle][key]
 end
@@ -1019,7 +1019,7 @@ hskill.lightningChain = function(options)
     else
         options.index = options.index + 1
     end
-    hlightning.unit2unit(lightningType, prevUnit, whichUnit, 1.25)
+    hlightning.unit2unit(lightningType, prevUnit, whichUnit, 0.25)
     htextTag.style(htextTag.create2Unit(whichUnit, "电链", 6.00, "87cefa", 10, 1.00, 10.00), "scale", 0, 0.2)
     if (options.model ~= nil) then
         heffect.bindUnit(options.model, whichUnit, "origin", 0.5)
