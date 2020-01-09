@@ -10,6 +10,7 @@ end
 -- 特效 XY坐标
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toXY = function(effectModel, x, y, during)
+    during = during or 0
     if (effectModel == nil or during < 0) then
         return
     end
@@ -33,6 +34,7 @@ end
 -- 特效 点
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toLoc = function(effectModel, loc, during)
+    during = during or 0
     if (effectModel == nil or loc == nil or during < 0) then
         return
     end
@@ -56,6 +58,7 @@ end
 -- 特效 单位所处位置
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toUnit = function(effectModel, targetUnit, during)
+    during = during or 0
     if (effectModel == nil or targetUnit == nil or during < 0) then
         return
     end
@@ -85,6 +88,7 @@ heffect.bindUnit = function(effectModel, targetUnit, attach, during)
         return
     end
     local eff
+    during = during or 0
     if (during > 0) then
         eff = cj.AddSpecialEffectTarget(effectModel, targetUnit, attach)
         htime.setTimeout(

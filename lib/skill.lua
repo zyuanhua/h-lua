@@ -706,7 +706,7 @@ hskill.unarm = function(options)
     if (table.includes(u, hRuntime.skill.unarmUnits) == false) then
         table.insert(hRuntime.skill.unarmUnits, u)
         local eff = heffect.bindUnit("Abilities\\Spells\\Other\\Silence\\SilenceTarget.mdl", u, "weapon", -1)
-        hskill.set(u, "unarmEffect", level)
+        hskill.set(u, "unarmEffect", eff)
     end
     his.set(u, "isUnArm", true)
     if (damage > 0) then
