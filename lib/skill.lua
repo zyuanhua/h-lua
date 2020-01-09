@@ -621,7 +621,7 @@ hskill.silent = function(options)
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            hskill.set(u, "silentLevel", hskill.get(u, "silentLevel") - 1)
+            hskill.set(u, "silentLevel", hskill.get(u, "silentLevel", 0) - 1)
             if (hskill.get(u, "silentLevel") <= 0) then
                 heffect.del(hskill.get(u, "silentEffect"))
                 if (table.includes(u, hRuntime.skill.silentUnits)) then
@@ -688,7 +688,7 @@ hskill.unarm = function(options)
             end
         )
     end
-    local level = hskill.get(u, "unarmLevel") + 1
+    local level = hskill.get(u, "unarmLevel", 0) + 1
     if (level <= 1) then
         htextTag.style(htextTag.create2Unit(u, "缴械", 6.00, "ffe4e1", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
@@ -749,7 +749,7 @@ hskill.unarm = function(options)
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel") - 1)
+            hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel", 0) - 1)
             if (hskill.get(u, "unarmLevel") <= 0) then
                 heffect.del(hskill.get(u, "unarmEffect"))
                 if (table.includes(u, hRuntime.skill.unarmUnits)) then
