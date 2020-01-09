@@ -323,6 +323,7 @@ hunit.setUserData = function(u, val, during)
     local oldData = hunit.getUserData(u)
     val = math.ceil(val)
     cj.SetUnitUserData(u, val)
+    during = during or 0
     if (during > 0) then
         htime.setTimeout(
             during,
