@@ -250,8 +250,9 @@ hskill.damage = function(options)
     end
     -- @触发伤害事件
     hevent.triggerEvent(
+        options.fromUnit,
+        CONST_EVENT.damage,
         {
-            triggerKey = CONST_EVENT.damage,
             triggerUnit = options.fromUnit,
             targetUnit = options.toUnit,
             sourceUnit = options.fromUnit,
@@ -263,8 +264,9 @@ hskill.damage = function(options)
     )
     -- @触发被伤害事件
     hevent.triggerEvent(
+        options.toUnit,
+        CONST_EVENT.beDamage,
         {
-            triggerKey = CONST_EVENT.beDamage,
             triggerUnit = options.toUnit,
             sourceUnit = options.fromUnit,
             damage = options.damage,
@@ -276,8 +278,9 @@ hskill.damage = function(options)
     if (options.huntKind == CONST_HUNT_KIND.attack) then
         -- @触发攻击事件
         hevent.triggerEvent(
+            options.fromUnit,
+            CONST_EVENT.attack,
             {
-                triggerKey = CONST_EVENT.attack,
                 triggerUnit = options.fromUnit,
                 attacker = options.fromUnit,
                 targetUnit = options.toUnit,
@@ -289,8 +292,9 @@ hskill.damage = function(options)
         )
         -- @触发被攻击事件
         hevent.triggerEvent(
+            options.fromUnit,
+            CONST_EVENT.beAttack,
             {
-                triggerKey = CONST_EVENT.beAttack,
                 triggerUnit = options.fromUnit,
                 attacker = options.fromUnit,
                 targetUnit = options.toUnit,
@@ -371,8 +375,9 @@ hskill.broken = function(options)
     if (sourceUnit ~= nil) then
         -- @触发打断事件
         hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.broken,
             {
-                triggerKey = CONST_EVENT.broken,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage
@@ -381,8 +386,9 @@ hskill.broken = function(options)
     end
     -- @触发被打断事件
     hevent.triggerEvent(
+        u,
+        CONST_EVENT.beBroken,
         {
-            triggerKey = CONST_EVENT.beBroken,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage
@@ -473,8 +479,9 @@ hskill.swim = function(options)
     if (sourceUnit ~= nil) then
         -- @触发眩晕事件
         hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.swim,
             {
-                triggerKey = CONST_EVENT.swim,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -484,8 +491,9 @@ hskill.swim = function(options)
     end
     -- @触发被眩晕事件
     hevent.triggerEvent(
+        u,
+        CONST_EVENT.beSwim,
         {
-            triggerKey = CONST_EVENT.beSwim,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -599,8 +607,9 @@ hskill.silent = function(options)
     if (sourceUnit ~= nil) then
         -- @触发沉默事件
         hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.silent,
             {
-                triggerKey = CONST_EVENT.silent,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -610,8 +619,9 @@ hskill.silent = function(options)
     end
     -- @触发被沉默事件
     hevent.triggerEvent(
+        u,
+        CONST_EVENT.beSilent,
         {
-            triggerKey = CONST_EVENT.beSilent,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -727,8 +737,9 @@ hskill.unarm = function(options)
     if (sourceUnit ~= nil) then
         -- @触发缴械事件
         hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.unarm,
             {
-                triggerKey = CONST_EVENT.unarm,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -738,8 +749,9 @@ hskill.unarm = function(options)
     end
     -- @触发被缴械事件
     hevent.triggerEvent(
+        u,
+        CONST_EVENT.beUnarm,
         {
-            triggerKey = CONST_EVENT.beUnarm,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -829,8 +841,9 @@ hskill.fetter = function(options)
     if (sourceUnit ~= nil) then
         -- @触发缚足事件
         hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.fetter,
             {
-                triggerKey = CONST_EVENT.fetter,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -840,8 +853,9 @@ hskill.fetter = function(options)
     end
     -- @触发被缚足事件
     hevent.triggerEvent(
+        u,
+        CONST_EVENT.beFetter,
         {
-            triggerKey = CONST_EVENT.beFetter,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -930,8 +944,9 @@ hskill.bomb = function(options)
             )
             -- @触发爆破事件
             hevent.triggerEvent(
+                options.sourceUnit,
+                CONST_EVENT.bomb,
                 {
-                    triggerKey = CONST_EVENT.bomb,
                     triggerUnit = options.sourceUnit,
                     targetUnit = cj.GetEnumUnit(),
                     damage = options.damage,
@@ -940,8 +955,9 @@ hskill.bomb = function(options)
             )
             -- @触发被爆破事件
             hevent.triggerEvent(
+                cj.GetEnumUnit(),
+                CONST_EVENT.beBomb,
                 {
-                    triggerKey = CONST_EVENT.beBomb,
                     triggerUnit = cj.GetEnumUnit(),
                     sourceUnit = options.sourceUnit,
                     damage = options.damage,
@@ -1038,8 +1054,9 @@ hskill.lightningChain = function(options)
     )
     -- @触发闪电链成功事件
     hevent.triggerEvent(
+        options.sourceUnit,
+        CONST_EVENT.lightningChain,
         {
-            triggerKey = CONST_EVENT.lightningChain,
             triggerUnit = options.sourceUnit,
             targetUnit = whichUnit,
             damage = damage,
@@ -1049,8 +1066,9 @@ hskill.lightningChain = function(options)
     )
     -- @触发被闪电链事件
     hevent.triggerEvent(
+        whichUnit,
+        CONST_EVENT.beLightningChain,
         {
-            triggerKey = CONST_EVENT.beLightningChain,
             triggerUnit = whichUnit,
             sourceUnit = options.sourceUnit,
             damage = damage,
@@ -1195,8 +1213,9 @@ hskill.crackFly = function(options)
     local cost = 0
     -- @触发击飞事件
     hevent.triggerEvent(
+        options.sourceUnit,
+        CONST_EVENT.crackFly,
         {
-            triggerKey = CONST_EVENT.crackFly,
             triggerUnit = options.sourceUnit,
             targetUnit = options.whichUnit,
             damage = damage,
@@ -1206,8 +1225,9 @@ hskill.crackFly = function(options)
     )
     -- @触发被击飞事件
     hevent.triggerEvent(
+        options.whichUnit,
+        CONST_EVENT.beCrackFly,
         {
-            triggerKey = CONST_EVENT.beCrackFly,
             triggerUnit = options.whichUnit,
             sourceUnit = options.sourceUnit,
             damage = damage,
