@@ -53,7 +53,6 @@ end
 hevent.triggerEvent = function(handle, key, triggerData)
     triggerData = triggerData or {}
     if (hRuntime.event.register[handle] == nil or hRuntime.event.register[handle][key] == nil) then
-        print_stack()
         return
     end
     if (#hRuntime.event.register[handle][key] <= 0) then

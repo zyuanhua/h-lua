@@ -1,8 +1,8 @@
-
 --获取一个对象的id
 string.char2id = function(idChar)
-    if (idChar == nil) then
+    if (idChar == nil or type(idChar) ~= "string") then
         print_stack()
+        return
     end
     local len = string.len(idChar)
     local id = 0
@@ -18,8 +18,9 @@ end
 
 --获取一个对象的id字符串
 string.id2char = function(id)
-    if (id == nil) then
+    if (id == nil or type(id) ~= "number") then
         print_stack()
+        return
     end
     return string.char(id // 0x1000000) ..
         string.char(id // 0x10000 % 0x100) .. string.char(id // 0x100 % 0x100) .. string.char(id % 0x100)
