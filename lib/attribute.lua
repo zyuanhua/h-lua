@@ -426,7 +426,6 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
             -- 减少
             local hkey = string.md5(val)
             local hasKey = false
-            print_mbr(params[attr])
             for k, v in pairs(params[attr]) do
                 if (v.hash == hkey) then
                     table.remove(params[attr], k)
@@ -435,7 +434,6 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                 end
             end
             if (hasKey == true) then
-                print_mbr(params[attr])
                 if (dur > 0) then
                     htime.setTimeout(
                         dur,
@@ -734,6 +732,7 @@ hattr.set = function(whichUnit, during, data)
                     for _, buff in pairs(v.add) do
                         if (buff == nil) then
                             print_err("table effect loss[buff]!")
+                            print_stack()
                             break
                         end
                         if (type(buff) ~= "table") then
@@ -747,6 +746,7 @@ hattr.set = function(whichUnit, during, data)
                     for _, buff in pairs(v.sub) do
                         if (buff == nil) then
                             print_err("table effect loss[buff]!")
+                            print_stack()
                             break
                         end
                         if (type(buff) ~= "table") then

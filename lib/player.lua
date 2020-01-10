@@ -77,6 +77,10 @@ end
 hplayer.getStatus = function(whichPlayer)
     return hRuntime.player[whichPlayer].status or hplayer.player_status.none
 end
+--- 设置玩家当前状态
+hplayer.setStatus = function(whichPlayer, status)
+    hRuntime.player[whichPlayer].status = status
+end
 --- 获取玩家APM
 hplayer.getApm = function(whichPlayer)
     return hRuntime.player[whichPlayer].apm or 0

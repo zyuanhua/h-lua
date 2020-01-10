@@ -59,10 +59,18 @@ hdzapi.server.set = {
 }
 hdzapi.server.get = {
     int = function(whichPlayer, key)
-        return japi.DzAPI_Map_GetServerValue(whichPlayer, "I" .. key) or 0
+        local val = japi.DzAPI_Map_GetServerValue(whichPlayer, "I" .. key) or 0
+        if (val == "") then
+            val = 0
+        end
+        return math.floor(val)
     end,
     real = function(whichPlayer, key)
-        return japi.DzAPI_Map_GetServerValue(whichPlayer, "R" .. key) or 0
+        local val = japi.DzAPI_Map_GetServerValue(whichPlayer, "R" .. key) or 0
+        if (val == "") then
+            val = 0
+        end
+        return math.round(val)
     end,
     bool = function(whichPlayer, key)
         local b = japi.DzAPI_Map_GetServerValue(whichPlayer, "B" .. key)
@@ -79,14 +87,14 @@ hdzapi.server.get = {
         if (string.len(id) > 0) then
             return string.char2id(id)
         end
-        return nil
+        return ""
     end,
     item = function(whichPlayer, key)
         local id = japi.DzAPI_Map_GetServerValue(whichPlayer, "S" .. key) or ""
         if (string.len(id) > 0) then
             return string.char2id(id)
         end
-        return nil
+        return ""
     end
 }
 -- 清理服务器数据

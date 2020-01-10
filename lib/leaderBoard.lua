@@ -13,9 +13,10 @@ end
     根据玩家创建排行榜
     key 排行榜唯一key
     refreshFrequency 刷新频率
-    yourFunc 设置数据的回调,可以获取到该排行榜和玩家的index索引
+    yourData 设置数据的回调,会返回当前的排行榜；
+             另外你需要设置数据传回到create中来，拼凑KV数据，playerIndex -> value
 ]]
-hleaderBoard.create = function(key, refreshFrequency, yourFunc)
+hleaderBoard.create = function(key, refreshFrequency, yourData)
     if (hRuntime.leaderBoard[key] == nil) then
         cj.DestroyLeaderboard(hRuntime.leaderBoard[key])
         hRuntime.leaderBoard[key] = cj.CreateLeaderboard()
@@ -24,29 +25,30 @@ hleaderBoard.create = function(key, refreshFrequency, yourFunc)
     htime.setInterval(
         refreshFrequency,
         function(t, td)
-            for i = 1, hplayer.qty_max, 1 do
-                if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[i]) then
-                    cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[i])
+            local data = yourData(hRuntime.leaderBoard[key])
+            print_r(data)
+            for playerIndex, value in pairs(data) do
+                if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex]) then
+                    cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex])
                 end
-                if (his.playing(hplayer.players[i])) then
-                    cj.PlayerSetLeaderboard(hplayer.players[i], hRuntime.leaderBoard[key])
-                    yourFunc(hRuntime.leaderBoard[key], i)
-                end
-                hleaderBoard.LeaderboardResize(hRuntime.leaderBoard[key])
+                cj.PlayerSetLeaderboard(hplayer.players[playerIndex], hRuntime.leaderBoard[key])
+                cj.LeaderboardAddItem(
+                    hRuntime.leaderBoard[key],
+                    cj.GetPlayerName(hplayer.players[playerIndex]),
+                    value,
+                    hplayer.players[playerIndex]
+                )
             end
+            hleaderBoard.LeaderboardResize(hRuntime.leaderBoard[key])
         end
     )
     cj.LeaderboardDisplay(hRuntime.leaderBoard[key], true)
+    return hRuntime.leaderBoard[key]
 end
 
 --设置排行榜的标题
 hleaderBoard.setTitle = function(whichBoard, title)
     cj.LeaderboardSetLabel(whichBoard, title)
-end
-
---设置玩家的数据
-hleaderBoard.setPlayerData = function(whichBoard, whichPlayer, data)
-    cj.LeaderboardAddItem(whichBoard, cj.GetPlayerName(whichPlayer), data, whichPlayer)
 end
 
 return hleaderBoard
