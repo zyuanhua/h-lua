@@ -34,7 +34,7 @@ end
 
 --最后一位伤害的单位
 hevent.getLastDamageUnit = function(whichUnit)
-    hevent.get(whichUnit, "lastDamageUnit")
+    return hevent.get(whichUnit, "lastDamageUnit")
 end
 
 -- 注册事件，会返回一个event_id（私有通用）
@@ -820,14 +820,14 @@ end
 
 --死亡时
 --triggerUnit 获取触发单位
---Killer 获取凶手单位
+--killer 获取凶手单位
 hevent.onDead = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.dead, callFunc)
 end
 
 --击杀时
 --triggerUnit 获取触发单位
---Killer 获取凶手单位
+--killer 获取凶手单位
 --targetUnit 获取死亡单位
 hevent.onKill = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.kill, callFunc)
