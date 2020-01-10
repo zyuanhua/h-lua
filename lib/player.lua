@@ -499,17 +499,10 @@ hplayer.init = function()
             hplayer.qty_current = hplayer.qty_current - 1
         end
     )
-    hevent.onSelection(
-        nil,
-        2,
-        function()
-            hplayer.set(hevent.getTriggerPlayer(), "selection", hevent.getTriggerUnit())
-        end
-    )
     cj.TriggerAddAction(
         triggerDeSelection,
         function()
-            hplayer.set(hevent.getTriggerPlayer(), "selection", nil)
+            hplayer.set(cj.GetTriggerPlayer(), "selection", nil)
         end
     )
     cj.TriggerAddAction(
@@ -648,6 +641,13 @@ hplayer.init = function()
             cj.TriggerRegisterPlayerChatEvent(triggerLSR, hplayer.players[i], "-lsr", true)
             cj.TriggerRegisterPlayerChatEvent(triggerMSR, hplayer.players[i], "-msr", true)
             cj.TriggerRegisterPlayerChatEvent(triggerConvert, hplayer.players[i], "-apc", true)
+            hevent.onSelection(
+                hplayer.players[i],
+                2,
+                function(evtData)
+                    hplayer.set(evtData.triggerPlayer, "selection", evtData.triggerUnit)
+                end
+            )
         else
             -- his
             his.set(hplayer.players[i], "isComputer", true)

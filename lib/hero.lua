@@ -269,42 +269,6 @@ hhero.buildClick = function(during, clickQty)
     -- evt
     local tgr_random = cj.CreateTrigger()
     local tgr_repick = cj.CreateTrigger()
-    local tgr_click =
-        hevent.onSelection(
-        nil,
-        clickQty,
-        function()
-            local p = hevent.getTriggerPlayer()
-            local u = hevent.getTriggerUnit()
-            if (hRuntime.heroBuildSelection[u] == nil) then
-                return
-            end
-            if (hRuntime.heroBuildSelection[u].canSelect == false) then
-                return
-            end
-            if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
-                return
-            end
-            if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
-                return
-            end
-            table.delete(u, randomChooseAbleList)
-            hhero.addPlayerUnit(p, u, "click")
-            if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echoXY0(p, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
-            else
-                hmessage.echoXY0(
-                    p,
-                    "您选择了 " ..
-                        "|cffffff80" ..
-                            cj.GetUnitName(u) ..
-                                "|r,还要选 " .. math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个",
-                    0
-                )
-            end
-        end
-    )
     cj.TriggerAddAction(
         tgr_random,
         function()
@@ -336,7 +300,7 @@ hhero.buildClick = function(during, clickQty)
     cj.TriggerAddAction(
         tgr_repick,
         function()
-            local p = hevent.getTriggerPlayer()
+            local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] <= 0) then
                 hmessage.echoXY0(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return
@@ -370,6 +334,51 @@ hhero.buildClick = function(during, clickQty)
         hunit.del(u, during)
         cj.TriggerRegisterPlayerChatEvent(tgr_random, p, "-random", true)
         cj.TriggerRegisterPlayerChatEvent(tgr_repick, p, "-repick", true)
+        local tgr_click =
+            hevent.onSelection(
+            p,
+            clickQty,
+            function(data)
+                local p = data.triggerPlayer
+                local u = data.triggerUnit
+                if (hRuntime.heroBuildSelection[u] == nil) then
+                    return
+                end
+                if (hRuntime.heroBuildSelection[u].canSelect == false) then
+                    return
+                end
+                if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
+                    return
+                end
+                if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
+                    hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
+                    return
+                end
+                table.delete(u, randomChooseAbleList)
+                hhero.addPlayerUnit(p, u, "click")
+                if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
+                    hmessage.echoXY0(p, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
+                else
+                    hmessage.echoXY0(
+                        p,
+                        "您选择了 " ..
+                            "|cffffff80" ..
+                                cj.GetUnitName(u) ..
+                                    "|r,还要选 " ..
+                                        math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个",
+                        0
+                    )
+                end
+            end
+        )
+        htime.setTimeout(
+            during - 0.5,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                hevent.deleteEvent(p, CONST_EVENT.selection .. "#" .. clickQty, tgr_click)
+            end
+        )
     end
     -- 还剩10秒给个选英雄提示
     htime.setTimeout(
@@ -393,8 +402,6 @@ hhero.buildClick = function(during, clickQty)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_random)
             cj.DestroyTrigger(tgr_random)
-            cj.DisableTrigger(tgr_click)
-            cj.DestroyTrigger(tgr_click)
         end,
         "选择英雄"
     )
@@ -475,7 +482,7 @@ hhero.buildTavern = function(during)
     cj.TriggerAddAction(
         tgr_repick,
         function()
-            local p = hevent.getTriggerPlayer()
+            local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] <= 0) then
                 hmessage.echoXY0(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return

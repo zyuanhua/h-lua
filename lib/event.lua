@@ -64,8 +64,8 @@ hevent.triggerEvent = function(handle, key, triggerData)
         for k, v in pairs(triggerData) do
             if (k == "triggerSkill") then
                 triggerData[k] = string.id2char(v)
-            elseif (k == "triggerSkill") then
-                triggerData.targetX = cj.GetSpellTargetLoc(v)
+            elseif (k == "targetLoc") then
+                triggerData.targetX = cj.GetLocationX(v)
                 triggerData.targetY = cj.GetLocationY(v)
                 triggerData.targetZ = cj.GetLocationZ(v)
                 cj.RemoveLocation(v)
