@@ -336,7 +336,7 @@ hunit.setUserData = function(u, val, during)
     end
 end
 
--- 设置单位颜色,color可设置玩家索引,应用其对应的颜色
+-- 设置单位颜色,color可设置玩家索引[1-16],应用其对应的颜色
 hunit.setColor = function(u, color)
     if (type(color) == "string") then
         color = string.upper(color)
@@ -344,7 +344,7 @@ hunit.setColor = function(u, color)
             cj.SetUnitColor(u, CONST_PLAYER_COLOR[color])
         end
     else
-        cj.SetUnitColor(u, cj.ConvertPlayerColor(color))
+        cj.SetUnitColor(u, cj.ConvertPlayerColor(color - 1))
     end
 end
 
