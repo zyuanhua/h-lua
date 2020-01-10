@@ -336,6 +336,18 @@ hunit.setUserData = function(u, val, during)
     end
 end
 
+-- 设置单位颜色,color可设置玩家索引,应用其对应的颜色
+hunit.setColor = function(u, color)
+    if (type(color) == "string") then
+        color = string.upper(color)
+        if (CONST_PLAYER_COLOR[color] ~= nil) then
+            cj.SetUnitColor(u, CONST_PLAYER_COLOR[color])
+        end
+    else
+        cj.SetUnitColor(u, cj.ConvertPlayerColor(color))
+    end
+end
+
 -- 获取单位面向角度
 hunit.getFacing = function(u)
     return cj.GetUnitFacing(u)
