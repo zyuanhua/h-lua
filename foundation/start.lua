@@ -89,7 +89,8 @@ hLuaStart = {
                 -- @触发击杀事件
                 hevent.triggerEvent(
                     killer,
-                    CONST_EVENT.kill {
+                    CONST_EVENT.kill,
+                    {
                         triggerUnit = killer,
                         killer = killer,
                         targetUnit = u

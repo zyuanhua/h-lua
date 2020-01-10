@@ -418,8 +418,9 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
             end
             -- @触发复活事件
             hevent.triggerEvent(
+                u,
+                CONST_EVENT.reborn,
                 {
-                    triggerKey = "reborn",
                     triggerUnit = u
                 }
             )
@@ -436,8 +437,9 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
                     end
                     -- @触发复活事件
                     hevent.triggerEvent(
+                        u,
+                        CONST_EVENT.reborn,
                         {
-                            triggerKey = "reborn",
                             triggerUnit = u
                         }
                     )

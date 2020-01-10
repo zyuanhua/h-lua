@@ -314,8 +314,9 @@ hitem.detector = function(whichUnit, it)
         )
         --触发超重事件
         hevent.triggerEvent(
+            whichUnit,
+            CONST_EVENT.itemOverWeight,
             {
-                triggerKey = CONST_EVENT.itemOverWeight,
                 triggerUnit = whichUnit,
                 triggerItem = it,
                 value = exWeight
@@ -374,8 +375,9 @@ hitem.detector = function(whichUnit, it)
             cj.UnitAddItem(whichUnit, it)
             --触发获得物品
             hevent.triggerEvent(
+                whichUnit,
+                CONST_EVENT.itemGet,
                 {
-                    triggerKey = CONST_EVENT.itemGet,
                     triggerUnit = whichUnit,
                     triggerItem = it
                 }
@@ -403,8 +405,9 @@ hitem.detector = function(whichUnit, it)
     if (isFullSlot) then
         --触发满格事件
         hevent.triggerEvent(
+            whichUnit,
+            CONST_EVENT.itemOverWeight,
             {
-                triggerKey = CONST_EVENT.itemOverWeight,
                 triggerUnit = whichUnit,
                 triggerItem = it
             }
@@ -602,8 +605,9 @@ hitem.init = function()
                     end
                     --触发使用物品事件
                     hevent.triggerEvent(
+                        u,
+                        CONST_EVENT.itemUsed,
                         {
-                            triggerKey = CONST_EVENT.itemUsed,
                             triggerUnit = u,
                             triggerItem = it
                         }
@@ -730,8 +734,9 @@ hitem.init = function()
             end
             --触发使用物品事件
             hevent.triggerEvent(
+                u,
+                CONST_EVENT.itemUsed,
                 {
-                    triggerKey = CONST_EVENT.itemUsed,
                     triggerUnit = u,
                     triggerItem = it
                 }

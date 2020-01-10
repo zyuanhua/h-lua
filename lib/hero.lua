@@ -34,8 +34,9 @@ cj.TriggerAddAction(
         )
         -- @触发升级事件
         hevent.triggerEvent(
+            u,
+            CONST_EVENT.levelUp,
             {
-                triggerKey = CONST_EVENT.levelUp,
                 triggerUnit = u,
                 value = diffLv
             }
