@@ -1,8 +1,12 @@
 hColor = {
     mixed = function(str, color)
+        if (str == nil or color == nil) then
+            print_stack()
+            return str
+        end
         return "|cff" .. color .. str .. "|r"
     end
-};
+}
 
 hColor.gold = function(str)
     return hColor.mixed(str, "ffcc00")
@@ -67,4 +71,3 @@ end
 hColor.purple = function(str)
     return hColor.mixed(str, "ff59ff")
 end
-
