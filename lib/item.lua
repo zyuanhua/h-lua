@@ -315,7 +315,7 @@ hitem.detector = function(whichUnit, it)
         --触发超重事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.itemOverWeight,
+                triggerKey = CONST_EVENT.itemOverWeight,
                 triggerUnit = whichUnit,
                 triggerItem = it,
                 value = exWeight
@@ -375,7 +375,7 @@ hitem.detector = function(whichUnit, it)
             --触发获得物品
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.itemGet,
+                    triggerKey = CONST_EVENT.itemGet,
                     triggerUnit = whichUnit,
                     triggerItem = it
                 }
@@ -404,7 +404,7 @@ hitem.detector = function(whichUnit, it)
         --触发满格事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.itemOverWeight,
+                triggerKey = CONST_EVENT.itemOverWeight,
                 triggerUnit = whichUnit,
                 triggerItem = it
             }
@@ -603,7 +603,7 @@ hitem.init = function()
                     --触发使用物品事件
                     hevent.triggerEvent(
                         {
-                            triggerKey = heventKeyMap.itemUsed,
+                            triggerKey = CONST_EVENT.itemUsed,
                             triggerUnit = u,
                             triggerItem = it
                         }
@@ -731,7 +731,7 @@ hitem.init = function()
             --触发使用物品事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.itemUsed,
+                    triggerKey = CONST_EVENT.itemUsed,
                     triggerUnit = u,
                     triggerItem = it
                 }

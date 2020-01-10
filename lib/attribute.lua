@@ -976,7 +976,7 @@ hattr.huntUnit = function(bean)
         -- @触发无视防御事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.breakArmor,
+                triggerKey = CONST_EVENT.breakArmor,
                 triggerUnit = bean.fromUnit,
                 targetUnit = bean.toUnit,
                 breakType = bean.breakArmorType
@@ -985,7 +985,7 @@ hattr.huntUnit = function(bean)
         -- @触发被无视防御事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.beBreakArmor,
+                triggerKey = CONST_EVENT.beBreakArmor,
                 triggerUnit = bean.toUnit,
                 sourceUnit = bean.fromUnit,
                 breakType = bean.breakArmorType
@@ -1039,7 +1039,7 @@ hattr.huntUnit = function(bean)
         -- @触发回避事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.avoid,
+                triggerKey = CONST_EVENT.avoid,
                 triggerUnit = bean.toUnit,
                 attacker = bean.fromUnit
             }
@@ -1047,7 +1047,7 @@ hattr.huntUnit = function(bean)
         -- @触发被回避事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.beAvoid,
+                triggerKey = CONST_EVENT.beAvoid,
                 triggerUnit = bean.fromUnit,
                 attacker = bean.fromUnit,
                 targetUnit = bean.toUnit
@@ -1111,7 +1111,7 @@ hattr.huntUnit = function(bean)
             --@触发极限韧性抵抗事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.limitToughness,
+                    triggerKey = CONST_EVENT.limitToughness,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit
                 }
@@ -1128,7 +1128,7 @@ hattr.huntUnit = function(bean)
             --@触发物理暴击事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.knocking,
+                    triggerKey = CONST_EVENT.knocking,
                     triggerUnit = bean.fromUnit,
                     targetUnit = bean.toUnit,
                     damage = realDamage,
@@ -1139,7 +1139,7 @@ hattr.huntUnit = function(bean)
             --@触发被物理暴击事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.beKnocking,
+                    triggerKey = CONST_EVENT.beKnocking,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     damage = realDamage,
@@ -1153,7 +1153,7 @@ hattr.huntUnit = function(bean)
             --@触发魔法暴击事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.violence,
+                    triggerKey = CONST_EVENT.violence,
                     triggerUnit = bean.fromUnit,
                     targetUnit = bean.toUnit,
                     damage = realDamage,
@@ -1164,7 +1164,7 @@ hattr.huntUnit = function(bean)
             --@触发被魔法暴击事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.beViolence,
+                    triggerKey = CONST_EVENT.beViolence,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     damage = realDamage,
@@ -1247,7 +1247,7 @@ hattr.huntUnit = function(bean)
             -- @触发分裂事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.split,
+                    triggerKey = CONST_EVENT.split,
                     triggerUnit = bean.fromUnit,
                     targetUnit = bean.toUnit,
                     damage = realDamage * split * 0.01,
@@ -1258,7 +1258,7 @@ hattr.huntUnit = function(bean)
             -- @触发被分裂事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.beSpilt,
+                    triggerKey = CONST_EVENT.beSpilt,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     damage = realDamage * split * 0.01,
@@ -1280,7 +1280,7 @@ hattr.huntUnit = function(bean)
             -- @触发吸血事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.hemophagia,
+                    triggerKey = CONST_EVENT.hemophagia,
                     triggerUnit = bean.fromUnit,
                     targetUnit = bean.toUnit,
                     damage = realDamage * hemophagia * 0.01,
@@ -1290,7 +1290,7 @@ hattr.huntUnit = function(bean)
             -- @触发被吸血事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.beHemophagia,
+                    triggerKey = CONST_EVENT.beHemophagia,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     damage = realDamage * hemophagia * 0.01,
@@ -1312,7 +1312,7 @@ hattr.huntUnit = function(bean)
             -- @触发技能吸血事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.skillHemophagia,
+                    triggerKey = CONST_EVENT.skillHemophagia,
                     triggerUnit = bean.fromUnit,
                     targetUnit = bean.toUnit,
                     damage = realDamage * hemophagia_skill * 0.01,
@@ -1322,7 +1322,7 @@ hattr.huntUnit = function(bean)
             -- @触发被技能吸血事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.beSkillHemophagia,
+                    triggerKey = CONST_EVENT.beSkillHemophagia,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     damage = realDamage * hemophagia_skill * 0.01,
@@ -1379,7 +1379,7 @@ hattr.huntUnit = function(bean)
             -- @触发硬直事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.heavy,
+                    triggerKey = CONST_EVENT.heavy,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     percent = punishEffectRatio * 100,
@@ -1409,7 +1409,7 @@ hattr.huntUnit = function(bean)
             -- @触发反伤事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.rebound,
+                    triggerKey = CONST_EVENT.rebound,
                     triggerUnit = bean.toUnit,
                     sourceUnit = bean.fromUnit,
                     damage = realDamage * toUnitHuntRebound * 0.01

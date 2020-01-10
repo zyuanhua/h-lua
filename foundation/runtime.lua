@@ -30,9 +30,10 @@ hRuntime = {
     weather = {},
     env = {},
     camera = {},
-    event = {},
-    eventTgr = {},
-    eventGlobalTgr = {},
+    event = {
+        register = {},
+        trigger = {}
+    },
     textTag = {},
     rect = {},
     player = {},
@@ -77,20 +78,17 @@ hRuntime = {
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     local p = cj.Player(i - 1)
     -- is
-    hRuntime.is[p] = {}
-    hRuntime.is[p].isComputer = true
-    hRuntime.is[p].isAutoConvertGoldToLumber = true
+    hRuntime.is[i] = {}
+    hRuntime.is[i].isComputer = true
+    hRuntime.is[i].isAutoConvertGoldToLumber = true
     -- sound
-    hRuntime.sound[p] = {}
-    hRuntime.sound[p].currentBgm = nil
-    hRuntime.sound[p].bgmDelay = 3.00
-    -- event
-    hRuntime.event[p] = {}
-    hRuntime.eventGlobalTgr[p] = {}
+    hRuntime.sound[i] = {}
+    hRuntime.sound[i].currentBgm = nil
+    hRuntime.sound[i].bgmDelay = 3.00
     -- player
-    hRuntime.player[p] = {}
+    hRuntime.player[i] = {}
     -- camera
-    hRuntime.camera[p] = {}
-    hRuntime.camera[p].model = "normal" -- 镜头模型
-    hRuntime.camera[p].isShocking = false
+    hRuntime.camera[i] = {}
+    hRuntime.camera[i].model = "normal" -- 镜头模型
+    hRuntime.camera[i].isShocking = false
 end

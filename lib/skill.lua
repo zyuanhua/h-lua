@@ -251,7 +251,7 @@ hskill.damage = function(options)
     -- @触发伤害事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.damage,
+            triggerKey = CONST_EVENT.damage,
             triggerUnit = options.fromUnit,
             targetUnit = options.toUnit,
             sourceUnit = options.fromUnit,
@@ -264,7 +264,7 @@ hskill.damage = function(options)
     -- @触发被伤害事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beDamage,
+            triggerKey = CONST_EVENT.beDamage,
             triggerUnit = options.toUnit,
             sourceUnit = options.fromUnit,
             damage = options.damage,
@@ -277,7 +277,7 @@ hskill.damage = function(options)
         -- @触发攻击事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.attack,
+                triggerKey = CONST_EVENT.attack,
                 triggerUnit = options.fromUnit,
                 attacker = options.fromUnit,
                 targetUnit = options.toUnit,
@@ -290,7 +290,7 @@ hskill.damage = function(options)
         -- @触发被攻击事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.beAttack,
+                triggerKey = CONST_EVENT.beAttack,
                 triggerUnit = options.fromUnit,
                 attacker = options.fromUnit,
                 targetUnit = options.toUnit,
@@ -372,7 +372,7 @@ hskill.broken = function(options)
         -- @触发打断事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.broken,
+                triggerKey = CONST_EVENT.broken,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage
@@ -382,7 +382,7 @@ hskill.broken = function(options)
     -- @触发被打断事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beBroken,
+            triggerKey = CONST_EVENT.beBroken,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage
@@ -474,7 +474,7 @@ hskill.swim = function(options)
         -- @触发眩晕事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.swim,
+                triggerKey = CONST_EVENT.swim,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -485,7 +485,7 @@ hskill.swim = function(options)
     -- @触发被眩晕事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beSwim,
+            triggerKey = CONST_EVENT.beSwim,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -600,7 +600,7 @@ hskill.silent = function(options)
         -- @触发沉默事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.silent,
+                triggerKey = CONST_EVENT.silent,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -611,7 +611,7 @@ hskill.silent = function(options)
     -- @触发被沉默事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beSilent,
+            triggerKey = CONST_EVENT.beSilent,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -728,7 +728,7 @@ hskill.unarm = function(options)
         -- @触发缴械事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.unarm,
+                triggerKey = CONST_EVENT.unarm,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -739,7 +739,7 @@ hskill.unarm = function(options)
     -- @触发被缴械事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beUnarm,
+            triggerKey = CONST_EVENT.beUnarm,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -830,7 +830,7 @@ hskill.fetter = function(options)
         -- @触发缚足事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.fetter,
+                triggerKey = CONST_EVENT.fetter,
                 triggerUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
@@ -841,7 +841,7 @@ hskill.fetter = function(options)
     -- @触发被缚足事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beFetter,
+            triggerKey = CONST_EVENT.beFetter,
             triggerUnit = u,
             sourceUnit = sourceUnit,
             damage = damage,
@@ -931,7 +931,7 @@ hskill.bomb = function(options)
             -- @触发爆破事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.bomb,
+                    triggerKey = CONST_EVENT.bomb,
                     triggerUnit = options.sourceUnit,
                     targetUnit = cj.GetEnumUnit(),
                     damage = options.damage,
@@ -941,7 +941,7 @@ hskill.bomb = function(options)
             -- @触发被爆破事件
             hevent.triggerEvent(
                 {
-                    triggerKey = heventKeyMap.beBomb,
+                    triggerKey = CONST_EVENT.beBomb,
                     triggerUnit = cj.GetEnumUnit(),
                     sourceUnit = options.sourceUnit,
                     damage = options.damage,
@@ -1039,7 +1039,7 @@ hskill.lightningChain = function(options)
     -- @触发闪电链成功事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.lightningChain,
+            triggerKey = CONST_EVENT.lightningChain,
             triggerUnit = options.sourceUnit,
             targetUnit = whichUnit,
             damage = damage,
@@ -1050,7 +1050,7 @@ hskill.lightningChain = function(options)
     -- @触发被闪电链事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beLightningChain,
+            triggerKey = CONST_EVENT.beLightningChain,
             triggerUnit = whichUnit,
             sourceUnit = options.sourceUnit,
             damage = damage,
@@ -1196,7 +1196,7 @@ hskill.crackFly = function(options)
     -- @触发击飞事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.crackFly,
+            triggerKey = CONST_EVENT.crackFly,
             triggerUnit = options.sourceUnit,
             targetUnit = options.whichUnit,
             damage = damage,
@@ -1207,7 +1207,7 @@ hskill.crackFly = function(options)
     -- @触发被击飞事件
     hevent.triggerEvent(
         {
-            triggerKey = heventKeyMap.beCrackFly,
+            triggerKey = CONST_EVENT.beCrackFly,
             triggerUnit = options.whichUnit,
             sourceUnit = options.sourceUnit,
             damage = damage,

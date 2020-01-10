@@ -39,22 +39,28 @@ end
 -- 延时是每个玩家独立时间，当切换的BGM为同一首时，切换不会进行
 hsound.bgm = function(musicFileName, whichPlayer)
     if (musicFileName ~= nil and string.len(musicFileName) > 0) then
-        if (whichPlayer ~= nil and hRuntime.sound[whichPlayer].currentBgm ~= musicFileName) then
-            return
+        if (whichPlayer ~= nil) then
+            local index = hplayer.index(whichPlayer)
+            if (hRuntime.sound[index].currentBgm ~= musicFileName) then
+                return
+            end
         end
         for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
             local p = cj.Player(i - 1)
             if (whichPlayer == nil or (p == whichPlayer and cj.GetLocalPlayer() == whichPlayer)) then
-                if (hRuntime.sound[p].currentBgm ~= musicFileName) then
-                    hRuntime.sound[p].currentBgm = musicFileName
+                if (hRuntime.sound[i].currentBgm ~= musicFileName) then
+                    hRuntime.sound[i].currentBgm = musicFileName
                     cj.StopMusic(true)
-                    htime.setTimeout(hRuntime.sound[p].bgmDelay, function(t, td)
-                        htime.delDialog(td)
-                        htime.delTimer(t)
-                        cj.PlayMusic(musicFileName)
-                        hRuntime.sound[p].bgmDelay = hRuntime.sound[p].bgmDelay - 3.00
-                    end)
-                    hRuntime.sound[p].bgmDelay = hRuntime.sound[p].bgmDelay + 3.00
+                    htime.setTimeout(
+                        hRuntime.sound[i].bgmDelay,
+                        function(t, td)
+                            htime.delDialog(td)
+                            htime.delTimer(t)
+                            cj.PlayMusic(musicFileName)
+                            hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay - 3.00
+                        end
+                    )
+                    hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay + 3.00
                 end
             end
         end

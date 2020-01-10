@@ -35,7 +35,7 @@ cj.TriggerAddAction(
         -- @触发升级事件
         hevent.triggerEvent(
             {
-                triggerKey = heventKeyMap.levelUp,
+                triggerKey = CONST_EVENT.levelUp,
                 triggerUnit = u,
                 value = diffLv
             }
@@ -152,9 +152,9 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         cj.SetUnitInvulnerable(u, false)
         -- 触发英雄被选择事件(全局)
         hevent.triggerEvent(
+            "global",
+            CONST_EVENT.pickHero,
             {
-                triggerKey = heventKeyMap.pickHero,
-                triggerHandle = hevent.defaultHandle,
                 triggerPlayer = whichPlayer,
                 triggerUnit = u
             }
