@@ -61,13 +61,16 @@ hevent.triggerEvent = function(handle, key, triggerData)
     --处理数据
     if (table.len(triggerData) > 0) then
         for k, v in pairs(triggerData) do
-            if (k == "triggerSkill") then
-                triggerData[k] = string.id2char(v)
-            elseif (k == "targetLoc") then
-                triggerData.targetX = cj.GetLocationX(v)
-                triggerData.targetY = cj.GetLocationY(v)
-                triggerData.targetZ = cj.GetLocationZ(v)
-                cj.RemoveLocation(v)
+            if (v ~= nil) then
+                if (k == "triggerSkill" and type(v) == "number") then
+                    triggerData[k] = string.id2char(v)
+                elseif (k == "targetLoc") then
+                    triggerData.targetX = cj.GetLocationX(v)
+                    triggerData.targetY = cj.GetLocationY(v)
+                    triggerData.targetZ = cj.GetLocationZ(v)
+                    cj.RemoveLocation(v)
+                    triggerData[k] = nil
+                end
             end
         end
     end

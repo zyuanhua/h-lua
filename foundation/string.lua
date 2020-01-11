@@ -20,6 +20,7 @@ end
 string.id2char = function(id)
     if (id == nil or type(id) ~= "number") then
         print_stack()
+        print(id)
         return
     end
     return string.char(id // 0x1000000) ..
