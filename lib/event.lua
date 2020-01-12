@@ -59,25 +59,25 @@ hevent.triggerEvent = function(handle, key, triggerData)
         return
     end
     --处理数据
+    local newData = {}
     if (table.len(triggerData) > 0) then
         for k, v in pairs(triggerData) do
             if (v ~= nil) then
-                if (k == "triggerSkill" and v ~= nil) then
-                    print("type=" .. type(v))
-                    print_r(triggerData)
-                    triggerData[k] = string.id2char(v)
+                if (k == "triggerSkill" and type(v) == "number") then
+                    newData[k] = string.id2char(v)
                 elseif (k == "targetLoc") then
-                    triggerData.targetX = cj.GetLocationX(v)
-                    triggerData.targetY = cj.GetLocationY(v)
-                    triggerData.targetZ = cj.GetLocationZ(v)
+                    newData.targetX = cj.GetLocationX(v)
+                    newData.targetY = cj.GetLocationY(v)
+                    newData.targetZ = cj.GetLocationZ(v)
                     cj.RemoveLocation(v)
-                    triggerData[k] = nil
+                else
+                    newData[k] = v
                 end
             end
         end
     end
     for _, callFunc in pairs(hRuntime.event.register[handle][key]) do
-        callFunc(triggerData)
+        callFunc(newData)
     end
 end
 
@@ -294,7 +294,7 @@ hevent.onSkillStart = function(whichUnit, callFunc)
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = string.id2char(cj.GetSpellAbilityId()),
+                        triggerSkill = cj.GetSpellAbilityId(),
                         targetUnit = cj.GetSpellTargetUnit(),
                         targetLoc = cj.GetSpellTargetLoc()
                     }
