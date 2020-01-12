@@ -30,7 +30,8 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
     if (his.alive(u) == true) then
         local i = 1
         local it
-        if (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1) then
+        local hasSlot = (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1)
+        if (hasSlot == false) then
             cj.UnitAddAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
         end
         while (i <= qty) do
@@ -39,6 +40,9 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
             cj.SetWidgetLife(it, 10.00)
             cj.RemoveItem(it)
             i = i + 1
+        end
+        if (hasSlot == false) then
+            cj.UnitRemoveAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
         end
     else
         local per = 3.00
@@ -55,7 +59,8 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
                     htime.delTimer(t)
                     local i = 1
                     local it
-                    if (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1) then
+                    local hasSlot = (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1)
+                    if (hasSlot == false) then
                         cj.UnitAddAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
                     end
                     while (i <= qty) do
@@ -64,6 +69,9 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
                         cj.SetWidgetLife(it, 10.00)
                         cj.RemoveItem(it)
                         i = i + 1
+                    end
+                    if (hasSlot == false) then
+                        cj.UnitRemoveAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
                     end
                 end
             end
@@ -1202,7 +1210,7 @@ hattr.huntUnit = function(bean)
                 damageString = realDamageString,
                 damageStringColor = realDamageStringColor,
                 damageKind = bean.damageKind,
-                effect = bean.damageType,
+                effect = bean.damageType
             }
         )
         -- 分裂

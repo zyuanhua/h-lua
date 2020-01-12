@@ -239,7 +239,7 @@ hskill.damage = function(options)
     htextTag.style(
         htextTag.create2Unit(
             targetUnit,
-            options.damageString .. math.floor(options.realDamage),
+            options.damageString .. math.floor(damage),
             6.00,
             options.damageStringColor,
             1,
@@ -252,10 +252,10 @@ hskill.damage = function(options)
     )
     if (sourceUnit ~= nil) then
         hevent.setLastDamageUnit(targetUnit, sourceUnit)
-        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), options.realDamage)
+        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), damage)
     end
-    hplayer.addBeDamage(cj.GetOwningPlayer(targetUnit), options.realDamage)
-    hunit.subCurLife(targetUnit, options.realDamage)
+    hplayer.addBeDamage(cj.GetOwningPlayer(targetUnit), damage)
+    hunit.subCurLife(targetUnit, damage)
     if (type(options.effect) == "string" and string.len(options.effect) > 0) then
         heffect.toXY(options.effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
     end
