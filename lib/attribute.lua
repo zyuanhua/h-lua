@@ -1189,6 +1189,7 @@ hattr.huntUnit = function(bean)
                     percent = fromUnitViolenceOdds
                 }
             )
+            heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", bean.toUnit, 0)
         end
         -- 暴击文本加持
         if (isKnocking and isViolence) then
