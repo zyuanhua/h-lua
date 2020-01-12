@@ -63,8 +63,8 @@ struct hSkill
             set bean.toUnit = prevUnit
             set bean.damage = damage
             set bean.huntEff = htime.getString(t,98)
-            set bean.huntKind = htime.getString(t,5)
-            set bean.huntType = htime.getString(t,6)
+            set bean.damageKind = htime.getString(t,5)
+            set bean.damageType = htime.getString(t,6)
             call hattrHunt.huntUnit(bean)
             call bean.destroy()
         endif
@@ -108,8 +108,8 @@ struct hSkill
             call htime.setInteger(t,2,qty)
             call htime.setReal(t,3,reduce)
             call htime.setReal(t,4,bean.damage)
-            call htime.setString(t,5,bean.huntKind)
-            call htime.setString(t,6,bean.huntType)
+            call htime.setString(t,5,bean.damageKind)
+            call htime.setString(t,6,bean.damageType)
             call htime.setString(t,97,codename)
             call htime.setString(t,98,bean.huntEff)
             call htime.setUnit(t,99,bean.fromUnit)
@@ -182,8 +182,8 @@ struct hSkill
             set bean.toUnit = toUnit
             set bean.damage = damage
             set bean.huntEff = htime.getString(t, 12)
-            set bean.huntKind = htime.getString(t, 10)
-            set bean.huntType = htime.getString(t, 11)
+            set bean.damageKind = htime.getString(t, 10)
+            set bean.damageType = htime.getString(t, 11)
             call hattrHunt.huntUnit(bean)
             call bean.destroy()
             call SetUnitFlyHeight( toUnit , originHigh , 10000 )
@@ -266,8 +266,8 @@ struct hSkill
 	    call htime.setReal( t , 3 , distance )
 	    call htime.setReal( t , 4 , high )
 	    call htime.setReal( t , 5 , bean.damage )
-        call htime.setString(t, 10,bean.huntKind)
-        call htime.setString(t, 11,bean.huntType)
+        call htime.setString(t, 10,bean.damageKind)
+        call htime.setString(t, 11,bean.damageType)
         call htime.setString(t, 12,bean.huntEff)
         call htime.setReal(t, 13,during)
         call htime.setReal(t, 14,GetUnitFlyHeight(bean.toUnit))
@@ -312,8 +312,8 @@ struct hSkill
             set bean.damage = damage
             set bean.fromUnit = fromUnit
             set bean.huntEff = htime.getString(t,9)
-            set bean.huntKind = htime.getString(t,11)
-            set bean.huntType = htime.getString(t,12)
+            set bean.damageKind = htime.getString(t,11)
+            set bean.damageType = htime.getString(t,12)
             set bean.isBreak = htime.getString(t,13)
             set bean.isNoAvoid = htime.getBoolean(t,14)
             call hattrHunt.huntGroup(bean)
@@ -372,8 +372,8 @@ struct hSkill
         call htime.setUnit(t,8,bean.fromUnit)
         call htime.setString(t,9,bean.huntEff)
         call htime.setReal(t,10,bean.damage)
-        call htime.setString(t,11,bean.huntKind)
-        call htime.setString(t,12,bean.huntType)
+        call htime.setString(t,11,bean.damageKind)
+        call htime.setString(t,12,bean.damageType)
         call htime.setString(t,13,bean.isBreak)
         call htime.setBoolean(t,14,bean.isNoAvoid)
         set t = null
@@ -449,8 +449,8 @@ struct hSkill
                     set bean.fromUnit = shutter
                     set bean.toUnit = targetUnit
                     set bean.huntEff = htime.getString(t,11)
-                    set bean.huntKind = htime.getString(t,13)
-                    set bean.huntType = htime.getString(t,14)
+                    set bean.damageKind = htime.getString(t,13)
+                    set bean.damageType = htime.getString(t,14)
                     set bean.isBreak = htime.getString(t,15)
                     set bean.isNoAvoid = htime.getBoolean(t,16)
                     call hattrHunt.huntUnit(bean)
@@ -533,8 +533,8 @@ struct hSkill
         call htime.setInteger( t , 10 , skillModel )
         call htime.setString(t,11,bean.huntEff)
         call htime.setReal(t,12,bean.damage)
-        call htime.setString(t,13,bean.huntKind)
-        call htime.setString(t,14,bean.huntType)
+        call htime.setString(t,13,bean.damageKind)
+        call htime.setString(t,14,bean.damageType)
         call htime.setString(t,15,bean.isBreak)
         call htime.setBoolean(t,16,bean.isNoAvoid)
         set t = null

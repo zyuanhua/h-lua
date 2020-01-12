@@ -1,6 +1,6 @@
 require "const.attribute"
-require "const.huntKind"
-require "const.huntType"
+require "const.damageKind"
+require "const.damageType"
 require "const.hero"
 require "const.hotKey"
 require "const.item"

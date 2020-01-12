@@ -1,6 +1,6 @@
 -- 伤害种类
 
-CONST_HUNT_TYPE = {
+CONST_DAMAGE_TYPE = {
     physical = "physical",
     magic = "magic",
     real = "real",
@@ -21,7 +21,7 @@ CONST_HUNT_TYPE = {
     insect = "insect"
 }
 
-CONST_HUNT_TYPE_NATURE = {
+CONST_DAMAGE_TYPE_NATURE = {
     "fire",
     "soil",
     "water",
@@ -38,7 +38,7 @@ CONST_HUNT_TYPE_NATURE = {
     "insect"
 }
 
-CONST_HUNT_TYPE_MAP = {
+CONST_DAMAGE_TYPE_MAP = {
     physical = {
         label = "物理",
         color = "d9d9d9"

@@ -28,8 +28,8 @@
     │   ├── attritube - 属性KV
     │   ├── hero - 英雄KV
     │   ├── hotKey - 热键KV
-    │   ├── huntKind - 伤害种类
-    │   ├── huntType - 伤害类型
+    │   ├── damageKind - 伤害种类
+    │   ├── damageType - 伤害类型
     │   ├── item - 物品KV
     │   ├── unit - 单位KV
     │   └── start.lua - 开始准备

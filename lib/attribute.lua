@@ -334,9 +334,9 @@ hattr.registerAll = function(whichUnit)
     }
     -- 智力英雄的攻击默认为魔法，力量敏捷为物理
     if (hRuntime.attribute[whichUnit].primary == "INT") then
-        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_HUNT_TYPE.magic}
+        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_DAMAGE_TYPE.magic}
     else
-        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_HUNT_TYPE.physical}
+        hRuntime.attribute[whichUnit].attack_hunt_type = {CONST_DAMAGE_TYPE.physical}
     end
 end
 
@@ -835,12 +835,12 @@ end
 --- 伤害一个单位
 --[[
      * -bean.effect 伤害特效
-     * -bean.huntKind伤害方式:
+     * -bean.damageKind伤害方式:
         attack 攻击
         skill 技能
         item 物品
         special 特殊（如眩晕、打断、分裂、爆炸、闪电链之类的）
-     * -bean.huntType伤害类型:
+     * -bean.damageType伤害类型:
         physical 物理伤害则无视护甲<享受物理暴击加成，受护甲影响>
         magic 魔法<享受魔法暴击加成，受魔抗影响>
         real 真实<无视回避>
@@ -888,24 +888,24 @@ hattr.huntUnit = function(bean)
         return
     end
     -- 判断伤害方式
-    if (bean.huntKind == CONST_HUNT_KIND.attack) then
+    if (bean.damageKind == CONST_DAMAGE_KIND.attack) then
         if (his.unarm(bean.fromUnit) == true) then
             return
         end
-        bean.huntType = hattr.get(bean.fromUnit, "attack_hunt_type")
-    elseif (bean.huntKind == CONST_HUNT_KIND.skill) then
+        bean.damageType = hattr.get(bean.fromUnit, "attack_hunt_type")
+    elseif (bean.damageKind == CONST_DAMAGE_KIND.skill) then
         if (his.silent(bean.fromUnit) == true) then
             return
         end
-    elseif (bean.huntKind == CONST_HUNT_KIND.item) then
-    elseif (bean.huntKind == CONST_HUNT_KIND.special) then
+    elseif (bean.damageKind == CONST_DAMAGE_KIND.item) then
+    elseif (bean.damageKind == CONST_DAMAGE_KIND.special) then
     else
-        print_err("伤害单位错误：huntKind")
+        print_err("伤害单位错误：damageKind")
         return
     end
     -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
     if (his.invincible(bean.toUnit) == true or math.random(1, 100) < hattr.get(bean.toUnit, "invincible")) then
-        if (table.includes(CONST_HUNT_TYPE.absolute, bean.huntType) == false) then
+        if (table.includes(CONST_DAMAGE_TYPE.absolute, bean.damageType) == false) then
             return
         end
     end
@@ -995,20 +995,20 @@ hattr.huntUnit = function(bean)
         )
     end
     -- 如果遇到真实伤害，无法回避
-    if (table.includes(CONST_HUNT_TYPE.real, bean.huntType) == true) then
+    if (table.includes(CONST_DAMAGE_TYPE.real, bean.damageType) == true) then
         toUnitAvoid = -99999
-        realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP.real.label
-        realDamageStringColor = CONST_HUNT_TYPE_MAP.real.color
+        realDamageString = realDamageString .. CONST_DAMAGE_TYPE_MAP.real.label
+        realDamageStringColor = CONST_DAMAGE_TYPE_MAP.real.color
     end
     -- 如果遇到绝对伤害，无法回避，无视无敌
-    if (table.includes(CONST_HUNT_TYPE.absolute, bean.huntType) == true) then
+    if (table.includes(CONST_DAMAGE_TYPE.absolute, bean.damageType) == true) then
         toUnitAvoid = -99999
-        realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP.absolute.label
-        realDamageStringColor = CONST_HUNT_TYPE_MAP.absolute.color
+        realDamageString = realDamageString .. CONST_DAMAGE_TYPE_MAP.absolute.label
+        realDamageStringColor = CONST_DAMAGE_TYPE_MAP.absolute.color
     end
     -- 计算物理暴击
-    if (table.includes(CONST_HUNT_TYPE.physical, bean.huntType) == true) then
-        realDamageStringColor = CONST_HUNT_TYPE_MAP.physical.color
+    if (table.includes(CONST_DAMAGE_TYPE.physical, bean.damageType) == true) then
+        realDamageStringColor = CONST_DAMAGE_TYPE_MAP.physical.color
         if
             (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
                 math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)
@@ -1019,8 +1019,8 @@ hattr.huntUnit = function(bean)
         end
     end
     -- 计算魔法暴击
-    if (table.includes(CONST_HUNT_TYPE.magic, bean.huntType) == true) then
-        realDamageStringColor = CONST_HUNT_TYPE_MAP.magic.color
+    if (table.includes(CONST_DAMAGE_TYPE.magic, bean.damageType) == true) then
+        realDamageStringColor = CONST_DAMAGE_TYPE_MAP.magic.color
         if
             (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
                 math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)
@@ -1032,7 +1032,7 @@ hattr.huntUnit = function(bean)
     end
     -- 计算回避 X 命中
     if
-        (bean.huntKind == CONST_HUNT_KIND.attack and toUnitAvoid - fromUnitAim > 0 and
+        (bean.damageKind == CONST_DAMAGE_KIND.attack and toUnitAvoid - fromUnitAim > 0 and
             math.random(1, 100) <= toUnitAvoid - fromUnitAim)
      then
         isAvoid = true
@@ -1062,7 +1062,7 @@ hattr.huntUnit = function(bean)
     if (realDamage > 0) then
         -- 自然属性
         local fromUnitNatural = {}
-        for k, natural in pairs(CONST_HUNT_TYPE_NATURE) do
+        for k, natural in pairs(CONST_DAMAGE_TYPE_NATURE) do
             fromUnitNatural[natural] =
                 hattr.get(bean.fromUnit, "natural_" .. natural) -
                 hattr.get(bean.toUnit, "natural_" .. natural .. "_oppose") +
@@ -1070,10 +1070,10 @@ hattr.huntUnit = function(bean)
             if (fromUnitNatural[natural] < -100) then
                 fromUnitNatural[natural] = -100
             end
-            if (table.includes(natural, bean.huntType) and fromUnitNatural[natural] ~= 0) then
+            if (table.includes(natural, bean.damageType) and fromUnitNatural[natural] ~= 0) then
                 realDamagePercent = realDamagePercent + fromUnitNatural[natural] * 0.01
-                realDamageString = realDamageString .. CONST_HUNT_TYPE_MAP[natural].label
-                realDamageStringColor = CONST_HUNT_TYPE_MAP[natural].color
+                realDamageString = realDamageString .. CONST_DAMAGE_TYPE_MAP[natural].label
+                realDamageStringColor = CONST_DAMAGE_TYPE_MAP[natural].color
             end
         end
     end
@@ -1082,7 +1082,7 @@ hattr.huntUnit = function(bean)
         realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
     end
     -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (table.includes(CONST_HUNT_TYPE.physical, bean.huntType) and toUnitDefend ~= 0) then
+    if (table.includes(CONST_DAMAGE_TYPE.physical, bean.damageType) and toUnitDefend ~= 0) then
         toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
         -- 计算护甲
         if (toUnitDefend > 0) then
@@ -1092,7 +1092,7 @@ hattr.huntUnit = function(bean)
         end
     end
     -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
-    if (table.includes(CONST_HUNT_TYPE.magic, bean.huntType) and toUnitResistance ~= 0) then
+    if (table.includes(CONST_DAMAGE_TYPE.magic, bean.damageType) and toUnitResistance ~= 0) then
         toUnitResistance = toUnitResistance * fromUnitHuntPercent.magic
         -- 计算魔抗
         if (toUnitResistance ~= 0) then
@@ -1196,20 +1196,19 @@ hattr.huntUnit = function(bean)
         -- 造成伤害
         hskill.damage(
             {
-                fromUnit = bean.fromUnit,
-                toUnit = bean.toUnit,
-                huntKind = bean.huntKind,
-                huntType = bean.huntType,
-                damage = bean.damage,
-                realDamage = realDamage,
-                realDamageString = realDamageString,
-                realDamageStringColor = realDamageStringColor
+                sourceUnit = bean.fromUnit,
+                targetUnit = bean.toUnit,
+                damage = realDamage,
+                damageString = realDamageString,
+                damageStringColor = realDamageStringColor,
+                damageKind = bean.damageKind,
+                effect = bean.damageType,
             }
         )
         -- 分裂
         local split = hattr.get(bean.fromUnit, "split") - hattr.get(bean.toUnit, "split_oppose")
         local split_range = hattr.get(bean.fromUnit, "split_range")
-        if (bean.huntKind == CONST_HUNT_KIND.attack and split > 0) then
+        if (bean.damageKind == CONST_DAMAGE_KIND.attack and split > 0) then
             local g =
                 hgroup.createByUnit(
                 bean.toUnit,
@@ -1237,17 +1236,16 @@ hattr.huntUnit = function(bean)
                         -- 造成伤害
                         hskill.damage(
                             {
-                                fromUnit = bean.fromUnit,
-                                toUnit = u,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real},
+                                sourceUnit = bean.fromUnit,
+                                targetUnit = u,
                                 damage = realDamage * split * 0.01,
-                                realDamage = realDamage * split * 0.01,
-                                realDamageString = "分裂",
-                                realDamageStringColor = "e25746"
+                                damageString = "分裂",
+                                damageStringColor = "e25746",
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real},
+                                effect = "Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdl"
                             }
                         )
-                        heffect.toUnit("Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdl", u, 0)
                     end
                 end
             )
@@ -1280,7 +1278,7 @@ hattr.huntUnit = function(bean)
         end
         -- 吸血
         local hemophagia = hattr.get(bean.toUnit, "hemophagia") - hattr.get(bean.toUnit, "hemophagia_oppose")
-        if (bean.huntKind == CONST_HUNT_KIND.attack and hemophagia > 0) then
+        if (bean.damageKind == CONST_DAMAGE_KIND.attack and hemophagia > 0) then
             hunit.addLife(bean.fromUnit, realDamage * hemophagia * 0.01)
             heffect.toUnit(
                 "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
@@ -1314,7 +1312,7 @@ hattr.huntUnit = function(bean)
         -- 技能吸血
         local hemophagia_skill =
             hattr.get(bean.toUnit, "hemophagia_skill") - hattr.get(bean.toUnit, "hemophagia_skill_oppose")
-        if (bean.huntKind == CONST_HUNT_KIND.skill and hemophagia_skill > 0) then
+        if (bean.damageKind == CONST_DAMAGE_KIND.skill and hemophagia_skill > 0) then
             hunit.addLife(bean.fromUnit, realDamage * hemophagia_skill * 0.01)
             heffect.toUnit(
                 "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
@@ -1437,10 +1435,10 @@ hattr.huntUnit = function(bean)
         -- buff/debuff
         local buff
         local debuff
-        if (bean.huntKind == CONST_HUNT_KIND.attack) then
+        if (bean.damageKind == CONST_DAMAGE_KIND.attack) then
             buff = hattr.get(bean.fromUnit, "attack_buff")
             debuff = hattr.get(bean.fromUnit, "attack_debuff")
-        elseif (bean.huntKind == CONST_HUNT_KIND.skill) then
+        elseif (bean.damageKind == CONST_DAMAGE_KIND.skill) then
             buff = hattr.get(bean.fromUnit, "skill_buff")
             debuff = hattr.get(bean.fromUnit, "skill_debuff")
         end
@@ -1468,9 +1466,9 @@ hattr.huntUnit = function(bean)
         end
         -- effect
         local effect
-        if (bean.huntKind == CONST_HUNT_KIND.attack) then
+        if (bean.damageKind == CONST_DAMAGE_KIND.attack) then
             effect = hattr.get(bean.fromUnit, "attack_effect")
-        elseif (bean.huntKind == CONST_HUNT_KIND.skill) then
+        elseif (bean.damageKind == CONST_DAMAGE_KIND.skill) then
             effect = hattr.get(bean.fromUnit, "skill_effect")
         end
         if (effect ~= nil) then
@@ -1488,8 +1486,8 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 sourceUnit = bean.fromUnit,
                                 model = b.model,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real}
                             }
                         )
                     elseif (b.attr == "swim") then
@@ -1502,8 +1500,8 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 model = b.model,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real}
                             }
                         )
                     elseif (b.attr == "silent") then
@@ -1516,8 +1514,8 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 model = b.model,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real}
                             }
                         )
                     elseif (b.attr == "unarm") then
@@ -1530,8 +1528,8 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 model = b.model,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real}
                             }
                         )
                     elseif (b.attr == "fetter") then
@@ -1544,8 +1542,8 @@ hattr.huntUnit = function(bean)
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
                                 model = b.model,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real}
                             }
                         )
                     elseif (b.attr == "bomb") then
@@ -1559,8 +1557,8 @@ hattr.huntUnit = function(bean)
                                 sourceUnit = bean.fromUnit,
                                 model = b.model,
                                 modelSingle = b.modelSingle,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.real}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.real}
                             }
                         )
                     elseif (b.attr == "lightning_chain") then
@@ -1578,8 +1576,8 @@ hattr.huntUnit = function(bean)
                                 whichUnit = bean.toUnit,
                                 prevUnit = bean.fromUnit,
                                 sourceUnit = bean.fromUnit,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.thunder}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.thunder}
                             }
                         )
                     elseif (b.attr == "crack_fly") then
@@ -1594,8 +1592,8 @@ hattr.huntUnit = function(bean)
                                 high = b.high,
                                 during = b.during,
                                 model = b.model,
-                                huntKind = CONST_HUNT_KIND.special,
-                                huntType = {CONST_HUNT_TYPE.thunder}
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = {CONST_DAMAGE_TYPE.thunder}
                             }
                         )
                     end

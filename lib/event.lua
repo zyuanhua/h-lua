@@ -199,8 +199,7 @@ end
 --triggerUnit 获取攻击来源
 --targetUnit 获取被攻击单位
 --attacker 获取攻击来源
---damage 获取初始伤害
---realDamage 获取实际伤害
+--damage 获取伤害
 --damageKind 获取伤害方式
 --damageType 获取伤害类型
 hevent.onAttack = function(whichUnit, callFunc)
@@ -210,8 +209,7 @@ end
 --承受攻击
 --triggerUnit 获取被攻击单位
 --attacker 获取攻击来源
---damage 获取初始伤害
---realDamage 获取实际伤害
+--damage 获取伤害
 --damageKind 获取伤害方式
 --damageType 获取伤害类型
 hevent.onBeAttack = function(whichUnit, callFunc)
@@ -485,8 +483,7 @@ end
 --triggerUnit 获取伤害来源
 --targetUnit 获取被伤害单位
 --sourceUnit 获取伤害来源
---damage 获取初始伤害
---realDamage 获取实际伤害
+--damage 获取伤害
 --damageKind 获取伤害方式
 --damageType 获取伤害类型
 hevent.onDamage = function(whichUnit, callFunc)
@@ -496,8 +493,7 @@ end
 --承受伤害
 --triggerUnit 获取被伤害单位
 --sourceUnit 获取伤害来源
---damage 获取初始伤害
---realDamage 获取实际伤害
+--damage 获取伤害
 --damageKind 获取伤害方式
 --damageType 获取伤害类型
 hevent.onBeDamage = function(whichUnit, callFunc)

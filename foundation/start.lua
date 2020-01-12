@@ -59,7 +59,7 @@ hLuaStart = {
                                     fromUnit = fromUnit,
                                     toUnit = toUnit,
                                     damage = damage,
-                                    huntKind = "attack"
+                                    damageKind = "attack"
                                 }
                             )
                         end

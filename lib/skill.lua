@@ -211,26 +211,37 @@ end
 --- 造成伤害
 --[[
     options = {
-        fromUnit = nil, --伤害来源
-        toUnit = nil, --目标单位
-        damage = 0, --初始伤害
-        realDamage = 0, --实际伤害
-        realDamageStringColor = "", --伤害漂浮字颜色
-        huntKind = "attack", --伤害种类请查看 CONST_HUNT_KIND
-        huntType = { "magic", "thunder" }, --伤害类型请查看 CONST_HUNT_TYPE
-        huntEff = "", --伤害特效
+        sourceUnit = nil, --伤害来源
+        targetUnit = nil, --目标单位
+        damage = 0, --实际伤害
+        damageString = "", --伤害漂浮字颜色
+        damageStringColor = "", --伤害漂浮字颜色
+        effect = nil, --伤害特效
+        damageKind = "attack", --伤害种类请查看 CONST_DAMAGE_KIND
+        damageType = { "magic", "thunder" }, --伤害类型请查看 CONST_DAMAGE_TYPE
     }
 ]]
 hskill.damage = function(options)
+    local sourceUnit = options.sourceUnit
+    local targetUnit = options.targetUnit
+    local damage = options.damage or 0
+    if (damage <= 0) then
+        return
+    end
+    if (targetUnit == nil) then
+        print_err("hskill.damage -sourceUnit -targetUnit")
+        print_stack()
+        return
+    end
     -- 文本显示
-    options.realDamageString = options.realDamageString or ""
-    options.realDamageStringColor = options.realDamageStringColor or nil
+    options.damageString = options.damageString or ""
+    options.damageStringColor = options.damageStringColor
     htextTag.style(
         htextTag.create2Unit(
-            options.toUnit,
-            options.realDamageString .. math.floor(options.realDamage),
+            targetUnit,
+            options.damageString .. math.floor(options.realDamage),
             6.00,
-            options.realDamageStringColor,
+            options.damageStringColor,
             1,
             1.1,
             11.00
@@ -239,69 +250,69 @@ hskill.damage = function(options)
         -0.05,
         0
     )
-    if (options.fromUnit ~= nil) then
-        hevent.setLastDamageUnit(options.toUnit, options.fromUnit)
-        hplayer.addDamage(cj.GetOwningPlayer(options.fromUnit), options.realDamage)
+    if (sourceUnit ~= nil) then
+        hevent.setLastDamageUnit(targetUnit, sourceUnit)
+        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), options.realDamage)
     end
-    hplayer.addBeDamage(cj.GetOwningPlayer(options.toUnit), options.realDamage)
-    hunit.subCurLife(options.toUnit, options.realDamage)
-    if (type(options.huntEff) == "string" and string.len(options.huntEff) > 0) then
-        heffect.toXY(options.huntEff, cj.GetUnitX(options.toUnit), cj.GetUnitY(options.toUnit), 0)
+    hplayer.addBeDamage(cj.GetOwningPlayer(targetUnit), options.realDamage)
+    hunit.subCurLife(targetUnit, options.realDamage)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.toXY(options.effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
     end
     -- @触发伤害事件
-    hevent.triggerEvent(
-        options.fromUnit,
-        CONST_EVENT.damage,
-        {
-            triggerUnit = options.fromUnit,
-            targetUnit = options.toUnit,
-            sourceUnit = options.fromUnit,
-            damage = options.damage,
-            realDamage = options.realDamage,
-            damageKind = options.huntKind,
-            damageType = options.huntType
-        }
-    )
-    -- @触发被伤害事件
-    hevent.triggerEvent(
-        options.toUnit,
-        CONST_EVENT.beDamage,
-        {
-            triggerUnit = options.toUnit,
-            sourceUnit = options.fromUnit,
-            damage = options.damage,
-            realDamage = options.realDamage,
-            damageKind = options.huntKind,
-            damageType = options.huntType
-        }
-    )
-    if (options.huntKind == CONST_HUNT_KIND.attack) then
-        -- @触发攻击事件
+    if (sourceUnit ~= nil) then
         hevent.triggerEvent(
-            options.fromUnit,
-            CONST_EVENT.attack,
+            sourceUnit,
+            CONST_EVENT.damage,
             {
-                triggerUnit = options.fromUnit,
-                attacker = options.fromUnit,
-                targetUnit = options.toUnit,
-                damage = options.damage,
-                realDamage = options.realDamage,
-                damageKind = options.huntKind,
-                damageType = options.huntType
+                triggerUnit = sourceUnit,
+                targetUnit = targetUnit,
+                sourceUnit = sourceUnit,
+                damage = damage,
+                damageKind = options.damageKind,
+                damageType = options.damageType
             }
         )
+    end
+    -- @触发被伤害事件
+    hevent.triggerEvent(
+        targetUnit,
+        CONST_EVENT.beDamage,
+        {
+            triggerUnit = targetUnit,
+            sourceUnit = sourceUnit,
+            damage = damage,
+            damageKind = options.damageKind,
+            damageType = options.damageType
+        }
+    )
+    if (options.damageKind == CONST_DAMAGE_KIND.attack) then
+        if (sourceUnit ~= nil) then
+            -- @触发攻击事件
+            hevent.triggerEvent(
+                sourceUnit,
+                CONST_EVENT.attack,
+                {
+                    triggerUnit = sourceUnit,
+                    attacker = sourceUnit,
+                    targetUnit = targetUnit,
+                    damage = damage,
+                    damageKind = options.damageKind,
+                    damageType = options.damageType
+                }
+            )
+        end
         -- @触发被攻击事件
         hevent.triggerEvent(
-            options.fromUnit,
+            targetUnit,
             CONST_EVENT.beAttack,
             {
-                triggerUnit = options.fromUnit,
-                attacker = options.fromUnit,
-                targetUnit = options.toUnit,
-                damage = options.damage,
-                realDamage = options.realDamage,
-                damageKind = options.huntKind,
-                damageType = options.huntType
+                triggerUnit = sourceUnit,
+                attacker = sourceUnit,
+                targetUnit = targetUnit,
+                damage = damage,
+                damageKind = options.damageKind,
+                damageType = options.damageType
             }
         )
     end
@@ -314,9 +325,9 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
-        model = nil, --特效，可选
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.broken = function(options)
@@ -330,8 +341,8 @@ hskill.broken = function(options)
     local odds = options.odds or 100
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "broken_oppose")
     odds = odds - oppose --(%)
@@ -356,19 +367,18 @@ hskill.broken = function(options)
     cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK, 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.3)
-    if (type(options.model) == "string" and string.len(options.model) > 0) then
-        heffect.bindUnit(options.model, u, "origin", during)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.bindUnit(options.effect, u, "origin", during)
     end
     if (damage > 0) then
         hskill.damage(
             {
-                fromUnit = sourceUnit,
-                toUnit = u,
+                sourceUnit = sourceUnit,
+                targetUnit = u,
                 damage = damage,
-                realDamage = damage,
-                realDamageString = "打断",
-                huntKind = huntKind,
-                huntType = huntType
+                damageString = "打断",
+                damageKind = damageKind,
+                damageType = damageType
             }
         )
     end
@@ -404,9 +414,9 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
-        model = nil, --特效，可选
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.swim = function(options)
@@ -421,8 +431,8 @@ hskill.swim = function(options)
     local odds = options.odds or 100
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "swim_oppose")
     odds = odds - oppose --(%)
@@ -460,19 +470,18 @@ hskill.swim = function(options)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.4)
     his.set(cu, "isSwim", true)
-    if (type(options.model) == "string" and string.len(options.model) > 0) then
-        heffect.bindUnit(options.model, u, "origin", during)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.bindUnit(options.effect, u, "origin", during)
     end
     if (damage > 0) then
         hskill.damage(
             {
-                fromUnit = sourceUnit,
-                toUnit = u,
+                sourceUnit = sourceUnit,
+                targetUnit = u,
                 damage = damage,
-                realDamage = damage,
-                realDamageString = "眩晕",
-                huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                damageString = "眩晕",
+                damageKind = CONST_DAMAGE_KIND.skill,
+                damageType = {CONST_DAMAGE_TYPE.real}
             }
         )
     end
@@ -523,9 +532,9 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
-        model = nil, --特效，可选
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.silent = function(options)
@@ -540,8 +549,8 @@ hskill.silent = function(options)
     local odds = options.odds or 100
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "silent_oppose")
     odds = odds - oppose --(%)
@@ -581,8 +590,8 @@ hskill.silent = function(options)
             0.2
         )
     end
-    if (type(options.model) == "string" and string.len(options.model) > 0) then
-        heffect.bindUnit(options.model, u, "origin", during)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.bindUnit(options.effect, u, "origin", during)
     end
     hskill.set(u, "silentLevel", level)
     if (table.includes(u, hRuntime.skill.silentUnits) == false) then
@@ -594,13 +603,12 @@ hskill.silent = function(options)
     if (damage > 0) then
         hskill.damage(
             {
-                fromUnit = sourceUnit,
-                toUnit = u,
+                sourceUnit = sourceUnit,
+                targetUnit = u,
                 damage = damage,
-                realDamage = damage,
-                realDamageString = "沉默",
-                huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                damageString = "沉默",
+                damageKind = CONST_DAMAGE_KIND.skill,
+                damageType = {CONST_DAMAGE_TYPE.real}
             }
         )
     end
@@ -653,9 +661,9 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
-        model = nil, --特效，可选
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.unarm = function(options)
@@ -670,8 +678,8 @@ hskill.unarm = function(options)
     local odds = options.odds or 100
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "unarm_oppose")
     odds = odds - oppose --(%)
@@ -711,8 +719,8 @@ hskill.unarm = function(options)
             0.2
         )
     end
-    if (type(options.model) == "string" and string.len(options.model) > 0) then
-        heffect.bindUnit(options.model, u, "origin", during)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.bindUnit(options.effect, u, "origin", during)
     end
     hskill.set(u, "unarmLevel", level)
     if (table.includes(u, hRuntime.skill.unarmUnits) == false) then
@@ -724,13 +732,12 @@ hskill.unarm = function(options)
     if (damage > 0) then
         hskill.damage(
             {
-                fromUnit = sourceUnit,
-                toUnit = u,
+                sourceUnit = sourceUnit,
+                targetUnit = u,
                 damage = damage,
-                realDamage = damage,
-                realDamageString = "缴械",
-                huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                damageString = "缴械",
+                damageKind = CONST_DAMAGE_KIND.skill,
+                damageType = {CONST_DAMAGE_TYPE.real}
             }
         )
     end
@@ -783,9 +790,9 @@ end
         odds = 100, --几率，可选
         damage = 0, --伤害，可选
         sourceUnit = nil, --来源单位，可选
-        model = nil, --特效，可选
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.fetter = function(options)
@@ -800,8 +807,8 @@ hskill.fetter = function(options)
     local odds = options.odds or 100
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.sourceUnit or {CONST_HUNT_TYPE.real}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
     --计算抵抗
     local oppose = hattr.get(u, "fetter_oppose")
     odds = odds - oppose --(%)
@@ -815,8 +822,8 @@ hskill.fetter = function(options)
         damage = damage * (1 - oppose * 0.01)
     end
     htextTag.style(htextTag.create2Unit(u, "缚足", 6.00, "ffa500", 10, 1.00, 10.00), "scale", 0, 0.2)
-    if (type(options.model) == "string" and string.len(options.model) > 0) then
-        heffect.bindUnit(options.model, u, "origin", during)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.bindUnit(options.effect, u, "origin", during)
     end
     hattr.set(
         u,
@@ -828,13 +835,12 @@ hskill.fetter = function(options)
     if (damage > 0) then
         hskill.damage(
             {
-                fromUnit = sourceUnit,
-                toUnit = u,
+                sourceUnit = sourceUnit,
+                targetUnit = u,
                 damage = damage,
-                realDamage = damage,
-                realDamageString = "缚足",
-                huntKind = CONST_HUNT_KIND.skill,
-                huntType = {CONST_HUNT_TYPE.real}
+                damageString = "缚足",
+                damageKind = CONST_DAMAGE_KIND.skill,
+                damageType = {CONST_DAMAGE_TYPE.real}
             }
         )
     end
@@ -873,10 +879,10 @@ end
         whichGroup = nil, --目标单位组（挑选，优先级更高）
         sourceUnit = nil, --伤害来源单位（可选）
         odds = 100, --几率（可选）
-        model = nil --目标位置特效（可选）
-        modelSingle = nil --个体的特效（可选）
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil --目标位置特效（可选）
+        effectSingle = nil --个体的特效（可选）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.bomb = function(options)
@@ -888,8 +894,8 @@ hskill.bomb = function(options)
     end
     local odds = options.odds or 100
     local range = options.range or 1
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.huntType or {CONST_HUNT_TYPE.real}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.damageType or {CONST_DAMAGE_TYPE.real}
     local whichGroup
     if (options.whichGroup ~= nil) then
         whichGroup = options.whichGroup
@@ -934,12 +940,11 @@ hskill.bomb = function(options)
             end
             hskill.damage(
                 {
-                    fromUnit = options.sourceUnit,
-                    toUnit = cj.GetEnumUnit(),
+                    sourceUnit = options.sourceUnit,
+                    targetUnit = cj.GetEnumUnit(),
                     damage = damage,
-                    realDamage = range,
-                    huntKind = huntKind,
-                    huntType = huntType
+                    damageKind = damageKind,
+                    damageType = damageType
                 }
             )
             -- @触发爆破事件
@@ -983,9 +988,9 @@ end
         change = 0, --增减率（可选，默认不增不减为0，范围建议[-1.00，1.00]）
         range = 300, --寻找下一目标的作用范围（可选，默认300）
         isRepeat = false, --是否允许同一个单位重复打击（临近2次不会同一个）
-        model = nil, --目标位置特效（可选）
-        huntKind = CONST_HUNT_KIND.skill, --伤害的种类（可选）
-        huntType = {"thunder"}, --伤害的类型,注意是table（可选）
+        effect = nil, --目标位置特效（可选）
+        damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
+        damageType = {"thunder"}, --伤害的类型,注意是table（可选）
         index = 1,--隐藏的参数，用于暗地里记录是第几个被电到的单位
         repeatGroup = [group],--隐藏的参数，用于暗地里记录单位是否被电过
     }
@@ -1025,8 +1030,8 @@ hskill.lightningChain = function(options)
     local change = options.change or 0
     local range = options.range or 500
     local isRepeat = options.isRepeat or false
-    local huntKind = options.huntKind or CONST_HUNT_KIND.skill
-    local huntType = options.huntType or {"thunder"}
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.damageType or {"thunder"}
     options.qty = options.qty or 1
     options.qty = options.qty - 1
     if (options.qty < 0) then
@@ -1039,17 +1044,16 @@ hskill.lightningChain = function(options)
     end
     hlightning.unit2unit(lightningType, prevUnit, whichUnit, 0.25)
     htextTag.style(htextTag.create2Unit(whichUnit, "电链", 6.00, "87cefa", 10, 1.00, 10.00), "scale", 0, 0.2)
-    if (options.model ~= nil) then
-        heffect.bindUnit(options.model, whichUnit, "origin", 0.5)
+    if (options.effect ~= nil) then
+        heffect.bindUnit(options.effect, whichUnit, "origin", 0.5)
     end
     hskill.damage(
         {
-            fromUnit = options.sourceUnit,
-            toUnit = whichUnit,
+            sourceUnit = options.sourceUnit,
+            targetUnit = whichUnit,
             damage = damage,
-            realDamage = damage,
-            huntKind = huntKind,
-            huntType = huntType
+            damageKind = damageKind,
+            damageType = damageType
         }
     )
     -- @触发闪电链成功事件
@@ -1144,9 +1148,9 @@ end
         distance = 0, --击退距离，可选，默认0
         high = 100, --击飞高度，可选，默认100
         during = 0.5, --击飞过程持续时间，可选，默认0.5秒
-        model = nil, --特效（可选）
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        effect = nil, --特效（可选）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.crackFly = function(options)
@@ -1178,12 +1182,12 @@ hskill.crackFly = function(options)
         during = 0.5
     end
     --不二次击飞
-    if (his.get(options.toUnit, "isCrackFly") == true) then
+    if (his.get(options.targetUnit, "isCrackFly") == true) then
         return
     end
-    his.set(options.toUnit, "isCrackFly", true)
+    his.set(options.targetUnit, "isCrackFly", true)
     --镜头放大模式下，距离缩小一半
-    if (hcamera.getModel(cj.GetOwningPlayer(options.toUnit)) == "zoomin") then
+    if (hcamera.getModel(cj.GetOwningPlayer(options.targetUnit)) == "zoomin") then
         distance = distance * 0.5
         high = high * 0.5
     end
@@ -1195,15 +1199,15 @@ hskill.crackFly = function(options)
     hskill.unarm(tempObj)
     hskill.silent(tempObj)
     hattr.set(
-        options.toUnit,
+        options.targetUnit,
         during,
         {
             move = "-9999"
         }
     )
     htextTag.style(htextTag.create2Unit(options.whichUnit, "击飞", 6.00, "808000", 10, 1.00, 10.00), "scale", 0, 0.2)
-    if (type(options.model) == "string" and string.len(options.model) > 0) then
-        heffect.bindUnit(options.model, options.whichUnit, "origin", during)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.bindUnit(options.effect, options.whichUnit, "origin", during)
     end
     hunit.setCanFly(options.whichUnit)
     cj.SetUnitPathing(options.whichUnit, false)
@@ -1244,25 +1248,24 @@ hskill.crackFly = function(options)
             if (cost > during) then
                 hskill.damage(
                     {
-                        fromUnit = options.fromUnit,
-                        toUnit = options.whichUnit,
+                        sourceUnit = options.sourceUnit,
+                        targetUnit = options.targetUnit,
+                        effect = options.effect,
                         damage = options.damage,
-                        realDamage = options.damage,
-                        huntEff = options.huntEff,
-                        huntKind = options.huntKind,
-                        huntType = options.huntType
+                        damageKind = options.damageKind,
+                        damageType = options.damageType
                     }
                 )
-                cj.SetUnitFlyHeight(options.whichUnit, originHigh, 10000)
-                cj.SetUnitPathing(options.whichUnit, true)
-                his.set(options.whichUnit, "isCrackFly", false)
+                cj.SetUnitFlyHeight(options.targetUnit, originHigh, 10000)
+                cj.SetUnitPathing(options.targetUnit, true)
+                his.set(options.targetUnit, "isCrackFly", false)
                 -- 默认是地面，创建沙尘
                 local tempEff = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
-                if (his.water(options.whichUnit) == true) then
+                if (his.water(options.targetUnit) == true) then
                     -- 如果是水面，创建水花
                     tempEff = "Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl"
                 end
-                heffect.whichUnit(tempEff, options.whichUnit, 0)
+                heffect.toUnit(tempEff, options.targetUnit, 0)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 return
@@ -1313,33 +1316,32 @@ end
         range = 0, --眩晕范围（必须有）
         during = 0, --眩晕持续时间（必须有）
         odds = 100, --对每个单位的独立几率（可选,默认100）
-        model = "", --特效（可选，只有在匹配模式下才会生效，使用单位组请额外补充特效）
-        whichGroup = [group], --目标单位组（可选）
+        effect = "", --特效（可选）
         whichUnit = [unit], --目标单位（可选）
         whichLoc = [location], --目标点（可选）
         x = [point], --目标坐标X（可选）
         y = [point], --目标坐标Y（可选）
-        filter = [function], --区配模型下必须有
+        filter = [function], --必须有
         damage = 0, --伤害（可选，但是这里可以等于0）
         sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
-        huntKind = CONST_HUNT_KIND.skill --伤害的种类（可选）
-        huntType = {CONST_HUNT_TYPE.real} --伤害的类型,注意是table（可选）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.swimGroup = function(options)
+hskill.rangeSwim = function(options)
     local range = options.range or 0
     local during = options.during or 0
     local damage = options.damage or 0
     if (range <= 0 or during <= 0) then
-        print_err("hskill.swimGroup:-range -during")
+        print_err("hskill.rangeSwim:-range -during")
         return
     end
     if (damage > 0 and options.sourceUnit == nil) then
-        print_err("hskill.swimGroup:-sourceUnit")
+        print_err("hskill.rangeSwim:-sourceUnit")
         return
     end
     local odds = options.odds or 100
-    local model = options.model or "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl"
+    local effect = options.effect or "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl"
     local x, y
     if (options.x ~= nil or options.y ~= nil) then
         x = options.x
@@ -1351,20 +1353,19 @@ hskill.swimGroup = function(options)
         x = cj.GetLocatonX(options.whichLoc)
         y = cj.GetLocatonY(options.whichLoc)
     end
-    local g
-    if (options.whichGroup ~= nil) then
-        g = options.whichGroup
-    elseif (x ~= nil or y ~= nil) then
-        local filter = options.filter
-        if (type(filter) ~= "function") then
-            print_err("filter must be function")
-            return
-        end
-        heffect.toXY(model, x, y, 0)
-        g = hgroup.createByXY(x, y, range, filter)
+    if (x == nil or y == nil) then
+        print_err("hskill.rangeSwim:-x -y")
+        return
     end
+    local filter = options.filter
+    if (type(filter) ~= "function") then
+        print_err("filter must be function")
+        return
+    end
+    heffect.toXY(effect, x, y, 0)
+    local g = hgroup.createByXY(x, y, range, filter)
     if (g == nil) then
-        print_err("swim group has not target")
+        print_err("rangeSwim has not target")
         return
     end
     if (hgroup.count(g) <= 0) then
@@ -1380,14 +1381,109 @@ hskill.swimGroup = function(options)
                     during = during,
                     damage = damage,
                     sourceUnit = options.sourceUnit,
-                    huntKind = options.huntKind,
-                    huntType = options.huntType
+                    damageKind = options.damageKind,
+                    damageType = options.damageType
                 }
             )
         end
     )
     cj.GroupClear(g)
     cj.DestroyGroup(g)
+end
+
+--[[
+    范围持续伤害
+    options = {
+        range = 0, --范围（必须有）
+        frequency = 0, --伤害频率（必须有）
+        times = 0, --伤害次数（必须有）
+        effect = "", --特效（可选）
+        effectSingle = "", --单体特效（可选）
+        filter = [function], --必须有
+        whichUnit = [unit], --目标单位的位置（可选）
+        whichLoc = [location], --目标点（可选）
+        x = [point], --目标坐标X（可选）
+        y = [point], --目标坐标Y（可选）
+        damage = 0, --伤害（可选，但是这里可以等于0）
+        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+    }
+]]
+hskill.rangeDamage = function(options)
+    local range = options.range or 0
+    local times = options.times or 0
+    local frequency = options.frequency or 0
+    local damage = options.damage or 0
+    if (range <= 0 or times <= 0 or frequency <= 0) then
+        print_err("hskill.rangeSwim:-range -times -frequency")
+        return
+    end
+    if (damage > 0 and options.sourceUnit == nil) then
+        print_err("hskill.rangeSwim:-sourceUnit")
+        return
+    end
+    local odds = options.odds or 100
+    local effect = options.effect or "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl"
+    local x, y
+    if (options.x ~= nil or options.y ~= nil) then
+        x = options.x
+        y = options.y
+    elseif (options.whichUnit ~= nil) then
+        x = cj.GetUnitX(options.whichUnit)
+        y = cj.GetUnitY(options.whichUnit)
+    elseif (options.whichLoc ~= nil) then
+        x = cj.GetLocatonX(options.whichLoc)
+        y = cj.GetLocatonY(options.whichLoc)
+    end
+    if (x == nil or y == nil) then
+        print_err("hskill.rangeSwim:-x -y")
+        return
+    end
+    local filter = options.filter
+    if (type(filter) ~= "function") then
+        print_err("filter must be function")
+        return
+    end
+    heffect.toXY(effect, x, y, 0.25 + (times * frequency))
+    local ti = 0
+    htime.setInterval(
+        frequency,
+        function(t, td)
+            ti = ti + 1
+            if (ti >= times) then
+                htime.delDialog(td)
+                htime.delTimer(t)
+                return
+            end
+            local g = hgroup.createByXY(x, y, range, filter)
+            if (g == nil) then
+                print_err("rangeDamage has not target")
+                return
+            end
+            if (hgroup.count(g) <= 0) then
+                return
+            end
+            cj.ForGroup(
+                g,
+                function()
+                    hskill.damage(
+                        {
+                            sourceUnit = options.sourceUnit,
+                            targetUnit = cj.GetEnumUnit(),
+                            effect = options.effectSingle,
+                            damage = damage,
+                            damageKind = options.damageKind,
+                            damageType = options.damageType
+                        }
+                    )
+                end
+            )
+            cj.GroupClear(g)
+            cj.DestroyGroup(g)
+            g = nil
+        end
+    )
 end
 
 --[[
@@ -1440,7 +1536,7 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, op
                         if (his.death(cj.GetFilterUnit())) then
                             flag = false
                         end
-                        if (his.ally(cj.GetFilterUnit(), options.fromUnit)) then
+                        if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
                             flag = false
                         end
                         if (his.building(cj.GetFilterUnit())) then
@@ -1457,12 +1553,12 @@ hskill.leap = function(mover, targetX, targetY, speed, meff, range, isRepeat, op
                     function()
                         hskill.damage(
                             {
+                                sourceUnit = options.sourceUnit,
+                                targetUnit = cj.GetEnumUnit(),
+                                effect = options.effect,
                                 damage = options.damage,
-                                fromUnit = options.fromUnit,
-                                toUnit = cj.GetEnumUnit(),
-                                huntEff = options.huntEff,
-                                huntKind = options.huntKind,
-                                huntType = options.huntType
+                                damageKind = options.damageKind,
+                                damageType = options.damageType
                             }
                         )
                     end
@@ -1493,7 +1589,7 @@ end
     * modelTo 技能模板 参考 h-lua SLK
 ]]
 hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
-    heffect.toUnit(eff, u, 1.5)
+    heffect.targetUnit(eff, u, 1.5)
     UnitAddAbility(u, modelTo)
     UnitRemoveAbility(u, modelTo)
     hattr.reRegister(u)
@@ -1502,7 +1598,7 @@ hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            heffect.toUnit(eff, u, 1.5)
+            heffect.targetUnit(eff, u, 1.5)
             UnitAddAbility(u, modelFrom)
             UnitRemoveAbility(u, modelFrom)
             hattr.reRegister(u)
