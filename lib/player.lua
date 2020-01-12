@@ -107,6 +107,14 @@ end
 hplayer.setStatus = function(whichPlayer, status)
     hplayer.set(whichPlayer, "status", status)
 end
+--- 获取玩家当前称号
+hplayer.getPrestige = function(whichPlayer)
+    return hplayer.get(whichPlayer, "prestige", "初出茅庐")
+end
+--- 设置玩家当前称号
+hplayer.setPrestige = function(whichPlayer, prestige)
+    hplayer.set(whichPlayer, "prestige", prestige)
+end
 --- 获取玩家APM
 hplayer.getApm = function(whichPlayer)
     return hplayer.get(whichPlayer, "apm", 0)
