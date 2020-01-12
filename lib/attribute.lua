@@ -313,30 +313,30 @@ hattr.registerAll = function(whichUnit)
             attack_buff = {
                 攻击伤害时buff=20%几率增加自身 1.5% 的攻击速度 3 秒
                 add = { --这个add表示添加这一种效果，而不是数值的增减
-                    { attr="attack_speed", odds = 20.0, val = 1.5, during = 3.0, model = nil },
+                    { attr="attack_speed", odds = 20.0, val = 1.5, during = 3.0, effect = nil },
                 },
                 sub = { --这个sub表示删除这一种效果，如果效果不存在，而无动作
-                    { attr="attack_speed", odds = 20.0, val = 1.5, during = 3.0, model = nil },
+                    { attr="attack_speed", odds = 20.0, val = 1.5, during = 3.0, effect = nil },
                 }
             }
             skill_debuff = {
                 技能伤害时buff=13%几率减少目标 3.5% 的攻击速度 4.4 秒，特效是 war3mapImported\\ExplosionBIG.mdl
                 add = {
-                    { attr="move",odds = 13.0, val = 3.5, during = 4.4, model = 'war3mapImported\\ExplosionBIG.mdl' },
+                    { attr="move",odds = 13.0, val = 3.5, during = 4.4, effect = 'war3mapImported\\ExplosionBIG.mdl' },
                 },
                 sub = { --这个sub表示删除这一种效果，如果效果不存在，而无动作
-                    { attr="move",odds = 13.0, val = 3.5, during = 4.4, model = 'war3mapImported\\ExplosionBIG.mdl' },
+                    { attr="move",odds = 13.0, val = 3.5, during = 4.4, effect = 'war3mapImported\\ExplosionBIG.mdl' },
                 }
             }
             attack_effect / skill_effect同理,effect只能设定下列的值，会在属性系统自动调用：
-                {attr="swim",odds = 0.0, val = 0.0, during = 0.0, model = nil},
-                {attr="broken",odds = 0.0, val = 0.0, during = 0.0, model = nil},
-                {attr="silent",odds = 0.0, val = 0.0, during = 0.0, model = nil},
-                {attr="unarm",odds = 0.0, val = 0.0, during = 0.0, model = nil},
-                {attr="fetter",odds = 0.0, val = 0.0, during = 0.0, model = nil},
-                {attr="bomb",odds = 0.0, val = 0.0, during = 0.0, model = nil},
-                {attr="lightning_chain",odds = 0.0, val = 0.0, during = 0.0, model = nil, qty = 0, reduce = 0.0},
-                {attr="crack_fly",odds = 0.0, val = 0.0, during = 0.0, model = nil, distance = 0, high = 0.0}
+                {attr="swim",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="broken",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="silent",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="unarm",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="fetter",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="bomb",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="lightning_chain",odds = 0.0, val = 0.0, during = 0.0, effect = nil, qty = 0, reduce = 0.0},
+                {attr="crack_fly",odds = 0.0, val = 0.0, during = 0.0, effect = nil, distance = 0, high = 0.0}
             * 至于是否同一种效果，是根据你设定的值自动计算出来的
         ]]
     }
@@ -1210,7 +1210,8 @@ hattr.huntUnit = function(bean)
                 damageString = realDamageString,
                 damageStringColor = realDamageStringColor,
                 damageKind = bean.damageKind,
-                effect = bean.damageType
+                damageType = bean.damageType,
+                effect = bean.effect
             }
         )
         -- 分裂
@@ -1455,8 +1456,8 @@ hattr.huntUnit = function(bean)
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
                     hattr.set(bean.fromUnit, b.during, {[b.attr] = "+" .. b.val})
-                    if (type(b.model) == "string" and string.len(b.model) > 0) then
-                        heffect.bindUnit(b.model, bean.fromUnit, "origin", b.during)
+                    if (type(b.effect) == "string" and string.len(b.effect) > 0) then
+                        heffect.bindUnit(b.effect, bean.fromUnit, "origin", b.during)
                     end
                 end
             end
@@ -1466,8 +1467,8 @@ hattr.huntUnit = function(bean)
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
                     hattr.set(bean.toUnit, b.during, {[b.attr] = "-" .. b.val})
-                    if (type(b.model) == "string" and string.len(b.model) > 0) then
-                        heffect.bindUnit(b.model, bean.toUnit, "origin", b.during)
+                    if (type(b.effect) == "string" and string.len(b.effect) > 0) then
+                        heffect.bindUnit(b.effect, bean.toUnit, "origin", b.during)
                     end
                 end
             end
@@ -1493,7 +1494,7 @@ hattr.huntUnit = function(bean)
                                 odds = b.odds,
                                 damage = b.val,
                                 sourceUnit = bean.fromUnit,
-                                model = b.model,
+                                effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
                             }
@@ -1507,7 +1508,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
-                                model = b.model,
+                                effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
                             }
@@ -1521,7 +1522,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
-                                model = b.model,
+                                effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
                             }
@@ -1535,7 +1536,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
-                                model = b.model,
+                                effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
                             }
@@ -1549,7 +1550,7 @@ hattr.huntUnit = function(bean)
                                 damage = b.val,
                                 during = b.during,
                                 sourceUnit = bean.fromUnit,
-                                model = b.model,
+                                effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
                             }
@@ -1563,8 +1564,8 @@ hattr.huntUnit = function(bean)
                                 range = b.range,
                                 whichUnit = bean.toUnit,
                                 sourceUnit = bean.fromUnit,
-                                model = b.model,
-                                modelSingle = b.modelSingle,
+                                effect = b.effect,
+                                effectSingle = b.effectSingle,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
                             }
@@ -1579,7 +1580,7 @@ hattr.huntUnit = function(bean)
                                 qty = b.qty,
                                 change = b.change,
                                 range = b.range or 500,
-                                model = b.model,
+                                effect = b.effect,
                                 isRepeat = false,
                                 whichUnit = bean.toUnit,
                                 prevUnit = bean.fromUnit,
@@ -1599,7 +1600,7 @@ hattr.huntUnit = function(bean)
                                 distance = b.distance,
                                 high = b.high,
                                 during = b.during,
-                                model = b.model,
+                                effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.thunder}
                             }
