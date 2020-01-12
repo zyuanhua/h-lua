@@ -1230,7 +1230,7 @@ hattr.huntUnit = function(bean)
                     if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
                         flag = false
                     end
-                    if (his.isBuilding(cj.GetFilterUnit())) then
+                    if (his.building(cj.GetFilterUnit())) then
                         flag = false
                     end
                     return flag
