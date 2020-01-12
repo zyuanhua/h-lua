@@ -1,19 +1,15 @@
 hslk_global = {
-
     dzapi_map_level_award = {},
     item_moment = {},
     env_model = {},
-
     skill_item_separate = 0,
-    skill_break = 0,
+    skill_break = {},
     skill_swim_unlimit = 0,
     skill_hero_tavern_selection = 0,
-
     unit_token = 0,
     unit_hero_tavern = 0, -- 酒馆id
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
-
     heroesLen = 0,
     heroes = {},
     heroesKV = {},
@@ -24,65 +20,66 @@ hslk_global = {
     itemsShadowKV = {},
     itemsFaceKV = {},
     abilitiesKV = {},
-
     attr = {
         agi_green = {
             add = {},
-            sub = {},
+            sub = {}
         },
         int_green = {
             add = {},
-            sub = {},
+            sub = {}
         },
         str_green = {
             add = {},
-            sub = {},
+            sub = {}
         },
         attack_green = {
             add = {},
-            sub = {},
+            sub = {}
         },
         attack_white = {
             add = {},
-            sub = {},
+            sub = {}
         },
         item_attack_white = {
             add = {},
-            sub = {},
+            sub = {}
         },
         attack_speed = {
             add = {},
-            sub = {},
+            sub = {}
         },
         defend = {
             add = {},
-            sub = {},
+            sub = {}
         },
         life = {
             add = {},
-            sub = {},
+            sub = {}
         },
         mana = {
             add = {},
-            sub = {},
+            sub = {}
         },
         avoid = {
             add = 0,
-            sub = 0,
+            sub = 0
         },
         sight = {
             add = {},
-            sub = {},
+            sub = {}
         },
-        sightTotal = {},
-    },
-
+        sightTotal = {}
+    }
 }
 
 --skill_item_separate
 hslk_global.skill_item_separate = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_item_separate"), 0)
 --skill_break
-hslk_global.skill_break = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_break"), 0)
+for dur = 1, 0.5 / 0.05, 1 do
+    local swDur = dur * 0.05
+    hslk_global.skill_break[swDur] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_break_"..swDur), 0)
+end
 --skill_swim_unlimit
 hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_swim_unlimit"), 0)
 --skill_hero_tavern_selection
@@ -100,7 +97,10 @@ hslk_global.unit_hero_death_token = cj.LoadInteger(cg.hash_hslk, cj.StringHash("
 --地图等级奖励
 local qty = cj.LoadInteger(cg.hash_hslk, cj.StringHash("dzapi_map_level_award"), cj.StringHash("max_qty"))
 for i = 1, qty do
-    table.insert(hslk_global.dzapi_map_level_award, cj.LoadInteger(cg.hash_hslk, cj.StringHash("dzapi_map_level_award"), i))
+    table.insert(
+        hslk_global.dzapi_map_level_award,
+        cj.LoadInteger(cg.hash_hslk, cj.StringHash("dzapi_map_level_award"), i)
+    )
 end
 
 --瞬逝物系统
@@ -129,8 +129,10 @@ for i = 1, 9 do
     hslk_global.attr.attack_green.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_green_sub"), val)
     hslk_global.attr.attack_white.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_white_add"), val)
     hslk_global.attr.attack_white.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_white_sub"), val)
-    hslk_global.attr.item_attack_white.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_item_attack_white_add"), val)
-    hslk_global.attr.item_attack_white.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_item_attack_white_sub"), val)
+    hslk_global.attr.item_attack_white.add[val] =
+        cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_item_attack_white_add"), val)
+    hslk_global.attr.item_attack_white.sub[val] =
+        cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_item_attack_white_sub"), val)
     hslk_global.attr.attack_speed.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_speed_add"), val)
     hslk_global.attr.attack_speed.sub[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_attack_speed_sub"), val)
     hslk_global.attr.defend.add[val] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_defend_add"), val)
@@ -144,7 +146,7 @@ end
 hslk_global.attr.avoid.add = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_avoid_add"), val)
 hslk_global.attr.avoid.sub = cj.LoadInteger(cg.hash_hslk, cj.StringHash("attr_avoid_sub"), val)
 --属性系统 视野
-local sightBase = { 1, 2, 3, 4, 5 }
+local sightBase = {1, 2, 3, 4, 5}
 local si = 1
 while (si <= 10000) do
     for k, v in ipairs(sightBase) do
@@ -155,6 +157,9 @@ while (si <= 10000) do
     end
     si = si * 10
 end
-table.sort(hslk_global.attr.sightTotal, function(a, b)
-    return a > b
-end)
+table.sort(
+    hslk_global.attr.sightTotal,
+    function(a, b)
+        return a > b
+    end
+)

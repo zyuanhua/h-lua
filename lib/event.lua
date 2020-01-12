@@ -62,7 +62,9 @@ hevent.triggerEvent = function(handle, key, triggerData)
     if (table.len(triggerData) > 0) then
         for k, v in pairs(triggerData) do
             if (v ~= nil) then
-                if (k == "triggerSkill" and type(v) == "number") then
+                if (k == "triggerSkill" and v ~= nil) then
+                    print("type=" .. type(v))
+                    print_r(triggerData)
                     triggerData[k] = string.id2char(v)
                 elseif (k == "targetLoc") then
                     triggerData.targetX = cj.GetLocationX(v)

@@ -105,29 +105,32 @@ obj.Rng1 = 30.00
 call SaveInteger(hash_hslk,StringHash("skill_item_separate"), 0, '<?=obj:get_id()?>')
 <?
 
--- #打断
-local obj = slk.ability.AHtb:new("skill_break")
-obj.EditorSuffix = "#h-lua"
-obj.Name = "技能系统 打断"
-obj.DataA1 = 0.00
-obj.Tip = "打断"
-obj.Ubertip = "打断"
-obj.Art = ""
-obj.Missileart = ""
-obj.Missilespeed = 0
-obj.Animnames = ""
-obj.hero = 0
-obj.race = "other"
-obj.levels = 1
-obj.Cool1 = 10.00
-obj.targs1 = "neutral,vulnerable,ground,enemies,invulnerable,organic,debris,air"
-obj.Dur1 = 0.100
-obj.HeroDur1 = 0.100
-obj.Cost1 = 0
-obj.Rng1 = 9999.00
-?>
-call SaveInteger(hash_hslk, StringHash("skill_break"), 0, '<?=obj:get_id()?>')
-<?
+-- #眩晕[0.05-0.5]
+for dur=1,0.5/0.05,1 do
+    local swDur = dur * 0.05
+    local obj = slk.ability.AHtb:new("skill_break_" .. swDur)
+    obj.EditorSuffix = "#h-lua"
+    obj.Name = "技能系统-眩晕"..swDur.."秒"
+    obj.DataA1 = 0.00
+    obj.Tip = "眩晕"..swDur.."秒"
+    obj.Ubertip = "眩晕"..swDur.."秒"
+    obj.Art = ""
+    obj.Missileart = ""
+    obj.Missilespeed = 999999
+    obj.Animnames = ""
+    obj.hero = 0
+    obj.race = "other"
+    obj.levels = 1
+    obj.Cool1 = 10.00
+    obj.targs1 = "neutral,vulnerable,ground,enemies,invulnerable,organic,debris,air,friend,self"
+    obj.Dur1 = swDur
+    obj.HeroDur1 = swDur
+    obj.Cost1 = 0
+    obj.Rng1 = 9999.00
+    ?>
+    call SaveInteger(hash_hslk, StringHash("skill_break_<?=swDur?>"), 0, '<?=obj:get_id()?>')
+    <?
+end
 
 -- #无限眩晕
 local obj = slk.ability.AHtb:new("skill_swim_unlimit")
@@ -138,14 +141,14 @@ obj.Tip = "无限眩晕"
 obj.Ubertip = "无限眩晕"
 obj.Art = ""
 obj.Missileart = ""
-obj.Missilespeed = 0
+obj.Missilespeed = 999999
 obj.Missilearc = 0.00
 obj.Animnames = ""
 obj.hero = 0
 obj.race = "other"
 obj.levels = 1
 obj.Cool1 = 10.00
-obj.targs1 = "neutral,vulnerable,ground,enemies,invulnerable,organic,debris,air"
+obj.targs1 = "neutral,vulnerable,ground,enemies,invulnerable,organic,debris,air,friend,self"
 obj.Dur1 = 0.000
 obj.HeroDur1 = 0.000
 obj.Cost1 = 0

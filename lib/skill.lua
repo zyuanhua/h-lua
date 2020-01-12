@@ -1,6 +1,6 @@
 local hskill = {
     SKILL_TOKEN = hslk_global.unit_token,
-    SKILL_BREAK = hslk_global.skill_break,
+    SKILL_BREAK = hslk_global.skill_break, --table[0.05~0.5]
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
@@ -363,8 +363,8 @@ hskill.broken = function(options)
             y = cj.GetUnitY(u)
         }
     )
-    cj.UnitAddAbility(cu, hskill.SKILL_BREAK)
-    cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK, 1)
+    cj.UnitAddAbility(cu, hskill.SKILL_BREAK[0.05])
+    cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK[0.05], 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.3)
     if (type(options.effect) == "string" and string.len(options.effect) > 0) then
@@ -465,24 +465,38 @@ hskill.swim = function(options)
             y = cj.GetUnitY(u)
         }
     )
-    cj.UnitAddAbility(cu, hskill.SKILL_SWIM)
-    cj.SetUnitAbilityLevel(cu, hskill.SKILL_SWIM, 1)
-    cj.IssueTargetOrder(cu, "thunderbolt", u)
-    hunit.del(cu, 0.4)
-    his.set(cu, "isSwim", true)
+    --判断during的时候是否小于0.5秒，使用眩晕0.05-0.5的技能，大于0.5使用无限眩晕法
+    if (during < 0.05) then
+        during = 0.05
+    end
+    his.set(u, "isSwim", true)
     if (type(options.effect) == "string" and string.len(options.effect) > 0) then
         heffect.bindUnit(options.effect, u, "origin", during)
     end
-    if (damage > 0) then
-        hskill.damage(
-            {
-                sourceUnit = sourceUnit,
-                targetUnit = u,
-                damage = damage,
-                damageString = "眩晕",
-                damageKind = CONST_DAMAGE_KIND.skill,
-                damageType = {CONST_DAMAGE_TYPE.real}
-            }
+    if (during <= 0.5) then
+        during = 0.05 * math.floor(during / 0.05) --必须是0.05的倍数
+        cj.UnitAddAbility(cu, hskill.SKILL_BREAK[during])
+        cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK[during], 1)
+        cj.IssueTargetOrder(cu, "thunderbolt", u)
+        hunit.del(cu, 0.4)
+    else
+        --无限法
+        cj.UnitAddAbility(cu, hskill.SKILL_SWIM)
+        cj.SetUnitAbilityLevel(cu, hskill.SKILL_SWIM, 1)
+        cj.IssueTargetOrder(cu, "thunderbolt", u)
+        hunit.del(cu, 0.4)
+        hskill.set(
+            u,
+            "swimTimer",
+            htime.setTimeout(
+                during,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
+                    his.set(u, "isSwim", false)
+                end
+            )
         )
     end
     if (sourceUnit ~= nil) then
@@ -509,19 +523,18 @@ hskill.swim = function(options)
             during = during
         }
     )
-    hskill.set(
-        u,
-        "swimTimer",
-        htime.setTimeout(
-            during,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
-                his.set(cu, "isSwim", false)
-            end
+    if (damage > 0) then
+        hskill.damage(
+            {
+                sourceUnit = sourceUnit,
+                targetUnit = u,
+                damage = damage,
+                damageString = "眩晕",
+                damageKind = CONST_DAMAGE_KIND.skill,
+                damageType = {CONST_DAMAGE_TYPE.real}
+            }
         )
-    )
+    end
 end
 
 --[[
@@ -1444,7 +1457,7 @@ hskill.rangeDamage = function(options)
         return
     end
     if (options.effect ~= nil) then
-        heffect.toXY(effect, x, y, 0.25 + (times * frequency))
+        heffect.toXY(options.effect, x, y, 0.25 + (times * frequency))
     end
     local ti = 0
     htime.setInterval(
