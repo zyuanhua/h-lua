@@ -30,7 +30,7 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
     if (his.alive(u) == true) then
         local i = 1
         local it
-        local hasSlot = (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1)
+        local hasSlot = (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) >= 1)
         if (hasSlot == false) then
             cj.UnitAddAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
         end
@@ -46,7 +46,7 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
         end
     else
         local per = 3.00
-        local limit = 180.0 / per -- 一般不会超过3分钟复活
+        local limit = 60.0 / per -- 一般不会超过1分钟复活
         htime.setInterval(
             per,
             function(t, td)
@@ -59,7 +59,7 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
                     htime.delTimer(t)
                     local i = 1
                     local it
-                    local hasSlot = (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1)
+                    local hasSlot = (cj.GetUnitAbilityLevel(u, hattr.DEFAULT_SKILL_ITEM_SLOT) >= 1)
                     if (hasSlot == false) then
                         cj.UnitAddAbility(u, hattr.DEFAULT_SKILL_ITEM_SLOT)
                     end
