@@ -1142,7 +1142,7 @@ end
     击飞
     options = {
         damage = 0, --伤害（必须有，但是这里可以等于0）
-        whichUnit = [unit], --第一个的目标单位（必须有）
+        whichUnit = [unit], --目标单位（必须有）
         sourceUnit = [unit], --伤害来源单位（必须有）
         odds = 100, --几率（可选,默认100）
         distance = 0, --击退距离，可选，默认0
@@ -1317,7 +1317,7 @@ end
         during = 0, --眩晕持续时间（必须有）
         odds = 100, --对每个单位的独立几率（可选,默认100）
         effect = "", --特效（可选）
-        whichUnit = [unit], --目标单位（可选）
+        whichUnit = [unit], --中心单位（可选）
         whichLoc = [location], --目标点（可选）
         x = [point], --目标坐标X（可选）
         y = [point], --目标坐标Y（可选）
@@ -1400,7 +1400,7 @@ end
         effect = "", --特效（可选）
         effectSingle = "", --单体特效（可选）
         filter = [function], --必须有
-        whichUnit = [unit], --目标单位的位置（可选）
+        whichUnit = [unit], --中心单位的位置（可选）
         whichLoc = [location], --目标点（可选）
         x = [point], --目标坐标X（可选）
         y = [point], --目标坐标Y（可选）
@@ -1423,8 +1423,6 @@ hskill.rangeDamage = function(options)
         print_err("hskill.rangeSwim:-sourceUnit")
         return
     end
-    local odds = options.odds or 100
-    local effect = options.effect or "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl"
     local x, y
     if (options.x ~= nil or options.y ~= nil) then
         x = options.x
@@ -1445,7 +1443,9 @@ hskill.rangeDamage = function(options)
         print_err("filter must be function")
         return
     end
-    heffect.toXY(effect, x, y, 0.25 + (times * frequency))
+    if (options.effect ~= nil) then
+        heffect.toXY(effect, x, y, 0.25 + (times * frequency))
+    end
     local ti = 0
     htime.setInterval(
         frequency,
