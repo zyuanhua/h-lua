@@ -377,6 +377,7 @@ hskill.broken = function(options)
                 targetUnit = u,
                 damage = damage,
                 damageString = "打断",
+                damageStringColor = "F0F8FF",
                 damageKind = damageKind,
                 damageType = damageType
             }
@@ -445,6 +446,8 @@ hskill.swim = function(options)
         during = during * (1 - oppose * 0.01)
         damage = damage * (1 - oppose * 0.01)
     end
+    local damageString = "眩晕"
+    local damageStringColor = "4169E1"
     local swimTimer = hskill.get(u, "swimTimer")
     if (swimTimer ~= nil and cj.TimerGetRemaining(t) > 0) then
         if (during <= cj.TimerGetRemaining(swimTimer)) then
@@ -453,7 +456,8 @@ hskill.swim = function(options)
             htime.delTimer(swimTimer)
             hskill.set(u, "swimTimer", nil)
             cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
-            htextTag.style(htextTag.create2Unit(u, "劲眩", 6.00, "64e3f2", 10, 1.00, 10.00), "scale", 0, 0.05)
+            damageString = "劲眩"
+            damageStringColor = "64e3f2"
         end
     end
     local cu =
@@ -529,9 +533,10 @@ hskill.swim = function(options)
                 sourceUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
-                damageString = "眩晕",
                 damageKind = CONST_DAMAGE_KIND.skill,
-                damageType = {CONST_DAMAGE_TYPE.real}
+                damageType = {CONST_DAMAGE_TYPE.real},
+                damageString = damageString,
+                damageStringColor = damageStringColor
             }
         )
     end
@@ -931,7 +936,6 @@ hskill.bomb = function(options)
                 return flag
             end
         )
-        htextTag.style(htextTag.create2Unit(options.whichUnit, "爆破", 6.00, "FF6347", 10, 1.00, 10.00), "scale", 0, 0.2)
     else
         print_err("lost bomb target")
         return
@@ -957,7 +961,9 @@ hskill.bomb = function(options)
                     targetUnit = cj.GetEnumUnit(),
                     damage = damage,
                     damageKind = damageKind,
-                    damageType = damageType
+                    damageType = damageType,
+                    damageString = "爆破",
+                    damageStringColor = "FF6347"
                 }
             )
             -- @触发爆破事件
@@ -1056,7 +1062,6 @@ hskill.lightningChain = function(options)
         options.index = options.index + 1
     end
     hlightning.unit2unit(lightningType, prevUnit, whichUnit, 0.25)
-    htextTag.style(htextTag.create2Unit(whichUnit, "电链", 6.00, "87cefa", 10, 1.00, 10.00), "scale", 0, 0.2)
     if (options.effect ~= nil) then
         heffect.bindUnit(options.effect, whichUnit, "origin", 0.5)
     end
@@ -1066,7 +1071,9 @@ hskill.lightningChain = function(options)
             targetUnit = whichUnit,
             damage = damage,
             damageKind = damageKind,
-            damageType = damageType
+            damageType = damageType,
+            damageString = "电链",
+            damageStringColor = "87cefa"
         }
     )
     -- @触发闪电链成功事件
@@ -1218,7 +1225,6 @@ hskill.crackFly = function(options)
             move = "-9999"
         }
     )
-    htextTag.style(htextTag.create2Unit(options.whichUnit, "击飞", 6.00, "808000", 10, 1.00, 10.00), "scale", 0, 0.2)
     if (type(options.effect) == "string" and string.len(options.effect) > 0) then
         heffect.bindUnit(options.effect, options.whichUnit, "origin", during)
     end
@@ -1266,7 +1272,9 @@ hskill.crackFly = function(options)
                         effect = options.effect,
                         damage = options.damage,
                         damageKind = options.damageKind,
-                        damageType = options.damageType
+                        damageType = options.damageType,
+                        damageString = "击飞",
+                        damageStringColor = "808000"
                     }
                 )
                 cj.SetUnitFlyHeight(options.targetUnit, originHigh, 10000)
