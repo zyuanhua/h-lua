@@ -1517,7 +1517,7 @@ end
         sourceUnit = [unit], --伤害来源单位（必须有）
         effect = "", --特效（可选）
         effectSingle = "", --单体砍中特效（可选）
-        animation = "stand", --单位播放的动作（可选）
+        animation = "spin", --单位附加动作，常见的spin（可选）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
@@ -1548,11 +1548,16 @@ hskill.whirlwind = function(options)
         print_err("filter must be function")
         return
     end
+    --不二次
+    if (his.get(options.sourceUnit, "isWhirlwind") == true) then
+        return
+    end
+    his.set(options.sourceUnit, "isWhirlwind", true)
     if (options.effect ~= nil) then
         heffect.bindUnit(options.effect, options.sourceUnit, "origin", during)
     end
     if (options.animation) then
-        cj.SetUnitAnimation(options.sourceUnit, options.animation)
+        cj.AddUnitAnimationProperties(options.sourceUnit, options.animation, true)
     end
     local time = 0
     htime.setInterval(
@@ -1563,9 +1568,13 @@ hskill.whirlwind = function(options)
                 htime.delDialog(td)
                 htime.delTimer(t)
                 if (options.animation) then
-                    cj.SetUnitAnimation(options.sourceUnit, "stand")
+                    cj.AddUnitAnimationProperties(options.sourceUnit, options.animation, false)
                 end
+                his.set(options.sourceUnit, "isWhirlwind", false)
                 return
+            end
+            if (options.animation) then
+                cj.SetUnitAnimation(options.sourceUnit, options.animation)
             end
             local g = hgroup.createByUnit(options.sourceUnit, range, filter)
             if (g == nil) then
