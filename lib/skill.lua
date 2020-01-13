@@ -1471,7 +1471,96 @@ hskill.rangeDamage = function(options)
             end
             local g = hgroup.createByXY(x, y, range, filter)
             if (g == nil) then
-                print_err("rangeDamage has not target")
+                return
+            end
+            if (hgroup.count(g) <= 0) then
+                return
+            end
+            cj.ForGroup(
+                g,
+                function()
+                    hskill.damage(
+                        {
+                            sourceUnit = options.sourceUnit,
+                            targetUnit = cj.GetEnumUnit(),
+                            effect = options.effectSingle,
+                            damage = damage,
+                            damageKind = options.damageKind,
+                            damageType = options.damageType
+                        }
+                    )
+                end
+            )
+            cj.GroupClear(g)
+            cj.DestroyGroup(g)
+            g = nil
+        end
+    )
+end
+
+--[[
+    剑刃风暴
+    options = {
+        range = 0, --范围（必须有）
+        frequency = 0, --伤害频率（必须有）
+        during = 0, --持续时间（必须有）
+        filter = [function], --必须有
+        damage = 0, --每次伤害（必须有）
+        sourceUnit = [unit], --伤害来源单位（必须有）
+        effect = "", --特效（可选）
+        effectSingle = "", --单体砍中特效（可选）
+        animation = "stand", --单位播放的动作（可选）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+    }
+]]
+hskill.whirlwind = function(options)
+    local range = options.range or 0
+    local frequency = options.frequency or 0
+    local during = options.during or 0
+    local damage = options.damage or 0
+    if (range <= 0 or during <= 0 or frequency <= 0) then
+        print_err("hskill.whirlwind:-range -during -frequency")
+        return
+    end
+    if (during < frequency) then
+        print_err("hskill.whirlwind:-during < frequency")
+        return
+    end
+    if (damage < 0 or options.sourceUnit == nil) then
+        print_err("hskill.whirlwind:-damage -sourceUnit")
+        return
+    end
+    if (options.filter == nil) then
+        print_err("hskill.whirlwind:-filter")
+        return
+    end
+    local filter = options.filter
+    if (type(filter) ~= "function") then
+        print_err("filter must be function")
+        return
+    end
+    if (options.effect ~= nil) then
+        heffect.bindUnit(options.effect, options.sourceUnit, "origin", during)
+    end
+    if (options.animation) then
+        cj.SetUnitAnimation(options.sourceUnit, options.animation)
+    end
+    local time = 0
+    htime.setInterval(
+        frequency,
+        function(t, td)
+            time = time + frequency
+            if (time > during) then
+                htime.delDialog(td)
+                htime.delTimer(t)
+                if (options.animation) then
+                    cj.SetUnitAnimation(options.sourceUnit, "stand")
+                end
+                return
+            end
+            local g = hgroup.createByUnit(options.sourceUnit, range, filter)
+            if (g == nil) then
                 return
             end
             if (hgroup.count(g) <= 0) then
