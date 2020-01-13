@@ -407,6 +407,11 @@ hunit.setCanFly = function(u)
     cj.UnitRemoveAbility(u, "Amrf")
 end
 
+--设置单位高度，用于设置单位可飞行之后
+hunit.setFlyHeight = function(u, height, speed)
+    cj.SetUnitFlyHeight(u, height, speed)
+end
+
 --在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
 hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
     if (his.hero(u)) then

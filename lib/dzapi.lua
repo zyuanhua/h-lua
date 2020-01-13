@@ -21,6 +21,11 @@ hdzapi.hasMallItem = function(whichPlayer, key)
     return japi.DzAPI_Map_HasMallItem(whichPlayer, key)
 end
 
+-- 设置房间数据
+hdzapi.setRoomStat = function(whichPlayer, key, text)
+    japi.DzAPI_Map_Stat_SetStat(whichPlayer, tostring(key), tostring(text))
+end
+
 -- 服务器存档
 hdzapi.server = {}
 -- save / load
