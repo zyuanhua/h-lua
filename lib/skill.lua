@@ -1626,6 +1626,7 @@ end
         effectArrow = nil, --前冲的特效（x,y时认为必须！自身冲击就是bind，否则为马甲本身，如冲击波的波）
         effectArrowScale = 1.00, --前冲的特效作为马甲冲击时的模型缩放
         effectArrowOpacity = 1.00, --前冲的特效作为马甲冲击时的模型透明度[0-1]
+        effectArrowHeight = 0.00, --前冲的特效作为马甲冲击时的离地高度
         effectMovement = nil, --移动过程，每个间距的特效（可选的，采用的0秒删除法，请使用explode类型的特效）
         effectEnd = nil, --到达最后位置时的特效（可选的，采用的0秒删除法，请使用explode类型的特效）
         damageMovement = 0, --移动过程中的伤害（可选的，默认为0）
@@ -1636,6 +1637,7 @@ end
         damageEndRange = 0, --移动结束时对目标的伤害范围（可选的，默认为0，此处0范围是有效的，会只对targetUnit生效，除非unit不存在）
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        oneHitOnly = false, --是否打击一次就立刻失效（类似格挡，这个一次和只攻击一个单位不是一回事）
         extraInfluence = [function] --对选中的敌人的额外影响，会回调该敌人单位，可以对其做出自定义行为
     }
 ]]
@@ -1676,6 +1678,8 @@ hskill.leap = function(options)
     local effectArrow = options.effectArrow
     local effectArrowScale = options.effectArrowScale or 1.00
     local effectArrowOpacity = options.effectArrowOpacity or 1.00
+    local effectArrowHeight = options.effectArrowHeight or 0
+    local oneHitOnly = options.oneHitOnly or false
     --这里要注意：targetUnit的优先级是比xy高的!
     local leapType
     local firstFacing = 0
@@ -1710,14 +1714,20 @@ hskill.leap = function(options)
                 qty = 1
             }
         )
+        if (effectArrowHeight > 0) then
+            hunit.setFlyHeight(arrowUnit, effectArrowHeight, 9999)
+        end
     end
     cj.SetUnitFacing(arrowUnit, firstFacing)
     --绑定一个无限的effect
-    local tempEffectArrow = heffect.bindUnit(effectArrow, arrowUnit, "origin", -1)
+    local tempEffectArrow
+    if (effectArrow ~= nil) then
+        tempEffectArrow = heffect.bindUnit(effectArrow, arrowUnit, "origin", -1)
+    end
     --无敌加无路径
+    cj.SetUnitPathing(arrowUnit, false)
     if (leapType == "unit") then
         cj.SetUnitInvulnerable(arrowUnit, true)
-        cj.SetUnitPathing(arrowUnit, false)
         cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 255 * effectArrowOpacity)
     end
     --开始冲鸭
@@ -1735,9 +1745,10 @@ hskill.leap = function(options)
                 tx = options.x
                 ty = options.y
             end
-            local txy = math.polarProjection(ax, ay, speed, tx, ty)
-            print_r(txy)
+            local fac = math.getDegBetweenXY(ax, ay, tx, ty)
+            local txy = math.polarProjection(ax, ay, speed, fac)
             cj.SetUnitPosition(arrowUnit, txy.x, txy.y)
+            cj.SetUnitFacing(arrowUnit, fac)
             if (options.effectMovement ~= nil) then
                 heffect.toXY(options.effectMovement, txy.x, txy.y, 0)
             end
@@ -1757,42 +1768,51 @@ hskill.leap = function(options)
                         return flag
                     end
                 )
-                cj.ForGroup(
-                    g,
-                    function()
-                        if (damageMovement > 0) then
-                            hskill.damage(
-                                {
-                                    sourceUnit = options.sourceUnit,
-                                    targetUnit = cj.GetEnumUnit(),
-                                    damage = damageMovement,
-                                    damageKind = options.damageKind,
-                                    damageType = options.damageType
-                                }
-                            )
-                        end
-                        if (damageMovementDrag == true) then
-                            cj.SetUnitPosition(cj.GetEnumUnit(), txy.x, txy.y)
-                        end
-                        if (type(extraInfluence) == "function") then
-                            extraInfluence(cj.GetEnumUnit())
-                        end
+                if (hgroup.count(g) > 0) then
+                    if (oneHitOnly == true) then
+                        hunit.kill(arrowUnit, 0)
                     end
-                )
+                    cj.ForGroup(
+                        g,
+                        function()
+                            hgroup.addUnit(repeatGroup, cj.GetEnumUnit())
+                            if (damageMovement > 0) then
+                                hskill.damage(
+                                    {
+                                        sourceUnit = options.sourceUnit,
+                                        targetUnit = cj.GetEnumUnit(),
+                                        damage = damageMovement,
+                                        damageKind = options.damageKind,
+                                        damageType = options.damageType
+                                    }
+                                )
+                            end
+                            if (damageMovementDrag == true) then
+                                cj.SetUnitPosition(cj.GetEnumUnit(), txy.x, txy.y)
+                            end
+                            if (type(extraInfluence) == "function") then
+                                extraInfluence(cj.GetEnumUnit())
+                            end
+                        end
+                    )
+                end
                 cj.GroupClear(g)
                 cj.DestroyGroup(g)
             end
-            local distance = math.getDegBetweenXY(cj.GetUnitX(arrowUnit), cj.GetUnitY(arrowUnit), tx, ty)
+            local distance = math.getDistanceBetweenXY(cj.GetUnitX(arrowUnit), cj.GetUnitY(arrowUnit), tx, ty)
             if (distance <= speed or speed <= 0 or his.death(arrowUnit) == true) then
                 htime.delDialog(td)
                 htime.delTimer(t)
+                if (tempEffectArrow ~= nil) then
+                    heffect.del(tempEffectArrow)
+                end
                 if (repeatGroup ~= nil) then
                     cj.GroupClear(repeatGroup)
                     cj.DestroyGroup(repeatGroup)
                     repeatGroup = nil
                 end
                 if (options.effectEnd ~= nil) then
-                    heffect.toXY(options.effectEnd, txy.x, txy, y, 0)
+                    heffect.toXY(options.effectEnd, txy.x, txy.y, 0)
                 end
                 if (damageEndRange == 0 and options.targetUnit ~= nil) then
                     if (damageEnd > 0) then
@@ -1807,7 +1827,7 @@ hskill.leap = function(options)
                         )
                     end
                     if (type(extraInfluence) == "function") then
-                        extraInfluence(cj.GetEnumUnit())
+                        extraInfluence(options.targetUnit)
                     end
                 elseif (damageEndRange > 0) then
                     local g = hgroup.createByUnit(arrowUnit, damageEndRange, filter)
@@ -1833,14 +1853,14 @@ hskill.leap = function(options)
                     cj.GroupClear(g)
                     cj.DestroyGroup(g)
                 end
-            end
-            if (leapType == "unit") then
-                cj.SetUnitInvulnerable(arrowUnit, false)
-                cj.SetUnitPathing(arrowUnit, true)
-                cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 1)
-                cj.SetUnitPosition(arrowUnit, txy.x, txy.y)
-            else
-                hunit.kill(arrowUnit, 0)
+                if (leapType == "unit") then
+                    cj.SetUnitInvulnerable(arrowUnit, false)
+                    cj.SetUnitPathing(arrowUnit, true)
+                    cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 1)
+                    cj.SetUnitPosition(arrowUnit, txy.x, txy.y)
+                else
+                    hunit.kill(arrowUnit, 0)
+                end
             end
         end
     )
