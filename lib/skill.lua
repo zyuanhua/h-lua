@@ -1911,10 +1911,8 @@ hskill.leapPow = function(options)
     local facing = math.getDegBetweenXY(sx, sy, x, y)
     local distance = math.getDistanceBetweenXY(sx, sy, x, y)
     local firstDeg = facing + (deg * (qty - 1) * 0.5)
-    print(facing, distance, firstDeg)
     for i = 1, qty, 1 do
         local angle = firstDeg - deg * (i - 1)
-        print("angle=" .. angle)
         local txy = math.polarProjection(sx, sy, distance, angle)
         local tmp = table.clone(options)
         tmp.targetUnit = nil
