@@ -96,7 +96,7 @@ hskill.avoid = function(whichUnit)
 end
 
 --无敌
-hskill.invulnerable = function(whichUnit, during)
+hskill.invulnerable = function(whichUnit, during, effect)
     if (whichUnit == nil) then
         return
     end
@@ -104,6 +104,9 @@ hskill.invulnerable = function(whichUnit, during)
         during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
     end
     cj.SetUnitInvulnerable(whichUnit, true)
+    if (during > 0 and effect ~= nil) then
+        heffect.bindUnit(effect, whichUnit, "origin", during)
+    end
     htime.setTimeout(
         during,
         function(t, td)
@@ -114,7 +117,7 @@ hskill.invulnerable = function(whichUnit, during)
     )
 end
 --群体无敌
-hskill.invulnerableGroup = function(whichGroup, during)
+hskill.invulnerableGroup = function(whichGroup, during, effect)
     if (whichGroup == nil) then
         return
     end
@@ -125,6 +128,9 @@ hskill.invulnerableGroup = function(whichGroup, during)
         whichGroup,
         function()
             cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
+            if (during > 0 and effect ~= nil) then
+                heffect.bindUnit(effect, cj.GetEnumUnit(), "origin", during)
+            end
         end
     )
     htime.setTimeout(
