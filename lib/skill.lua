@@ -1736,6 +1736,26 @@ hskill.leap = function(options)
     htime.setInterval(
         frequency,
         function(t, td)
+            if (his.death(sourceUnit)) then
+                htime.delDialog(td)
+                htime.delTimer(t)
+                if (tempEffectArrow ~= nil) then
+                    heffect.del(tempEffectArrow)
+                end
+                if (repeatGroup ~= nil) then
+                    cj.GroupClear(repeatGroup)
+                    cj.DestroyGroup(repeatGroup)
+                    repeatGroup = nil
+                end
+                if (leapType == "unit") then
+                    cj.SetUnitInvulnerable(arrowUnit, false)
+                    cj.SetUnitPathing(arrowUnit, true)
+                    cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 1)
+                else
+                    hunit.kill(arrowUnit, 0)
+                end
+                return
+            end
             local ax = cj.GetUnitX(arrowUnit)
             local ay = cj.GetUnitY(arrowUnit)
             local tx = 0
@@ -1783,7 +1803,7 @@ hskill.leap = function(options)
                             if (damageMovement > 0) then
                                 hskill.damage(
                                     {
-                                        sourceUnit = options.sourceUnit,
+                                        sourceUnit = sourceUnit,
                                         targetUnit = cj.GetEnumUnit(),
                                         damage = damageMovement,
                                         damageKind = options.damageKind,
