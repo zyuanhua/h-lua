@@ -1682,16 +1682,16 @@ hskill.leap = function(options)
     local oneHitOnly = options.oneHitOnly or false
     --这里要注意：targetUnit的优先级是比xy高的!
     local leapType
-    local firstFacing = 0
+    local initFacing = 0
     if (options.arrowUnit ~= nil) then
         leapType = "unit"
     else
         leapType = "point"
     end
     if (options.targetUnit ~= nil) then
-        firstFacing = math.getDegBetweenUnit(sourceUnit, options.targetUnit)
+        initFacing = math.getDegBetweenUnit(sourceUnit, options.targetUnit)
     elseif (options.x ~= nil and options.y ~= nil) then
-        firstFacing = math.getDegBetweenXY(cj.GetUnitX(sourceUnit), cj.GetUnitY(sourceUnit), options.x, options.y)
+        initFacing = math.getDegBetweenXY(cj.GetUnitX(sourceUnit), cj.GetUnitY(sourceUnit), options.x, options.y)
     else
         print_err("leapType: -unknow")
         return
@@ -1701,14 +1701,15 @@ hskill.leap = function(options)
         repeatGroup = cj.CreateGroup()
     end
     if (arrowUnit == nil) then
+        local cxy = math.polarProjection(cj.GetUnitX(sourceUnit), cj.GetUnitY(sourceUnit), 100, initFacing)
         arrowUnit =
             hunit.create(
             {
                 whichPlayer = cj.GetOwningPlayer(sourceUnit),
                 unitId = hskill.SKILL_LEAP,
-                x = cj.GetUnitX(sourceUnit),
-                y = cj.GetUnitY(sourceUnit),
-                facing = firstFacing,
+                x = cxy.x,
+                y = cxy.y,
+                facing = initFacing,
                 modelScale = effectArrowScale,
                 opacity = effectArrowOpacity,
                 qty = 1
@@ -1864,6 +1865,63 @@ hskill.leap = function(options)
             end
         end
     )
+end
+
+--[[
+    剃[爪子状]，参数与leap一致，额外有两个参数，设置角度
+    * 需要注意一点的是，pow会自动将对单位跟踪的效果转为对坐标系(不建议使用unit)
+    options = {
+        qty = 0, --数量
+        deg = 15, --角度
+        hskill.leap.options
+    }
+]]
+hskill.leapPow = function(options)
+    local qty = options.qty or 0
+    local deg = options.deg or 15
+    if (qty <= 1) then
+        print_err("leapPow: -qty")
+        return
+    end
+    if (options.sourceUnit == nil) then
+        print_err("leapPow: -sourceUnit")
+        return
+    end
+    if (type(options.filter) ~= "function") then
+        print_err("leapPow: -filter")
+        return
+    end
+    if (options.effectArrow == nil) then
+        print_err("leapPow: -not arrow")
+    end
+    if (options.targetUnit == nil and options.x == nil and options.y == nil) then
+        print_err("leapPow: -target")
+        return
+    end
+    local x, y
+    if (options.targetUnit ~= nil) then
+        x = cj.GetUnitX(options.targetUnit)
+        y = cj.GetUnitY(options.targetUnit)
+    else
+        x = options.x
+        y = options.y
+    end
+    local sx = cj.GetUnitX(options.sourceUnit)
+    local sy = cj.GetUnitY(options.sourceUnit)
+    local facing = math.getDegBetweenXY(sx, sy, x, y)
+    local distance = math.getDistanceBetweenXY(sx, sy, x, y)
+    local firstDeg = facing + (deg * (qty - 1) * 0.5)
+    print(facing, distance, firstDeg)
+    for i = 1, qty, 1 do
+        local angle = firstDeg - deg * (i - 1)
+        print("angle=" .. angle)
+        local txy = math.polarProjection(sx, sy, distance, angle)
+        local tmp = table.clone(options)
+        tmp.targetUnit = nil
+        tmp.x = txy.x
+        tmp.y = txy.y
+        hskill.leap(tmp)
+    end
 end
 
 --[[
