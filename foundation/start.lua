@@ -105,14 +105,15 @@ hLuaStart = {
             triggerRegIn,
             function()
                 local u = cj.GetTriggerUnit()
-                if (cj.GetUnitAbilityLevel(u, "Aloc") > 0) then
+                if (cj.GetUnitAbilityLevel(u, string.char2id("Aloc")) > 0) then
                     -- 蝗虫不做处理
                     return
                 end
                 -- 排除单位类型
                 local uid = cj.GetUnitTypeId(u)
                 if
-                    (uid == hslk_global.unit_token or uid == hslk_global.unit_hero_tavern_token or
+                    (uid == hslk_global.unit_token or uid == hslk_global.unit_token_leap or
+                        uid == hslk_global.unit_hero_tavern_token or
                         uid == hslk_global.unit_hero_death_token or
                         uid == hslk_global.unit_hero_tavern)
                  then
