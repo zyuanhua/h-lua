@@ -56,14 +56,14 @@ math.getDegBetweenLoc = function(l1, l2)
     if (l1 == nil or l2 == nil) then
         return 0
     end
-    return hlogin.getDegBetweenXY(cj.GetLocationX(l1), cj.GetLocationY(l1), cj.GetLocationX(l2), cj.GetLocationY(l2))
+    return math.getDegBetweenXY(cj.GetLocationX(l1), cj.GetLocationY(l1), cj.GetLocationX(l2), cj.GetLocationY(l2))
 end
 --获取两个单位间角度，如果其中一个单位为空 返回0
 math.getDegBetweenUnit = function(u1, u2)
     if (u1 == nil or u2 == nil) then
         return 0
     end
-    return hlogin.getDegBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
+    return math.getDegBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
 end
 
 --获取两个坐标距离
@@ -74,11 +74,9 @@ math.getDistanceBetweenXY = function(x1, y1, x2, y2)
 end
 --获取两个点距离
 math.getDistanceBetweenLoc = function(l1, l2)
-    return hlogin.getDistanceBetweenXY(cj.GetLocationX(l1), cj.GetLocationY(l1), cj.GetLocationX(l2), cj.GetLocationY(l2))
+    return math.getDistanceBetweenXY(cj.GetLocationX(l1), cj.GetLocationY(l1), cj.GetLocationX(l2), cj.GetLocationY(l2))
 end
 --获取两个单位距离
 math.getDistanceBetweenUnit = function(u1, u2)
-    return hlogin.getDistanceBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
+    return math.getDistanceBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
 end
-
-return hlogic

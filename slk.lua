@@ -52,6 +52,32 @@ obj.nsight = 0
 call SaveInteger(hash_hslk, StringHash("unit_token"), 1, '<?=obj:get_id()?>')
 <?
 
+--冲击单位
+-- #token
+local obj = slk.unit.hfoo:new("unit_token_leap")
+obj.EditorSuffix = "#h-lua"
+obj.Name = "Token - leap"
+obj.special = 1
+obj.abilList = "Avul,Aloc"
+obj.upgrade = ""
+obj.file = ".mdl"
+obj.unitShadow = ""
+obj.Art = ""
+obj.modelScale = 1.00
+obj.movetp = "fly"
+obj.moveHeight = 0.00
+obj.moveFloor = 0.00
+obj.spd = 0
+obj.turnRate = 3.00
+obj.weapsOn = 0
+obj.race = "other"
+obj.fused = 0
+obj.sight = 250
+obj.nsight = 250
+?>
+call SaveInteger(hash_hslk, StringHash("unit_token_leap"), 1, '<?=obj:get_id()?>')
+<?
+
 --树
 -- #token
 local obj = slk.unit.hfoo:new("unit_tree")

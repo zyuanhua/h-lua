@@ -97,7 +97,7 @@ end
         height = 高度，0，可选
         timeScalePercent = 动作时间比例，1~，可选
         modelScalePercent = 模型缩放比例，1~，可选
-        opacity = 透明，0～255，可选
+        opacity = 透明，0.0～1.0，可选,0不可见
         qty = 1, --数量，可选，可选
         life = nil, --生命周期，到期死亡，可选
         during = nil, --持续时间，到期删除，可选
@@ -194,9 +194,9 @@ hunit.create = function(bean)
             cj.SetUnitScalePercent(u, bean.modelScalePercent, bean.modelScalePercent, bean.modelScalePercent)
         end
         -- 透明比例
-        if (bean.opacity ~= nil and bean.opacity <= 255 and bean.opacity >= 0) then
+        if (bean.opacity ~= nil and bean.opacity <= 1 and bean.opacity >= 0) then
             bean.opacity = hlogin.round(bean.opacity)
-            cj.SetUnitVertexColor(u, 255, 255, 255, bean.opacity)
+            cj.SetUnitVertexColor(u, 255, 255, 255, 255 * bean.opacity)
         end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then

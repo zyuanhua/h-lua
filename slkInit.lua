@@ -7,6 +7,7 @@ hslk_global = {
     skill_swim_unlimit = 0,
     skill_hero_tavern_selection = 0,
     unit_token = 0,
+    unit_token_leap = 0,
     unit_hero_tavern = 0, -- 酒馆id
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
@@ -87,6 +88,8 @@ hslk_global.skill_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, cj.String
 
 --unit_token
 hslk_global.unit_token = cj.LoadInteger(cg.hash_hslk, cj.StringHash("unit_token"), 1)
+--unit_token_leap
+hslk_global.unit_token_leap = cj.LoadInteger(cg.hash_hslk, cj.StringHash("unit_token_leap"), 1)
 --unit_hero_tavern
 hslk_global.unit_hero_tavern = cj.LoadInteger(cg.hash_hslk, cj.StringHash("unit_hero_tavern"), 2)
 --unit_hero_tavern_token
