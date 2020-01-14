@@ -96,7 +96,7 @@ end
         loc = nil, --创建点，可选
         height = 高度，0，可选
         timeScalePercent = 动作时间比例，1~，可选
-        modelScalePercent = 模型缩放比例，1~，可选
+        modelScale = 模型缩放比例，1~，可选
         opacity = 透明，0.0～1.0，可选,0不可见
         qty = 1, --数量，可选，可选
         life = nil, --生命周期，到期死亡，可选
@@ -160,11 +160,11 @@ hunit.create = function(bean)
     if (bean.facing ~= nil) then
         facing = bean.facing
     elseif (bean.facingX ~= nil and bean.facingY ~= nil) then
-        facing = hlogin.getDegBetweenXY(x, y, bean.facingX, bean.facingY)
+        facing = math.getDegBetweenXY(x, y, bean.facingX, bean.facingY)
     elseif (bean.facingLoc ~= nil) then
-        facing = hlogin.getDegBetweenXY(x, y, cj.GetLocationX(bean.facingLoc), cj.GetLocationY(bean.facingLoc))
+        facing = math.getDegBetweenXY(x, y, cj.GetLocationX(bean.facingLoc), cj.GetLocationY(bean.facingLoc))
     elseif (bean.facingUnit ~= nil) then
-        facing = hlogin.getDegBetweenXY(x, y, cj.GetUnitX(bean.facingUnit), cj.GetUnitY(bean.facingUnit))
+        facing = math.getDegBetweenXY(x, y, cj.GetUnitX(bean.facingUnit), cj.GetUnitY(bean.facingUnit))
     else
         facing = bj_UNIT_FACING
     end
@@ -179,23 +179,23 @@ hunit.create = function(bean)
         end
         -- 高度
         if (bean.height ~= nil and bean.height ~= 0) then
-            bean.height = hlogin.round(bean.height)
+            bean.height = math.round(bean.height)
             hunit.setCanFly(u)
             cj.SetUnitFlyHeight(u, bean.height, 10000)
         end
         -- 动作时间比例 %
         if (bean.timeScalePercent ~= nil and bean.timeScalePercent > 0) then
-            bean.timeScalePercent = hlogin.round(bean.timeScalePercent)
+            bean.timeScalePercent = math.round(bean.timeScalePercent)
             cj.SetUnitTimeScalePercent(u, timeScalePercent)
         end
         -- 模型缩放比例 %
-        if (bean.modelScalePercent ~= nil and bean.modelScalePercent > 0) then
-            bean.modelScalePercent = hlogin.round(bean.modelScalePercent)
-            cj.SetUnitScalePercent(u, bean.modelScalePercent, bean.modelScalePercent, bean.modelScalePercent)
+        if (bean.modelScale ~= nil and bean.modelScale > 0) then
+            bean.modelScale = math.round(bean.modelScale)
+            cj.SetUnitScale(u, bean.modelScale, bean.modelScale, bean.modelScale)
         end
         -- 透明比例
         if (bean.opacity ~= nil and bean.opacity <= 1 and bean.opacity >= 0) then
-            bean.opacity = hlogin.round(bean.opacity)
+            bean.opacity = math.round(bean.opacity)
             cj.SetUnitVertexColor(u, 255, 255, 255, 255 * bean.opacity)
         end
         -- 生命周期 dead

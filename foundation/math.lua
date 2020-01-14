@@ -48,8 +48,7 @@ end
 
 --获取两个坐标间角度，如果其中一个单位为空 返回0
 math.getDegBetweenXY = function(x1, y1, x2, y2)
-    --return bj_RADTODEG * cj.Atan2(y2 - y1, x2 - x1)
-    return bj_RADTODEG * math.atan2(y2 - y1, x2 - x1)
+    return bj_RADTODEG * cj.Atan2(y2 - y1, x2 - x1)
 end
 --获取两个点间角度，如果其中一个单位为空 返回0
 math.getDegBetweenLoc = function(l1, l2)

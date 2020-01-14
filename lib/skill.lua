@@ -1666,11 +1666,11 @@ hskill.leap = function(options)
     local filter = options.filter
     local sourceUnit = options.sourceUnit
     local damageMovement = options.damageMovement or 0
-    local damageMovementRange = options.damageMovementRange or 10
+    local damageMovementRange = options.damageMovementRange or 0
     local damageMovementRepeat = options.damageMovementRepeat or false
     local damageMovementDrag = options.damageMovementDrag or false
     local damageEnd = options.damageEnd or false
-    local damageEndRange = options.damageEndRange or false
+    local damageEndRange = options.damageEndRange or 0
     local extraInfluence = options.extraInfluence
     local arrowUnit = options.arrowUnit
     local effectArrow = options.effectArrow
@@ -1700,11 +1700,12 @@ hskill.leap = function(options)
         arrowUnit =
             hunit.create(
             {
+                whichPlayer = cj.GetOwningPlayer(sourceUnit),
                 unitId = hskill.SKILL_LEAP,
                 x = cj.GetUnitX(sourceUnit),
                 y = cj.GetUnitY(sourceUnit),
                 facing = firstFacing,
-                modelScalePercent = effectArrowScale,
+                modelScale = effectArrowScale,
                 opacity = effectArrowOpacity,
                 qty = 1
             }
@@ -1712,7 +1713,7 @@ hskill.leap = function(options)
     end
     cj.SetUnitFacing(arrowUnit, firstFacing)
     --绑定一个无限的effect
-    local tempEffectArrow = heffect.bindUnit(effectArrow, arrowUnit, "chest", -1)
+    local tempEffectArrow = heffect.bindUnit(effectArrow, arrowUnit, "origin", -1)
     --无敌加无路径
     if (leapType == "unit") then
         cj.SetUnitInvulnerable(arrowUnit, true)
@@ -1735,6 +1736,7 @@ hskill.leap = function(options)
                 ty = options.y
             end
             local txy = math.polarProjection(ax, ay, speed, tx, ty)
+            print_r(txy)
             cj.SetUnitPosition(arrowUnit, txy.x, txy.y)
             if (options.effectMovement ~= nil) then
                 heffect.toXY(options.effectMovement, txy.x, txy.y, 0)
