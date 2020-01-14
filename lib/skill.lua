@@ -1623,10 +1623,10 @@ end
         speed = 10, --冲击的速度（可选的，默认10，0.02秒的移动距离,大概1秒500px)
         acceleration = 0, --冲击加速度（可选的，每个周期都会增加0.02秒一次)
         filter = [function], --必须有
-        effectArrow = nil, --前冲的特效（x,y时认为必须！自身冲击就是bind，否则为马甲本身，如冲击波的波）
-        effectArrowScale = 1.00, --前冲的特效作为马甲冲击时的模型缩放
-        effectArrowOpacity = 1.00, --前冲的特效作为马甲冲击时的模型透明度[0-1]
-        effectArrowHeight = 0.00, --前冲的特效作为马甲冲击时的离地高度
+        tokenArrow = nil, --前冲的特效（x,y时认为必须！自身冲击就是bind，否则为马甲本身，如冲击波的波）
+        tokenArrowScale = 1.00, --前冲的特效作为马甲冲击时的模型缩放
+        tokenArrowOpacity = 1.00, --前冲的特效作为马甲冲击时的模型透明度[0-1]
+        tokenArrowHeight = 0.00, --前冲的特效作为马甲冲击时的离地高度
         effectMovement = nil, --移动过程，每个间距的特效（可选的，采用的0秒删除法，请使用explode类型的特效）
         effectEnd = nil, --到达最后位置时的特效（可选的，采用的0秒删除法，请使用explode类型的特效）
         damageMovement = 0, --移动过程中的伤害（可选的，默认为0）
@@ -1637,6 +1637,7 @@ end
         damageEndRange = 0, --移动结束时对目标的伤害范围（可选的，默认为0，此处0范围是有效的，会只对targetUnit生效，除非unit不存在）
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageEffect = nil, --伤害特效（可选）
         oneHitOnly = false, --是否打击一次就立刻失效（类似格挡，这个一次和只攻击一个单位不是一回事）
         extraInfluence = [function] --对选中的敌人的额外影响，会回调该敌人单位，可以对其做出自定义行为
     }
@@ -1650,7 +1651,7 @@ hskill.leap = function(options)
         print_err("leap: -filter")
         return
     end
-    if (options.arrowUnit == nil and options.effectArrow == nil) then
+    if (options.arrowUnit == nil and options.tokenArrow == nil) then
         print_err("leap: -not arrow")
     end
     if (options.targetUnit == nil and options.x == nil and options.y == nil) then
@@ -1675,10 +1676,10 @@ hskill.leap = function(options)
     local damageEndRange = options.damageEndRange or 0
     local extraInfluence = options.extraInfluence
     local arrowUnit = options.arrowUnit
-    local effectArrow = options.effectArrow
-    local effectArrowScale = options.effectArrowScale or 1.00
-    local effectArrowOpacity = options.effectArrowOpacity or 1.00
-    local effectArrowHeight = options.effectArrowHeight or 0
+    local tokenArrow = options.tokenArrow
+    local tokenArrowScale = options.tokenArrowScale or 1.00
+    local tokenArrowOpacity = options.tokenArrowOpacity or 1.00
+    local tokenArrowHeight = options.tokenArrowHeight or 0
     local oneHitOnly = options.oneHitOnly or false
     --这里要注意：targetUnit的优先级是比xy高的!
     local leapType
@@ -1710,26 +1711,26 @@ hskill.leap = function(options)
                 x = cxy.x,
                 y = cxy.y,
                 facing = initFacing,
-                modelScale = effectArrowScale,
-                opacity = effectArrowOpacity,
+                modelScale = tokenArrowScale,
+                opacity = tokenArrowOpacity,
                 qty = 1
             }
         )
-        if (effectArrowHeight > 0) then
-            hunit.setFlyHeight(arrowUnit, effectArrowHeight, 9999)
+        if (tokenArrowHeight > 0) then
+            hunit.setFlyHeight(arrowUnit, tokenArrowHeight, 9999)
         end
     end
     cj.SetUnitFacing(arrowUnit, firstFacing)
     --绑定一个无限的effect
     local tempEffectArrow
-    if (effectArrow ~= nil) then
-        tempEffectArrow = heffect.bindUnit(effectArrow, arrowUnit, "origin", -1)
+    if (tokenArrow ~= nil) then
+        tempEffectArrow = heffect.bindUnit(tokenArrow, arrowUnit, "origin", -1)
     end
     --无敌加无路径
     cj.SetUnitPathing(arrowUnit, false)
     if (leapType == "unit") then
         cj.SetUnitInvulnerable(arrowUnit, true)
-        cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 255 * effectArrowOpacity)
+        cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 255 * tokenArrowOpacity)
     end
     --开始冲鸭
     htime.setInterval(
@@ -1776,7 +1777,9 @@ hskill.leap = function(options)
                     cj.ForGroup(
                         g,
                         function()
-                            hgroup.addUnit(repeatGroup, cj.GetEnumUnit())
+                            if (damageMovementRepeat ~= true) then
+                                hgroup.addUnit(repeatGroup, cj.GetEnumUnit())
+                            end
                             if (damageMovement > 0) then
                                 hskill.damage(
                                     {
@@ -1784,7 +1787,8 @@ hskill.leap = function(options)
                                         targetUnit = cj.GetEnumUnit(),
                                         damage = damageMovement,
                                         damageKind = options.damageKind,
-                                        damageType = options.damageType
+                                        damageType = options.damageType,
+                                        effect = options.damageEffect
                                     }
                                 )
                             end
@@ -1823,7 +1827,8 @@ hskill.leap = function(options)
                                 targetUnit = options.targetUnit,
                                 damage = damageEnd,
                                 damageKind = options.damageKind,
-                                damageType = options.damageType
+                                damageType = options.damageType,
+                                effect = options.damageEffect
                             }
                         )
                     end
@@ -1842,7 +1847,8 @@ hskill.leap = function(options)
                                         targetUnit = cj.GetEnumUnit(),
                                         damage = damageEnd,
                                         damageKind = options.damageKind,
-                                        damageType = options.damageType
+                                        damageType = options.damageType,
+                                        effect = options.damageEffect
                                     }
                                 )
                             end
@@ -1891,7 +1897,7 @@ hskill.leapPow = function(options)
         print_err("leapPow: -filter")
         return
     end
-    if (options.effectArrow == nil) then
+    if (options.tokenArrow == nil) then
         print_err("leapPow: -not arrow")
     end
     if (options.targetUnit == nil and options.x == nil and options.y == nil) then
