@@ -83,6 +83,8 @@ for dur = 1, 0.5 / 0.05, 1 do
 end
 --skill_swim_unlimit
 hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_swim_unlimit"), 0)
+--skill_invisible
+hslk_global.skill_invisible = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_invisible"), 0)
 --skill_hero_tavern_selection
 hslk_global.skill_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_hero_tavern_selection"), 0)
 

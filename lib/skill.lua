@@ -3,6 +3,7 @@ local hskill = {
     SKILL_LEAP = hslk_global.unit_token_leap,
     SKILL_BREAK = hslk_global.skill_break, --table[0.05~0.5]
     SKILL_SWIM = hslk_global.skill_swim_unlimit,
+    SKILL_INVISIBLE = hslk_global.skill_invisible,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
     BUFF_SWIM = string.char2id("BPSE")
@@ -30,7 +31,10 @@ end
 
 -- 添加技能
 hskill.add = function(whichUnit, ability_id, during)
-    local id = string.char2id(ability_id)
+    local id = ability_id
+    if (type(ability_id) == "string") then
+        id = string.char2id(id)
+    end
     if (during == nil or during <= 0) then
         cj.UnitAddAbility(whichUnit, id)
         cj.UnitMakeAbilityPermanent(whichUnit, true, id)
@@ -47,7 +51,10 @@ end
 
 -- 删除技能
 hskill.del = function(whichUnit, ability_id, during)
-    local id = string.char2id(ability_id)
+    local id = ability_id
+    if (type(ability_id) == "string") then
+        id = string.char2id(id)
+    end
     if (during == nil or during <= 0) then
         cj.UnitRemoveAbility(whichUnit, id)
     else
@@ -148,6 +155,7 @@ hskill.invulnerableGroup = function(whichGroup, during, effect)
         end
     )
 end
+
 --暂停效果
 hskill.pause = function(whichUnit, during, pauseColor)
     if (whichUnit == nil) then
@@ -194,6 +202,48 @@ hskill.pause = function(whichUnit, during, pauseColor)
             end
         )
     )
+end
+
+--隐身
+hskill.invisible = function(whichUnit, during, transition, effect)
+    if (whichUnit == nil or during == nil or during <= 0) then
+        return
+    end
+    transition = transition or 0
+    if (effect ~= nil) then
+        heffect.toUnit(effect, whichUnit, 0)
+    end
+    if (transition > 0) then
+        htime.setTimeout(
+            transition,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
+            end
+        )
+    end
+end
+
+--现形
+hskill.visible = function(whichUnit, during, transition, effect)
+    if (whichUnit == nil or during == nil or during <= 0) then
+        return
+    end
+    transition = transition or 0
+    if (effect ~= nil) then
+        heffect.toUnit(effect, whichUnit, 0)
+    end
+    if (transition > 0) then
+        htime.setTimeout(
+            transition,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
+            end
+        )
+    end
 end
 
 --为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间

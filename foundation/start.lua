@@ -41,23 +41,23 @@ hLuaStart = {
         cj.TriggerAddAction(
             triggerBeHunt,
             function()
-                local fromUnit = cj.GetEventDamageSource()
-                local toUnit = cj.GetTriggerUnit()
+                local sourceUnit = cj.GetEventDamageSource()
+                local targetUnit = cj.GetTriggerUnit()
                 local damage = cj.GetEventDamage()
-                local oldLife = hunit.getCurLife(toUnit)
+                local oldLife = hunit.getCurLife(targetUnit)
                 if (damage > 0.125) then
-                    hattr.set(toUnit, 0, {life = "+" .. damage})
+                    hattr.set(targetUnit, 0, {life = "+" .. damage})
                     htime.setTimeout(
                         0,
                         function(t, td)
                             htime.delDialog(td)
                             htime.delTimer(t)
-                            hattr.set(toUnit, 0, {life = "-" .. damage})
-                            hunit.setCurLife(toUnit, oldLife)
+                            hattr.set(targetUnit, 0, {life = "-" .. damage})
+                            hunit.setCurLife(targetUnit, oldLife)
                             hattr.huntUnit(
                                 {
-                                    fromUnit = fromUnit,
-                                    toUnit = toUnit,
+                                    sourceUnit = sourceUnit,
+                                    targetUnit = targetUnit,
                                     damage = damage,
                                     damageKind = "attack"
                                 }

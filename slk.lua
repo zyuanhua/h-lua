@@ -185,6 +185,22 @@ obj.Rng1 = 9999.00
 call SaveInteger(hash_hslk, StringHash("skill_swim_unlimit"), 0, '<?=obj:get_id()?>')
 <?
 
+--隐身
+local obj = slk.ability.Apiv:new("skill_invisible")
+obj.EditorSuffix = "#h-lua"
+obj.Name = "技能系统-隐身"
+obj.DataA1 = 0.00
+obj.Tip = "隐身"
+obj.Ubertip = "隐身"
+obj.Art = ""
+obj.hero = 0
+obj.race = "other"
+obj.Dur1 = 0
+obj.HeroDur1 = 0
+?>
+call SaveInteger(hash_hslk, StringHash("skill_invisible"), 0, '<?=obj:get_id()?>')
+<?
+
 -- #酒馆选英雄选择单位
 local obj = slk.ability.Aneu:new("skill_hero_tavern_selection")
 obj.EditorSuffix = "#h-lua"

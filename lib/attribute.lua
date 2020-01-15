@@ -842,13 +842,13 @@ end
 
 --- 伤害一个单位
 --[[
-     * -bean.effect 伤害特效
-     * -bean.damageKind伤害方式:
+     * -options.effect 伤害特效
+     * -options.damageKind伤害方式:
         attack 攻击
         skill 技能
         item 物品
         special 特殊（如眩晕、打断、分裂、爆炸、闪电链之类的）
-     * -bean.damageType伤害类型:
+     * -options.damageType伤害类型:
         physical 物理伤害则无视护甲<享受物理暴击加成，受护甲影响>
         magic 魔法<享受魔法暴击加成，受魔抗影响>
         real 真实<无视回避>
@@ -867,10 +867,10 @@ end
         metal   金
         dragon  龙
         insect  虫
-     * bean.breakArmorType 无视的类型：{ 'defend', 'resistance', 'avoid' }
+     * options.breakArmorType 无视的类型：{ 'defend', 'resistance', 'avoid' }
      * 沉默时，爆炸、闪电链、击飞会失效，其他不受影响
 ]]
-hattr.huntUnit = function(bean)
+hattr.huntUnit = function(options)
     local realDamage = 0
     local realDamagePercent = 0.0
     local realDamageString = ""
@@ -879,235 +879,235 @@ hattr.huntUnit = function(bean)
     local isAvoid = false
     local isKnocking = false
     local isViolence = false
-    if (bean.damage <= 0.125) then
+    if (options.damage <= 0.125) then
         print_err("伤害太小被忽略")
         return
     end
-    if (bean.fromUnit == nil) then
+    if (options.sourceUnit == nil) then
         print_err("伤害源不存在")
         return
     end
-    if (bean.toUnit == nil) then
+    if (options.targetUnit == nil) then
         print_err("目标不存在")
         return
     end
-    if (his.alive(bean.toUnit) == false) then
+    if (his.alive(options.targetUnit) == false) then
         print_err("目标已死亡")
         return
     end
     -- 判断伤害方式
-    if (bean.damageKind == CONST_DAMAGE_KIND.attack) then
-        if (his.unarm(bean.fromUnit) == true) then
+    if (options.damageKind == CONST_DAMAGE_KIND.attack) then
+        if (his.unarm(options.sourceUnit) == true) then
             return
         end
-        bean.damageType = hattr.get(bean.fromUnit, "attack_hunt_type")
-    elseif (bean.damageKind == CONST_DAMAGE_KIND.skill) then
-        if (his.silent(bean.fromUnit) == true) then
+        options.damageType = hattr.get(options.sourceUnit, "attack_hunt_type")
+    elseif (options.damageKind == CONST_DAMAGE_KIND.skill) then
+        if (his.silent(options.sourceUnit) == true) then
             return
         end
-    elseif (bean.damageKind == CONST_DAMAGE_KIND.item) then
-    elseif (bean.damageKind == CONST_DAMAGE_KIND.special) then
+    elseif (options.damageKind == CONST_DAMAGE_KIND.item) then
+    elseif (options.damageKind == CONST_DAMAGE_KIND.special) then
     else
         print_err("伤害单位错误：damageKind")
         return
     end
     -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
-    if (his.invincible(bean.toUnit) == true or math.random(1, 100) < hattr.get(bean.toUnit, "invincible")) then
-        if (table.includes(CONST_DAMAGE_TYPE.absolute, bean.damageType) == false) then
+    if (his.invincible(options.targetUnit) == true or math.random(1, 100) < hattr.get(options.targetUnit, "invincible")) then
+        if (table.includes(CONST_DAMAGE_TYPE.absolute, options.damageType) == false) then
             return
         end
     end
-    if (type(bean.huntEff) == "string" and string.len(bean.huntEff) > 0) then
-        heffect.toXY(bean.huntEff, cj.GetUnitX(bean.toUnit), cj.GetUnitY(bean.toUnit), 0)
+    if (type(options.effect) == "string" and string.len(options.effect) > 0) then
+        heffect.toXY(options.effect, cj.GetUnitX(options.targetUnit), cj.GetUnitY(options.targetUnit), 0)
     end
     -- 计算硬直抵抗
     punishEffectRatio = 0.99
-    if (hattr.get(bean.toUnit, "punish_oppose") > 0) then
-        punishEffectRatio = punishEffectRatio - hattr.get(bean.toUnit, "punish_oppose") * 0.01
+    if (hattr.get(options.targetUnit, "punish_oppose") > 0) then
+        punishEffectRatio = punishEffectRatio - hattr.get(options.targetUnit, "punish_oppose") * 0.01
         if (punishEffectRatio < 0.100) then
             punishEffectRatio = 0.100
         end
     end
 
-    local toUnitDefend = hattr.get(bean.toUnit, "defend")
-    local toUnitResistance = hattr.get(bean.toUnit, "resistance")
-    local toUnitAvoid = hattr.get(bean.toUnit, "avoid")
-    local fromUnitKnocking = hattr.get(bean.fromUnit, "knocking")
-    local fromUnitViolence = hattr.get(bean.fromUnit, "violence")
-    local fromUnitKnockingOdds = hattr.get(bean.fromUnit, "knocking_odds")
-    local fromUnitViolenceOdds = hattr.get(bean.fromUnit, "violence_odds")
-    local fromUnitAim = hattr.get(bean.fromUnit, "aim")
-    local fromUnitHuntAmplitude = hattr.get(bean.fromUnit, "hunt_amplitude")
+    local targetUnitDefend = hattr.get(options.targetUnit, "defend")
+    local targetUnitResistance = hattr.get(options.targetUnit, "resistance")
+    local targetUnitAvoid = hattr.get(options.targetUnit, "avoid")
+    local sourceUnitKnocking = hattr.get(options.sourceUnit, "knocking")
+    local sourceUnitViolence = hattr.get(options.sourceUnit, "violence")
+    local sourceUnitKnockingOdds = hattr.get(options.sourceUnit, "knocking_odds")
+    local sourceUnitViolenceOdds = hattr.get(options.sourceUnit, "violence_odds")
+    local sourceUnitAim = hattr.get(options.sourceUnit, "aim")
+    local sourceUnitHuntAmplitude = hattr.get(options.sourceUnit, "hunt_amplitude")
 
-    local toUnitKnockingOppose = hattr.get(bean.toUnit, "knocking_oppose")
-    local toUnitViolenceOppose = hattr.get(bean.toUnit, "violence_oppose")
+    local targetUnitKnockingOppose = hattr.get(options.targetUnit, "knocking_oppose")
+    local targetUnitViolenceOppose = hattr.get(options.targetUnit, "violence_oppose")
 
     -- *重要* hjass必须设定护甲因子为0，这里为了修正魔兽负护甲依然因子保持0.06的bug
     -- 当护甲x为负时，最大-20,公式2-(1-a)^abs(x)
-    if (toUnitDefend < 0 and toUnitDefend >= -20) then
-        bean.damage = bean.damage / (2 - cj.Pow(0.94, math.abs(toUnitDefend)))
-    elseif (toUnitDefend < 0 and toUnitDefend < -20) then
-        bean.damage = bean.damage / (2 - cj.Pow(0.94, 20))
+    if (targetUnitDefend < 0 and targetUnitDefend >= -20) then
+        options.damage = options.damage / (2 - cj.Pow(0.94, math.abs(targetUnitDefend)))
+    elseif (targetUnitDefend < 0 and targetUnitDefend < -20) then
+        options.damage = options.damage / (2 - cj.Pow(0.94, 20))
     end
     -- 计算攻击者的攻击里物理攻击和魔法攻击的占比
-    local attackSum = hattr.get(bean.fromUnit, "attack_white") + hattr.get(bean.fromUnit, "attack_green")
-    local fromUnitHuntPercent = {physical = 0, magic = 0}
+    local attackSum = hattr.get(options.sourceUnit, "attack_white") + hattr.get(options.sourceUnit, "attack_green")
+    local sourceUnitHuntPercent = {physical = 0, magic = 0}
     if (attackSum > 0) then
-        fromUnitHuntPercent.physical = hattr.get(bean.fromUnit, "attack_white") / attackSum
-        fromUnitHuntPercent.magic = hattr.get(bean.fromUnit, "attack_green") / attackSum
+        sourceUnitHuntPercent.physical = hattr.get(options.sourceUnit, "attack_white") / attackSum
+        sourceUnitHuntPercent.magic = hattr.get(options.sourceUnit, "attack_green") / attackSum
     end
     -- 赋值伤害
-    realDamage = bean.damage
+    realDamage = options.damage
     -- 计算暴击值，判断伤害类型将暴击归0
     -- 判断无视装甲类型
-    if (bean.breakArmorType) then
+    if (options.breakArmorType) then
         realDamageString = realDamageString .. "无视"
-        if (table.includes("defend", bean.breakArmorType)) then
-            if (toUnitDefend > 0) then
-                toUnitDefend = 0
+        if (table.includes("defend", options.breakArmorType)) then
+            if (targetUnitDefend > 0) then
+                targetUnitDefend = 0
             end
             realDamageString = realDamageString .. "护甲"
             realDamageStringColor = "f97373"
         end
-        if (table.includes("resistance", bean.breakArmorType)) then
-            if (toUnitResistance > 0) then
-                toUnitResistance = 0
+        if (table.includes("resistance", options.breakArmorType)) then
+            if (targetUnitResistance > 0) then
+                targetUnitResistance = 0
             end
             realDamageString = realDamageString .. "魔抗"
             realDamageStringColor = "6fa8dc"
         end
-        if (table.includes("avoid", bean.breakArmorType)) then
-            toUnitAvoid = -100
+        if (table.includes("avoid", options.breakArmorType)) then
+            targetUnitAvoid = -100
             realDamageString = realDamageString .. "回避"
             realDamageStringColor = "76a5af"
         end
         -- @触发无视防御事件
         hevent.triggerEvent(
-            bean.fromUnit,
+            options.sourceUnit,
             CONST_EVENT.breakArmor,
             {
-                triggerUnit = bean.fromUnit,
-                targetUnit = bean.toUnit,
-                breakType = bean.breakArmorType
+                triggerUnit = options.sourceUnit,
+                targetUnit = options.targetUnit,
+                breakType = options.breakArmorType
             }
         )
         -- @触发被无视防御事件
         hevent.triggerEvent(
-            bean.toUnit,
+            options.targetUnit,
             CONST_EVENT.beBreakArmor,
             {
-                triggerUnit = bean.toUnit,
-                sourceUnit = bean.fromUnit,
-                breakType = bean.breakArmorType
+                triggerUnit = options.targetUnit,
+                sourceUnit = options.sourceUnit,
+                breakType = options.breakArmorType
             }
         )
     end
     -- 如果遇到真实伤害，无法回避
-    if (table.includes(CONST_DAMAGE_TYPE.real, bean.damageType) == true) then
-        toUnitAvoid = -99999
+    if (table.includes(CONST_DAMAGE_TYPE.real, options.damageType) == true) then
+        targetUnitAvoid = -99999
         realDamageString = realDamageString .. CONST_DAMAGE_TYPE_MAP.real.label
         realDamageStringColor = CONST_DAMAGE_TYPE_MAP.real.color
     end
     -- 如果遇到绝对伤害，无法回避，无视无敌
-    if (table.includes(CONST_DAMAGE_TYPE.absolute, bean.damageType) == true) then
-        toUnitAvoid = -99999
+    if (table.includes(CONST_DAMAGE_TYPE.absolute, options.damageType) == true) then
+        targetUnitAvoid = -99999
         realDamageString = realDamageString .. CONST_DAMAGE_TYPE_MAP.absolute.label
         realDamageStringColor = CONST_DAMAGE_TYPE_MAP.absolute.color
     end
     -- 计算物理暴击
-    if (table.includes(CONST_DAMAGE_TYPE.physical, bean.damageType) == true) then
+    if (table.includes(CONST_DAMAGE_TYPE.physical, options.damageType) == true) then
         realDamageStringColor = CONST_DAMAGE_TYPE_MAP.physical.color
         if
-            (fromUnitKnockingOdds - toUnitKnockingOppose) > 0 and
-                math.random(1, 100) <= (fromUnitKnockingOdds - toUnitKnockingOppose)
+            (sourceUnitKnockingOdds - targetUnitKnockingOppose) > 0 and
+                math.random(1, 100) <= (sourceUnitKnockingOdds - targetUnitKnockingOppose)
          then
-            realDamagePercent = realDamagePercent + fromUnitHuntPercent.physical * fromUnitKnocking * 0.01
-            toUnitAvoid = -100 -- 触发暴击，回避减100%
+            realDamagePercent = realDamagePercent + sourceUnitHuntPercent.physical * sourceUnitKnocking * 0.01
+            targetUnitAvoid = -100 -- 触发暴击，回避减100%
             isKnocking = true
         end
     end
     -- 计算魔法暴击
-    if (table.includes(CONST_DAMAGE_TYPE.magic, bean.damageType) == true) then
+    if (table.includes(CONST_DAMAGE_TYPE.magic, options.damageType) == true) then
         realDamageStringColor = CONST_DAMAGE_TYPE_MAP.magic.color
         if
-            (fromUnitViolenceOdds - toUnitViolenceOppose) > 0 and
-                math.random(1, 100) <= (fromUnitViolenceOdds - toUnitViolenceOppose)
+            (sourceUnitViolenceOdds - targetUnitViolenceOppose) > 0 and
+                math.random(1, 100) <= (sourceUnitViolenceOdds - targetUnitViolenceOppose)
          then
-            realDamagePercent = realDamagePercent + fromUnitHuntPercent.magic * fromUnitViolence * 0.01
-            toUnitAvoid = -100 -- 触发暴击，回避减100%
+            realDamagePercent = realDamagePercent + sourceUnitHuntPercent.magic * sourceUnitViolence * 0.01
+            targetUnitAvoid = -100 -- 触发暴击，回避减100%
             isViolence = true
         end
     end
     -- 计算回避 X 命中
     if
-        (bean.damageKind == CONST_DAMAGE_KIND.attack and toUnitAvoid - fromUnitAim > 0 and
-            math.random(1, 100) <= toUnitAvoid - fromUnitAim)
+        (options.damageKind == CONST_DAMAGE_KIND.attack and targetUnitAvoid - sourceUnitAim > 0 and
+            math.random(1, 100) <= targetUnitAvoid - sourceUnitAim)
      then
         isAvoid = true
         realDamage = 0
-        htextTag.style(htextTag.create2Unit(bean.toUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
+        htextTag.style(htextTag.create2Unit(options.targetUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
         -- @触发回避事件
         hevent.triggerEvent(
-            bean.toUnit,
+            options.targetUnit,
             CONST_EVENT.avoid,
             {
-                triggerUnit = bean.toUnit,
-                attacker = bean.fromUnit
+                triggerUnit = options.targetUnit,
+                attacker = options.sourceUnit
             }
         )
         -- @触发被回避事件
         hevent.triggerEvent(
-            bean.fromUnit,
+            options.sourceUnit,
             CONST_EVENT.beAvoid,
             {
-                triggerUnit = bean.fromUnit,
-                attacker = bean.fromUnit,
-                targetUnit = bean.toUnit
+                triggerUnit = options.sourceUnit,
+                attacker = options.sourceUnit,
+                targetUnit = options.targetUnit
             }
         )
     end
     -- 计算自然属性
     if (realDamage > 0) then
         -- 自然属性
-        local fromUnitNatural = {}
+        local sourceUnitNatural = {}
         for k, natural in pairs(CONST_DAMAGE_TYPE_NATURE) do
-            fromUnitNatural[natural] =
-                hattr.get(bean.fromUnit, "natural_" .. natural) -
-                hattr.get(bean.toUnit, "natural_" .. natural .. "_oppose") +
+            sourceUnitNatural[natural] =
+                hattr.get(options.sourceUnit, "natural_" .. natural) -
+                hattr.get(options.targetUnit, "natural_" .. natural .. "_oppose") +
                 10
-            if (fromUnitNatural[natural] < -100) then
-                fromUnitNatural[natural] = -100
+            if (sourceUnitNatural[natural] < -100) then
+                sourceUnitNatural[natural] = -100
             end
-            if (table.includes(natural, bean.damageType) and fromUnitNatural[natural] ~= 0) then
-                realDamagePercent = realDamagePercent + fromUnitNatural[natural] * 0.01
+            if (table.includes(natural, options.damageType) and sourceUnitNatural[natural] ~= 0) then
+                realDamagePercent = realDamagePercent + sourceUnitNatural[natural] * 0.01
                 realDamageString = realDamageString .. CONST_DAMAGE_TYPE_MAP[natural].label
                 realDamageStringColor = CONST_DAMAGE_TYPE_MAP[natural].color
             end
         end
     end
     -- 计算伤害增幅
-    if (realDamage > 0 and fromUnitHuntAmplitude ~= 0) then
-        realDamagePercent = realDamagePercent + fromUnitHuntAmplitude * 0.01
+    if (realDamage > 0 and sourceUnitHuntAmplitude ~= 0) then
+        realDamagePercent = realDamagePercent + sourceUnitHuntAmplitude * 0.01
     end
     -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (table.includes(CONST_DAMAGE_TYPE.physical, bean.damageType) and toUnitDefend ~= 0) then
-        toUnitDefend = toUnitDefend * fromUnitHuntPercent.physical
+    if (table.includes(CONST_DAMAGE_TYPE.physical, options.damageType) and targetUnitDefend ~= 0) then
+        targetUnitDefend = targetUnitDefend * sourceUnitHuntPercent.physical
         -- 计算护甲
-        if (toUnitDefend > 0) then
-            realDamagePercent = realDamagePercent - toUnitDefend / (toUnitDefend + 200)
+        if (targetUnitDefend > 0) then
+            realDamagePercent = realDamagePercent - targetUnitDefend / (targetUnitDefend + 200)
         else
-            realDamagePercent = realDamagePercent + (-toUnitDefend / (-toUnitDefend + 100))
+            realDamagePercent = realDamagePercent + (-targetUnitDefend / (-targetUnitDefend + 100))
         end
     end
     -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
-    if (table.includes(CONST_DAMAGE_TYPE.magic, bean.damageType) and toUnitResistance ~= 0) then
-        toUnitResistance = toUnitResistance * fromUnitHuntPercent.magic
+    if (table.includes(CONST_DAMAGE_TYPE.magic, options.damageType) and targetUnitResistance ~= 0) then
+        targetUnitResistance = targetUnitResistance * sourceUnitHuntPercent.magic
         -- 计算魔抗
-        if (toUnitResistance ~= 0) then
-            if (toUnitResistance >= 100) then
-                realDamagePercent = realDamagePercent * fromUnitHuntPercent.physical
+        if (targetUnitResistance ~= 0) then
+            if (targetUnitResistance >= 100) then
+                realDamagePercent = realDamagePercent * sourceUnitHuntPercent.physical
             else
-                realDamagePercent = realDamagePercent - toUnitResistance * 0.01
+                realDamagePercent = realDamagePercent - targetUnitResistance * 0.01
             end
         end
     end
@@ -1116,21 +1116,21 @@ hattr.huntUnit = function(bean)
     realDamage = realDamage * (1 + realDamagePercent)
 
     -- 计算韧性
-    local toUnitToughness = hattr.get(bean.toUnit, "toughness")
-    if (toUnitToughness > 0) then
-        if ((realDamage - toUnitToughness) < realDamage * 0.1) then
+    local targetUnitToughness = hattr.get(options.targetUnit, "toughness")
+    if (targetUnitToughness > 0) then
+        if ((realDamage - targetUnitToughness) < realDamage * 0.1) then
             realDamage = realDamage * 0.1
             --@触发极限韧性抵抗事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.limitToughness,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit
                 }
             )
         else
-            realDamage = realDamage - toUnitToughness
+            realDamage = realDamage - targetUnitToughness
         end
     end
     -- 上面都是先行计算 ------------------
@@ -1140,56 +1140,56 @@ hattr.huntUnit = function(bean)
         if (isKnocking) then
             --@触发物理暴击事件
             hevent.triggerEvent(
-                bean.fromUnit,
+                options.sourceUnit,
                 CONST_EVENT.knocking,
                 {
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
+                    triggerUnit = options.sourceUnit,
+                    targetUnit = options.targetUnit,
                     damage = realDamage,
-                    value = fromUnitKnocking,
-                    percent = fromUnitKnockingOdds
+                    value = sourceUnitKnocking,
+                    percent = sourceUnitKnockingOdds
                 }
             )
             --@触发被物理暴击事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.beKnocking,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
                     damage = realDamage,
-                    value = fromUnitKnocking,
-                    percent = fromUnitKnockingOdds
+                    value = sourceUnitKnocking,
+                    percent = sourceUnitKnockingOdds
                 }
             )
-            heffect.toUnit("war3mapImported\\eff_crit.mdl", bean.toUnit, 0)
+            heffect.targetUnit("war3mapImported\\eff_crit.mdl", options.targetUnit, 0)
         end
         if (isViolence) then
             --@触发魔法暴击事件
             hevent.triggerEvent(
-                bean.fromUnit,
+                options.sourceUnit,
                 CONST_EVENT.violence,
                 {
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
+                    triggerUnit = options.sourceUnit,
+                    targetUnit = options.targetUnit,
                     damage = realDamage,
-                    value = fromUnitViolence,
-                    percent = fromUnitViolenceOdds
+                    value = sourceUnitViolence,
+                    percent = sourceUnitViolenceOdds
                 }
             )
             --@触发被魔法暴击事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.beViolence,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
                     damage = realDamage,
-                    value = fromUnitViolence,
-                    percent = fromUnitViolenceOdds
+                    value = sourceUnitViolence,
+                    percent = sourceUnitViolenceOdds
                 }
             )
-            heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", bean.toUnit, 0)
+            heffect.targetUnit("war3mapImported\\eff_demon_explosion.mdl", options.targetUnit, 0)
         end
         -- 暴击文本加持
         if (isKnocking and isViolence) then
@@ -1205,30 +1205,30 @@ hattr.huntUnit = function(bean)
         -- 造成伤害
         hskill.damage(
             {
-                sourceUnit = bean.fromUnit,
-                targetUnit = bean.toUnit,
+                sourceUnit = options.sourceUnit,
+                targetUnit = options.targetUnit,
                 damage = realDamage,
                 damageString = realDamageString,
                 damageStringColor = realDamageStringColor,
-                damageKind = bean.damageKind,
-                damageType = bean.damageType,
-                effect = bean.effect
+                damageKind = options.damageKind,
+                damageType = options.damageType,
+                effect = options.effect
             }
         )
         -- 分裂
-        local split = hattr.get(bean.fromUnit, "split") - hattr.get(bean.toUnit, "split_oppose")
-        local split_range = hattr.get(bean.fromUnit, "split_range")
-        if (bean.damageKind == CONST_DAMAGE_KIND.attack and split > 0) then
+        local split = hattr.get(options.sourceUnit, "split") - hattr.get(options.targetUnit, "split_oppose")
+        local split_range = hattr.get(options.sourceUnit, "split_range")
+        if (options.damageKind == CONST_DAMAGE_KIND.attack and split > 0) then
             local g =
                 hgroup.createByUnit(
-                bean.toUnit,
+                options.targetUnit,
                 split_range,
                 function()
                     local flag = true
                     if (his.death(cj.GetFilterUnit())) then
                         flag = false
                     end
-                    if (his.ally(cj.GetFilterUnit(), bean.fromUnit)) then
+                    if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
                         flag = false
                     end
                     if (his.building(cj.GetFilterUnit())) then
@@ -1237,16 +1237,16 @@ hattr.huntUnit = function(bean)
                     return flag
                 end
             )
-            heffect.toUnit("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", bean.toUnit, 0)
+            heffect.targetUnit("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", options.targetUnit, 0)
             cj.ForGroup(
                 g,
                 function()
                     local u = cj.GetEnumUnit()
-                    if (u ~= bean.toUnit) then
+                    if (u ~= options.targetUnit) then
                         -- 造成伤害
                         hskill.damage(
                             {
-                                sourceUnit = bean.fromUnit,
+                                sourceUnit = options.sourceUnit,
                                 targetUnit = u,
                                 damage = realDamage * split * 0.01,
                                 damageString = "分裂",
@@ -1263,11 +1263,11 @@ hattr.huntUnit = function(bean)
             cj.DestroyGroup(g)
             -- @触发分裂事件
             hevent.triggerEvent(
-                bean.fromUnit,
+                options.sourceUnit,
                 CONST_EVENT.split,
                 {
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
+                    triggerUnit = options.sourceUnit,
+                    targetUnit = options.targetUnit,
                     damage = realDamage * split * 0.01,
                     range = split_range,
                     percent = split
@@ -1275,11 +1275,11 @@ hattr.huntUnit = function(bean)
             )
             -- @触发被分裂事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.beSpilt,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
                     damage = realDamage * split * 0.01,
                     range = split_range,
                     percent = split
@@ -1287,33 +1287,34 @@ hattr.huntUnit = function(bean)
             )
         end
         -- 吸血
-        local hemophagia = hattr.get(bean.toUnit, "hemophagia") - hattr.get(bean.toUnit, "hemophagia_oppose")
-        if (bean.damageKind == CONST_DAMAGE_KIND.attack and hemophagia > 0) then
-            hunit.addLife(bean.fromUnit, realDamage * hemophagia * 0.01)
-            heffect.toUnit(
+        local hemophagia =
+            hattr.get(options.targetUnit, "hemophagia") - hattr.get(options.targetUnit, "hemophagia_oppose")
+        if (options.damageKind == CONST_DAMAGE_KIND.attack and hemophagia > 0) then
+            hunit.addLife(options.sourceUnit, realDamage * hemophagia * 0.01)
+            heffect.targetUnit(
                 "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
-                bean.fromUnit,
+                options.sourceUnit,
                 "origin",
                 1.00
             )
             -- @触发吸血事件
             hevent.triggerEvent(
-                bean.fromUnit,
+                options.sourceUnit,
                 CONST_EVENT.hemophagia,
                 {
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
+                    triggerUnit = options.sourceUnit,
+                    targetUnit = options.targetUnit,
                     damage = realDamage * hemophagia * 0.01,
                     percent = hemophagia
                 }
             )
             -- @触发被吸血事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.beHemophagia,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
                     damage = realDamage * hemophagia * 0.01,
                     percent = hemophagia
                 }
@@ -1321,33 +1322,33 @@ hattr.huntUnit = function(bean)
         end
         -- 技能吸血
         local hemophagia_skill =
-            hattr.get(bean.toUnit, "hemophagia_skill") - hattr.get(bean.toUnit, "hemophagia_skill_oppose")
-        if (bean.damageKind == CONST_DAMAGE_KIND.skill and hemophagia_skill > 0) then
-            hunit.addLife(bean.fromUnit, realDamage * hemophagia_skill * 0.01)
-            heffect.toUnit(
+            hattr.get(options.targetUnit, "hemophagia_skill") - hattr.get(options.targetUnit, "hemophagia_skill_oppose")
+        if (options.damageKind == CONST_DAMAGE_KIND.skill and hemophagia_skill > 0) then
+            hunit.addLife(options.sourceUnit, realDamage * hemophagia_skill * 0.01)
+            heffect.targetUnit(
                 "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
-                bean.fromUnit,
+                options.sourceUnit,
                 "origin",
                 1.80
             )
             -- @触发技能吸血事件
             hevent.triggerEvent(
-                bean.fromUnit,
+                options.sourceUnit,
                 CONST_EVENT.skillHemophagia,
                 {
-                    triggerUnit = bean.fromUnit,
-                    targetUnit = bean.toUnit,
+                    triggerUnit = options.sourceUnit,
+                    targetUnit = options.targetUnit,
                     damage = realDamage * hemophagia_skill * 0.01,
                     percent = hemophagia_skill
                 }
             )
             -- @触发被技能吸血事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.beSkillHemophagia,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
                     damage = realDamage * hemophagia_skill * 0.01,
                     percent = hemophagia_skill
                 }
@@ -1356,29 +1357,29 @@ hattr.huntUnit = function(bean)
         -- 硬直
         local punish_during = 5.00
         if
-            (realDamage > 3 and his.alive(bean.toUnit) and his.punish(bean.toUnit) == false and
-                hunit.isOpenPunish(bean.toUnit))
+            (realDamage > 3 and his.alive(options.targetUnit) and his.punish(options.targetUnit) == false and
+                hunit.isOpenPunish(options.targetUnit))
          then
             hattr.set(
-                bean.toUnit,
+                options.targetUnit,
                 0,
                 {
                     punish_current = "-" .. realDamage
                 }
             )
-            if (hattr.get(bean.toUnit, "punish_current") <= 0) then
-                his.set(bean.toUnit, "isPunishing", true)
+            if (hattr.get(options.targetUnit, "punish_current") <= 0) then
+                his.set(options.targetUnit, "isPunishing", true)
                 htime.setTimeout(
                     punish_during + 1.00,
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        his.set(bean.toUnit, "isPunishing", false)
+                        his.set(options.targetUnit, "isPunishing", false)
                     end
                 )
             end
-            local punishEffectAttackSpeed = (100 + hattr.get(bean.toUnit, "attack_speed")) * punishEffectRatio
-            local punishEffectMove = hattr.get(bean.toUnit, "move") * punishEffectRatio
+            local punishEffectAttackSpeed = (100 + hattr.get(options.targetUnit, "attack_speed")) * punishEffectRatio
+            local punishEffectMove = hattr.get(options.targetUnit, "move") * punishEffectRatio
             if (punishEffectAttackSpeed < 1) then
                 punishEffectAttackSpeed = 1.00
             end
@@ -1386,7 +1387,7 @@ hattr.huntUnit = function(bean)
                 punishEffectMove = 1.00
             end
             hattr.set(
-                bean.toUnit,
+                options.targetUnit,
                 punish_during,
                 {
                     attack_speed = "-" .. punishEffectAttackSpeed,
@@ -1394,32 +1395,32 @@ hattr.huntUnit = function(bean)
                 }
             )
             htextTag.style(
-                htextTag.create2Unit(bean.toUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00),
+                htextTag.create2Unit(options.targetUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00),
                 "scale",
                 0,
                 0
             )
             -- @触发硬直事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.heavy,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
                     percent = punishEffectRatio * 100,
                     during = punish_during
                 }
             )
         end
         -- 反射
-        local toUnitHuntRebound =
-            hattr.get(bean.toUnit, "hunt_rebound") - hattr.get(bean.fromUnit, "hunt_rebound_oppose")
-        if (toUnitHuntRebound > 0) then
-            hunit.subCurLife(bean.fromUnit, realDamage * toUnitHuntRebound * 0.01)
+        local targetUnitHuntRebound =
+            hattr.get(options.targetUnit, "hunt_rebound") - hattr.get(options.sourceUnit, "hunt_rebound_oppose")
+        if (targetUnitHuntRebound > 0) then
+            hunit.subCurLife(options.sourceUnit, realDamage * targetUnitHuntRebound * 0.01)
             htextTag.style(
                 htextTag.create2Unit(
-                    bean.fromUnit,
-                    "反伤" .. (realDamage * toUnitHuntRebound * 0.01),
+                    options.sourceUnit,
+                    "反伤" .. (realDamage * targetUnitHuntRebound * 0.01),
                     10.00,
                     "f8aaeb",
                     10,
@@ -1432,12 +1433,12 @@ hattr.huntUnit = function(bean)
             )
             -- @触发反伤事件
             hevent.triggerEvent(
-                bean.toUnit,
+                options.targetUnit,
                 CONST_EVENT.rebound,
                 {
-                    triggerUnit = bean.toUnit,
-                    sourceUnit = bean.fromUnit,
-                    damage = realDamage * toUnitHuntRebound * 0.01
+                    triggerUnit = options.targetUnit,
+                    sourceUnit = options.sourceUnit,
+                    damage = realDamage * targetUnitHuntRebound * 0.01
                 }
             )
         end
@@ -1445,20 +1446,20 @@ hattr.huntUnit = function(bean)
         -- buff/debuff
         local buff
         local debuff
-        if (bean.damageKind == CONST_DAMAGE_KIND.attack) then
-            buff = hattr.get(bean.fromUnit, "attack_buff")
-            debuff = hattr.get(bean.fromUnit, "attack_debuff")
-        elseif (bean.damageKind == CONST_DAMAGE_KIND.skill) then
-            buff = hattr.get(bean.fromUnit, "skill_buff")
-            debuff = hattr.get(bean.fromUnit, "skill_debuff")
+        if (options.damageKind == CONST_DAMAGE_KIND.attack) then
+            buff = hattr.get(options.sourceUnit, "attack_buff")
+            debuff = hattr.get(options.sourceUnit, "attack_debuff")
+        elseif (options.damageKind == CONST_DAMAGE_KIND.skill) then
+            buff = hattr.get(options.sourceUnit, "skill_buff")
+            debuff = hattr.get(options.sourceUnit, "skill_debuff")
         end
         if (buff ~= nil) then
             for _, etc in pairs(buff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(bean.fromUnit, b.during, {[b.attr] = "+" .. b.val})
+                    hattr.set(options.sourceUnit, b.during, {[b.attr] = "+" .. b.val})
                     if (type(b.effect) == "string" and string.len(b.effect) > 0) then
-                        heffect.bindUnit(b.effect, bean.fromUnit, "origin", b.during)
+                        heffect.bindUnit(b.effect, options.sourceUnit, "origin", b.during)
                     end
                 end
             end
@@ -1467,19 +1468,19 @@ hattr.huntUnit = function(bean)
             for _, etc in pairs(debuff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(bean.toUnit, b.during, {[b.attr] = "-" .. b.val})
+                    hattr.set(options.targetUnit, b.during, {[b.attr] = "-" .. b.val})
                     if (type(b.effect) == "string" and string.len(b.effect) > 0) then
-                        heffect.bindUnit(b.effect, bean.toUnit, "origin", b.during)
+                        heffect.bindUnit(b.effect, options.targetUnit, "origin", b.during)
                     end
                 end
             end
         end
         -- effect
         local effect
-        if (bean.damageKind == CONST_DAMAGE_KIND.attack) then
-            effect = hattr.get(bean.fromUnit, "attack_effect")
-        elseif (bean.damageKind == CONST_DAMAGE_KIND.skill) then
-            effect = hattr.get(bean.fromUnit, "skill_effect")
+        if (options.damageKind == CONST_DAMAGE_KIND.attack) then
+            effect = hattr.get(options.sourceUnit, "attack_effect")
+        elseif (options.damageKind == CONST_DAMAGE_KIND.skill) then
+            effect = hattr.get(options.sourceUnit, "skill_effect")
         end
         if (effect ~= nil) then
             for _, etc in pairs(effect) do
@@ -1491,10 +1492,10 @@ hattr.huntUnit = function(bean)
                         --打断
                         hskill.broken(
                             {
-                                whichUnit = bean.toUnit,
+                                whichUnit = options.targetUnit,
                                 odds = b.odds,
                                 damage = b.val,
-                                sourceUnit = bean.fromUnit,
+                                sourceUnit = options.sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
@@ -1504,11 +1505,11 @@ hattr.huntUnit = function(bean)
                         --眩晕
                         hskill.swim(
                             {
-                                whichUnit = bean.toUnit,
+                                whichUnit = options.targetUnit,
                                 odds = b.odds,
                                 damage = b.val,
                                 during = b.during,
-                                sourceUnit = bean.fromUnit,
+                                sourceUnit = options.sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
@@ -1518,11 +1519,11 @@ hattr.huntUnit = function(bean)
                         --沉默
                         hskill.silent(
                             {
-                                whichUnit = bean.toUnit,
+                                whichUnit = options.targetUnit,
                                 odds = b.odds,
                                 damage = b.val,
                                 during = b.during,
-                                sourceUnit = bean.fromUnit,
+                                sourceUnit = options.sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
@@ -1532,11 +1533,11 @@ hattr.huntUnit = function(bean)
                         --缴械
                         hskill.unarm(
                             {
-                                whichUnit = bean.toUnit,
+                                whichUnit = options.targetUnit,
                                 odds = b.odds,
                                 damage = b.val,
                                 during = b.during,
-                                sourceUnit = bean.fromUnit,
+                                sourceUnit = options.sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
@@ -1546,11 +1547,11 @@ hattr.huntUnit = function(bean)
                         --缚足
                         hskill.fetter(
                             {
-                                whichUnit = bean.toUnit,
+                                whichUnit = options.targetUnit,
                                 odds = b.odds,
                                 damage = b.val,
                                 during = b.during,
-                                sourceUnit = bean.fromUnit,
+                                sourceUnit = options.sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.real}
@@ -1563,8 +1564,8 @@ hattr.huntUnit = function(bean)
                                 odds = b.odds,
                                 damage = b.val,
                                 range = b.range,
-                                whichUnit = bean.toUnit,
-                                sourceUnit = bean.fromUnit,
+                                whichUnit = options.targetUnit,
+                                sourceUnit = options.sourceUnit,
                                 effect = b.effect,
                                 effectSingle = b.effectSingle,
                                 damageKind = CONST_DAMAGE_KIND.special,
@@ -1583,9 +1584,9 @@ hattr.huntUnit = function(bean)
                                 range = b.range or 500,
                                 effect = b.effect,
                                 isRepeat = false,
-                                whichUnit = bean.toUnit,
-                                prevUnit = bean.fromUnit,
-                                sourceUnit = bean.fromUnit,
+                                whichUnit = options.targetUnit,
+                                prevUnit = options.sourceUnit,
+                                sourceUnit = options.sourceUnit,
                                 damageKind = CONST_DAMAGE_KIND.special,
                                 damageType = {CONST_DAMAGE_TYPE.thunder}
                             }
@@ -1596,8 +1597,8 @@ hattr.huntUnit = function(bean)
                             {
                                 odds = b.odds,
                                 damage = b.val,
-                                whichUnit = bean.toUnit,
-                                sourceUnit = bean.fromUnit,
+                                whichUnit = options.targetUnit,
+                                sourceUnit = options.sourceUnit,
                                 distance = b.distance,
                                 high = b.high,
                                 during = b.during,
