@@ -29,7 +29,7 @@ htextTag.create = function(msg, size, color, opacity, during)
         opacity = opacity,
         during = during
     }
-    cj.SetTextTagText(ttg, s, size * 0.023 / 10)
+    cj.SetTextTagText(ttg, msg, size * 0.023 / 10)
     cj.SetTextTagColor(ttg, 255, 255, 255, math.floor(255 * opacity))
     if (during == 0) then
         cj.SetTextTagPermanent(ttg, true)
