@@ -210,10 +210,10 @@ hskill.invisible = function(whichUnit, during, transition, effect)
         return
     end
     transition = transition or 0
+    if (effect ~= nil) then
+        heffect.toUnit(effect, whichUnit, 0)
+    end
     if (transition > 0) then
-        if (effect ~= nil) then
-            heffect.toUnit(effect, whichUnit, 0)
-        end
         htime.setTimeout(
             transition,
             function(t, td)
@@ -233,10 +233,10 @@ hskill.visible = function(whichUnit, during, transition, effect)
         return
     end
     transition = transition or 0
+    if (effect ~= nil) then
+        heffect.toUnit(effect, whichUnit, 0)
+    end
     if (transition > 0) then
-        if (effect ~= nil) then
-            heffect.toUnit(effect, whichUnit, 0)
-        end
         htime.setTimeout(
             transition,
             function(t, td)
