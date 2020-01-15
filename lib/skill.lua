@@ -222,6 +222,8 @@ hskill.invisible = function(whichUnit, during, transition, effect)
                 hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
             end
         )
+    else
+        hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
     end
 end
 
@@ -243,6 +245,8 @@ hskill.visible = function(whichUnit, during, transition, effect)
                 hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
             end
         )
+    else
+        hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
     end
 end
 
