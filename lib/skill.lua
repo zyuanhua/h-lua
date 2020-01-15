@@ -1949,6 +1949,60 @@ hskill.leapPow = function(options)
 end
 
 --[[
+    剃[选区型]，参数与leap一致，额外有两个参数，设置范围
+    * 需要注意一点的是，pow会自动将对单位跟踪的效果转为对坐标系(不建议使用unit)
+    options = {
+        targetRange = 0, --以目标点为中心的选区范围
+        hskill.leap.options
+    }
+]]
+hskill.leapRange = function(options)
+    local targetRange = options.targetRange or 0
+    if (targetRange <= 0) then
+        print_err("leapRange: -targetRange")
+        return
+    end
+    if (options.sourceUnit == nil) then
+        print_err("leapRange: -sourceUnit")
+        return
+    end
+    if (type(options.filter) ~= "function") then
+        print_err("leapRange: -filter")
+        return
+    end
+    if (options.targetUnit == nil and options.x == nil and options.y == nil) then
+        print_err("leapRange: -target")
+        return
+    end
+    local filter = options.filter
+    local x, y
+    if (options.targetUnit ~= nil) then
+        x = cj.GetUnitX(options.targetUnit)
+        y = cj.GetUnitY(options.targetUnit)
+        options.x = nil
+        options.y = nil
+    else
+        x = options.x
+        y = options.y
+    end
+    local g = hgroup.createByXY(x, y, targetRange, filter)
+    cj.ForGroup(
+        g,
+        function()
+            local eu = cj.GetEnumUnit()
+            local tmp = table.clone(options)
+            if (options.targetUnit ~= nil) then
+                tmp.targetUnit = eu
+            else
+                tmp.x = cj.GetUnitX(eu)
+                tmp.y = cj.GetUnitY(eu)
+            end
+            hskill.leap(tmp)
+        end
+    )
+end
+
+--[[
     变身[参考 h-lua变身技能模板]
     * modelFrom 技能模板 参考 h-lua SLK
     * modelTo 技能模板 参考 h-lua SLK
