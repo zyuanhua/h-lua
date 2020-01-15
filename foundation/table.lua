@@ -1,4 +1,3 @@
-
 --获取一个table的正确长度
 table.len = function(table)
     local len = 0
@@ -60,6 +59,9 @@ end
 --在数组内
 table.includes = function(val, arr)
     local isin = false
+    if (val == nil or #arr <= 0) then
+        return isin
+    end
     for k, v in pairs(arr) do
         if (v == val) then
             isin = true

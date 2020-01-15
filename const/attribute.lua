@@ -5,7 +5,7 @@ CONST_ATTR = {
     mana = "魔法",
     move = "移动",
     defend = "护甲",
-    attack_hunt_type = "攻击附魔",
+    attack_damage_type = "攻击伤害类型",
     physical = "物理",
     magic = "魔法",
     real = "真实",
@@ -62,8 +62,9 @@ CONST_ATTR = {
     invincible = "无敌",
     weight = "负重",
     weight_current = "当前负重",
-    hunt_amplitude = "伤害增幅",
-    hunt_rebound = "反弹伤害",
+    damage_amplitude = "伤害增幅",
+    damage_rebound = "反弹伤害",
+    damage_rebound_oppose = "反伤抵抗",
     cure = "治疗",
     knocking_oppose = "物理暴击抵抗",
     violence_oppose = "魔法暴击抵抗",
@@ -71,7 +72,6 @@ CONST_ATTR = {
     hemophagia_skill_oppose = "技能吸血抵抗",
     split_oppose = "分裂抵抗",
     punish_oppose = "僵直抵抗",
-    hunt_rebound_oppose = "反伤抵抗",
     swim_oppose = "眩晕抵抗",
     broken_oppose = "打断抵抗",
     silent_oppose = "沉默抵抗",
@@ -150,7 +150,7 @@ const_getItemDesc = function(attr)
             "knocking_odds", "violence_odds",
             "hemophagia", "hemophagia_skill",
             "split", "luck", "invincible",
-            "hunt_amplitude", "hunt_rebound", "cure"
+            "damage_amplitude", "damage_rebound", "cure"
         })) then
             v = v .. "%"
         end
@@ -163,7 +163,7 @@ const_getItemDesc = function(attr)
         str = str .. CONST_ATTR[k] .. "："
         if (type(v) == "table") then
             local temp = ""
-            if (table.includes(k, { "attack_hunt_type" })) then
+            if (table.includes(k, { "attack_damage_type" })) then
                 for _, vv in ipairs(v) do
                     if (temp == "") then
                         temp = temp .. CONST_ATTR[vv]
@@ -206,7 +206,7 @@ const_getItemUbertip = function(attr)
         str = str .. CONST_ATTR[k] .. ":"
         if (type(v) == "table") then
             local temp = ""
-            if (k == "attack_hunt_type") then
+            if (k == "attack_damage_type") then
                 for _, vv in ipairs(v) do
                     if (temp == "") then
                         temp = temp .. CONST_ATTR[vv]

@@ -54,7 +54,7 @@ hLuaStart = {
                             htime.delTimer(t)
                             hattr.set(targetUnit, 0, {life = "-" .. damage})
                             hunit.setCurLife(targetUnit, oldLife)
-                            hattr.huntUnit(
+                            hskill.damage(
                                 {
                                     sourceUnit = sourceUnit,
                                     targetUnit = targetUnit,

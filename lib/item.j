@@ -2756,16 +2756,16 @@ if(weightCurrent!=0)then
 endif
 if(huntAmplitude!=0)then
     if(isPlus == true)then
-        call hattr.addHuntAmplitude(whichUnit,huntAmplitude,0)
+        call hattr.addDamageAmplitude(whichUnit,huntAmplitude,0)
     else
-        call hattr.subHuntAmplitude(whichUnit,huntAmplitude,0)
+        call hattr.subDamageAmplitude(whichUnit,huntAmplitude,0)
     endif
 endif
 if(huntRebound!=0)then
     if(isPlus == true)then
-        call hattr.addHuntRebound(whichUnit,huntRebound,0)
+        call hattr.addDamageRebound(whichUnit,huntRebound,0)
     else
-        call hattr.subHuntRebound(whichUnit,huntRebound,0)
+        call hattr.subDamageRebound(whichUnit,huntRebound,0)
     endif
 endif
 if(cure!=0)then
@@ -2812,9 +2812,9 @@ if(punishOppose!=0)then
 endif
 if(huntReboundOppose!=0)then
     if(isPlus == true)then
-        call hattr.addHuntReboundOppose(whichUnit,huntReboundOppose,0)
+        call hattr.addDamageReboundOppose(whichUnit,huntReboundOppose,0)
     else
-        call hattr.subHuntReboundOppose(whichUnit,huntReboundOppose,0)
+        call hattr.subDamageReboundOppose(whichUnit,huntReboundOppose,0)
     endif
 endif
 if(swimOppose!=0)then
@@ -3323,16 +3323,16 @@ endif
 endif
  if(huntAmplitudeVal!=0)then
     if(isPlus == true)then
-        call hattrEffect.addHuntAmplitudeVal(whichUnit,huntAmplitudeVal,0)
+        call hattrEffect.addDamageAmplitudeVal(whichUnit,huntAmplitudeVal,0)
     else
-        call hattrEffect.subHuntAmplitudeVal(whichUnit,huntAmplitudeVal,0)
+        call hattrEffect.subDamageAmplitudeVal(whichUnit,huntAmplitudeVal,0)
     endif
 endif
  if(huntAmplitudeDuring!=0)then
     if(isPlus == true)then
-        call hattrEffect.addHuntAmplitudeDuring(whichUnit,huntAmplitudeDuring,0)
+        call hattrEffect.addDamageAmplitudeDuring(whichUnit,huntAmplitudeDuring,0)
     else
-        call hattrEffect.subHuntAmplitudeDuring(whichUnit,huntAmplitudeDuring,0)
+        call hattrEffect.subDamageAmplitudeDuring(whichUnit,huntAmplitudeDuring,0)
     endif
 endif
  if(fireVal!=0)then
