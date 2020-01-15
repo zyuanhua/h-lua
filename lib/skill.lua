@@ -232,6 +232,9 @@ hskill.visible = function(whichUnit, during, transition, effect)
     if (whichUnit == nil or during == nil or during <= 0) then
         return
     end
+    if (his.death(whichUnit)) then
+        return
+    end
     transition = transition or 0
     if (effect ~= nil) then
         heffect.toUnit(effect, whichUnit, 0)
