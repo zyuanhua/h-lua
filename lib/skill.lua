@@ -209,6 +209,9 @@ hskill.invisible = function(whichUnit, during, transition, effect)
     if (whichUnit == nil or during == nil or during <= 0) then
         return
     end
+    if (his.death(whichUnit)) then
+        return
+    end
     transition = transition or 0
     if (effect ~= nil) then
         heffect.toUnit(effect, whichUnit, 0)
@@ -293,7 +296,7 @@ hskill.damage = function(options)
         return
     end
     if (targetUnit == nil) then
-        print_err("hskill.damage -sourceUnit -targetUnit")
+        print_err("hskill.damage -targetUnit")
         print_stack()
         return
     end
@@ -2065,7 +2068,7 @@ end
     * modelTo 技能模板 参考 h-lua SLK
 ]]
 hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
-    heffect.targetUnit(eff, u, 1.5)
+    heffect.toUnit(eff, u, 1.5)
     UnitAddAbility(u, modelTo)
     UnitRemoveAbility(u, modelTo)
     hattr.reRegister(u)
@@ -2074,7 +2077,7 @@ hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            heffect.targetUnit(eff, u, 1.5)
+            heffect.toUnit(eff, u, 1.5)
             UnitAddAbility(u, modelFrom)
             UnitRemoveAbility(u, modelFrom)
             hattr.reRegister(u)

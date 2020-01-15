@@ -1162,7 +1162,7 @@ hattr.huntUnit = function(options)
                     percent = sourceUnitKnockingOdds
                 }
             )
-            heffect.targetUnit("war3mapImported\\eff_crit.mdl", options.targetUnit, 0)
+            heffect.toUnit("war3mapImported\\eff_crit.mdl", options.targetUnit, 0)
         end
         if (isViolence) then
             --@触发魔法暴击事件
@@ -1189,7 +1189,7 @@ hattr.huntUnit = function(options)
                     percent = sourceUnitViolenceOdds
                 }
             )
-            heffect.targetUnit("war3mapImported\\eff_demon_explosion.mdl", options.targetUnit, 0)
+            heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", options.targetUnit, 0)
         end
         -- 暴击文本加持
         if (isKnocking and isViolence) then
@@ -1237,7 +1237,7 @@ hattr.huntUnit = function(options)
                     return flag
                 end
             )
-            heffect.targetUnit("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", options.targetUnit, 0)
+            heffect.toUnit("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", options.targetUnit, 0)
             cj.ForGroup(
                 g,
                 function()
@@ -1291,7 +1291,7 @@ hattr.huntUnit = function(options)
             hattr.get(options.targetUnit, "hemophagia") - hattr.get(options.targetUnit, "hemophagia_oppose")
         if (options.damageKind == CONST_DAMAGE_KIND.attack and hemophagia > 0) then
             hunit.addLife(options.sourceUnit, realDamage * hemophagia * 0.01)
-            heffect.targetUnit(
+            heffect.toUnit(
                 "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
                 options.sourceUnit,
                 "origin",
@@ -1325,7 +1325,7 @@ hattr.huntUnit = function(options)
             hattr.get(options.targetUnit, "hemophagia_skill") - hattr.get(options.targetUnit, "hemophagia_skill_oppose")
         if (options.damageKind == CONST_DAMAGE_KIND.skill and hemophagia_skill > 0) then
             hunit.addLife(options.sourceUnit, realDamage * hemophagia_skill * 0.01)
-            heffect.targetUnit(
+            heffect.toUnit(
                 "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
                 options.sourceUnit,
                 "origin",
