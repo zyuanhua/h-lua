@@ -25,13 +25,15 @@
     ├── slkInit.lua - SLK物编初始化
     ├── ui - UI界面
     ├── const - 静态值
-    │   ├── attritube - 属性KV
-    │   ├── hero - 英雄KV
-    │   ├── hotKey - 热键KV
+    │   ├── attritube - 属性
+    │   ├── event - 事件
+    │   ├── hero - 英雄
+    │   ├── hotKey - 热键
     │   ├── damageKind - 伤害种类
     │   ├── damageType - 伤害类型
-    │   ├── item - 物品KV
-    │   ├── unit - 单位KV
+    │   ├── item - 物品
+    │   ├── playerColor - 玩家颜色
+    │   ├── unit - 单位
     │   └── start.lua - 开始准备
     ├── foundation - 基础文件
     │   ├── foundation - 基础文件
