@@ -213,10 +213,10 @@ hskill.split = function(options)
                     hskill.damage(
                         {
                             sourceUnit = options.sourceUnit,
-                            targetUnit = targetUnit,
+                            targetUnit = eu,
                             damage = splitDamage,
                             damageString = "分裂",
-                            damageStringColor = "15bcef",
+                            damageStringColor = "ff6347",
                             damageKind = damageKind,
                             damageType = damageType,
                             effect = options.effect

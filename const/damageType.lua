@@ -86,7 +86,7 @@ CONST_DAMAGE_TYPE_MAP = {
     },
     dark = {
         label = "暗",
-        color = "383434"
+        color = "696969"
     },
     wood = {
         label = "木",
@@ -98,7 +98,7 @@ CONST_DAMAGE_TYPE_MAP = {
     },
     poison = {
         label = "毒",
-        color = "45f7f7"
+        color = "3cb371"
     },
     ghost = {
         label = "鬼",

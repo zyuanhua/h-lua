@@ -3,8 +3,8 @@ local _damageTtgQty = 0
 local _damageTtg = function(targetUnit, damage, fix, color)
     _damageTtgQty = _damageTtgQty + 1
     local during = 1.0
-    local offx = -0.05 - _damageTtgQty * 0.01
-    local offy = -0.05 - _damageTtgQty * 0.01
+    local offx = -0.05 - _damageTtgQty * 0.015
+    local offy = 0.05 + _damageTtgQty * 0.015
     htextTag.style(
         htextTag.create2Unit(targetUnit, fix .. math.floor(damage), 6.00, color, 1, during, 12.00),
         "toggle",
