@@ -112,7 +112,7 @@ end
         attackUnit = nil, --攻击单位，可选
         isOpenPunish = false, --是否开启硬直系统，可选
         isShadow = false, --是否影子，可选
-        isUnSelectable = false, --是否可鼠标选中，可选
+        isUnSelectable = false, --是否不可鼠标选中，可选
         isPause = false, -- 是否暂停
         isInvulnerable = false, --是否无敌，可选
         isShareSight = false, --是否与所有玩家共享视野，可选

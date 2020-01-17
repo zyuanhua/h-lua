@@ -29,7 +29,7 @@ end
 
 --单位
 -- #token
-local obj = slk.unit.hfoo:new("unit_token")
+local obj = slk.unit.opeo:new("unit_token")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "Token"
 obj.special = 1
@@ -49,13 +49,15 @@ obj.race = "other"
 obj.fused = 0
 obj.sight = 0
 obj.nsight = 0
+obj.Builds = ""
+obj.upgrades = ""
 ?>
 call SaveInteger(hash_hslk, StringHash("unit_token"), 1, '<?=obj:get_id()?>')
 <?
 
 --冲击单位
 -- #token
-local obj = slk.unit.hfoo:new("unit_token_leap")
+local obj = slk.unit.opeo:new("unit_token_leap")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "Token - leap"
 obj.special = 1
@@ -76,13 +78,15 @@ obj.race = "other"
 obj.fused = 0
 obj.sight = 250
 obj.nsight = 250
+obj.Builds = ""
+obj.upgrades = ""
 ?>
 call SaveInteger(hash_hslk, StringHash("unit_token_leap"), 1, '<?=obj:get_id()?>')
 <?
 
 --树
 -- #token
-local obj = slk.unit.hfoo:new("unit_tree")
+local obj = slk.unit.opeo:new("unit_tree")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "Tree"
 obj.special = 1
@@ -101,6 +105,8 @@ obj.race = "other"
 obj.fused = 0
 obj.sight = 0
 obj.nsight = 0
+obj.Builds = ""
+obj.upgrades = ""
 ?>
 call SaveInteger(hash_hslk, StringHash("unit_tree"), 1, '<?=obj:get_id()?>')
 <?
@@ -230,7 +236,7 @@ obj.teamColor = 12
 call SaveInteger(hash_hslk, StringHash("unit_hero_tavern"), 2, '<?=obj:get_id()?>')
 <?
 -- #token
-local obj = slk.unit.hfoo:new("unit_hero_tavern_token")
+local obj = slk.unit.opeo:new("unit_hero_tavern_token")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "英雄系统 选英雄Token"
 obj.special = 1
@@ -250,6 +256,8 @@ obj.race = "other"
 obj.fused = 0
 obj.sight = 1250
 obj.nsight = 1250
+obj.Builds = ""
+obj.upgrades = ""
 ?>
 call SaveInteger(hash_hslk, StringHash("unit_hero_tavern_token"), 3, '<?=obj:get_id()?>')
 <?
@@ -284,6 +292,8 @@ obj.race = "other"
 obj.fused = 0
 obj.sight = 250
 obj.nsight = 250
+obj.Builds = ""
+obj.upgrades = ""
 ?>
 call SaveInteger(hash_hslk, StringHash("unit_hero_death_token"), 4, '<?=obj:get_id()?>')
 <?
@@ -313,7 +323,7 @@ local item_moments = {
 call SaveInteger(hash_hslk, StringHash("item_moment"), -1, <?=#item_moments?>)
 <?
 for k,v in ipairs(item_moments) do
-local obj = slk.unit.hfoo:new("item_moment_" .. v.Name)
+local obj = slk.unit.opeo:new("item_moment_" .. v.Name)
 obj.EditorSuffix = "#h-lua"
 obj.Name = "瞬逝物系统 " .. v.Name
 obj.special = 1
