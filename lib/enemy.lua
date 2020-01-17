@@ -104,6 +104,6 @@ end
 ]]
 henemy.create = function(bean)
     bean.whichPlayer = henemy.getPlayer(bean.qty or 1)
-    bean.isShareSight = hemeny.isShareSight()
+    bean.isShareSight = henemy.isShareSight()
     return hunit.create(bean)
 end

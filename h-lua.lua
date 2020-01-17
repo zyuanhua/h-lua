@@ -56,7 +56,7 @@ require "lib.multiBoard" -- 多面板
 --别称
 hmsg = hmessage
 httg = htextTag
-hattr = hattribute
+hattribute = hattr
 
 -- 最后的初始化run
 -- last init
