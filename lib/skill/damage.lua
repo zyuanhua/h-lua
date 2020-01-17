@@ -31,7 +31,7 @@ end
         damageStringColor = "", --伤害漂浮字颜色
         effect = nil, --伤害特效
         damageKind = "attack", --伤害种类请查看 CONST_DAMAGE_KIND
-        damageType = { "magic", "thunder" }, --伤害类型请查看 CONST_DAMAGE_TYPE
+        damageType = { "common" }, --伤害类型请查看 CONST_DAMAGE_TYPE
         breakArmorType 无视的类型：{ 'defend', 'resistance', 'avoid' } --破防类型请查看 CONST_BREAK_ARMOR_TYPE
     }
 ]]
@@ -65,9 +65,9 @@ hskill.damage = function(options)
             damageType = hattr.get(sourceUnit, "attack_damage_type")
         end
     end
+    --常规伤害判定
     if (damageType == nil or #damageType <= 0) then
-        print_err("DAMAGE -damageType")
-        return
+        damageType = {CONST_DAMAGE_TYPE.common}
     end
     -- 最终伤害
     local lastDamage = 0

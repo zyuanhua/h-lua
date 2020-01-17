@@ -1,6 +1,7 @@
 -- 伤害种类
 
 CONST_DAMAGE_TYPE = {
+    common = "common",
     physical = "physical",
     magic = "magic",
     real = "real",
@@ -39,6 +40,10 @@ CONST_DAMAGE_TYPE_NATURE = {
 }
 
 CONST_DAMAGE_TYPE_MAP = {
+    common = {
+        label = "常规",
+        color = "ffffff"
+    },
     physical = {
         label = "物理",
         color = "d9d9d9"
@@ -49,7 +54,7 @@ CONST_DAMAGE_TYPE_MAP = {
     },
     real = {
         label = "真实",
-        color = "ffffff"
+        color = "ffd700"
     },
     absolute = {
         label = "绝对",

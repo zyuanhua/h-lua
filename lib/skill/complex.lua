@@ -8,7 +8,7 @@
         sourceUnit = nil, --来源单位，必须
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.physical,CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {CONST_DAMAGE_TYPE.physical} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.knocking = function(options)
@@ -31,7 +31,7 @@ hskill.knocking = function(options)
     end
     if (math.random(1, 100) <= odds) then
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-        local damageType = options.damageType or {CONST_DAMAGE_TYPE.physical, CONST_DAMAGE_TYPE.real}
+        local damageType = options.damageType or {CONST_DAMAGE_TYPE.physical}
         local effect = options.effect or "war3mapImported\\eff_crit.mdl"
         heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
@@ -84,7 +84,7 @@ end
         sourceUnit = nil, --来源单位，必须
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {CONST_DAMAGE_TYPE.magic} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.violence = function(options)
@@ -107,7 +107,7 @@ hskill.violence = function(options)
     end
     if (math.random(1, 100) <= odds) then
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-        local damageType = options.damageType or {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.real}
+        local damageType = options.damageType or {CONST_DAMAGE_TYPE.magic}
         local effect = options.effect or "war3mapImported\\eff_demon_explosion.mdl"
         heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
@@ -161,7 +161,7 @@ end
         sourceUnit = nil, --来源单位，必须
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.split = function(options)
@@ -204,7 +204,7 @@ hskill.split = function(options)
         )
         local splitDamage = damage * percent * 0.01
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-        local damageType = options.damageType or {CONST_DAMAGE_TYPE.real}
+        local damageType = options.damageType or {}
         cj.ForGroup(
             g,
             function()
@@ -264,7 +264,7 @@ end
         sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.broken = function(options)
@@ -279,7 +279,7 @@ hskill.broken = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
+    local damageType = options.sourceUnit or {}
     --计算抵抗
     local oppose = hattr.get(u, "broken_oppose")
     odds = odds - oppose --(%)
@@ -356,7 +356,7 @@ end
         sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.swim = function(options)
@@ -372,7 +372,7 @@ hskill.swim = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
+    local damageType = options.sourceUnit or {}
     --计算抵抗
     local oppose = hattr.get(u, "swim_oppose")
     odds = odds - oppose --(%)
@@ -493,7 +493,7 @@ end
         sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.silent = function(options)
@@ -509,7 +509,7 @@ hskill.silent = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
+    local damageType = options.sourceUnit or {}
     --计算抵抗
     local oppose = hattr.get(u, "silent_oppose")
     odds = odds - oppose --(%)
@@ -624,7 +624,7 @@ end
         sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.unarm = function(options)
@@ -640,7 +640,7 @@ hskill.unarm = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
+    local damageType = options.sourceUnit or {}
     --计算抵抗
     local oppose = hattr.get(u, "unarm_oppose")
     odds = odds - oppose --(%)
@@ -755,7 +755,7 @@ end
         sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.fetter = function(options)
@@ -771,7 +771,7 @@ hskill.fetter = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {CONST_DAMAGE_TYPE.real}
+    local damageType = options.sourceUnit or {}
     --计算抵抗
     local oppose = hattr.get(u, "fetter_oppose")
     odds = odds - oppose --(%)
@@ -847,7 +847,7 @@ end
         effect = nil --目标位置特效（可选）
         effectSingle = nil --个体的特效（可选）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.bomb = function(options)
@@ -860,7 +860,7 @@ hskill.bomb = function(options)
     local odds = options.odds or 100
     local range = options.range or 1
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.damageType or {CONST_DAMAGE_TYPE.real}
+    local damageType = options.damageType or {}
     local whichGroup
     if (options.whichGroup ~= nil) then
         whichGroup = options.whichGroup
@@ -1121,7 +1121,7 @@ end
         during = 0.5, --击飞过程持续时间，可选，默认0.5秒
         effect = nil, --特效（可选）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.crackFly = function(options)
@@ -1299,7 +1299,7 @@ end
         damage = 0, --伤害（可选，但是这里可以等于0）
         sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.rangeSwim = function(options)
@@ -1378,7 +1378,7 @@ end
         effectSingle = "", --单体砍中特效（可选）
         animation = "spin", --单位附加动作，常见的spin（可选）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.whirlwind = function(options)
@@ -1488,7 +1488,7 @@ end
         damageEnd = 0, --移动结束时对目标的伤害（可选的，默认为0）
         damageEndRange = 0, --移动结束时对目标的伤害范围（可选的，默认为0，此处0范围是有效的，会只对targetUnit生效，除非unit不存在）
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
         damageEffect = nil, --伤害特效（可选）
         oneHitOnly = false, --是否打击一次就立刻失效（类似格挡，这个一次和只攻击一个单位不是一回事）
         extraInfluence = [function] --对选中的敌人的额外影响，会回调该敌人单位，可以对其做出自定义行为
