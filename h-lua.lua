@@ -25,7 +25,7 @@ require "slkInit"
     1. YDWE——配置——魔兽插件——[勾上]LUA引擎（不行就做第2步）
     2. 打开触发窗口（F4），创建一个不运行的触发（无事件），在条件及动作补充你需要的Dzapi
 ]]
-hdzapi = require "lib.dzapi"
+require "lib.dzapi"
 
 -- 加载h-lua库
 require "lib.time" -- 时间/计时器

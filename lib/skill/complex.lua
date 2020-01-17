@@ -35,7 +35,7 @@ hskill.knocking = function(options)
         local effect = options.effect or "war3mapImported\\eff_crit.mdl"
         heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
-        local val = damage * percent
+        local val = damage * percent * 0.01
         hskill.damage(
             {
                 sourceUnit = options.sourceUnit,
@@ -111,7 +111,7 @@ hskill.violence = function(options)
         local effect = options.effect or "war3mapImported\\eff_demon_explosion.mdl"
         heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
-        local val = damage * percent
+        local val = damage * percent * 0.01
         hskill.damage(
             {
                 sourceUnit = options.sourceUnit,
