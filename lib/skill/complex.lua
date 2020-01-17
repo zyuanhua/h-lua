@@ -32,7 +32,8 @@ hskill.knocking = function(options)
     if (math.random(1, 100) <= odds) then
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
         local damageType = options.damageType or {CONST_DAMAGE_TYPE.physical, CONST_DAMAGE_TYPE.real}
-        heffect.toUnit("war3mapImported\\eff_crit.mdl", targetUnit, 0)
+        local effect = options.effect or "war3mapImported\\eff_crit.mdl"
+        heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
         local val = damage * percent
         hskill.damage(
@@ -107,7 +108,8 @@ hskill.violence = function(options)
     if (math.random(1, 100) <= odds) then
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
         local damageType = options.damageType or {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.real}
-        heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", targetUnit, 0)
+        local effect = options.effect or "war3mapImported\\eff_demon_explosion.mdl"
+        heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
         local val = damage * percent
         hskill.damage(
@@ -212,11 +214,12 @@ hskill.split = function(options)
                         {
                             sourceUnit = options.sourceUnit,
                             targetUnit = targetUnit,
-                            damage = val,
+                            damage = splitDamage,
                             damageString = "分裂",
                             damageStringColor = "15bcef",
                             damageKind = damageKind,
-                            damageType = damageType
+                            damageType = damageType,
+                            effect = options.effect
                         }
                     )
                 end
