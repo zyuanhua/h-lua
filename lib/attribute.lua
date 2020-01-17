@@ -201,7 +201,7 @@ hattr.registerAll = function(whichUnit)
     --init
     local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
     if (hslk_global.unitsKV[unitId] == nil) then
-        print_err("未注册 hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
+        print_err("unresgister hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
         return
     end
     hRuntime.attribute[whichUnit] = {
@@ -779,7 +779,7 @@ hattr.set = function(whichUnit, during, data)
     end
     -- 处理data
     if (type(data) ~= "table") then
-        print_err("data必须为table")
+        print_err("data must be table")
         return
     end
     for attr, v in pairs(data) do
