@@ -312,69 +312,6 @@ hskill.damage = function(options)
                 }
             )
         end
-        -- 分裂
-        local split = sourceUnitAttr.split - targetUnitAttr.split_oppose
-        local split_range = sourceUnitAttr.split_range
-        if (damageKind == CONST_DAMAGE_KIND.attack and split > 0) then
-            local g =
-                hgroup.createByUnit(
-                targetUnit,
-                split_range,
-                function()
-                    local flag = true
-                    if (his.death(cj.GetFilterUnit())) then
-                        flag = false
-                    end
-                    if (his.ally(cj.GetFilterUnit(), sourceUnit)) then
-                        flag = false
-                    end
-                    if (his.building(cj.GetFilterUnit())) then
-                        flag = false
-                    end
-                    return flag
-                end
-            )
-            local splitDamage = lastDamage * split * 0.01
-            cj.ForGroup(
-                g,
-                function()
-                    local eu = cj.GetEnumUnit()
-                    if (eu ~= targetUnit) then
-                        hevent.setLastDamageUnit(eu, sourceUnit)
-                        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), splitDamage)
-                        hplayer.addBeDamage(cj.GetOwningPlayer(eu), splitDamage)
-                        hunit.subCurLife(eu, splitDamage)
-                        heffect.toUnit("Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdl", targetUnit, 0)
-                    end
-                end
-            )
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
-            -- @触发分裂事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.split,
-                {
-                    triggerUnit = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = splitDamage,
-                    range = split_range,
-                    percent = split
-                }
-            )
-            -- @触发被分裂事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.beSpilt,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    damage = splitDamage,
-                    range = split_range,
-                    percent = split
-                }
-            )
-        end
         -- 吸血
         if (damageKind == CONST_DAMAGE_KIND.attack) then
             local hemophagia = sourceUnitAttr.hemophagia - targetUnitAttr.hemophagia_oppose
@@ -577,171 +514,176 @@ hskill.damage = function(options)
                 local b = etc.table
                 b.val = b.val or 0
                 b.odds = b.odds or 0
-                if (b.attr == "knocking") then
-                    --物理暴击
-                    if (table.includes(CONST_DAMAGE_TYPE.physical, damageType) == true) then
-                        hskill.knocking(
+                if (b.odds > 0) then
+                    if (b.attr == "knocking") then
+                        --物理暴击
+                        if (table.includes(CONST_DAMAGE_TYPE.physical, damageType) == true) then
+                            hskill.knocking(
+                                {
+                                    whichUnit = targetUnit,
+                                    odds = b.odds,
+                                    damage = typeRatio * damage,
+                                    percent = b.percent,
+                                    sourceUnit = sourceUnit,
+                                    effect = b.effect,
+                                    damageKind = CONST_DAMAGE_KIND.special,
+                                    damageType = {CONST_DAMAGE_TYPE.physical, CONST_DAMAGE_TYPE.real}
+                                }
+                            )
+                        end
+                    elseif (b.attr == "violence") then
+                        --魔法暴击
+                        if (table.includes(CONST_DAMAGE_TYPE.magic, damageType) == true) then
+                            hskill.violence(
+                                {
+                                    whichUnit = targetUnit,
+                                    odds = b.odds,
+                                    damage = typeRatio * damage,
+                                    percent = b.percent,
+                                    sourceUnit = sourceUnit,
+                                    effect = b.effect,
+                                    damageKind = CONST_DAMAGE_KIND.special,
+                                    damageType = {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.real}
+                                }
+                            )
+                        end
+                    elseif (b.attr == "split") then
+                        --分裂
+                        if (CONST_DAMAGE_KIND.attack == damageKind) then
+                            hskill.split(
+                                {
+                                    whichUnit = targetUnit,
+                                    odds = b.odds,
+                                    damage = damage,
+                                    percent = b.percent,
+                                    range = b.range,
+                                    sourceUnit = sourceUnit,
+                                    effect = b.effect,
+                                    damageKind = CONST_DAMAGE_KIND.special,
+                                    damageType = {CONST_DAMAGE_TYPE.real}
+                                }
+                            )
+                        end
+                    elseif (b.attr == "broken") then
+                        --打断
+                        hskill.broken(
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                percent = b.val,
-                                damage = typeRatio * damage,
+                                damage = b.val,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.physical, CONST_DAMAGE_TYPE.real}
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.physical}
                             }
                         )
-                    end
-                elseif (b.attr == "violence") then
-                    --魔法暴击
-                    if (table.includes(CONST_DAMAGE_TYPE.magic, damageType) == true) then
-                        hskill.violence(
+                    elseif (b.attr == "swim") then
+                        --眩晕
+                        hskill.swim(
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                percent = b.val,
-                                damage = typeRatio * damage,
+                                damage = b.val,
+                                during = b.during,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.real}
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.physical}
+                            }
+                        )
+                    elseif (b.attr == "silent") then
+                        --沉默
+                        hskill.silent(
+                            {
+                                whichUnit = targetUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = sourceUnit,
+                                effect = b.effect,
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
+                            }
+                        )
+                    elseif (b.attr == "unarm") then
+                        --缴械
+                        hskill.unarm(
+                            {
+                                whichUnit = targetUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = sourceUnit,
+                                effect = b.effect,
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
+                            }
+                        )
+                    elseif (b.attr == "fetter") then
+                        --缚足
+                        hskill.fetter(
+                            {
+                                whichUnit = targetUnit,
+                                odds = b.odds,
+                                damage = b.val,
+                                during = b.during,
+                                sourceUnit = sourceUnit,
+                                effect = b.effect,
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
+                            }
+                        )
+                    elseif (b.attr == "bomb") then
+                        --爆破
+                        hskill.bomb(
+                            {
+                                odds = b.odds,
+                                damage = b.val,
+                                range = b.range,
+                                whichUnit = targetUnit,
+                                sourceUnit = sourceUnit,
+                                effect = b.effect,
+                                effectSingle = b.effectSingle,
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
+                            }
+                        )
+                    elseif (b.attr == "lightning_chain") then
+                        --闪电链
+                        hskill.lightningChain(
+                            {
+                                odds = b.odds,
+                                damage = b.val,
+                                lightningType = b.lightning_type,
+                                qty = b.qty,
+                                change = b.change,
+                                range = b.range or 500,
+                                effect = b.effect,
+                                isRepeat = false,
+                                whichUnit = targetUnit,
+                                prevUnit = sourceUnit,
+                                sourceUnit = sourceUnit,
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.thunder}
+                            }
+                        )
+                    elseif (b.attr == "crack_fly") then
+                        --击飞
+                        hskill.crackFly(
+                            {
+                                odds = b.odds,
+                                damage = b.val,
+                                whichUnit = targetUnit,
+                                sourceUnit = sourceUnit,
+                                distance = b.distance,
+                                high = b.high,
+                                during = b.during,
+                                effect = b.effect,
+                                damageKind = CONST_DAMAGE_KIND.special,
+                                damageType = b.damageType or {CONST_DAMAGE_TYPE.physical}
                             }
                         )
                     end
-                elseif (b.attr == "split") then
-                    --分裂
-                    hskill.split(
-                        {
-                            whichUnit = targetUnit,
-                            odds = b.odds,
-                            damage = b.val,
-                            range = b.range,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = {CONST_DAMAGE_TYPE.real}
-                        }
-                    )
-                elseif (b.attr == "broken") then
-                    --打断
-                    hskill.broken(
-                        {
-                            whichUnit = targetUnit,
-                            odds = b.odds,
-                            damage = b.val,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.physical}
-                        }
-                    )
-                elseif (b.attr == "swim") then
-                    --眩晕
-                    hskill.swim(
-                        {
-                            whichUnit = targetUnit,
-                            odds = b.odds,
-                            damage = b.val,
-                            during = b.during,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.physical}
-                        }
-                    )
-                elseif (b.attr == "silent") then
-                    --沉默
-                    hskill.silent(
-                        {
-                            whichUnit = targetUnit,
-                            odds = b.odds,
-                            damage = b.val,
-                            during = b.during,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
-                        }
-                    )
-                elseif (b.attr == "unarm") then
-                    --缴械
-                    hskill.unarm(
-                        {
-                            whichUnit = targetUnit,
-                            odds = b.odds,
-                            damage = b.val,
-                            during = b.during,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
-                        }
-                    )
-                elseif (b.attr == "fetter") then
-                    --缚足
-                    hskill.fetter(
-                        {
-                            whichUnit = targetUnit,
-                            odds = b.odds,
-                            damage = b.val,
-                            during = b.during,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
-                        }
-                    )
-                elseif (b.attr == "bomb") then
-                    --爆破
-                    hskill.bomb(
-                        {
-                            odds = b.odds,
-                            damage = b.val,
-                            range = b.range,
-                            whichUnit = targetUnit,
-                            sourceUnit = sourceUnit,
-                            effect = b.effect,
-                            effectSingle = b.effectSingle,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.magic}
-                        }
-                    )
-                elseif (b.attr == "lightning_chain") then
-                    --闪电链
-                    hskill.lightningChain(
-                        {
-                            odds = b.odds,
-                            damage = b.val,
-                            lightningType = b.lightning_type,
-                            qty = b.qty,
-                            change = b.change,
-                            range = b.range or 500,
-                            effect = b.effect,
-                            isRepeat = false,
-                            whichUnit = targetUnit,
-                            prevUnit = sourceUnit,
-                            sourceUnit = sourceUnit,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.thunder}
-                        }
-                    )
-                elseif (b.attr == "crack_fly") then
-                    --击飞
-                    hskill.crackFly(
-                        {
-                            odds = b.odds,
-                            damage = b.val,
-                            whichUnit = targetUnit,
-                            sourceUnit = sourceUnit,
-                            distance = b.distance,
-                            high = b.high,
-                            during = b.during,
-                            effect = b.effect,
-                            damageKind = CONST_DAMAGE_KIND.special,
-                            damageType = b.damageType or {CONST_DAMAGE_TYPE.physical}
-                        }
-                    )
                 end
             end
         end

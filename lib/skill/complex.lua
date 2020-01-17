@@ -2,12 +2,12 @@
     物理暴击
     options = {
         whichUnit = unit, --目标单位，必须
-        odds = 0, --几率，可选
-        damage = 0, --原始伤害，可选
-        percent = 0, --暴击比例，可选
-        sourceUnit = nil, --来源单位，可选
+        odds = 0, --几率，必须
+        damage = 0, --原始伤害，必须
+        percent = 0, --暴击比例，必须
+        sourceUnit = nil, --来源单位，必须
         effect = nil, --特效，可选
-        damageKind = CONST_DAMAGE_KIND.special --伤害的种类（可选）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.physical,CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
@@ -19,7 +19,7 @@ hskill.knocking = function(options)
     local odds = options.odds or 0
     local damage = options.damage or 0
     local percent = options.percent or 0
-    if (odds <= 0 or damage <= 0 or percent) then
+    if (odds <= 0 or damage <= 0 or percent <= 0) then
         print_err("knocking: -odds -damage -percent")
         return
     end
@@ -30,7 +30,7 @@ hskill.knocking = function(options)
         return
     end
     if (math.random(1, 100) <= odds) then
-        local damageKind = options.damageKind or CONST_DAMAGE_KIND.special
+        local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
         local damageType = options.damageType or {CONST_DAMAGE_TYPE.physical, CONST_DAMAGE_TYPE.real}
         heffect.toUnit("war3mapImported\\eff_crit.mdl", targetUnit, 0)
         --暴！
@@ -77,9 +77,10 @@ end
     魔法暴击
     options = {
         whichUnit = unit, --目标单位，必须
-        odds = 100, --几率，可选
-        damage = 0, --伤害，可选
-        sourceUnit = nil, --来源单位，可选
+        odds = 100, --几率，必须
+        damage = 0, --原始伤害，必须
+        percent = 0, --暴击比例，必须
+        sourceUnit = nil, --来源单位，必须
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
@@ -93,7 +94,7 @@ hskill.violence = function(options)
     local odds = options.odds or 0
     local damage = options.damage or 0
     local percent = options.percent or 0
-    if (odds <= 0 or damage <= 0 or percent) then
+    if (odds <= 0 or damage <= 0 or percent <= 0) then
         print_err("violence: -odds -damage -percent")
         return
     end
@@ -104,7 +105,7 @@ hskill.violence = function(options)
         return
     end
     if (math.random(1, 100) <= odds) then
-        local damageKind = options.damageKind or CONST_DAMAGE_KIND.special
+        local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
         local damageType = options.damageType or {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.real}
         heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", targetUnit, 0)
         --暴！
@@ -141,6 +142,110 @@ hskill.violence = function(options)
                 sourceUnit = targetUnit,
                 damage = val,
                 odds = odds,
+                percent = percent
+            }
+        )
+    end
+end
+
+--[[
+    分裂
+    options = {
+        whichUnit = unit, --目标单位，必须
+        odds = 100, --几率，必须
+        damage = 0, --原始伤害，必须
+        percent = 0, --几率比例，必须
+        range = 0, --分裂范围，必须
+        sourceUnit = nil, --来源单位，必须
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+    }
+]]
+hskill.split = function(options)
+    if (options.whichUnit == nil or options.sourceUnit == nil) then
+        print_err("split: -whichUnit - sourceUnit")
+        return
+    end
+    local odds = options.odds or 0
+    local damage = options.damage or 0
+    local percent = options.percent or 0
+    local range = options.range or 0
+    if (odds <= 0 or damage <= 0 or percent <= 0 or range <= 0) then
+        print_err("split: -odds -damage -percent -range")
+        return
+    end
+    local targetUnit = options.whichUnit
+    local targetOppose = hattr.get(targetUnit, "split_oppose")
+    odds = odds - targetOppose
+    if (odds <= 0) then
+        return
+    end
+    if (math.random(1, 100) <= odds) then
+        local g =
+            hgroup.createByUnit(
+            targetUnit,
+            range,
+            function()
+                local flag = true
+                if (his.death(cj.GetFilterUnit())) then
+                    flag = false
+                end
+                if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
+                    flag = false
+                end
+                if (his.building(cj.GetFilterUnit())) then
+                    flag = false
+                end
+                return flag
+            end
+        )
+        local splitDamage = damage * percent * 0.01
+        local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+        local damageType = options.damageType or {CONST_DAMAGE_TYPE.real}
+        cj.ForGroup(
+            g,
+            function()
+                local eu = cj.GetEnumUnit()
+                if (eu ~= targetUnit) then
+                    hskill.damage(
+                        {
+                            sourceUnit = options.sourceUnit,
+                            targetUnit = targetUnit,
+                            damage = val,
+                            damageString = "分裂",
+                            damageStringColor = "15bcef",
+                            damageKind = damageKind,
+                            damageType = damageType
+                        }
+                    )
+                end
+            end
+        )
+        cj.GroupClear(g)
+        cj.DestroyGroup(g)
+        g = nil
+        -- @触发分裂事件
+        hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.split,
+            {
+                triggerUnit = options.sourceUnit,
+                targetUnit = targetUnit,
+                damage = splitDamage,
+                range = range,
+                percent = percent
+            }
+        )
+        -- @触发被分裂事件
+        hevent.triggerEvent(
+            targetUnit,
+            CONST_EVENT.beSpilt,
+            {
+                triggerUnit = targetUnit,
+                sourceUnit = options.sourceUnit,
+                damage = splitDamage,
+                range = range,
                 percent = percent
             }
         )
@@ -366,8 +471,8 @@ hskill.swim = function(options)
                 sourceUnit = sourceUnit,
                 targetUnit = u,
                 damage = damage,
-                damageKind = CONST_DAMAGE_KIND.skill,
-                damageType = {CONST_DAMAGE_TYPE.real},
+                damageKind = damageKind,
+                damageType = damageType,
                 damageString = damageString,
                 damageStringColor = damageStringColor
             }
@@ -458,8 +563,8 @@ hskill.silent = function(options)
                 targetUnit = u,
                 damage = damage,
                 damageString = "沉默",
-                damageKind = CONST_DAMAGE_KIND.skill,
-                damageType = {CONST_DAMAGE_TYPE.real}
+                damageKind = damageKind,
+                damageType = damageType
             }
         )
     end
@@ -589,8 +694,8 @@ hskill.unarm = function(options)
                 targetUnit = u,
                 damage = damage,
                 damageString = "缴械",
-                damageKind = CONST_DAMAGE_KIND.skill,
-                damageType = {CONST_DAMAGE_TYPE.real}
+                damageKind = damageKind,
+                damageType = damageType
             }
         )
     end
@@ -694,8 +799,8 @@ hskill.fetter = function(options)
                 targetUnit = u,
                 damage = damage,
                 damageString = "缚足",
-                damageKind = CONST_DAMAGE_KIND.skill,
-                damageType = {CONST_DAMAGE_TYPE.real}
+                damageKind = damageKind,
+                damageType = damageType
             }
         )
     end

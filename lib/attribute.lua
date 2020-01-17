@@ -323,9 +323,9 @@ hattr.registerAll = function(whichUnit)
                 }
             }
             attack_effect / skill_effect同理,effect只能设定下列的值，会在属性系统自动调用：
-                {attr="knocking",odds = 0.0, val = 0.0, effect = nil},
-                {attr="violence",odds = 0.0, val = 0.0, effect = nil},
-                {attr="split",odds = 0.0, val = 0.0, range = 0.0,effect = nil},
+                {attr="knocking",odds = 0.0, percent = 0.0, effect = nil},
+                {attr="violence",odds = 0.0, percent = 0.0, effect = nil},
+                {attr="split",odds = 0.0, percent=0.0, range = 0.0, effect = nil},
                 {attr="swim",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
                 {attr="broken",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
                 {attr="silent",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
