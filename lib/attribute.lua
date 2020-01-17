@@ -344,6 +344,29 @@ hattr.registerAll = function(whichUnit)
     end
 end
 
+--积累性diff
+hattr.getAccumuDiff = function(whichUnit, attr)
+    if (hRuntime.attributeDiff[whichUnit] == nil) then
+        hRuntime.attributeDiff[whichUnit] = {}
+    end
+    return hRuntime.attributeDiff[whichUnit][attr] or 0
+end
+
+hattr.setAccumuDiff = function(whichUnit, attr, value)
+    if (hRuntime.attributeDiff[whichUnit] == nil) then
+        hRuntime.attributeDiff[whichUnit] = {}
+    end
+    hRuntime.attributeDiff[whichUnit][attr] = math.round(value)
+end
+
+hattr.addAccumuDiff = function(whichUnit, attr, value)
+    hattr.setAccumuDiff(whichUnit, attr, hattr.getAccumuDiff(whichUnit, attr) + value)
+end
+
+hattr.subAccumuDiff = function(whichUnit, attr, value)
+    hattr.setAccumuDiff(whichUnit, attr, hattr.getAccumuDiff(whichUnit, attr) - value)
+end
+
 ---设定属性
 --[[
     白字攻击 绿字攻击
@@ -363,8 +386,9 @@ end
     }
     during = 0.0 大于0生效；小于等于0时无限持续时间
 ]]
-hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
+hattr.setHandle = function(whichUnit, attr, opr, val, dur)
     local valType = type(val)
+    local params = hRuntime.attribute[whichUnit]
     if (valType == "string") then
         -- string类型只有+-=
         if (opr == "+") then
@@ -376,7 +400,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        hattr.setHandle(params, whichUnit, attr, "-", val, 0)
+                        hattr.setHandle(whichUnit, attr, "-", val, 0)
                     end
                 )
             end
@@ -390,7 +414,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         function(t, td)
                             htime.delDialog(td)
                             htime.delTimer(t)
-                            hattr.setHandle(params, whichUnit, attr, "+", val, 0)
+                            hattr.setHandle(whichUnit, attr, "+", val, 0)
                         end
                     )
                 end
@@ -405,7 +429,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        hattr.setHandle(params, whichUnit, attr, "=", old, 0)
+                        hattr.setHandle(whichUnit, attr, "=", old, 0)
                     end
                 )
             end
@@ -422,7 +446,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        hattr.setHandle(params, whichUnit, attr, "-", val, 0)
+                        hattr.setHandle(whichUnit, attr, "-", val, 0)
                     end
                 )
             end
@@ -444,7 +468,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                         function(t, td)
                             htime.delDialog(td)
                             htime.delTimer(t)
-                            hattr.setHandle(params, whichUnit, attr, "+", val, 0)
+                            hattr.setHandle(whichUnit, attr, "+", val, 0)
                         end
                     )
                 end
@@ -452,6 +476,28 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
         end
     elseif (valType == "number") then
         -- number
+        local intAttr = {
+            "life",
+            "mana",
+            "move",
+            "attack_white",
+            "attack_green",
+            "attack_range",
+            "sight",
+            "defend",
+            "str_white",
+            "agi_white",
+            "int_white",
+            "str_green",
+            "agi_green",
+            "int_green",
+            "punish"
+        }
+        local isInt = false
+        if (table.includes(attr, intAttr)) then
+            isInt = true
+        end
+        --
         local diff = 0
         if (opr == "+") then
             diff = val
@@ -464,6 +510,22 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
         elseif (opr == "=") then
             diff = val - params[attr]
         end
+        diff = diff + hattr.getAccumuDiff(whichUnit, attr)
+        --部分属性取整处理，否则失真
+        if (isInt and diff ~= 0) then
+            local di, df = math.modf(math.abs(diff))
+            if (diff >= 0) then
+                diff = di
+                if (df ~= 0) then
+                    hattr.addAccumuDiff(whichUnit, attr, df)
+                end
+            else
+                diff = -di
+                if (df ~= 0) then
+                    hattr.subAccumuDiff(whichUnit, attr, df)
+                end
+            end
+        end
         if (diff ~= 0) then
             local currentVal = params[attr]
             local futureVal = params[attr] + diff
@@ -474,7 +536,7 @@ hattr.setHandle = function(params, whichUnit, attr, opr, val, dur)
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        hattr.setHandle(params, whichUnit, attr, "-", diff, 0)
+                        hattr.setHandle(whichUnit, attr, "-", diff, 0)
                     end
                 )
             end
@@ -729,7 +791,7 @@ hattr.set = function(whichUnit, during, data)
                 if (val == nil) then
                     val = v
                 end
-                hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, opr, val, during)
+                hattr.setHandle(whichUnit, attr, opr, val, during)
             elseif (type(v) == "table") then
                 -- table型，如特效，buff等
                 if (v.add ~= nil and type(v.add) == "table") then
@@ -744,7 +806,7 @@ hattr.set = function(whichUnit, during, data)
                             print_stack()
                             break
                         end
-                        hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "+", buff, during)
+                        hattr.setHandle(whichUnit, attr, "+", buff, during)
                     end
                 elseif (v.sub ~= nil and type(v.sub) == "table") then
                     for _, buff in pairs(v.sub) do
@@ -758,7 +820,7 @@ hattr.set = function(whichUnit, during, data)
                             print_stack()
                             break
                         end
-                        hattr.setHandle(hRuntime.attribute[whichUnit], whichUnit, attr, "-", buff, during)
+                        hattr.setHandle(whichUnit, attr, "-", buff, during)
                     end
                 end
             end

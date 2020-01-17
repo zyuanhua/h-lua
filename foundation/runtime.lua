@@ -45,6 +45,7 @@ hRuntime = {
     heroBuildSelection = {},
     skill = {},
     attribute = {},
+    attributeDiff = {},
     attributeGroup = {
         life_back = {},
         mana_back = {},
