@@ -1,4 +1,4 @@
-local hskill = {
+hskill = {
     SKILL_TOKEN = hslk_global.unit_token,
     SKILL_LEAP = hslk_global.unit_token_leap,
     SKILL_BREAK = hslk_global.skill_break, --table[0.05~0.5]
@@ -89,5 +89,3 @@ end
 require "lib.skill.basic"
 require "lib.skill.damage"
 require "lib.skill.complex"
-
-return hskill

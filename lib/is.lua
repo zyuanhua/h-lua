@@ -1,4 +1,4 @@
-local his = {}
+his = {}
 
 his.set = function(handle, key, val)
     if (handle == nil or key == nil or val == nil) then
@@ -212,5 +212,3 @@ his.ownItem = function(u, itemId)
     end
     return f
 end
-
-return his

@@ -1,4 +1,4 @@
-local hevent = {}
+hevent = {}
 
 --set
 hevent.set = function(handle, key, value)
@@ -1268,5 +1268,3 @@ end
 hevent.onPickHero = function(callFunc)
     return hevent.onEventByHandle("global", CONST_EVENT.pickHero, callFunc)
 end
-
-return hevent

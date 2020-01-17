@@ -1,5 +1,5 @@
 -- 特效
-local heffect = {}
+heffect = {}
 
 --删除特效
 heffect.del = function(e)
@@ -107,5 +107,3 @@ heffect.bindUnit = function(effectModel, targetUnit, attach, during)
     end
     return eff
 end
-
-return heffect

@@ -1,4 +1,4 @@
-local hweather = {
+hweather = {
     --天气ID
     sun = string.char2id('LRaa'), --日光
     moon = string.char2id('LRma'), --月光
@@ -63,5 +63,3 @@ hweather.create = function(bean)
         end)
     end
 end
-
-return hweather

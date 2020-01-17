@@ -1,4 +1,4 @@
-local htime = {
+htime = {
     -- 获取开始游戏后经过的总秒数
     count = 0,
     -- 时
@@ -115,5 +115,3 @@ htime.delDialog = function(td)
     end
     cj.DestroyTimerDialog(td)
 end
-
-return htime

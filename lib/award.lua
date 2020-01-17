@@ -1,5 +1,5 @@
 -- [[奖励]]
-local haward = {
+haward = {
     shareRange = 1000.00
 }
 -- 设置共享范围
@@ -139,5 +139,3 @@ end
 haward.forPlayerLumber = function(lumber)
     haward.forPlayer(0, lumber)
 end
-
-return haward

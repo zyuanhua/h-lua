@@ -1,5 +1,5 @@
 -- 漂浮字
-local htextTag = {}
+htextTag = {}
 
 -- 删除漂浮字
 htextTag.del = function(ttg)
@@ -163,5 +163,3 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         )
     end
 end
-
-return htextTag

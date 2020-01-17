@@ -106,5 +106,3 @@ hdzapi.server.get = {
 hdzapi.server.clear = function(whichPlayer, key)
     japi.DzAPI_Map_SaveServerValue(whichPlayer, key, nil)
 end
-
-return hdzapi

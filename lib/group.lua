@@ -1,4 +1,4 @@
-local hgroup = {}
+hgroup = {}
 
 -- 统计单位组当前单位数
 hgroup.count = function(whichGroup)
@@ -168,5 +168,3 @@ hgroup.clear = function(whichGroup, isDestroy, isDestroyUnit)
         cj.DestroyGroup(g)
     end
 end
-
-return hgroup

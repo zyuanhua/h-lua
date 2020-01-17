@@ -1,5 +1,5 @@
 -- [[多面板/多列榜]]
-local hmultiBoard = {}
+hmultiBoard = {}
 
 --[[
     根据玩家创建多面板,多面板是可以每个玩家看到的都不一样的
@@ -107,5 +107,3 @@ end
 hmultiBoard.setTitle = function(whichBoard, title)
     cj.MultiboardSetTitleText(whichBoard, title)
 end
-
-return hmultiBoard

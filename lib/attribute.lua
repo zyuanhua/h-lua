@@ -1,6 +1,5 @@
 -- 属性系统
-
-local hattr = {
+hattr = {
     max_move_speed = 522,
     max_life = 999999999,
     max_mana = 999999999,
@@ -836,5 +835,3 @@ hattr.reRegister = function(whichUnit)
         }
     )
 end
-
-return hattr

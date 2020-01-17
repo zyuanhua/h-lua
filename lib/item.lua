@@ -14,7 +14,7 @@
     -不叠加：数量不影响几率，如：30%几率的物品，持有100件也为30%
     *物品不说明的属性不涉及叠加规定，默认不叠加
 ]]
-local hitem = {
+hitem = {
     PRIVATE_TRIGGER = {},
     TYPE = {
         COORDINATE = "coordinate",
@@ -754,5 +754,3 @@ hitem.init = function()
         end
     )
 end
-
-return hitem

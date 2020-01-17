@@ -44,7 +44,7 @@ henvData = {
         underground = { 'Yrtl' },
     },
 }
-local henv = {}
+henv = {}
 
 -- 构建区域装饰
 henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, ground, doodad, units)
@@ -362,5 +362,3 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
     end
     henv.build(whichRect, typeStr, excludeX, excludeY, isDestroyRect, ground, doodad, unit)
 end
-
-return henv

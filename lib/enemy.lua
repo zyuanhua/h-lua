@@ -1,5 +1,5 @@
 -- 敌人模块
-local henemy = {
+henemy = {
     players = {}, -- 充当敌人的玩家
     numbers = {}, -- 充当敌人的玩家调用次数，默认 0
     numberLimit = 100000, -- 充当敌人的玩家调用次数上限，达到就全体归0
@@ -107,5 +107,3 @@ henemy.create = function(bean)
     bean.isShareSight = hemeny.isShareSight()
     return hunit.create(bean)
 end
-
-return henemy

@@ -1,5 +1,5 @@
 -- [[排行榜]]
-local hleaderBoard = {}
+hleaderBoard = {}
 
 hleaderBoard.LeaderboardResize = function(lb)
     local size = cj.LeaderboardGetItemCount(lb)
@@ -49,5 +49,3 @@ end
 hleaderBoard.setTitle = function(whichBoard, title)
     cj.LeaderboardSetLabel(whichBoard, title)
 end
-
-return hleaderBoard

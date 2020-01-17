@@ -1,4 +1,4 @@
-local hhero = {
+hhero = {
     trigger_hero_lvup = nil,
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
     player_current_qty = {}, -- 玩家当前单位数量,默认0
@@ -594,5 +594,3 @@ hhero.buildTavern = function(during)
     -- 转移玩家镜头
     hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
 end
-
-return hhero

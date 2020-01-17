@@ -1,4 +1,4 @@
-local hcamera = {}
+hcamera = {}
 
 -- 重置镜头
 hcamera.reset = function(whichPlayer, during)
@@ -169,5 +169,3 @@ hcamera.setModel = function(bean)
         end
     end
 end
-
-return hcamera

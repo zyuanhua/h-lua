@@ -1,5 +1,5 @@
 ---遮罩
-local hmark = {}
+hmark = {}
 
 hmark.create = function(path, during, whichPlayer)
     if (whichPlayer == nil) then
@@ -76,5 +76,3 @@ hmark.create = function(path, during, whichPlayer)
         )
     end
 end
-
-return hmark

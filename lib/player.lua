@@ -1,4 +1,4 @@
-local hplayer = {
+hplayer = {
     --用户玩家
     players = {},
     --中立敌对
@@ -664,5 +664,3 @@ hplayer.init = function()
         end
     end
 end
-
-return hplayer

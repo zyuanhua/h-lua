@@ -1,5 +1,5 @@
 -- 声音
-local hsound = {}
+hsound = {}
 
 --- 播放音效
 hsound.sound = function(s)
@@ -74,5 +74,3 @@ hsound.bgmStop = function(whichPlayer)
         cj.StopMusic(true)
     end
 end
-
-return hsound

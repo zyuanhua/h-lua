@@ -1,4 +1,4 @@
-local hunit = {}
+hunit = {}
 
 -- 获取单位的最大生命值
 hunit.getMaxLife = function(u)
@@ -458,5 +458,3 @@ end
 hunit.rebornAtLoc = function(u, delay, invulnerable, loc)
     hunit.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc))
 end
-
-return hunit

@@ -28,36 +28,36 @@ require "slkInit"
 hdzapi = require "lib.dzapi"
 
 -- 加载h-lua库
-htime = require "lib.time" -- 时间/计时器
-his = require "lib.is" -- 条件判断
-hmessage = require "lib.message" -- 消息
+require "lib.time" -- 时间/计时器
+require "lib.is" -- 条件判断
+require "lib.message" -- 消息
+require "lib.sound" -- 多媒体
+require "lib.mark" -- 遮罩
+require "lib.effect" -- 特效
+require "lib.lightning" -- 闪电链
+require "lib.weather" -- 天气
+require "lib.env" -- 环境装饰
+require "lib.camera" -- 镜头
+require "lib.event" -- 事件
+require "lib.textTag" -- 漂浮字
+require "lib.rect" -- 区域
+require "lib.player" -- 玩家
+require "lib.award" -- 奖励
+require "lib.unit" -- 单位
+require "lib.enemy" -- 敌人
+require "lib.group" -- 单位组
+require "lib.hero" -- 英雄
+require "lib.skill.index" -- 技能
+require "lib.attribute" -- 属性
+require "lib.item" -- 物品
+require "lib.dialog" -- 对话框
+require "lib.leaderBoard" -- 排行榜
+require "lib.multiBoard" -- 多面板
+--别称
 hmsg = hmessage
-hsound = require "lib.sound" -- 多媒体
-hmark = require "lib.mark" -- 遮罩
-heffect = require "lib.effect" -- 特效
-hlightning = require "lib.lightning" -- 闪电链
-hweather = require "lib.weather" -- 天气
-henv = require "lib.env" -- 环境装饰
-hcamera = require "lib.camera" -- 镜头
-hevent = require "lib.event" -- 事件
-htextTag = require "lib.textTag" -- 漂浮字
 httg = htextTag
-hrect = require "lib.rect" -- 区域
-hplayer = require "lib.player" -- 玩家
-haward = require "lib.award" -- 奖励
-hunit = require "lib.unit" -- 单位
-hemeny = require "lib.enemy" -- 敌人
-hgroup = require "lib.group" -- 单位组
-hhero = require "lib.hero" -- 英雄
-hskill = require "lib.skill.index" -- 技能
-hattribute = require "lib.attribute" -- 属性
 hattr = hattribute
-hitem = require "lib.item" -- 物品
-hdialog = require "lib.dialog" -- 对话框
-hleaderBoard = require "lib.leaderBoard" -- 排行榜
-hmultiBoard = require "lib.multiBoard" -- 多面板
 
 -- 最后的初始化run
 -- last init
 hLuaStart.run()
-

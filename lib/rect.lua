@@ -1,4 +1,4 @@
-local hrect = {}
+hrect = {}
 
 --创建一个设定中心（x,y）创建一个长w宽h的矩形区域
 hrect.create = function(x, y, w, h, name)
@@ -243,5 +243,3 @@ hrect.lock = function(bean)
         end
     end)
 end
-
-return hrect

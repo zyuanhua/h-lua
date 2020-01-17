@@ -1,5 +1,5 @@
 -- 消息
-local hmessage = {}
+hmessage = {}
 
 -- 在屏幕打印信息给所有玩家
 hmessage.echo = function(msg, duration)
@@ -23,5 +23,3 @@ end
 hmessage.echo00 = function(whichPlayer, msg, duration)
     hmessage.echoXY(whichPlayer, msg, 0, 0, duration)
 end
-
-return hmessage

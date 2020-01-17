@@ -1,5 +1,5 @@
 -- [[对话框]]
-local hdialog = {}
+hdialog = {}
 
 -- 自动根据key识别热键
 hdialog.hotkey = function(key)
@@ -63,5 +63,3 @@ hdialog.create = function(whichPlayer, options, call)
     end
     cj.DialogDisplay(whichPlayer, d, true)
 end
-
-return hdialog
