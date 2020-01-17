@@ -10,10 +10,10 @@ require "foundation.blizzard_b"
 bj = require "foundation.blizzard_bj"
 
 -- 加载const
-require "const.start"
+require "const.index"
 
 -- 加载foundation
-hLuaStart = require "foundation.start"
+hLuaStart = require "foundation.index"
 
 -- 读取hSlk数据 # hash_hslk
 require "slkInit"
@@ -49,7 +49,7 @@ hunit = require "lib.unit" -- 单位
 hemeny = require "lib.enemy" -- 敌人
 hgroup = require "lib.group" -- 单位组
 hhero = require "lib.hero" -- 英雄
-hskill = require "lib.skill" -- 技能
+hskill = require "lib.skill.index" -- 技能
 hattribute = require "lib.attribute" -- 属性
 hattr = hattribute
 hitem = require "lib.item" -- 物品

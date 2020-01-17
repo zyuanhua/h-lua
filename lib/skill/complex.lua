@@ -1,1100 +1,154 @@
-local hskill = {
-    SKILL_TOKEN = hslk_global.unit_token,
-    SKILL_LEAP = hslk_global.unit_token_leap,
-    SKILL_BREAK = hslk_global.skill_break, --table[0.05~0.5]
-    SKILL_SWIM = hslk_global.skill_swim_unlimit,
-    SKILL_INVISIBLE = hslk_global.skill_invisible,
-    SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
-    SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
-    BUFF_SWIM = string.char2id("BPSE")
-}
-
-hskill.set = function(handle, key, val)
-    if (handle == nil or key == nil) then
-        return
-    end
-    if (hRuntime.skill[handle] == nil) then
-        hRuntime.skill[handle] = {}
-    end
-    hRuntime.skill[handle][key] = val
-end
-
-hskill.get = function(handle, key, defaultVal)
-    if (handle == nil or key == nil) then
-        return defaultVal
-    end
-    if (hRuntime.skill[handle] == nil or hRuntime.skill[handle][key] == nil) then
-        return defaultVal
-    end
-    return hRuntime.skill[handle][key]
-end
-
--- 添加技能
-hskill.add = function(whichUnit, ability_id, during)
-    local id = ability_id
-    if (type(ability_id) == "string") then
-        id = string.char2id(id)
-    end
-    if (during == nil or during <= 0) then
-        cj.UnitAddAbility(whichUnit, id)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, id)
-    else
-        cj.UnitAddAbility(whichUnit, id)
-        htime.setTimeout(
-            during,
-            function(t, td)
-                cj.UnitRemoveAbility(whichUnit, id)
-            end
-        )
-    end
-end
-
--- 删除技能
-hskill.del = function(whichUnit, ability_id, during)
-    local id = ability_id
-    if (type(ability_id) == "string") then
-        id = string.char2id(id)
-    end
-    if (during == nil or during <= 0) then
-        cj.UnitRemoveAbility(whichUnit, id)
-    else
-        cj.UnitRemoveAbility(whichUnit, id)
-        htime.setTimeout(
-            during,
-            function(t, td)
-                cj.UnitAddAbility(whichUnit, id)
-            end
-        )
-    end
-end
-
--- 设置技能的永久使用性
-hskill.forever = function(whichUnit, ability_id)
-    local id = string.char2id(ability_id)
-    cj.UnitMakeAbilityPermanent(whichUnit, true, id)
-end
-
--- 是否拥有技能
-hskill.has = function(whichUnit, ability_id)
-    if (whichUnit == nil or ability_id == nil) then
-        return false
-    end
-    local id = string.char2id(ability_id)
-    if (cj.GetUnitAbilityLevel(whichUnit, id) >= 1) then
-        return true
-    end
-    return false
-end
-
---回避
-hskill.avoid = function(whichUnit)
-    cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
-    cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
-    cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
-    htime.setTimeout(
-        0.00,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
-            cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
-            cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
-        end
-    )
-end
-
---无敌
-hskill.invulnerable = function(whichUnit, during, effect)
-    if (whichUnit == nil) then
-        return
-    end
-    if (during < 0) then
-        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
-    end
-    cj.SetUnitInvulnerable(whichUnit, true)
-    if (during > 0 and effect ~= nil) then
-        heffect.bindUnit(effect, whichUnit, "origin", during)
-    end
-    htime.setTimeout(
-        during,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.SetUnitInvulnerable(whichUnit, false)
-        end
-    )
-end
---群体无敌
-hskill.invulnerableGroup = function(whichGroup, during, effect)
-    if (whichGroup == nil) then
-        return
-    end
-    if (during < 0) then
-        during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
-    end
-    cj.ForGroup(
-        whichGroup,
-        function()
-            cj.SetUnitInvulnerable(cj.GetEnumUnit(), true)
-            if (during > 0 and effect ~= nil) then
-                heffect.bindUnit(effect, cj.GetEnumUnit(), "origin", during)
-            end
-        end
-    )
-    htime.setTimeout(
-        during,
-        function(t, td)
-            htime.delDialog(td)
-            htime.delTimer(t)
-            cj.ForGroup(
-                whichGroup,
-                function()
-                    cj.SetUnitInvulnerable(cj.GetEnumUnit(), false)
-                end
-            )
-        end
-    )
-end
-
---暂停效果
-hskill.pause = function(whichUnit, during, pauseColor)
-    if (whichUnit == nil) then
-        return
-    end
-    if (during < 0) then
-        during = 0.01 -- 假如没有设置时间，默认打断效果
-    end
-    local prevTimer = hskill.get(whichUnit, "pauseTimer")
-    local prevTimeRemaining = 0
-    if (prevTimer ~= nil) then
-        prevTimeRemaining = cj.TimerGetRemaining(prevTimer)
-        if (prevTimeRemaining > 0) then
-            htime.delTimer(prevTimer)
-            hskill.set(whichUnit, "pauseTimer", nil)
-        else
-            prevTimeRemaining = 0
-        end
-    end
-    if (pauseColor == "black") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 30, 0)
-    elseif (pauseColor == "blue") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 200, 0)
-    elseif (pauseColor == "red") then
-        bj.SetUnitVertexColorBJ(whichUnit, 200, 30, 30, 0)
-    elseif (pauseColor == "green") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 200, 30, 0)
-    end
-    cj.SetUnitTimeScalePercent(whichUnit, 0.00)
-    cj.PauseUnit(whichUnit, true)
-    hskill.set(
-        whichUnit,
-        "pauseTimer",
-        htime.setTimeout(
-            during + prevTimeRemaining,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                cj.PauseUnit(whichUnit, false)
-                if (string.len(pauseColor) ~= nil) then
-                    cj.SetUnitVertexColorBJ(whichUnit, 100, 100, 100, 0)
-                end
-                cj.SetUnitTimeScalePercent(whichUnit, 100.00)
-            end
-        )
-    )
-end
-
---隐身
-hskill.invisible = function(whichUnit, during, transition, effect)
-    if (whichUnit == nil or during == nil or during <= 0) then
-        return
-    end
-    if (his.death(whichUnit)) then
-        return
-    end
-    transition = transition or 0
-    if (effect ~= nil) then
-        heffect.toUnit(effect, whichUnit, 0)
-    end
-    if (transition > 0) then
-        htime.setTimeout(
-            transition,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
-            end
-        )
-    else
-        hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
-    end
-end
-
---现形
-hskill.visible = function(whichUnit, during, transition, effect)
-    if (whichUnit == nil or during == nil or during <= 0) then
-        return
-    end
-    if (his.death(whichUnit)) then
-        return
-    end
-    transition = transition or 0
-    if (effect ~= nil) then
-        heffect.toUnit(effect, whichUnit, 0)
-    end
-    if (transition > 0) then
-        htime.setTimeout(
-            transition,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
-            end
-        )
-    else
-        hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
-    end
-end
-
---为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
-hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
-    if (whichUnit ~= nil and whichAbility ~= nil and during > 0.03) then
-        cj.UnitAddAbility(whichUnit, whichAbility)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, whichAbility)
-        if (abilityLevel > 0) then
-            cj.SetUnitAbilityLevel(whichUnit, whichAbility, abilityLevel)
-        end
-        htime.setTimeout(
-            during,
-            function(t, td)
-                htime.delDialog(td)
-                htime.delTimer(t)
-                cj.UnitRemoveAbility(whichUnit, whichAbility)
-            end
-        )
-    end
-end
-
---- 造成伤害
 --[[
+    物理暴击
     options = {
-        sourceUnit = nil, --伤害来源
-        targetUnit = nil, --目标单位
-        damage = 0, --实际伤害
-        damageString = "", --伤害漂浮字颜色
-        damageStringColor = "", --伤害漂浮字颜色
-        effect = nil, --伤害特效
-        damageKind = "attack", --伤害种类请查看 CONST_DAMAGE_KIND
-        damageType = { "magic", "thunder" }, --伤害类型请查看 CONST_DAMAGE_TYPE
-        breakArmorType 无视的类型：{ 'defend', 'resistance', 'avoid' } --破防类型请查看 CONST_BREAK_ARMOR_TYPE
+        whichUnit = unit, --目标单位，必须
+        odds = 0, --几率，可选
+        damage = 0, --原始伤害，可选
+        percent = 0, --暴击比例，可选
+        sourceUnit = nil, --来源单位，可选
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.special --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.physical,CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
     }
 ]]
-hskill.damage = function(options)
-    local sourceUnit = options.sourceUnit
-    local targetUnit = options.targetUnit
+hskill.knocking = function(options)
+    if (options.whichUnit == nil or options.sourceUnit == nil) then
+        print_err("knocking: -whichUnit - sourceUnit")
+        return
+    end
+    local odds = options.odds or 0
     local damage = options.damage or 0
-    if (damage < 0.125) then
-        print_err("DAMAGE -val")
+    local percent = options.percent or 0
+    if (odds <= 0 or damage <= 0 or percent) then
+        print_err("knocking: -odds -damage -percent")
         return
     end
-    if (targetUnit == nil) then
-        print_err("DAMAGE -targetUnit")
+    local targetUnit = options.whichUnit
+    local targetOppose = hattr.get(targetUnit, "knocking_oppose")
+    odds = odds - targetOppose
+    if (odds <= 0) then
         return
     end
-    if (sourceUnit == nil) then
-        print_err("DAMAGE -sourceUnit")
-        return
-    end
-    if (options.damageKind == nil) then
-        print_err("DAMAGE -damageKind")
-        return
-    end
-    if (his.alive(options.targetUnit) == false) then
-        return
-    end
-    local damageKind = options.damageKind
-    local damageType = options.damageType
-    if (damageType == nil) then
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
-            damageType = hattr.get(sourceUnit, "attack_damage_type")
-        end
-    end
-    if (damageType == nil) then
-        print_err("DAMAGE -damageType")
-        return
-    end
-    -- 最终伤害
-    local lastDamage = 0
-    local lastDamagePercent = 0.0
-    -- 僵直计算
-    local punishEffectRatio = 0
-    -- bool
-    local isAvoid = false
-    local isKnocking = false
-    local isViolence = false
-    -- 文本显示
-    local breakArmorType = options.breakArmorType or {}
-    local damageString = options.damageString or ""
-    local damageStringColor = options.damageStringColor or "d9d9d9"
-    local effect = options.effect
-    -- 判断伤害方式
-    if (damageKind == CONST_DAMAGE_KIND.attack) then
-        if (his.unarm(sourceUnit) == true) then
-            return
-        end
-    elseif (damageKind == CONST_DAMAGE_KIND.skill) then
-        if (his.silent(sourceUnit) == true) then
-            return
-        end
-    elseif (damageKind == CONST_DAMAGE_KIND.item) then
-    elseif (damageKind == CONST_DAMAGE_KIND.special) then
-    else
-        print_err("DAMAGE -damageKind")
-        return
-    end
-    --双方attr get
-    local targetUnitAttr = hattr.get(targetUnit)
-    local sourceUnitAttr = hattr.get(sourceUnit)
-    -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
-    if (his.invincible(targetUnit) == true or math.random(1, 100) < targetUnitAttr.invincible) then
-        if (table.includes(CONST_DAMAGE_TYPE.absolute, damageType) == false) then
-            return
-        end
-    end
-    -- 计算硬直抵抗
-    punishEffectRatio = 0.99
-    if (targetUnitAttr.punish_oppose > 0) then
-        punishEffectRatio = punishEffectRatio - targetUnitAttr.punish_oppose * 0.01
-        if (punishEffectRatio < 0.100) then
-            punishEffectRatio = 0.100
-        end
-    end
-    -- *重要* 地图平衡常数必须设定护甲因子为0，这里为了修正魔兽负护甲依然因子保持0.06的bug
-    -- 当护甲x为负时，最大-20,公式2-(1-a)^abs(x)
-    if (targetUnitAttr.defend < 0 and targetUnitAttr.defend >= -20) then
-        damage = damage / (2 - cj.Pow(0.94, math.abs(targetUnitAttr.defend)))
-    elseif (targetUnitAttr.defend < 0 and targetUnitAttr.defend < -20) then
-        damage = damage / (2 - cj.Pow(0.94, 20))
-    end
-    -- 计算攻击者的攻击里各种类型的占比
-    local typeRatio = 1 / #damageType
-    local damageTypePercent = {} --*
-    for _, dt in ipairs(damageType) do
-        damageTypePercent[dt] = typeRatio
-    end
-    local attackSum = sourceUnitAttr.attack_white + sourceUnitAttr.attack_green
-    if (attackSum > 0) then
-        damageTypePercent.physical = typeRatio * (sourceUnitAttr.attack_white / attackSum)
-        damageTypePercent.magic = typeRatio * (sourceUnitAttr.attack_green / attackSum)
-    end
-    -- 开始神奇的伤害计算
-    lastDamage = damage
-    -- 计算暴击值，判断伤害类型将暴击归0
-    -- 判断无视装甲类型
-    if (breakArmorType ~= nil and #breakArmorType > 0) then
-        damageString = damageString .. "无视"
-        if (table.includes("defend", breakArmorType)) then
-            if (targetUnitAttr.defend > 0) then
-                targetUnitAttr.defend = 0
-            end
-            damageString = damageString .. "护甲"
-            damageStringColor = "f97373"
-        end
-        if (table.includes("resistance", breakArmorType)) then
-            if (targetUnitAttr.resistance > 0) then
-                targetUnitAttr.resistance = 0
-            end
-            damageString = damageString .. "魔抗"
-            damageStringColor = "6fa8dc"
-        end
-        if (table.includes("avoid", breakArmorType)) then
-            targetUnitAttr.avoid = -999
-            damageString = damageString .. "回避"
-            damageStringColor = "76a5af"
-        end
-        -- @触发无视防御事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.breakArmor,
+    if (math.random(1, 100) <= odds) then
+        local damageKind = options.damageKind or CONST_DAMAGE_KIND.special
+        local damageType = options.damageType or {CONST_DAMAGE_TYPE.physical, CONST_DAMAGE_TYPE.real}
+        heffect.toUnit("war3mapImported\\eff_crit.mdl", targetUnit, 0)
+        --暴！
+        local val = damage * percent
+        hskill.damage(
             {
-                triggerUnit = sourceUnit,
+                sourceUnit = options.sourceUnit,
                 targetUnit = targetUnit,
-                breakType = breakArmorType
-            }
-        )
-        -- @触发被无视防御事件
-        hevent.triggerEvent(
-            targetUnit,
-            CONST_EVENT.beBreakArmor,
-            {
-                triggerUnit = targetUnit,
-                sourceUnit = sourceUnit,
-                breakType = breakArmorType
-            }
-        )
-    end
-    -- 如果遇到真实伤害，无法回避
-    if (table.includes(CONST_DAMAGE_TYPE.real, damageType) == true) then
-        targetUnitAttr.avoid = -99999
-        damageString = damageString .. CONST_DAMAGE_TYPE_MAP.real.label
-        damageStringColor = CONST_DAMAGE_TYPE_MAP.real.color
-    end
-    -- 如果遇到绝对伤害，无法回避，无视无敌
-    if (table.includes(CONST_DAMAGE_TYPE.absolute, damageType) == true) then
-        targetUnitAttr.avoid = -99999
-        damageString = damageString .. CONST_DAMAGE_TYPE_MAP.absolute.label
-        damageStringColor = CONST_DAMAGE_TYPE_MAP.absolute.color
-    end
-    -- 计算物理暴击
-    if (table.includes(CONST_DAMAGE_TYPE.physical, damageType) == true) then
-        damageStringColor = CONST_DAMAGE_TYPE_MAP.physical.color
-        if
-            (targetUnitAttr.knocking_odds - targetUnitAttr.knocking_oppose) > 0 and
-                math.random(1, 100) <= (targetUnitAttr.knocking_odds - targetUnitAttr.knocking_oppose)
-         then
-            lastDamagePercent = lastDamagePercent + damageTypePercent.physical * sourceUnitAttr.knocking * 0.01
-            targetUnitAttr.avoid = -999 -- 触发暴击，无视回避(模仿了魔兽原生的风格)
-            isKnocking = true
-        end
-    end
-    -- 计算魔法暴击
-    if (table.includes(CONST_DAMAGE_TYPE.magic, damageType) == true) then
-        damageStringColor = CONST_DAMAGE_TYPE_MAP.magic.color
-        if
-            (targetUnitAttr.violence_odds - targetUnitAttr.violence_oppose) > 0 and
-                math.random(1, 100) <= (targetUnitAttr.violence_odds - targetUnitAttr.violence_oppose)
-         then
-            lastDamagePercent = lastDamagePercent + damageTypePercent.magic * sourceUnitAttr.violence * 0.01
-            targetUnitAttr.avoid = -999 -- 触发暴击，无视回避(模仿了魔兽原生的风格)
-            isViolence = true
-        end
-    end
-    -- 计算回避 X 命中
-    if
-        (damageKind == CONST_DAMAGE_KIND.attack and targetUnitAttr.avoid - sourceUnitAttr.aim > 0 and
-            math.random(1, 100) <= targetUnitAttr.avoid - sourceUnitAttr.aim)
-     then
-        isAvoid = true
-        lastDamage = 0
-        htextTag.style(htextTag.create2Unit(targetUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
-        -- @触发回避事件
-        hevent.triggerEvent(
-            targetUnit,
-            CONST_EVENT.avoid,
-            {
-                triggerUnit = targetUnit,
-                attacker = sourceUnit
-            }
-        )
-        -- @触发被回避事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.beAvoid,
-            {
-                triggerUnit = sourceUnit,
-                attacker = sourceUnit,
-                targetUnit = targetUnit
-            }
-        )
-    end
-    -- 计算自然属性
-    if (lastDamage > 0) then
-        -- 自然属性
-        local tempNatural = {}
-        for k, natural in pairs(CONST_DAMAGE_TYPE_NATURE) do
-            tempNatural[natural] =
-                10 + sourceUnitAttr["natural_" .. natural] - targetUnitAttr["natural_" .. natural .. "_oppose"]
-            if (tempNatural[natural] < -100) then
-                tempNatural[natural] = -100
-            end
-            if (table.includes(natural, damageType) and tempNatural[natural] ~= 0) then
-                lastDamagePercent = lastDamagePercent + typeRatio * tempNatural[natural] * 0.01
-                damageString = damageString .. CONST_DAMAGE_TYPE_MAP[natural].label
-                damageStringColor = CONST_DAMAGE_TYPE_MAP[natural].color
-            end
-        end
-    end
-    -- 计算混合了物理的杂乱伤害，护甲效果减弱
-    if (table.includes(CONST_DAMAGE_TYPE.physical, damageType) and targetUnitAttr.defend ~= 0) then
-        targetUnitAttr.defend = targetUnitAttr.defend * damageTypePercent.physical
-        -- 计算护甲
-        if (targetUnitAttr.defend > 0) then
-            lastDamagePercent = lastDamagePercent - targetUnitAttr.defend / (targetUnitAttr.defend + 200)
-        else
-            lastDamagePercent = lastDamagePercent + (-targetUnitAttr.defend / (-targetUnitAttr.defend + 100))
-        end
-    end
-    -- 计算混合了魔法的杂乱伤害，魔抗效果减弱
-    if (table.includes(CONST_DAMAGE_TYPE.magic, damageType) and targetUnitAttr.resistance ~= 0) then
-        targetUnitAttr.resistance = targetUnitAttr.resistance * damageTypePercent.magic
-        -- 计算魔抗
-        if (targetUnitAttr.resistance ~= 0) then
-            if (targetUnitAttr.resistance >= 100) then
-                lastDamagePercent = lastDamagePercent * damageTypePercent.physical
-            else
-                lastDamagePercent = lastDamagePercent - targetUnitAttr.resistance * 0.01
-            end
-        end
-    end
-    -- 计算伤害增幅
-    if (lastDamage > 0 and sourceUnitAttr.damage_amplitude ~= 0) then
-        lastDamagePercent = lastDamagePercent + sourceUnitAttr.damage_amplitude * 0.01
-    end
-    -- 合计 lastDamagePercent
-    lastDamage = lastDamage * (1 + lastDamagePercent)
-    -- 计算减伤
-    if (targetUnitAttr.toughness > 0) then
-        if (targetUnitAttr.toughness >= lastDamage) then
-            --@当减伤100%以上时触发事件,触发极限减伤抵抗事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.limitToughness,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit
-                }
-            )
-            lastDamage = 0
-        else
-            lastDamage = lastDamage - targetUnitAttr.toughness
-        end
-    end
-    -- 上面都是先行计算 ------------------
-    if (lastDamage > 0.125) then
-        if (isKnocking) then
-            --@触发物理暴击事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.knocking,
-                {
-                    triggerUnit = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = lastDamage,
-                    value = sourceUnitAttr.knocking,
-                    percent = sourceUnitAttr.knocking_odds
-                }
-            )
-            --@触发被物理暴击事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.beKnocking,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    damage = lastDamage,
-                    value = sourceUnitAttr.knocking,
-                    percent = sourceUnitAttr.knocking_odds
-                }
-            )
-            heffect.toUnit("war3mapImported\\eff_crit.mdl", targetUnit, 0)
-        end
-        if (isViolence) then
-            --@触发魔法暴击事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.violence,
-                {
-                    triggerUnit = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = lastDamage,
-                    value = sourceUnitAttr.violence,
-                    percent = sourceUnitAttr.violence_odds
-                }
-            )
-            --@触发被魔法暴击事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.beViolence,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    damage = lastDamage,
-                    value = sourceUnitAttr.violence,
-                    percent = sourceUnitAttr.violence_odds
-                }
-            )
-            heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", targetUnit, 0)
-        end
-        -- 暴击文本加持
-        if (isKnocking and isViolence) then
-            damageString = damageString .. "双暴"
-            damageStringColor = "b054ee"
-        elseif (isKnocking) then
-            damageString = damageString .. "物暴"
-            damageStringColor = "ef3215"
-        elseif (isViolence) then
-            damageString = damageString .. "魔爆"
-            damageStringColor = "15bcef"
-        end
-        -- 造成伤害及漂浮字
-        htextTag.style(
-            htextTag.create2Unit(
-                targetUnit,
-                damageString .. math.floor(lastDamage),
-                6.00,
-                damageStringColor,
-                1,
-                1.1,
-                11.00
-            ),
-            "toggle",
-            -0.05,
-            0
-        )
-        hevent.setLastDamageUnit(targetUnit, sourceUnit)
-        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), lastDamage)
-        hplayer.addBeDamage(cj.GetOwningPlayer(targetUnit), lastDamage)
-        hunit.subCurLife(targetUnit, lastDamage)
-        if (type(effect) == "string" and string.len(effect) > 0) then
-            heffect.toXY(effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
-        end
-        -- @触发伤害事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.damage,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = targetUnit,
-                sourceUnit = sourceUnit,
-                damage = lastDamage,
+                damage = val,
+                damageString = "物暴",
+                damageStringColor = "ef3215",
                 damageKind = damageKind,
                 damageType = damageType
             }
         )
-        -- @触发被伤害事件
+        --@触发物理暴击事件
         hevent.triggerEvent(
-            targetUnit,
-            CONST_EVENT.beDamage,
+            options.sourceUnit,
+            CONST_EVENT.knocking,
             {
-                triggerUnit = targetUnit,
-                sourceUnit = sourceUnit,
-                damage = lastDamage,
-                damageKind = damageKind,
-                damageType = damageType
+                triggerUnit = options.sourceUnit,
+                targetUnit = targetUnit,
+                damage = val,
+                odds = odds,
+                percent = percent
             }
         )
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
-            -- @触发攻击事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.attack,
-                {
-                    triggerUnit = sourceUnit,
-                    attacker = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = lastDamage,
-                    damageKind = damageKind,
-                    damageType = damageType
-                }
-            )
-            -- @触发被攻击事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.beAttack,
-                {
-                    triggerUnit = sourceUnit,
-                    attacker = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = lastDamage,
-                    damageKind = damageKind,
-                    damageType = damageType
-                }
-            )
-        end
-        -- 分裂
-        local split = sourceUnitAttr.split - targetUnitAttr.split_oppose
-        local split_range = sourceUnitAttr.split_range
-        if (damageKind == CONST_DAMAGE_KIND.attack and split > 0) then
-            local g =
-                hgroup.createByUnit(
-                targetUnit,
-                split_range,
-                function()
-                    local flag = true
-                    if (his.death(cj.GetFilterUnit())) then
-                        flag = false
-                    end
-                    if (his.ally(cj.GetFilterUnit(), sourceUnit)) then
-                        flag = false
-                    end
-                    if (his.building(cj.GetFilterUnit())) then
-                        flag = false
-                    end
-                    return flag
-                end
-            )
-            local splitDamage = lastDamage * split * 0.01
-            cj.ForGroup(
-                g,
-                function()
-                    local eu = cj.GetEnumUnit()
-                    if (eu ~= targetUnit) then
-                        hevent.setLastDamageUnit(eu, sourceUnit)
-                        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), splitDamage)
-                        hplayer.addBeDamage(cj.GetOwningPlayer(eu), splitDamage)
-                        hunit.subCurLife(eu, splitDamage)
-                        heffect.toUnit("Abilities\\Spells\\Other\\Cleave\\CleaveDamageTarget.mdl", targetUnit, 0)
-                    end
-                end
-            )
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
-            -- @触发分裂事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.split,
-                {
-                    triggerUnit = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = splitDamage,
-                    range = split_range,
-                    percent = split
-                }
-            )
-            -- @触发被分裂事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.beSpilt,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    damage = splitDamage,
-                    range = split_range,
-                    percent = split
-                }
-            )
-        end
-        -- 吸血
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
-            local hemophagia = sourceUnitAttr.hemophagia - targetUnitAttr.hemophagia_oppose
-            if (hemophagia > 0) then
-                hunit.addLife(sourceUnit, lastDamage * hemophagia * 0.01)
-                heffect.toUnit(
-                    "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
-                    sourceUnit,
-                    "origin",
-                    1.00
-                )
-                -- @触发吸血事件
-                hevent.triggerEvent(
-                    sourceUnit,
-                    CONST_EVENT.hemophagia,
-                    {
-                        triggerUnit = sourceUnit,
-                        targetUnit = targetUnit,
-                        damage = lastDamage * hemophagia * 0.01,
-                        percent = hemophagia
-                    }
-                )
-                -- @触发被吸血事件
-                hevent.triggerEvent(
-                    targetUnit,
-                    CONST_EVENT.beHemophagia,
-                    {
-                        triggerUnit = targetUnit,
-                        sourceUnit = sourceUnit,
-                        damage = lastDamage * hemophagia * 0.01,
-                        percent = hemophagia
-                    }
-                )
-            end
-        end
-        -- 技能吸血
-        if (damageKind == CONST_DAMAGE_KIND.skill) then
-            local hemophagiaSkill = sourceUnitAttr.hemophagia_skill - targetUnitAttr.hemophagia_skill_oppose
-            if (hemophagiaSkill > 0) then
-                hunit.addLife(sourceUnit, lastDamage * hemophagiaSkill * 0.01)
-                heffect.toUnit(
-                    "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
-                    sourceUnit,
-                    "origin",
-                    1.80
-                )
-                -- @触发技能吸血事件
-                hevent.triggerEvent(
-                    sourceUnit,
-                    CONST_EVENT.skillHemophagia,
-                    {
-                        triggerUnit = sourceUnit,
-                        targetUnit = targetUnit,
-                        damage = lastDamage * hemophagiaSkill * 0.01,
-                        percent = hemophagiaSkill
-                    }
-                )
-                -- @触发被技能吸血事件
-                hevent.triggerEvent(
-                    targetUnit,
-                    CONST_EVENT.beSkillHemophagia,
-                    {
-                        triggerUnit = targetUnit,
-                        sourceUnit = sourceUnit,
-                        damage = lastDamage * hemophagiaSkill * 0.01,
-                        percent = hemophagiaSkill
-                    }
-                )
-            end
-        end
-        -- 硬直
-        local punish_during = 5.00
-        if
-            (lastDamage > 1 and his.alive(targetUnit) and his.punish(targetUnit) == false and
-                hunit.isOpenPunish(targetUnit))
-         then
-            hattr.set(
-                targetUnit,
-                0,
-                {
-                    punish_current = "-" .. lastDamage
-                }
-            )
-            if (targetUnitAttr.punish_current <= 0) then
-                his.set(targetUnit, "isPunishing", true)
-                htime.setTimeout(
-                    punish_during + 1.00,
-                    function(t, td)
-                        htime.delDialog(td)
-                        htime.delTimer(t)
-                        his.set(targetUnit, "isPunishing", false)
-                    end
-                )
-            end
-            local punishEffectAttackSpeed = (100 + targetUnitAttr.attack_speed) * punishEffectRatio
-            local punishEffectMove = targetUnitAttr.move * punishEffectRatio
-            if (punishEffectAttackSpeed < 1) then
-                punishEffectAttackSpeed = 1.00
-            end
-            if (punishEffectMove < 1) then
-                punishEffectMove = 1.00
-            end
-            hattr.set(
-                targetUnit,
-                punish_during,
-                {
-                    attack_speed = "-" .. punishEffectAttackSpeed,
-                    move = "-" .. punishEffectMove
-                }
-            )
-            htextTag.style(
-                htextTag.create2Unit(targetUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00),
-                "scale",
-                0,
-                0
-            )
-            -- @触发硬直事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.heavy,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    percent = punishEffectRatio * 100,
-                    during = punish_during
-                }
-            )
-        end
-        -- 反射
-        local targetUnitDamageRebound = targetUnitAttr.damage_rebound - sourceUnitAttr.damage_rebound_oppose
-        if (targetUnitDamageRebound > 0) then
-            hunit.subCurLife(sourceUnit, lastDamage * targetUnitDamageRebound * 0.01)
-            htextTag.style(
-                htextTag.create2Unit(
-                    sourceUnit,
-                    "反伤" .. (lastDamage * targetUnitDamageRebound * 0.01),
-                    10.00,
-                    "f8aaeb",
-                    10,
-                    1.00,
-                    10.00
-                ),
-                "shrink",
-                -0.05,
-                0
-            )
-            -- @触发反伤事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.rebound,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    damage = lastDamage * targetUnitDamageRebound * 0.01
-                }
-            )
-        end
-        -- 特殊效果,需要非无敌并处于效果启动状态下
-        -- buff/debuff
-        local buff
-        local debuff
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
-            buff = sourceUnitAttr.attack_buff
-            debuff = sourceUnitAttr.attack_debuff
-        elseif (damageKind == CONST_DAMAGE_KIND.skill) then
-            buff = sourceUnitAttr.skill_buff
-            debuff = sourceUnitAttr.skill_debuff
-        end
-        if (buff ~= nil) then
-            for _, etc in pairs(buff) do
-                local b = etc.table
-                if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(sourceUnit, b.during, {[b.attr] = "+" .. b.val})
-                    if (type(b.effect) == "string" and string.len(b.effect) > 0) then
-                        heffect.bindUnit(b.effect, sourceUnit, "origin", b.during)
-                    end
-                end
-            end
-        end
-        if (debuff ~= nil) then
-            for _, etc in pairs(debuff) do
-                local b = etc.table
-                if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(targetUnit, b.during, {[b.attr] = "-" .. b.val})
-                    if (type(b.effect) == "string" and string.len(b.effect) > 0) then
-                        heffect.bindUnit(b.effect, targetUnit, "origin", b.during)
-                    end
-                end
-            end
-        end
-        -- effect
-        local effect
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
-            effect = sourceUnitAttr.attack_effect
-        elseif (damageKind == CONST_DAMAGE_KIND.skill) then
-            effect = sourceUnitAttr.skill_effect
-        end
-        if (effect ~= nil) then
-            for _, etc in pairs(effect) do
-                local b = etc.table
-                b.val = b.val or 0
-                b.odds = b.odds or 0
-                if (b.odds > 0) then
-                    if (b.attr == "broken") then
-                        --打断
-                        hskill.broken(
-                            {
-                                whichUnit = targetUnit,
-                                odds = b.odds,
-                                damage = b.val,
-                                sourceUnit = sourceUnit,
-                                effect = b.effect,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.real}
-                            }
-                        )
-                    elseif (b.attr == "swim") then
-                        --眩晕
-                        hskill.swim(
-                            {
-                                whichUnit = targetUnit,
-                                odds = b.odds,
-                                damage = b.val,
-                                during = b.during,
-                                sourceUnit = sourceUnit,
-                                effect = b.effect,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.real}
-                            }
-                        )
-                    elseif (b.attr == "silent") then
-                        --沉默
-                        hskill.silent(
-                            {
-                                whichUnit = targetUnit,
-                                odds = b.odds,
-                                damage = b.val,
-                                during = b.during,
-                                sourceUnit = sourceUnit,
-                                effect = b.effect,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.real}
-                            }
-                        )
-                    elseif (b.attr == "unarm") then
-                        --缴械
-                        hskill.unarm(
-                            {
-                                whichUnit = targetUnit,
-                                odds = b.odds,
-                                damage = b.val,
-                                during = b.during,
-                                sourceUnit = sourceUnit,
-                                effect = b.effect,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.real}
-                            }
-                        )
-                    elseif (b.attr == "fetter") then
-                        --缚足
-                        hskill.fetter(
-                            {
-                                whichUnit = targetUnit,
-                                odds = b.odds,
-                                damage = b.val,
-                                during = b.during,
-                                sourceUnit = sourceUnit,
-                                effect = b.effect,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.real}
-                            }
-                        )
-                    elseif (b.attr == "bomb") then
-                        --爆破
-                        hskill.bomb(
-                            {
-                                odds = b.odds,
-                                damage = b.val,
-                                range = b.range,
-                                whichUnit = targetUnit,
-                                sourceUnit = sourceUnit,
-                                effect = b.effect,
-                                effectSingle = b.effectSingle,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.real}
-                            }
-                        )
-                    elseif (b.attr == "lightning_chain") then
-                        --闪电链
-                        hskill.lightningChain(
-                            {
-                                odds = b.odds,
-                                damage = b.val,
-                                lightningType = b.lightning_type,
-                                qty = b.qty,
-                                change = b.change,
-                                range = b.range or 500,
-                                effect = b.effect,
-                                isRepeat = false,
-                                whichUnit = targetUnit,
-                                prevUnit = sourceUnit,
-                                sourceUnit = sourceUnit,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.thunder}
-                            }
-                        )
-                    elseif (b.attr == "crack_fly") then
-                        --击飞
-                        hskill.crackFly(
-                            {
-                                odds = b.odds,
-                                damage = b.val,
-                                whichUnit = targetUnit,
-                                sourceUnit = sourceUnit,
-                                distance = b.distance,
-                                high = b.high,
-                                during = b.during,
-                                effect = b.effect,
-                                damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = {CONST_DAMAGE_TYPE.thunder}
-                            }
-                        )
-                    end
-                end
-            end
-        end
+        --@触发被物理暴击事件
+        hevent.triggerEvent(
+            targetUnit,
+            CONST_EVENT.beKnocking,
+            {
+                triggerUnit = options.sourceUnit,
+                sourceUnit = targetUnit,
+                damage = val,
+                odds = odds,
+                percent = percent
+            }
+        )
     end
 end
 
 --[[
-    打断 ! 注意这个方法对中立被动无效
+    魔法暴击
+    options = {
+        whichUnit = unit, --目标单位，必须
+        odds = 100, --几率，可选
+        damage = 0, --伤害，可选
+        sourceUnit = nil, --来源单位，可选
+        effect = nil, --特效，可选
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+    }
+]]
+hskill.violence = function(options)
+    if (options.whichUnit == nil or options.sourceUnit == nil) then
+        print_err("violence: -whichUnit - sourceUnit")
+        return
+    end
+    local odds = options.odds or 0
+    local damage = options.damage or 0
+    local percent = options.percent or 0
+    if (odds <= 0 or damage <= 0 or percent) then
+        print_err("violence: -odds -damage -percent")
+        return
+    end
+    local targetUnit = options.whichUnit
+    local targetOppose = hattr.get(targetUnit, "violence_oppose")
+    odds = odds - targetOppose
+    if (odds <= 0) then
+        return
+    end
+    if (math.random(1, 100) <= odds) then
+        local damageKind = options.damageKind or CONST_DAMAGE_KIND.special
+        local damageType = options.damageType or {CONST_DAMAGE_TYPE.magic, CONST_DAMAGE_TYPE.real}
+        heffect.toUnit("war3mapImported\\eff_demon_explosion.mdl", targetUnit, 0)
+        --暴！
+        local val = damage * percent
+        hskill.damage(
+            {
+                sourceUnit = options.sourceUnit,
+                targetUnit = targetUnit,
+                damage = val,
+                damageString = "魔爆",
+                damageStringColor = "15bcef",
+                damageKind = damageKind,
+                damageType = damageType
+            }
+        )
+        --@触发魔法暴击事件
+        hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.violence,
+            {
+                triggerUnit = options.sourceUnit,
+                targetUnit = targetUnit,
+                damage = val,
+                odds = odds,
+                percent = percent
+            }
+        )
+        --@触发被魔法暴击事件
+        hevent.triggerEvent(
+            targetUnit,
+            CONST_EVENT.beViolence,
+            {
+                triggerUnit = targetUnit,
+                sourceUnit = targetUnit,
+                damage = val,
+                odds = odds,
+                percent = percent
+            }
+        )
+    end
+end
+
+--[[
+    打断
     options = {
         whichUnit = unit, --目标单位，必须
         odds = 100, --几率，可选
@@ -1166,6 +220,7 @@ hskill.broken = function(options)
             {
                 triggerUnit = sourceUnit,
                 targetUnit = u,
+                odds = odds,
                 damage = damage
             }
         )
@@ -1177,6 +232,7 @@ hskill.broken = function(options)
         {
             triggerUnit = u,
             sourceUnit = sourceUnit,
+            odds = odds,
             damage = damage
         }
     )
@@ -1286,6 +342,7 @@ hskill.swim = function(options)
             {
                 triggerUnit = sourceUnit,
                 targetUnit = u,
+                odds = odds,
                 damage = damage,
                 during = during
             }
@@ -1298,6 +355,7 @@ hskill.swim = function(options)
         {
             triggerUnit = u,
             sourceUnit = sourceUnit,
+            odds = odds,
             damage = damage,
             during = during
         }
@@ -1413,6 +471,7 @@ hskill.silent = function(options)
             {
                 triggerUnit = sourceUnit,
                 targetUnit = u,
+                odds = odds,
                 damage = damage,
                 during = during
             }
@@ -1425,6 +484,7 @@ hskill.silent = function(options)
         {
             triggerUnit = u,
             sourceUnit = sourceUnit,
+            odds = odds,
             damage = damage,
             during = during
         }
@@ -1542,6 +602,7 @@ hskill.unarm = function(options)
             {
                 triggerUnit = sourceUnit,
                 targetUnit = u,
+                odds = odds,
                 damage = damage,
                 during = during
             }
@@ -1554,6 +615,7 @@ hskill.unarm = function(options)
         {
             triggerUnit = u,
             sourceUnit = sourceUnit,
+            odds = odds,
             damage = damage,
             during = during
         }
@@ -1645,6 +707,7 @@ hskill.fetter = function(options)
             {
                 triggerUnit = sourceUnit,
                 targetUnit = u,
+                odds = odds,
                 damage = damage,
                 during = during
             }
@@ -1657,6 +720,7 @@ hskill.fetter = function(options)
         {
             triggerUnit = u,
             sourceUnit = sourceUnit,
+            odds = odds,
             damage = damage,
             during = during
         }
@@ -1748,6 +812,7 @@ hskill.bomb = function(options)
                 {
                     triggerUnit = options.sourceUnit,
                     targetUnit = cj.GetEnumUnit(),
+                    odds = odds,
                     damage = options.damage,
                     range = range
                 }
@@ -1759,6 +824,7 @@ hskill.bomb = function(options)
                 {
                     triggerUnit = cj.GetEnumUnit(),
                     sourceUnit = options.sourceUnit,
+                    odds = odds,
                     damage = options.damage,
                     range = range
                 }
@@ -1858,6 +924,7 @@ hskill.lightningChain = function(options)
         {
             triggerUnit = options.sourceUnit,
             targetUnit = whichUnit,
+            odds = odds,
             damage = damage,
             range = range,
             index = options.index
@@ -1870,6 +937,7 @@ hskill.lightningChain = function(options)
         {
             triggerUnit = whichUnit,
             sourceUnit = options.sourceUnit,
+            odds = odds,
             damage = damage,
             range = range,
             index = options.index
@@ -2016,6 +1084,7 @@ hskill.crackFly = function(options)
         {
             triggerUnit = options.sourceUnit,
             targetUnit = options.whichUnit,
+            odds = odds,
             damage = damage,
             high = high,
             distance = distance
@@ -2028,6 +1097,7 @@ hskill.crackFly = function(options)
         {
             triggerUnit = options.whichUnit,
             sourceUnit = options.sourceUnit,
+            odds = odds,
             damage = damage,
             high = high,
             distance = distance
@@ -2185,100 +1255,6 @@ hskill.rangeSwim = function(options)
     )
     cj.GroupClear(g)
     cj.DestroyGroup(g)
-end
-
---[[
-    范围持续伤害
-    options = {
-        range = 0, --范围（必须有）
-        frequency = 0, --伤害频率（必须有）
-        times = 0, --伤害次数（必须有）
-        effect = "", --特效（可选）
-        effectSingle = "", --单体特效（可选）
-        filter = [function], --必须有
-        whichUnit = [unit], --中心单位的位置（可选）
-        whichLoc = [location], --目标点（可选）
-        x = [point], --目标坐标X（可选）
-        y = [point], --目标坐标Y（可选）
-        damage = 0, --伤害（可选，但是这里可以等于0）
-        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
-        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
-    }
-]]
-hskill.rangeDamage = function(options)
-    local range = options.range or 0
-    local times = options.times or 0
-    local frequency = options.frequency or 0
-    local damage = options.damage or 0
-    if (range <= 0 or times <= 0 or frequency <= 0) then
-        print_err("hskill.rangeSwim:-range -times -frequency")
-        return
-    end
-    if (damage > 0 and options.sourceUnit == nil) then
-        print_err("hskill.rangeSwim:-sourceUnit")
-        return
-    end
-    local x, y
-    if (options.x ~= nil or options.y ~= nil) then
-        x = options.x
-        y = options.y
-    elseif (options.whichUnit ~= nil) then
-        x = cj.GetUnitX(options.whichUnit)
-        y = cj.GetUnitY(options.whichUnit)
-    elseif (options.whichLoc ~= nil) then
-        x = cj.GetLocatonX(options.whichLoc)
-        y = cj.GetLocatonY(options.whichLoc)
-    end
-    if (x == nil or y == nil) then
-        print_err("hskill.rangeSwim:-x -y")
-        return
-    end
-    local filter = options.filter
-    if (type(filter) ~= "function") then
-        print_err("filter must be function")
-        return
-    end
-    if (options.effect ~= nil) then
-        heffect.toXY(options.effect, x, y, 0.25 + (times * frequency))
-    end
-    local ti = 0
-    htime.setInterval(
-        frequency,
-        function(t, td)
-            ti = ti + 1
-            if (ti >= times) then
-                htime.delDialog(td)
-                htime.delTimer(t)
-                return
-            end
-            local g = hgroup.createByXY(x, y, range, filter)
-            if (g == nil) then
-                return
-            end
-            if (hgroup.count(g) <= 0) then
-                return
-            end
-            cj.ForGroup(
-                g,
-                function()
-                    hskill.damage(
-                        {
-                            sourceUnit = options.sourceUnit,
-                            targetUnit = cj.GetEnumUnit(),
-                            effect = options.effectSingle,
-                            damage = damage,
-                            damageKind = options.damageKind,
-                            damageType = options.damageType
-                        }
-                    )
-                end
-            )
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
-            g = nil
-        end
-    )
 end
 
 --[[
@@ -2794,43 +1770,3 @@ hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
     -- 根据data影响属性
     hattr.set(u, during, attrData)
 end
-
---- 自定义技能 - 对单位/对XY/对点
---[[
-    options = {
-        whichPlayer,
-        skillId,
-        orderString,
-        x,y 创建位置
-        targetX,targetY 对XY时可选
-        targetLoc, 对点时可选
-        targetUnit, 对单位时可选
-        life, 马甲生命周期
-    }
-]]
-hskill.diy = function(options)
-    if (options.whichPlayer == nil or options.skillId == nil or options.orderString == nil) then
-        return
-    end
-    if (options.x == nil or options.y == nil) then
-        return
-    end
-    local life = options.life
-    if (options.life == nil or options.life < 2.00) then
-        life = 2.00
-    end
-    local token = cj.CreateUnit(options.whichPlayer, hskill.SKILL_TOKEN, x, y, bj_UNIT_FACING)
-    cj.UnitAddAbility(token, options.skillId)
-    if (options.targetUnit ~= nil) then
-        cj.IssueTargetOrderById(token, options.orderId, options.targetUnit)
-    elseif (options.targetX ~= nil and options.targetY ~= nil) then
-        cj.IssuePointOrder(token, options.orderString, options.targetX, options.targetY)
-    elseif (options.targetLoc ~= nil) then
-        cj.IssuePointOrderLoc(token, options.orderString, options.targetLoc)
-    else
-        cj.IssueImmediateOrder(token, options.orderString)
-    end
-    hunit.del(token, life)
-end
-
-return hskill

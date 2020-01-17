@@ -236,18 +236,12 @@ hattr.registerAll = function(whichUnit)
         toughness = 0.0,
         avoid = 0.0,
         aim = 0.0,
-        knocking = 0.0,
-        violence = 0.0,
-        knocking_odds = 0.0,
-        violence_odds = 0.0,
         punish = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
         punish_current = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
         meditative = 0.0,
         help = 0.0,
         hemophagia = 0.0,
         hemophagia_skill = 0.0,
-        split = 0.0,
-        split_range = 0.0,
         luck = 0.0,
         invincible = 0.0,
         weight = 0.0,
@@ -329,6 +323,9 @@ hattr.registerAll = function(whichUnit)
                 }
             }
             attack_effect / skill_effect同理,effect只能设定下列的值，会在属性系统自动调用：
+                {attr="knocking",odds = 0.0, val = 0.0, effect = nil},
+                {attr="violence",odds = 0.0, val = 0.0, effect = nil},
+                {attr="split",odds = 0.0, val = 0.0, range = 0.0,effect = nil},
                 {attr="swim",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
                 {attr="broken",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
                 {attr="silent",odds = 0.0, val = 0.0, during = 0.0, effect = nil},

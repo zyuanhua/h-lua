@@ -538,7 +538,7 @@ end
 --眩晕成功
 --triggerUnit 获取触发单位
 --targetUnit 获取被眩晕单位
---percent 获取眩晕几率百分比
+--odds 获取眩晕几率百分比
 --during 获取眩晕时间（秒）
 --damage 获取眩晕伤害
 hevent.onSwim = function(whichUnit, callFunc)
@@ -548,7 +548,7 @@ end
 --被眩晕
 --triggerUnit 获取被眩晕单位
 --sourceUnit 获取来源单位
---percent 获取眩晕几率百分比
+--odds 获取眩晕几率百分比
 --during 获取眩晕时间（秒）
 --damage 获取眩晕伤害
 hevent.onBeSwim = function(whichUnit, callFunc)
@@ -558,6 +558,7 @@ end
 --打断成功
 --triggerUnit 获取触发单位
 --targetUnit 获取被打断单位
+--odds 获取几率百分比
 --damage 获取打断伤害
 hevent.onBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.broken, callFunc)
@@ -566,6 +567,7 @@ end
 --被打断
 --triggerUnit 获取被打断单位
 --sourceUnit 获取来源单位
+--odds 获取几率百分比
 --damage 获取打断伤害
 hevent.onBeBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBroken, callFunc)
@@ -575,6 +577,7 @@ end
 --triggerUnit 获取触发单位
 --targetUnit 获取被沉默单位
 --during 获取沉默时间（秒）
+--odds 获取几率百分比
 --damage 获取沉默伤害
 hevent.onSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.silent, callFunc)
@@ -584,6 +587,7 @@ end
 --triggerUnit 获取被沉默单位
 --sourceUnit 获取来源单位
 --during 获取沉默时间（秒）
+--odds 获取几率百分比
 --damage 获取沉默伤害
 hevent.onBeSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSilent, callFunc)
@@ -593,6 +597,7 @@ end
 --triggerUnit 获取触发单位
 --targetUnit 获取被缴械单位
 --during 获取缴械时间（秒）
+--odds 获取几率百分比
 --damage 获取缴械伤害
 hevent.onUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.unarm, callFunc)
@@ -602,6 +607,7 @@ end
 --triggerUnit 获取被缴械单位
 --sourceUnit 获取来源单位
 --during 获取缴械时间（秒）
+--odds 获取几率百分比
 --damage 获取缴械伤害
 hevent.onBeUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beUnarm, callFunc)
@@ -611,6 +617,7 @@ end
 --triggerUnit 获取触发单位
 --targetUnit 获取被缚足单位
 --during 获取缚足时间（秒）
+--odds 获取几率百分比
 --damage 获取缚足伤害
 hevent.onFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.fetter, callFunc)
@@ -620,6 +627,7 @@ end
 --triggerUnit 获取被缚足单位
 --sourceUnit 获取来源单位
 --during 获取缚足时间（秒）
+--odds 获取几率百分比
 --damage 获取缚足伤害
 hevent.onBeFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beFetter, callFunc)
@@ -629,6 +637,7 @@ end
 --triggerUnit 获取触发单位
 --targetUnit 获取被爆破单位
 --damage 获取爆破伤害
+--odds 获取几率百分比
 --range 获取爆破范围
 hevent.onBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.bomb, callFunc)
@@ -638,6 +647,7 @@ end
 --triggerUnit 获取被爆破单位
 --sourceUnit 获取来源单位
 --damage 获取爆破伤害
+--odds 获取几率百分比
 --range 获取爆破范围
 hevent.onBeBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBomb, callFunc)
@@ -646,6 +656,7 @@ end
 --闪电链成功
 --triggerUnit 获取触发单位
 --targetUnit 获取被闪电链单位
+--odds 获取几率百分比
 --damage 获取闪电链伤害
 --range 获取闪电链范围
 --index 获取单位是第几个被电到的
@@ -656,6 +667,7 @@ end
 --被闪电链
 --triggerUnit 获取被闪电链单位
 --sourceUnit 获取来源单位
+--odds 获取几率百分比
 --damage 获取闪电链伤害
 --range 获取闪电链范围
 --index 获取单位是第几个被电到的
@@ -666,6 +678,7 @@ end
 --击飞成功
 --triggerUnit 获取触发单位
 --targetUnit 获取被击飞单位
+--odds 获取几率百分比
 --damage 获取击飞伤害
 --high 获取击飞高度
 --distance 获取击飞距离
@@ -676,6 +689,7 @@ end
 --被击飞
 --triggerUnit 获取被击飞单位
 --sourceUnit 获取来源单位
+--odds 获取几率百分比
 --damage 获取击飞伤害
 --high 获取击飞高度
 --distance 获取击飞距离
@@ -711,7 +725,7 @@ end
 --triggerUnit 获取触发单位
 --targetUnit 获取目标单位
 --damage 获取暴击伤害值
---value 获取暴击几率百分比
+--odds 获取暴击几率百分比
 --percent 获取暴击增幅百分比
 hevent.onKnocking = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.knocking, callFunc)
@@ -721,7 +735,7 @@ end
 --triggerUnit 获取触发单位
 --sourceUnit 获取来源单位
 --damage 获取暴击伤害值
---value 获取暴击几率百分比
+--odds 获取暴击几率百分比
 --percent 获取暴击增幅百分比
 hevent.onBeKnocking = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beKnocking, callFunc)
@@ -731,7 +745,7 @@ end
 --triggerUnit 获取触发单位
 --targetUnit 获取目标单位
 --damage 获取暴击伤害值
---value 获取暴击几率百分比
+--odds 获取暴击几率百分比
 --percent 获取暴击增幅百分比
 hevent.onViolence = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.violence, callFunc)
@@ -741,7 +755,7 @@ end
 --triggerUnit 获取触发单位
 --sourceUnit 获取来源单位
 --damage 获取暴击伤害值
---value 获取暴击几率百分比
+--odds 获取暴击几率百分比
 --percent 获取暴击增幅百分比
 hevent.onBeViolence = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beViolence, callFunc)
