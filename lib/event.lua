@@ -104,7 +104,7 @@ hevent.onAttackDetect = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -129,7 +129,7 @@ hevent.onAttackGetTarget = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -156,7 +156,7 @@ hevent.onAttackReadyAction = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetAttacker(),
                     key,
                     {
                         triggerUnit = cj.GetAttacker(),
@@ -183,7 +183,7 @@ hevent.onBeAttackReady = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -230,7 +230,7 @@ hevent.onSkillStudy = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -259,7 +259,7 @@ hevent.onSkillReady = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -290,7 +290,7 @@ hevent.onSkillStart = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -317,7 +317,7 @@ hevent.onSkillStop = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -346,7 +346,7 @@ hevent.onSkillHappen = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -373,7 +373,7 @@ hevent.onSkillOver = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit(),
@@ -433,7 +433,7 @@ hevent.onItemDestroy = function(whichItem, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichItem,
+                    cj.GetManipulatedItem(),
                     key,
                     {
                         triggerItem = cj.GetManipulatedItem(),
@@ -872,7 +872,7 @@ hevent.onSummon = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit()
@@ -1062,7 +1062,7 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
                 )
                 if (hRuntime.event.trigger[key].click >= qty) then
                     hevent.triggerEvent(
-                        whichPlayer,
+                        triggerPlayer,
                         key,
                         {
                             triggerPlayer = triggerPlayer,
@@ -1095,7 +1095,7 @@ hevent.onUnSelection = function(whichPlayer, callFunc)
             hRuntime.event.trigger[key][whichPlayer],
             function()
                 hevent.triggerEvent(
-                    whichPlayer,
+                    cj.GetTriggerPlayer(),
                     key,
                     {
                         triggerPlayer = cj.GetTriggerPlayer(),
@@ -1118,7 +1118,7 @@ hevent.onUpgradeStart = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit()
@@ -1141,7 +1141,7 @@ hevent.onUpgradeCancel = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit()
@@ -1164,7 +1164,7 @@ hevent.onUpgradeFinish = function(whichUnit, callFunc)
             hRuntime.event.trigger[key],
             function()
                 hevent.triggerEvent(
-                    whichUnit,
+                    cj.GetTriggerUnit(),
                     key,
                     {
                         triggerUnit = cj.GetTriggerUnit()
