@@ -201,7 +201,8 @@ string.findCount = function(str, pattern)
     if (str == nil or pattern == nil) then
         return
     end
-    local s, e = 0
+    local s
+    local e = 0
     local qty = 0
     while (true) do
         s, e = string.find(str, pattern, e + 1)
@@ -209,6 +210,9 @@ string.findCount = function(str, pattern)
             break
         end
         qty = qty + 1
+        if (e == nil) then
+            break
+        end
     end
     return qty
 end
