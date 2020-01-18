@@ -196,17 +196,19 @@ string.implode = function(delimeter, table)
     return str
 end
 
---以某个子串重复生成字符串
-string.repeatStr = function(str, qty)
-    if (str == nil or qty == nil or str == "" or qty < 1) then
+--统计某个子串出现的次数
+string.findCount = function(str, pattern)
+    if (str == nil or pattern == nil) then
         return
     end
-    if (qty == 1) then
-        return str
+    local s, e = 0
+    local qty = 0
+    while (true) do
+        s, e = string.find(str, pattern, e + 1)
+        if (s == nil) then
+            break
+        end
+        qty = qty + 1
     end
-    local temp = str
-    for i = 1, qty - 1, 1 do
-        temp = temp .. str
-    end
-    return temp
+    return qty
 end
