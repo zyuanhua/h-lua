@@ -85,6 +85,27 @@ hunit.isOpenPunish = function(u)
     return hRuntime.unit[u].isOpenPunish
 end
 
+-- 设置单位的动画速度[比例尺1.00]
+hunit.setAnimateSpeed = function(u, speed, during)
+    if (hRuntime.unit[u] == nil) then
+        hRuntime.unit[u] = {}
+    end
+    cj.SetUnitTimeScale(u, speed)
+    during = during or 0
+    if (during > 0) then
+        local prevSpeed = hRuntime.unit[u].animateSpeed or 1.00
+        hRuntime.unit[u].animateSpeed = speed
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                cj.SetUnitTimeScale(u, prevSpeed)
+            end
+        )
+    end
+end
+
 --[[
     创建单位/单位组
     @return 最后创建单位/单位组
