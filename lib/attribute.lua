@@ -24,8 +24,12 @@ hattr.setLM = function(u, abilityId, qty)
         i = i + 1
     end
 end
---- 为单位添加N个同样的攻击之书Private
-hattr.setAttackWhitePrivate = function(u, itemId, qty)
+
+--- 为单位添加N个同样的攻击之书
+hattr.setAttackWhite = function(u, itemId, qty)
+    if (u == nil or itemId == nil or qty <= 0) then
+        return
+    end
     if (his.alive(u) == true) then
         local i = 1
         local it
@@ -76,13 +80,6 @@ hattr.setAttackWhitePrivate = function(u, itemId, qty)
             end
         )
     end
-end
---- 为单位添加N个同样的攻击之书
-hattr.setAttackWhite = function(u, itemId, qty)
-    if (u == nil or itemId == nil or qty <= 0) then
-        return
-    end
-    hattr.setAttackWhitePrivate(u, itemId, qty)
 end
 --- 设置三围的影响
 hattr.setThreeBuff = function(buff)
@@ -510,20 +507,32 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
         elseif (opr == "=") then
             diff = val - params[attr]
         end
-        diff = diff + hattr.getAccumuDiff(whichUnit, attr)
+        local isAccumuDiff = false
+        local accumuDiff = hattr.getAccumuDiff(whichUnit, attr)
+        if (diff * accumuDiff > 0) then
+            isAccumuDiff = true
+            diff = diff + accumuDiff
+        end
         --部分属性取整处理，否则失真
         if (isInt and diff ~= 0) then
             local di, df = math.modf(math.abs(diff))
-            if (diff >= 0) then
-                diff = di
-                if (df ~= 0) then
-                    hattr.addAccumuDiff(whichUnit, attr, df)
+            if (isAccumuDiff) then
+                if (diff >= 0) then
+                    hattr.setAccumuDiff(whichUnit, attr, df)
+                else
+                    hattr.setAccumuDiff(whichUnit, attr, -df)
                 end
             else
-                diff = -di
-                if (df ~= 0) then
+                if (diff >= 0) then
+                    hattr.addAccumuDiff(whichUnit, attr, df)
+                else
                     hattr.subAccumuDiff(whichUnit, attr, df)
                 end
+            end
+            if (diff >= 0) then
+                diff = di
+            else
+                diff = -di
             end
         end
         if (diff ~= 0) then

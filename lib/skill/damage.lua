@@ -52,7 +52,7 @@ hskill.damage = function(options)
         return
     end
     if (options.damageKind == nil) then
-        print_err("DAMAGE -damageKind")
+        options.damageKind = CONST_DAMAGE_KIND.special
         return
     end
     if (his.alive(options.targetUnit) == false) then
