@@ -372,7 +372,7 @@ hskill.swim = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {}
+    local damageType = options.damageType or {}
     --计算抵抗
     local oppose = hattr.get(u, "swim_oppose")
     odds = odds - oppose --(%)
