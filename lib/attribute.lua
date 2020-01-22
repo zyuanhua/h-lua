@@ -276,6 +276,7 @@ hattr.registerAll = function(whichUnit)
         natural_metal = 0.0,
         natural_dragon = 0.0,
         natural_insect = 0.0,
+        natural_god = 0.0,
         natural_fire_oppose = 0.0,
         natural_soil_oppose = 0.0,
         natural_water_oppose = 0.0,
@@ -290,6 +291,7 @@ hattr.registerAll = function(whichUnit)
         natural_metal_oppose = 0.0,
         natural_dragon_oppose = 0.0,
         natural_insect_oppose = 0.0,
+        natural_god_oppose = 0.0,
         --
         attack_buff = {}, -- array
         attack_debuff = {}, -- array

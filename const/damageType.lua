@@ -19,7 +19,8 @@ CONST_DAMAGE_TYPE = {
     ghost = "ghost",
     metal = "metal",
     dragon = "dragon",
-    insect = "insect"
+    insect = "insect",
+    god = "god"
 }
 
 CONST_DAMAGE_TYPE_NATURE = {
@@ -36,7 +37,8 @@ CONST_DAMAGE_TYPE_NATURE = {
     "ghost",
     "metal",
     "dragon",
-    "insect"
+    "insect",
+    "god",
 }
 
 CONST_DAMAGE_TYPE_MAP = {
@@ -115,5 +117,9 @@ CONST_DAMAGE_TYPE_MAP = {
     insect = {
         label = "虫",
         color = "ba55d3"
+    },
+    god = {
+        label = "神",
+        color = "bf3eff"
     }
 }
