@@ -392,7 +392,8 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
         -- string类型只有+-=
         if (opr == "+") then
             -- 添加
-            table.insert(params[attr], val)
+            local valArr = string.explode(",", val)
+            params[attr] = table.merge(params[attr], valArr)
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
@@ -405,30 +406,33 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             end
         elseif (opr == "-") then
             -- 减少
-            if (table.includes(val, params[attr])) then
-                table.delete(val, params[attr], 1)
-                if (dur > 0) then
-                    htime.setTimeout(
-                        dur,
-                        function(t, td)
-                            htime.delDialog(td)
-                            htime.delTimer(t)
-                            hattr.setHandle(whichUnit, attr, "+", val, 0)
-                        end
-                    )
+            local valArr = string.explode(",", val)
+            for _, v in ipairs(valArr) do
+                if (table.includes(v, params[attr])) then
+                    table.delete(v, params[attr], 1)
                 end
             end
-        elseif (opr == "=") then
-            -- 设定
-            local old = table.clone(params[attr])
-            params[attr] = val
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
                     function(t, td)
                         htime.delDialog(td)
                         htime.delTimer(t)
-                        hattr.setHandle(whichUnit, attr, "=", old, 0)
+                        hattr.setHandle(whichUnit, attr, "+", val, 0)
+                    end
+                )
+            end
+        elseif (opr == "=") then
+            -- 设定
+            local old = table.clone(params[attr])
+            params[attr] = string.explode(",", val)
+            if (dur > 0) then
+                htime.setTimeout(
+                    dur,
+                    function(t, td)
+                        htime.delDialog(td)
+                        htime.delTimer(t)
+                        hattr.setHandle(whichUnit, attr, "=", string.implode(",", old), 0)
                     end
                 )
             end
