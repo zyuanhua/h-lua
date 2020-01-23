@@ -1491,6 +1491,7 @@ end
         damageType = {} --伤害的类型,注意是table（可选）
         damageEffect = nil, --伤害特效（可选）
         oneHitOnly = false, --是否打击一次就立刻失效（类似格挡，这个一次和只攻击一个单位不是一回事）
+        onEnding = [function], --结束时触发的动作
         extraInfluence = [function] --对选中的敌人的额外影响，会回调该敌人单位，可以对其做出自定义行为
     }
 ]]
@@ -1520,6 +1521,7 @@ hskill.leap = function(options)
     end
     local filter = options.filter
     local sourceUnit = options.sourceUnit
+    local prevUnit = options.prevUnit or sourceUnit
     local damageMovement = options.damageMovement or 0
     local damageMovementRange = options.damageMovementRange or 0
     local damageMovementRepeat = options.damageMovementRepeat or false
@@ -1542,9 +1544,9 @@ hskill.leap = function(options)
         leapType = "point"
     end
     if (options.targetUnit ~= nil) then
-        initFacing = math.getDegBetweenUnit(sourceUnit, options.targetUnit)
+        initFacing = math.getDegBetweenUnit(prevUnit, options.targetUnit)
     elseif (options.x ~= nil and options.y ~= nil) then
-        initFacing = math.getDegBetweenXY(cj.GetUnitX(sourceUnit), cj.GetUnitY(sourceUnit), options.x, options.y)
+        initFacing = math.getDegBetweenXY(cj.GetUnitX(prevUnit), cj.GetUnitY(prevUnit), options.x, options.y)
     else
         print_err("leapType: -unknow")
         return
@@ -1554,7 +1556,7 @@ hskill.leap = function(options)
         repeatGroup = cj.CreateGroup()
     end
     if (arrowUnit == nil) then
-        local cxy = math.polarProjection(cj.GetUnitX(sourceUnit), cj.GetUnitY(sourceUnit), 100, initFacing)
+        local cxy = math.polarProjection(cj.GetUnitX(prevUnit), cj.GetUnitY(prevUnit), 100, initFacing)
         arrowUnit =
             hunit.create(
             {
@@ -1588,6 +1590,8 @@ hskill.leap = function(options)
     htime.setInterval(
         frequency,
         function(t, td)
+            local ax = cj.GetUnitX(arrowUnit)
+            local ay = cj.GetUnitY(arrowUnit)
             if (his.death(sourceUnit)) then
                 htime.delDialog(td)
                 htime.delTimer(t)
@@ -1606,10 +1610,11 @@ hskill.leap = function(options)
                 else
                     hunit.kill(arrowUnit, 0)
                 end
+                if (type(options.onEnding) == "function") then
+                    options.onEnding(ax, ay)
+                end
                 return
             end
-            local ax = cj.GetUnitX(arrowUnit)
-            local ay = cj.GetUnitY(arrowUnit)
             local tx = 0
             local ty = 0
             if (options.targetUnit ~= nil) then
@@ -1740,6 +1745,9 @@ hskill.leap = function(options)
                 else
                     hunit.kill(arrowUnit, 0)
                 end
+                if (type(options.onEnding) == "function") then
+                    options.onEnding(txy.x, txy.y)
+                end
             end
         end
     )
@@ -1852,6 +1860,53 @@ hskill.leapRange = function(options)
             hskill.leap(tmp)
         end
     )
+end
+
+--[[
+    反射弹跳
+    options = {
+        qty = 1, --（跳跃次数，默认1）
+        range = 0, --（选目标范围，默认0无效）
+        hskill.leap.options
+    }
+]]
+hskill.leapReflex = function(options)
+    local qty = options.qty or 1
+    local range = options.range or 0
+    if (range <= 0) then
+        print_err("reflex: -range")
+        return
+    end
+    if (options.sourceUnit == nil) then
+        print_err("reflex: -sourceUnit")
+        return
+    end
+    if (type(options.filter) ~= "function") then
+        print_err("reflex: -filter")
+        return
+    end
+    if (options.arrowUnit == nil and options.tokenArrow == nil) then
+        print_err("reflex: -not arrow")
+    end
+    if (options.targetUnit == nil) then
+        print_err("reflex: -target")
+        return
+    end
+    options.x = nil
+    options.y = nil
+    options.onEnding = function(x, y)
+        qty = qty - 1
+        if (qty >= 1) then
+            local g = hgroup.createByXY(x, y, range, options.filter)
+            local closer = hgroup.getClosest(g, x, y)
+            if (closer ~= nil) then
+                options.prevUnit = options.targetUnit
+                options.targetUnit = closer
+                hskill.leap(options)
+            end
+        end
+    end
+    hskill.leap(options)
 end
 
 --[[
