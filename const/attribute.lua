@@ -57,7 +57,7 @@ CONST_ATTR = {
     invincible = "无敌",
     weight = "负重",
     weight_current = "当前负重",
-    damage_amplitude = "伤害增幅",
+    damage_extent = "伤害增幅",
     damage_rebound = "反弹伤害",
     damage_rebound_oppose = "反伤抵抗",
     cure = "治疗",
@@ -151,7 +151,7 @@ const_getItemDesc = function(attr)
             "knocking_odds", "violence_odds",
             "hemophagia", "hemophagia_skill",
             "split", "luck", "invincible",
-            "damage_amplitude", "damage_rebound", "cure"
+            "damage_extent", "damage_rebound", "cure"
         })) then
             v = v .. "%"
         end

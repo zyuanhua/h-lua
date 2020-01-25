@@ -225,8 +225,8 @@ hskill.damage = function(options)
         end
     end
     -- 计算伤害增幅
-    if (lastDamage > 0 and sourceUnitAttr.damage_amplitude ~= 0) then
-        lastDamagePercent = lastDamagePercent + sourceUnitAttr.damage_amplitude * 0.01
+    if (lastDamage > 0 and sourceUnitAttr.damage_extent ~= 0) then
+        lastDamagePercent = lastDamagePercent + sourceUnitAttr.damage_extent * 0.01
     end
     -- 合计 lastDamagePercent
     lastDamage = lastDamage * (1 + lastDamagePercent)
