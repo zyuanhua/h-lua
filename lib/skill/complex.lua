@@ -1964,6 +1964,24 @@ hskill.rectangleStrike = function(options)
                 break
             end
             local txy = math.polarProjection(options.x, options.y, d, deg)
+            if (options.effectStrike ~= nil) then
+                local effUnitDur = 0.6
+                local effUnit =
+                    hunit.create(
+                    {
+                        whichPlayer = hplayer.player_passive,
+                        unitId = hskill.SKILL_LEAP,
+                        x = txy.x,
+                        y = txy.y,
+                        facing = deg,
+                        modelScale = 1.00,
+                        opacity = 1.00,
+                        qty = 1,
+                        during = effUnitDur
+                    }
+                )
+                heffect.bindUnit(options.effectStrike, effUnit, "origin", effUnitDur)
+            end
             hgroup.loop(
                 hgroup.createByXY(txy.x, txy.y, range, options.filter),
                 function(eu)
@@ -1972,6 +1990,20 @@ hskill.rectangleStrike = function(options)
                     end
                 end,
                 true
+            )
+        end
+        if (hgroup.count(tg) > 0) then
+            hskill.damageGroup(
+                {
+                    frequency = 0,
+                    times = 1,
+                    effect = options.effect,
+                    whichGroup = tg,
+                    damage = damage,
+                    sourceUnit = options.sourceUnit,
+                    damageKind = damageKind,
+                    damageType = damageType
+                }
             )
         end
     end

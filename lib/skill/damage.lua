@@ -716,12 +716,12 @@ hskill.damageRange = function(options)
     local times = options.times or 0
     local frequency = options.frequency or 0
     local damage = options.damage or 0
-    if (range <= 0 or times <= 0 or frequency <= 0) then
-        print_err("hskill.rangeSwim:-range -times -frequency")
+    if (range <= 0 or times <= 0 or frequency < 0) then
+        print_err("hskill.damageRange:-range -times -frequency")
         return
     end
     if (damage > 0 and options.sourceUnit == nil) then
-        print_err("hskill.rangeSwim:-sourceUnit")
+        print_err("hskill.damageRange:-sourceUnit")
         return
     end
     local x, y
@@ -736,7 +736,7 @@ hskill.damageRange = function(options)
         y = cj.GetLocatonY(options.whichLoc)
     end
     if (x == nil or y == nil) then
-        print_err("hskill.rangeSwim:-x -y")
+        print_err("hskill.damageRange:-x -y")
         return
     end
     local filter = options.filter
@@ -746,6 +746,9 @@ hskill.damageRange = function(options)
     end
     if (options.effect ~= nil) then
         heffect.toXY(options.effect, x, y, 0.25 + (times * frequency))
+    end
+    if (times <= 1) then
+        frequency = 0
     end
     local ti = 0
     htime.setInterval(
@@ -782,6 +785,70 @@ hskill.damageRange = function(options)
             cj.GroupClear(g)
             cj.DestroyGroup(g)
             g = nil
+        end
+    )
+end
+
+--[[
+    单位组持续伤害
+    options = {
+        frequency = 0, --伤害频率（必须有）
+        times = 0, --伤害次数（必须有）
+        effect = "", --伤害特效（可选）
+        whichGroup = [group], --单位组（必须有）
+        damage = 0, --伤害（可选，但是这里可以等于0）
+        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+    }
+]]
+hskill.damageGroup = function(options)
+    local times = options.times or 0
+    local frequency = options.frequency or 0
+    local damage = options.damage or 0
+    if (options.whichGroup == nil) then
+        print_err("hskill.damageGroup:-whichGroup")
+        return
+    end
+    if (times <= 0 or frequency < 0) then
+        print_err("hskill.damageGroup:-times -frequency")
+        return
+    end
+    if (damage > 0 and options.sourceUnit == nil) then
+        print_err("hskill.damageGroup:-sourceUnit")
+        return
+    end
+    if (hgroup.count(options.whichGroup) <= 0) then
+        return
+    end
+    if (times <= 1) then
+        frequency = 0
+    end
+    local ti = 0
+    htime.setInterval(
+        frequency,
+        function(t, td)
+            ti = ti + 1
+            if (ti >= times) then
+                htime.delDialog(td)
+                htime.delTimer(t)
+                return
+            end
+            cj.ForGroup(
+                options.whichGroup,
+                function()
+                    hskill.damage(
+                        {
+                            sourceUnit = options.sourceUnit,
+                            targetUnit = cj.GetEnumUnit(),
+                            effect = options.effect,
+                            damage = damage,
+                            damageKind = options.damageKind,
+                            damageType = options.damageType
+                        }
+                    )
+                end
+            )
         end
     )
 end
