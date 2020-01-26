@@ -1910,6 +1910,74 @@ hskill.leapReflex = function(options)
 end
 
 --[[
+    矩形打击
+    options = {
+        damage = 0, --伤害（必须有，默认0无效）
+        sourceUnit, --伤害来源（必须有！不管有没有伤害）
+        x, --初始的x坐标（必须有，对点冲击，从该处开始打击）
+        y, --初始的y坐标（必须有，对点冲击，从该处开始打击）
+        range = 0, --打击范围（必须有，默认为0无效）
+        distance = 0, --打击距离（必须有，默认为0无效）
+        frequency = 0, --打击频率（必须有，默认0瞬间打击全部形状）
+        filter = [function], --必须有
+        effectStrike = nil, --冲击特效
+        effect = nil, --到达最后位置时的特效（可选的，采用的0秒删除法，请使用explode类型的特效）
+        damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
+        damageType = {} --伤害的类型,注意是table（可选）
+        damageEffect = nil, --伤害特效（可选）
+        oneHitOnly = true, --是否每个敌人只打击一次（可选,默认true）
+        extraInfluence = [function] --对击中的敌人的额外影响，会回调该敌人单位，可以对其做出自定义行为
+    }
+]]
+hskill.rectangleStrike = function(options)
+    if (options.sourceUnit == nil) then
+        print_err("rectangleStrike: -sourceUnit")
+        return
+    end
+    if (options.x == nil or options.y == nil) then
+        print_err("rectangleStrike: -xy")
+        return
+    end
+    if (options.filter == nil) then
+        print_err("rectangleStrike: -filter")
+        return
+    end
+    local damage = options.damage or 0
+    local range = options.range or 0
+    local distance = options.distance or 0
+    if (damage <= 0 or range <= 0 or distance <= 0) then
+        print_err("rectangleStrike: -data")
+        return
+    end
+    local frequency = options.frequency or 0
+    local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
+    local damageType = options.damageType or {CONST_DAMAGE_TYPE.common}
+    local oneHitOnly = options.oneHitOnly or true
+    local deg =
+        math.getDegBetweenXY(cj.GetUnitX(options.sourceUnit), cj.GetUnitY(options.sourceUnit), options.x, options.y)
+    if (frequency <= 0) then
+        local i = 0
+        local tg = cj.CreateGroup()
+        while (true) do
+            local d = i * range * 0.33
+            if (d >= distance) then
+                break
+            end
+            local txy = math.polarProjection(options.x, options.y, d, deg)
+            hgroup.loop(
+                hgroup.createByXY(txy.x, txy.y, range, options.filter),
+                function(eu)
+                    if (hgroup.isIn(tg, eu) == false) then
+                        cj.GroupAddUnit(tg, eu)
+                    end
+                end,
+                true
+            )
+        end
+    end
+end
+
+--[[
     变身[参考 h-lua变身技能模板]
     * modelFrom 技能模板 参考 h-lua SLK
     * modelTo 技能模板 参考 h-lua SLK

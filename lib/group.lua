@@ -1,5 +1,23 @@
 hgroup = {}
 
+-- 循环group
+hgroup.loop = function(whichGroup, actions, autoDel)
+    if (whichGroup == nil or type(actions) ~= "function") then
+        return
+    end
+    autoDel = autoDel or false
+    cj.ForGroup(
+        whichGroup,
+        function()
+            actions(cj.GetEnumUnit())
+        end
+    )
+    if (autoDel == true) then
+        cj.GroupClear(whichGroup)
+        cj.DestroyGroup(whichGroup)
+    end
+end
+
 -- 统计单位组当前单位数
 hgroup.count = function(whichGroup)
     if (whichGroup == nil) then
