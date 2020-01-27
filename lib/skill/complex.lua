@@ -1920,8 +1920,7 @@ end
         distance = 0, --打击距离（必须有，默认为0无效）
         frequency = 0, --打击频率（必须有，默认0瞬间打击全部形状）
         filter = [function], --必须有
-        effectStrike = nil, --冲击特效
-        effect = nil, --到达最后位置时的特效（可选的，采用的0秒删除法，请使用explode类型的特效）
+        effect = nil, --冲击特效
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
         damageType = {} --伤害的类型,注意是table（可选）
         damageEffect = nil, --伤害特效（可选）
@@ -1964,7 +1963,7 @@ hskill.rectangleStrike = function(options)
                 break
             end
             local txy = math.polarProjection(options.x, options.y, d, deg)
-            if (options.effectStrike ~= nil) then
+            if (options.effect ~= nil) then
                 local effUnitDur = 0.6
                 local effUnit =
                     hunit.create(
@@ -1980,7 +1979,7 @@ hskill.rectangleStrike = function(options)
                         during = effUnitDur
                     }
                 )
-                heffect.bindUnit(options.effectStrike, effUnit, "origin", effUnitDur)
+                heffect.bindUnit(options.effect, effUnit, "origin", effUnitDur)
             end
             hgroup.loop(
                 hgroup.createByXY(txy.x, txy.y, range, options.filter),
@@ -1997,7 +1996,7 @@ hskill.rectangleStrike = function(options)
                 {
                     frequency = 0,
                     times = 1,
-                    effect = options.effect,
+                    effect = options.damageEffect,
                     whichGroup = tg,
                     damage = damage,
                     sourceUnit = options.sourceUnit,
@@ -2019,7 +2018,7 @@ hskill.rectangleStrike = function(options)
                     return
                 end
                 local txy = math.polarProjection(options.x, options.y, d, deg)
-                if (options.effectStrike ~= nil) then
+                if (options.effect ~= nil) then
                     local effUnitDur = 0.6
                     local effUnit =
                         hunit.create(
@@ -2035,7 +2034,7 @@ hskill.rectangleStrike = function(options)
                             during = effUnitDur
                         }
                     )
-                    heffect.bindUnit(options.effectStrike, effUnit, "origin", effUnitDur)
+                    heffect.bindUnit(options.effect, effUnit, "origin", effUnitDur)
                 end
                 local g = hgroup.createByXY(txy.x, txy.y, range, options.filter)
                 if (hgroup.count(g) > 0) then
@@ -2043,7 +2042,7 @@ hskill.rectangleStrike = function(options)
                         {
                             frequency = 0,
                             times = 1,
-                            effect = options.effect,
+                            effect = options.damageEffect,
                             whichGroup = g,
                             damage = damage,
                             sourceUnit = options.sourceUnit,
