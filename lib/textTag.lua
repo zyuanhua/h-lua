@@ -61,6 +61,17 @@ end
 -- 漂浮文字 - 默认 (绑定在某单位头上，跟随移动)
 htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffset)
     local ttg = htextTag.create2Unit(u, msg, size, color, opacity, during, zOffset)
+    if (ttg == nil) then
+        htime.setTimeout(
+            0.1,
+            function(t, td)
+                htime.delDialog(td)
+                htime.delTimer(t)
+                htextTag.createFollowUnit(u, msg, size, color, opacity, during, zOffset)
+            end
+        )
+        return
+    end
     local txt = htextTag.getMsg(ttg)
     local scale = 0.5
     htime.setInterval(
@@ -103,6 +114,9 @@ htextTag.getDuring = function(ttg)
 end
 -- 风格特效
 htextTag.style = function(ttg, showtype, xspeed, yspeed)
+    if (ttg == nil) then
+        return
+    end
     cj.SetTextTagVelocity(ttg, xspeed, yspeed)
     if (showtype == "scale") then
         -- 放大
