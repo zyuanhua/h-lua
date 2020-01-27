@@ -313,7 +313,7 @@ hskill.damage = function(options)
         if (damageKind == CONST_DAMAGE_KIND.attack) then
             local hemophagia = sourceUnitAttr.hemophagia - targetUnitAttr.hemophagia_oppose
             if (hemophagia > 0) then
-                hunit.addLife(sourceUnit, lastDamage * hemophagia * 0.01)
+                hunit.addCurLife(sourceUnit, lastDamage * hemophagia * 0.01)
                 heffect.toUnit(
                     "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
                     sourceUnit,
@@ -348,7 +348,7 @@ hskill.damage = function(options)
         if (damageKind == CONST_DAMAGE_KIND.skill) then
             local hemophagiaSkill = sourceUnitAttr.hemophagia_skill - targetUnitAttr.hemophagia_skill_oppose
             if (hemophagiaSkill > 0) then
-                hunit.addLife(sourceUnit, lastDamage * hemophagiaSkill * 0.01)
+                hunit.addCurLife(sourceUnit, lastDamage * hemophagiaSkill * 0.01)
                 heffect.toUnit(
                     "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
                     sourceUnit,
