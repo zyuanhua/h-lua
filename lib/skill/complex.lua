@@ -2001,7 +2001,8 @@ hskill.rectangleStrike = function(options)
                     damage = damage,
                     sourceUnit = options.sourceUnit,
                     damageKind = damageKind,
-                    damageType = damageType
+                    damageType = damageType,
+                    extraInfluence = options.extraInfluence
                 }
             )
         end
@@ -2047,7 +2048,8 @@ hskill.rectangleStrike = function(options)
                             damage = damage,
                             sourceUnit = options.sourceUnit,
                             damageKind = damageKind,
-                            damageType = damageType
+                            damageType = damageType,
+                            extraInfluence = options.extraInfluence
                         }
                     )
                 end

@@ -709,6 +709,7 @@ end
         sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        extraInfluence = [function],
     }
 ]]
 hskill.damageRange = function(options)
@@ -772,6 +773,9 @@ hskill.damageRange = function(options)
                         damageType = options.damageType
                     }
                 )
+                if (type(options.extraInfluence) == "function") then
+                    options.extraInfluence(eu)
+                end
             end,
             true
         )
@@ -806,6 +810,9 @@ hskill.damageRange = function(options)
                                 damageType = options.damageType
                             }
                         )
+                        if (type(options.extraInfluence) == "function") then
+                            options.extraInfluence(eu)
+                        end
                     end,
                     true
                 )
@@ -823,8 +830,9 @@ end
         whichGroup = [group], --单位组（必须有）
         damage = 0, --伤害（可选，但是这里可以等于0）
         sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
-        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
-        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real}, --伤害的类型,注意是table（可选）
+        extraInfluence = [function],
     }
 ]]
 hskill.damageGroup = function(options)
@@ -872,6 +880,9 @@ hskill.damageGroup = function(options)
                             damageType = options.damageType
                         }
                     )
+                    if (type(options.extraInfluence) == "function") then
+                        options.extraInfluence(cj.GetEnumUnit())
+                    end
                 end
             )
         end
