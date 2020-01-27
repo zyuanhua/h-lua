@@ -1916,11 +1916,13 @@ end
         sourceUnit, --伤害来源（必须有！不管有没有伤害）
         x, --初始的x坐标（必须有，对点冲击，从该处开始打击）
         y, --初始的y坐标（必须有，对点冲击，从该处开始打击）
+        deg, --方向（必须有）
         range = 0, --打击范围（必须有，默认为0无效）
         distance = 0, --打击距离（必须有，默认为0无效）
         frequency = 0, --打击频率（必须有，默认0瞬间打击全部形状）
         filter = [function], --必须有
-        effect = nil, --冲击特效
+        effect = nil, --打击特效
+        effectScale = 1.30, --打击特效缩放
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
         damageType = {} --伤害的类型,注意是table（可选）
         damageEffect = nil, --伤害特效（可选）
@@ -1935,6 +1937,10 @@ hskill.rectangleStrike = function(options)
     end
     if (options.x == nil or options.y == nil) then
         print_err("rectangleStrike: -xy")
+        return
+    end
+    if (options.deg == nil) then
+        print_err("rectangleStrike: -deg")
         return
     end
     if (options.filter == nil) then
@@ -1952,17 +1958,17 @@ hskill.rectangleStrike = function(options)
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
     local damageType = options.damageType or {CONST_DAMAGE_TYPE.common}
     local oneHitOnly = options.oneHitOnly or true
-    local deg =
-        math.getDegBetweenXY(cj.GetUnitX(options.sourceUnit), cj.GetUnitY(options.sourceUnit), options.x, options.y)
+    local effectScale = options.effectScale or 1.30
     if (frequency <= 0) then
         local i = 0
         local tg = cj.CreateGroup()
         while (true) do
+            i = i + 1
             local d = i * range * 0.33
             if (d >= distance) then
                 break
             end
-            local txy = math.polarProjection(options.x, options.y, d, deg)
+            local txy = math.polarProjection(options.x, options.y, d, options.deg)
             if (options.effect ~= nil) then
                 local effUnitDur = 0.6
                 local effUnit =
@@ -1972,8 +1978,8 @@ hskill.rectangleStrike = function(options)
                         unitId = hskill.SKILL_LEAP,
                         x = txy.x,
                         y = txy.y,
-                        facing = deg,
-                        modelScale = 1.00,
+                        facing = options.deg,
+                        modelScale = effectScale,
                         opacity = 1.00,
                         qty = 1,
                         during = effUnitDur
@@ -2006,6 +2012,8 @@ hskill.rectangleStrike = function(options)
                 }
             )
         end
+        cj.GroupClear(tg)
+        cj.DestroyGroup(tg)
     else
         local i = 0
         htime.setInterval(
@@ -2018,7 +2026,7 @@ hskill.rectangleStrike = function(options)
                     htime.delTimer(t)
                     return
                 end
-                local txy = math.polarProjection(options.x, options.y, d, deg)
+                local txy = math.polarProjection(options.x, options.y, d, options.deg)
                 if (options.effect ~= nil) then
                     local effUnitDur = 0.6
                     local effUnit =
@@ -2028,8 +2036,8 @@ hskill.rectangleStrike = function(options)
                             unitId = hskill.SKILL_LEAP,
                             x = txy.x,
                             y = txy.y,
-                            facing = deg,
-                            modelScale = 1.00,
+                            facing = options.deg,
+                            modelScale = effectScale,
                             opacity = 1.00,
                             qty = 1,
                             during = effUnitDur

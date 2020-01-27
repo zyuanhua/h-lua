@@ -780,7 +780,7 @@ hskill.damageRange = function(options)
             frequency,
             function(t, td)
                 ti = ti + 1
-                if (ti >= times) then
+                if (ti > times) then
                     htime.delDialog(td)
                     htime.delTimer(t)
                     return
@@ -850,36 +850,54 @@ hskill.damageGroup = function(options)
         return
     end
     if (times <= 1) then
-        frequency = 0
-    end
-    local ti = 0
-    htime.setInterval(
-        frequency,
-        function(t, td)
-            ti = ti + 1
-            if (ti >= times) then
-                htime.delDialog(td)
-                htime.delTimer(t)
-                return
-            end
-            cj.ForGroup(
-                options.whichGroup,
-                function()
-                    hskill.damage(
-                        {
-                            sourceUnit = options.sourceUnit,
-                            targetUnit = cj.GetEnumUnit(),
-                            effect = options.effect,
-                            damage = damage,
-                            damageKind = options.damageKind,
-                            damageType = options.damageType
-                        }
-                    )
-                    if (type(options.extraInfluence) == "function") then
-                        options.extraInfluence(cj.GetEnumUnit())
-                    end
+        cj.ForGroup(
+            options.whichGroup,
+            function()
+                hskill.damage(
+                    {
+                        sourceUnit = options.sourceUnit,
+                        targetUnit = cj.GetEnumUnit(),
+                        effect = options.effect,
+                        damage = damage,
+                        damageKind = options.damageKind,
+                        damageType = options.damageType
+                    }
+                )
+                if (type(options.extraInfluence) == "function") then
+                    options.extraInfluence(cj.GetEnumUnit())
                 end
-            )
-        end
-    )
+            end
+        )
+    else
+        local ti = 0
+        htime.setInterval(
+            frequency,
+            function(t, td)
+                ti = ti + 1
+                if (ti > times) then
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    return
+                end
+                cj.ForGroup(
+                    options.whichGroup,
+                    function()
+                        hskill.damage(
+                            {
+                                sourceUnit = options.sourceUnit,
+                                targetUnit = cj.GetEnumUnit(),
+                                effect = options.effect,
+                                damage = damage,
+                                damageKind = options.damageKind,
+                                damageType = options.damageType
+                            }
+                        )
+                        if (type(options.extraInfluence) == "function") then
+                            options.extraInfluence(cj.GetEnumUnit())
+                        end
+                    end
+                )
+            end
+        )
+    end
 end
