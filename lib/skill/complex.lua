@@ -2006,6 +2006,56 @@ hskill.rectangleStrike = function(options)
                 }
             )
         end
+    else
+        local i = 0
+        htime.setInterval(
+            frequency,
+            function(t, td)
+                i = i + 1
+                local d = i * range * 0.5
+                if (d >= distance) then
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    return
+                end
+                local txy = math.polarProjection(options.x, options.y, d, deg)
+                if (options.effectStrike ~= nil) then
+                    local effUnitDur = 0.6
+                    local effUnit =
+                        hunit.create(
+                        {
+                            whichPlayer = hplayer.player_passive,
+                            unitId = hskill.SKILL_LEAP,
+                            x = txy.x,
+                            y = txy.y,
+                            facing = deg,
+                            modelScale = 1.00,
+                            opacity = 1.00,
+                            qty = 1,
+                            during = effUnitDur
+                        }
+                    )
+                    heffect.bindUnit(options.effectStrike, effUnit, "origin", effUnitDur)
+                end
+                local g = hgroup.createByXY(txy.x, txy.y, range, options.filter)
+                if (hgroup.count(g) > 0) then
+                    hskill.damageGroup(
+                        {
+                            frequency = 0,
+                            times = 1,
+                            effect = options.effect,
+                            whichGroup = g,
+                            damage = damage,
+                            sourceUnit = options.sourceUnit,
+                            damageKind = damageKind,
+                            damageType = damageType
+                        }
+                    )
+                end
+                cj.GroupClear(g)
+                cj.DestroyGroup(g)
+            end
+        )
     end
 end
 
