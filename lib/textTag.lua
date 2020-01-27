@@ -19,6 +19,10 @@ htextTag.create = function(msg, size, color, opacity, during)
         opacity = 0
     end
     local ttg = cj.CreateTextTag()
+    if (ttg == nil) then
+        --由于漂浮字有上限，所以有可能为nil，此时返回不创建即可
+        return
+    end
     if (color ~= nil and string.len(color) == 6) then
         msg = "|cff" .. color .. msg .. "|r"
     end
