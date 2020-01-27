@@ -95,7 +95,7 @@ his.alive = function(whichUnit)
 end
 --是否无敌
 his.invincible = function(whichUnit)
-    return cj.GetUnitAbilityLevel(whichUnit, 'Avul') > 0
+    return cj.GetUnitAbilityLevel(whichUnit, "Avul") > 0
 end
 --是否英雄
 his.hero = function(whichUnit)
@@ -136,6 +136,10 @@ end
 --是否古树
 his.ancient = function(whichUnit)
     return cj.IsUnitType(whichUnit, UNIT_TYPE_ANCIENT)
+end
+--是否蝗虫
+his.locust = function(whichUnit)
+    return cj.GetUnitAbilityLevel(whichUnit, string.char2id("Aloc")) > 0
 end
 --是否被眩晕
 his.swim = function(whichUnit)
