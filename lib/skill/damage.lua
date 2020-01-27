@@ -716,8 +716,12 @@ hskill.damageRange = function(options)
     local times = options.times or 0
     local frequency = options.frequency or 0
     local damage = options.damage or 0
-    if (range <= 0 or times <= 0 or frequency < 0) then
-        print_err("hskill.damageRange:-range -times -frequency")
+    if (range <= 0 or times <= 0) then
+        print_err("hskill.damageRange:-range -times")
+        return
+    end
+    if (times > 1 or frequency <= 0) then
+        print_err("hskill.damageRange:-frequency")
         return
     end
     if (damage > 0 and options.sourceUnit == nil) then
@@ -748,45 +752,66 @@ hskill.damageRange = function(options)
         heffect.toXY(options.effect, x, y, 0.25 + (times * frequency))
     end
     if (times <= 1) then
-        frequency = 0
-    end
-    local ti = 0
-    htime.setInterval(
-        frequency,
-        function(t, td)
-            ti = ti + 1
-            if (ti >= times) then
-                htime.delDialog(td)
-                htime.delTimer(t)
-                return
-            end
-            local g = hgroup.createByXY(x, y, range, filter)
-            if (g == nil) then
-                return
-            end
-            if (hgroup.count(g) <= 0) then
-                return
-            end
-            cj.ForGroup(
-                g,
-                function()
-                    hskill.damage(
-                        {
-                            sourceUnit = options.sourceUnit,
-                            targetUnit = cj.GetEnumUnit(),
-                            effect = options.effectSingle,
-                            damage = damage,
-                            damageKind = options.damageKind,
-                            damageType = options.damageType
-                        }
-                    )
-                end
-            )
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
-            g = nil
+        local g = hgroup.createByXY(x, y, range, filter)
+        if (g == nil) then
+            return
         end
-    )
+        if (hgroup.count(g) <= 0) then
+            return
+        end
+        hgroup.loop(
+            g,
+            function(eu)
+                hskill.damage(
+                    {
+                        sourceUnit = options.sourceUnit,
+                        targetUnit = eu,
+                        effect = options.effectSingle,
+                        damage = damage,
+                        damageKind = options.damageKind,
+                        damageType = options.damageType
+                    }
+                )
+            end,
+            true
+        )
+    else
+        local ti = 0
+        htime.setInterval(
+            frequency,
+            function(t, td)
+                ti = ti + 1
+                if (ti >= times) then
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    return
+                end
+                local g = hgroup.createByXY(x, y, range, filter)
+                if (g == nil) then
+                    return
+                end
+                if (hgroup.count(g) <= 0) then
+                    return
+                end
+                hgroup.loop(
+                    g,
+                    function(eu)
+                        hskill.damage(
+                            {
+                                sourceUnit = options.sourceUnit,
+                                targetUnit = eu,
+                                effect = options.effectSingle,
+                                damage = damage,
+                                damageKind = options.damageKind,
+                                damageType = options.damageType
+                            }
+                        )
+                    end,
+                    true
+                )
+            end
+        )
+    end
 end
 
 --[[
