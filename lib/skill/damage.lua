@@ -40,15 +40,12 @@ hskill.damage = function(options)
     local targetUnit = options.targetUnit
     local damage = options.damage or 0
     if (damage < 0.125) then
-        print_err("DAMAGE -val")
         return
     end
     if (targetUnit == nil) then
-        print_err("DAMAGE -targetUnit")
         return
     end
     if (sourceUnit == nil) then
-        print_err("DAMAGE -sourceUnit")
         return
     end
     if (options.damageKind == nil) then
