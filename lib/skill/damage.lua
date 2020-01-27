@@ -514,9 +514,7 @@ hskill.damage = function(options)
         if (effect ~= nil) then
             for _, etc in pairs(effect) do
                 local b = etc.table
-                b.val = b.val or 0
-                b.odds = b.odds or 0
-                if (b.odds > 0) then
+                if ((b.odds or 0) > 0) then
                     if (b.attr == "knocking") then
                         --物理暴击
                         if (table.includes(CONST_DAMAGE_TYPE.physical, damageType) == true) then
@@ -572,7 +570,7 @@ hskill.damage = function(options)
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
@@ -585,7 +583,7 @@ hskill.damage = function(options)
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 during = b.during,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
@@ -599,7 +597,7 @@ hskill.damage = function(options)
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 during = b.during,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
@@ -613,7 +611,7 @@ hskill.damage = function(options)
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 during = b.during,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
@@ -627,7 +625,7 @@ hskill.damage = function(options)
                             {
                                 whichUnit = targetUnit,
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 during = b.during,
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
@@ -640,7 +638,7 @@ hskill.damage = function(options)
                         hskill.bomb(
                             {
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 range = b.range,
                                 whichUnit = targetUnit,
                                 sourceUnit = sourceUnit,
@@ -655,7 +653,7 @@ hskill.damage = function(options)
                         hskill.lightningChain(
                             {
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 lightningType = b.lightning_type,
                                 qty = b.qty,
                                 change = b.change,
@@ -674,7 +672,7 @@ hskill.damage = function(options)
                         hskill.crackFly(
                             {
                                 odds = b.odds,
-                                damage = b.val,
+                                damage = b.val or 0,
                                 whichUnit = targetUnit,
                                 sourceUnit = sourceUnit,
                                 distance = b.distance,
