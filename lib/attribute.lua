@@ -388,6 +388,9 @@ end
 hattr.setHandle = function(whichUnit, attr, opr, val, dur)
     local valType = type(val)
     local params = hRuntime.attribute[whichUnit]
+    if (params == nil) then
+        return
+    end
     if (valType == "string") then
         -- string类型只有+-=
         if (opr == "+") then

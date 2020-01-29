@@ -193,7 +193,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local tend1 = tend * 0.2
         local tend2 = tend * 0.2
         local tend3 = tend - tend1 - tend2
-        local scale = tend * 0.0023
+        local scale = tend * 0.0022
         htime.setInterval(
             0.03,
             function(t, td)
