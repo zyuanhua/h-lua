@@ -716,7 +716,7 @@ hskill.damageRange = function(options)
         print_err("hskill.damageRange:-range -times")
         return
     end
-    if (times > 1 or frequency <= 0) then
+    if (times > 1 and frequency <= 0) then
         print_err("hskill.damageRange:-frequency")
         return
     end
