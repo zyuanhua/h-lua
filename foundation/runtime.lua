@@ -101,6 +101,9 @@ hRuntime.clear = function(handle)
     if (hRuntime.textTag[handle] ~= nil) then
         hRuntime.textTag[handle] = nil
     end
+    if (hRuntime.is[handle] ~= nil) then
+        hRuntime.is[handle] = nil
+    end
 end
 
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
