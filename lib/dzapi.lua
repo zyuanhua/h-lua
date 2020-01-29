@@ -13,7 +13,7 @@ end
 
 -- 获取地图等级
 hdzapi.mapLv = function(whichPlayer)
-    return japi.DzAPI_Map_GetMapLevel(whichPlayer)
+    return japi.DzAPI_Map_GetMapLevel(whichPlayer) or 1
 end
 
 -- 是否有商城道具
