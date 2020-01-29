@@ -1923,6 +1923,7 @@ end
         filter = [function], --必须有
         effect = nil, --打击特效
         effectScale = 1.30, --打击特效缩放
+        effectOffset = 0, --打击特效偏移量（distance+offset才是展示特效距离）
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
         damageType = {} --伤害的类型,注意是table（可选）
         damageEffect = nil, --伤害特效（可选）
@@ -1959,6 +1960,7 @@ hskill.rectangleStrike = function(options)
     local damageType = options.damageType or {CONST_DAMAGE_TYPE.common}
     local oneHitOnly = options.oneHitOnly or true
     local effectScale = options.effectScale or 1.30
+    local effectOffset = options.effectOffset or 0
     if (frequency <= 0) then
         local i = 0
         local tg = cj.CreateGroup()
@@ -1969,7 +1971,7 @@ hskill.rectangleStrike = function(options)
                 break
             end
             local txy = math.polarProjection(options.x, options.y, d, options.deg)
-            if (options.effect ~= nil) then
+            if (options.effect ~= nil and d-effectOffset < distance) then
                 local effUnitDur = 0.6
                 local effUnit =
                     hunit.create(
@@ -2027,7 +2029,7 @@ hskill.rectangleStrike = function(options)
                     return
                 end
                 local txy = math.polarProjection(options.x, options.y, d, options.deg)
-                if (options.effect ~= nil) then
+                if (options.effect ~= nil and d-effectOffset < distance) then
                     local effUnitDur = 0.6
                     local effUnit =
                         hunit.create(

@@ -13,25 +13,19 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
     end
     local p = cj.GetOwningPlayer(whichUnit)
     local index = hplayer.index(p)
-    local realGold = cj.R2I(gold * hplayer.getGoldRatio(p) / 100.00)
-    local realLumber = cj.R2I(lumber * hplayer.getLumberRatio(p) / 100.00)
-    local realExp = cj.R2I(exp * hplayer.getExpRatio(p) / 100.00)
+    local realGold = cj.R2I(gold)
+    local realLumber = cj.R2I(lumber)
+    local realExp = cj.R2I(exp)
     if (realExp >= 1 and his.hero(whichUnit)) then
         hunit.addExp(whichUnit, realExp, true)
     end
     local floatStr = ""
     local ttgColorLen = 0
     if (realGold >= 1) then
-        hplayer.addGold(p, realGold)
-        floatStr = floatStr .. " |cffffcc00+" .. realGold .. " Gold" .. "|r"
-        ttgColorLen = ttgColorLen + 13
-        hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, whichUnit)
+        hplayer.addGold(p, realGold, whichUnit)
     end
     if (realLumber >= 1) then
-        hplayer.addLumber(p, realLumber)
-        floatStr = floatStr .. " |cff80ff80+" .. realLumber .. " Lumber" .. "|r"
-        ttgColorLen = ttgColorLen + 13
-        hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, whichUnit)
+        hplayer.addLumber(p, realLumber, whichUnit)
     end
     if (floatStr ~= "") then
         local ttg = htextTag.create2Unit(whichUnit, floatStr, 7, "", 1, 1.70, 60.00)

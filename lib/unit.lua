@@ -66,6 +66,7 @@ hunit.addExp = function(u, val, showEffect)
     if (type(showEffect) ~= "boolean") then
         showEffect = false
     end
+    val = cj.R2I(val * hplayer.getExpRatio(cj.GetOwningPlayer(u)) / 100)
     cj.AddHeroXP(u, val, showEffect)
     htextTag.style(htextTag.create2Unit(u, "+" .. val .. " Exp", 7, "c4c4ff", 1, 1.70, 60.00), "toggle", 0, 0.20)
 end

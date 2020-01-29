@@ -428,8 +428,13 @@ hplayer.setGold = function(whichPlayer, gold)
     hplayer.adjustGold(whichPlayer)
 end
 --- 增加玩家金钱
-hplayer.addGold = function(whichPlayer, gold)
+hplayer.addGold = function(whichPlayer, gold, u)
+    gold = cj.R2I(gold * hplayer.getGoldRatio(whichPlayer) / 100)
     hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) + gold)
+    if (u ~= nil) then
+        htextTag.style(htextTag.create2Unit(u, "+" .. gold .. " Gold", 7, "ffcc00", 1, 1.70, 60.00), "toggle", 0, 0.20)
+        hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, u)
+    end
 end
 --- 减少玩家金钱
 hplayer.subGold = function(whichPlayer, gold)
@@ -446,8 +451,13 @@ hplayer.setLumber = function(whichPlayer, lumber)
     hplayer.adjustLumber(whichPlayer)
 end
 --- 增加玩家木头
-hplayer.addLumber = function(whichPlayer, lumber)
+hplayer.addLumber = function(whichPlayer, lumber, u)
+    lumber = cj.R2I(lumber * hplayer.getLumberRatio(whichPlayer) / 100)
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) + lumber)
+    if (u ~= nil) then
+        htextTag.style(htextTag.create2Unit(u, "+" .. lumber .. " Lumber", 7, "80ff80", 1, 1.70, 60.00), "toggle", 0, 0.20)
+        hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, u)
+    end
 end
 --- 减少玩家木头
 hplayer.subLumber = function(whichPlayer, lumber)
