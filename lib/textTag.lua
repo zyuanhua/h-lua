@@ -150,11 +150,14 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         return
     end
     cj.SetTextTagVelocity(ttg, xspeed, yspeed)
+    local size = htextTag.getSize(ttg)
+    local tend = htextTag.getDuring(ttg)
+    if (tend <= 0) then
+        tend = 0.5
+    end
     if (showtype == "scale") then
         -- 放大
-        local size = htextTag.getSize(ttg)
         local tnow = 0
-        local tend = 0.5
         htime.setInterval(
             0.03,
             function(t, td)
@@ -170,9 +173,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         )
     elseif (showtype == "shrink") then
         -- 缩小
-        local size = htextTag.getSize(ttg)
         local tnow = 0
-        local tend = 0.5
         htime.setInterval(
             0.03,
             function(t, td)
@@ -188,25 +189,25 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         )
     elseif (showtype == "toggle") then
         -- 放大再缩小
-        local size = htextTag.getSize(ttg)
         local tnow = 0
-        local tend1 = 0.2
-        local tend2 = 0.2
-        local during = 0.7
+        local tend1 = tend * 0.2
+        local tend2 = tend * 0.2
+        local tend3 = tend - tend1 - tend2
+        local scale = tend * 0.0023
         htime.setInterval(
             0.03,
             function(t, td)
                 tnow = tnow + cj.TimerGetTimeout(t)
                 local msg = htextTag.getMsg(ttg)
-                if (msg == nil or tnow >= tend1 + tend2 + during) then
+                if (msg == nil or tnow >= tend1 + tend2 + tend3) then
                     htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
                 if (tnow <= tend1) then
-                    cj.SetTextTagText(ttg, msg, (size * (1 + tnow / tend1)) * 0.023 / 10)
-                elseif (tnow > tend1 + during) then
-                    cj.SetTextTagText(ttg, msg, (size * 2 - (5 * (tnow - tend1 - during) / tend2)) * 0.023 / 10)
+                    cj.SetTextTagText(ttg, msg, (size * (1 + tnow / tend1)) * scale)
+                elseif (tnow > tend1 + tend3) then
+                    cj.SetTextTagText(ttg, msg, (size * 2 - (5 * (tnow - tend1 - tend3) / tend2)) * scale)
                 end
             end
         )
