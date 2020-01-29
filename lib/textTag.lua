@@ -88,7 +88,12 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
     local scale = 0.5
     htime.setInterval(
         0.03,
-        function()
+        function(t, td)
+            if (txt == nil) then
+                htime.delDialog(td)
+                htime.delTimer(t)
+                return
+            end
             if (hcamera.model == "zoomin") then
                 scale = 0.25
             elseif (hcamera.model == "zoomout") then
@@ -106,22 +111,37 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
 end
 -- 获取漂浮字大小
 htextTag.getSize = function(ttg)
+    if (hRuntime.textTag[ttg] == nil) then
+        return
+    end
     return hRuntime.textTag[ttg].size
 end
 -- 获取漂浮字颜色
 htextTag.getColor = function(ttg)
+    if (hRuntime.textTag[ttg] == nil) then
+        return
+    end
     return hRuntime.textTag[ttg].color
 end
 -- 获取漂浮字内容
 htextTag.getMsg = function(ttg)
+    if (hRuntime.textTag[ttg] == nil) then
+        return
+    end
     return hRuntime.textTag[ttg].msg
 end
 -- 获取漂浮字透明度
 htextTag.getOpacity = function(ttg)
+    if (hRuntime.textTag[ttg] == nil) then
+        return
+    end
     return hRuntime.textTag[ttg].opacity
 end
 -- 获取漂浮字持续时间
 htextTag.getDuring = function(ttg)
+    if (hRuntime.textTag[ttg] == nil) then
+        return
+    end
     return hRuntime.textTag[ttg].during
 end
 -- 风格特效
@@ -139,12 +159,13 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
             0.03,
             function(t, td)
                 tnow = tnow + cj.TimerGetTimeout(t)
-                if (tnow >= tend) then
+                local msg = htextTag.getMsg(ttg)
+                if (msg == nil or tnow >= tend) then
                     htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
-                cj.SetTextTagText(ttg, htextTag.getMsg(ttg), (size * (1 + tnow * 0.5 / tend)) * 0.023 / 10)
+                cj.SetTextTagText(ttg, msg, (size * (1 + tnow * 0.5 / tend)) * 0.023 / 10)
             end
         )
     elseif (showtype == "shrink") then
@@ -156,12 +177,13 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
             0.03,
             function(t, td)
                 tnow = tnow + cj.TimerGetTimeout(t)
-                if (tnow >= tend) then
+                local msg = htextTag.getMsg(ttg)
+                if (msg == nil or tnow >= tend) then
                     htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
-                cj.SetTextTagText(ttg, htextTag.getMsg(ttg), (size * (1 - tnow * 0.5 / tend)) * 0.023 / 10)
+                cj.SetTextTagText(ttg, msg, (size * (1 - tnow * 0.5 / tend)) * 0.023 / 10)
             end
         )
     elseif (showtype == "toggle") then
@@ -175,19 +197,16 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
             0.03,
             function(t, td)
                 tnow = tnow + cj.TimerGetTimeout(t)
-                if (tnow >= tend1 + tend2 + during) then
+                local msg = htextTag.getMsg(ttg)
+                if (msg == nil or tnow >= tend1 + tend2 + during) then
                     htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
                 if (tnow <= tend1) then
-                    cj.SetTextTagText(ttg, htextTag.getMsg(ttg), (size * (1 + tnow / tend1)) * 0.023 / 10)
+                    cj.SetTextTagText(ttg, msg, (size * (1 + tnow / tend1)) * 0.023 / 10)
                 elseif (tnow > tend1 + during) then
-                    cj.SetTextTagText(
-                        ttg,
-                        htextTag.getMsg(ttg),
-                        (size * 2 - (5 * (tnow - tend1 - during) / tend2)) * 0.023 / 10
-                    )
+                    cj.SetTextTagText(ttg, msg, (size * 2 - (5 * (tnow - tend1 - during) / tend2)) * 0.023 / 10)
                 end
             end
         )
