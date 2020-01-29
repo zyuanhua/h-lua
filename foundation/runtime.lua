@@ -76,6 +76,33 @@ hRuntime = {
     multiBoard = {}
 }
 
+hRuntime.clear = function(handle)
+    if (hRuntime.unit[handle] ~= nil) then
+        hRuntime.unit[handle] = nil
+    end
+    if (hRuntime.item[handle] ~= nil) then
+        hRuntime.item[handle] = nil
+    end
+    if (hRuntime.player[handle] ~= nil) then
+        hRuntime.player[handle] = nil
+    end
+    if (hRuntime.attribute[handle] ~= nil) then
+        hRuntime.attribute[handle] = nil
+    end
+    if (hRuntime.env[handle] ~= nil) then
+        hRuntime.env[handle] = nil
+    end
+    if (hRuntime.event[handle] ~= nil) then
+        hRuntime.event[handle] = nil
+    end
+    if (hRuntime.event.register[handle] ~= nil) then
+        hRuntime.event.register[handle] = nil
+    end
+    if (hRuntime.textTag[handle] ~= nil) then
+        hRuntime.textTag[handle] = nil
+    end
+end
+
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     local p = cj.Player(i - 1)
     -- is

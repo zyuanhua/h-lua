@@ -7,42 +7,42 @@
 ]]
 henvData = {
     doodad = {
-        block = { 'LTba' },
-        cage = { 'LOcg' },
-        bucket = { 'LTbr', 'LTbx', 'LTbs' },
-        bucketBrust = { 'LTex' },
-        box = { 'LTcr' },
-        supportColumn = { 'BTsc' },
-        stone = { 'LTrc' },
-        stoneRed = { 'DTrc' },
-        stoneIce = { 'ITcr' },
-        ice = { 'ITf1', 'ITf2', 'ITf3', 'ITf4' },
-        spiderEggs = { 'DTes' },
-        volcano = { 'Volc' }, -- 火山
-        treeSummer = { 'LTlt' },
-        treeAutumn = { 'FTtw' },
-        treeWinter = { 'WTtw' },
-        treeWinterShow = { 'WTst' },
-        treeDark = { 'NTtw' }, -- 枯枝
-        treeDarkUmbrella = { 'NTtc' }, -- 伞
-        treePoor = { 'BTtw' }, -- 贫瘠
-        treePoorUmbrella = { 'BTtc' }, -- 伞
-        treeRuins = { 'ZTtw' }, -- 遗迹
-        treeRuinsUmbrella = { 'ZTtc' }, -- 伞
-        treeFire = { 'ZTtw' }, -- 炼狱
-        treeUnderground = { 'DTsh', 'GTsh' }, -- 地下城
+        block = {"LTba"},
+        cage = {"LOcg"},
+        bucket = {"LTbr", "LTbx", "LTbs"},
+        bucketBrust = {"LTex"},
+        box = {"LTcr"},
+        supportColumn = {"BTsc"},
+        stone = {"LTrc"},
+        stoneRed = {"DTrc"},
+        stoneIce = {"ITcr"},
+        ice = {"ITf1", "ITf2", "ITf3", "ITf4"},
+        spiderEggs = {"DTes"},
+        volcano = {"Volc"}, -- 火山
+        treeSummer = {"LTlt"},
+        treeAutumn = {"FTtw"},
+        treeWinter = {"WTtw"},
+        treeWinterShow = {"WTst"},
+        treeDark = {"NTtw"}, -- 枯枝
+        treeDarkUmbrella = {"NTtc"}, -- 伞
+        treePoor = {"BTtw"}, -- 贫瘠
+        treePoorUmbrella = {"BTtc"}, -- 伞
+        treeRuins = {"ZTtw"}, -- 遗迹
+        treeRuinsUmbrella = {"ZTtc"}, -- 伞
+        treeFire = {"ZTtw"}, -- 炼狱
+        treeUnderground = {"DTsh", "GTsh"} -- 地下城
     },
     ground = {
-        summer = { 'Adrg' },
-        autumn = { 'Ydtr' },
-        winter = { 'Agrs' },
-        winterDeep = { 'Agrs' },
-        dark = { 'Xblm' },
-        poor = { 'Adrd' },
-        ruins = { 'Xhdg' },
-        fire = { 'Yblm' },
-        underground = { 'Yrtl' },
-    },
+        summer = {"Adrg"},
+        autumn = {"Ydtr"},
+        winter = {"Agrs"},
+        winterDeep = {"Agrs"},
+        dark = {"Xblm"},
+        poor = {"Adrd"},
+        ruins = {"Xhdg"},
+        fire = {"Yblm"},
+        underground = {"Yrtl"}
+    }
 }
 henv = {}
 
@@ -64,9 +64,12 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         hRuntime.env[whichRect] = {}
     end
     --清理装饰物
-    cj.EnumDestructablesInRectAll(whichRect, function()
-        cj.RemoveDestructable(cj.GetEnumDestructable())
-    end)
+    cj.EnumDestructablesInRectAll(
+        whichRect,
+        function()
+            cj.RemoveDestructable(cj.GetEnumDestructable())
+        end
+    )
     local rectStartX = hrect.getStartX(whichRect)
     local rectStartY = hrect.getStartY(whichRect)
     local rectEndX = hrect.getEndX(whichRect)
@@ -81,52 +84,67 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
             table.insert(doodads, vv)
         end
     end
-    htime.setInterval(0.01, function(t, td)
-        local x = rectStartX + indexX * 80
-        local y = rectStartY + indexY * 80
-        local buildType = cj.GetRandomInt(1, 4)
-        if (x >= rectEndX and y >= rectEndY) then
-            htime.delTimer(t)
-            if (isDestroyRect) then
-                cj.RemoveRect(whichRect)
+    htime.setInterval(
+        0.01,
+        function(t, td)
+            local x = rectStartX + indexX * 80
+            local y = rectStartY + indexY * 80
+            local buildType = cj.GetRandomInt(1, 4)
+            if (x >= rectEndX and y >= rectEndY) then
+                htime.delTimer(t)
+                if (isDestroyRect) then
+                    hrect.del(whichRect)
+                end
+                return
             end
-            return
-        end
-        if (x >= rectEndX) then
-            indexY = 1 + indexY
-            indexX = -1
-        end
-        if (y >= rectEndY) then
-            indexY = -1
-        end
-        indexX = 1 + indexX
-        if (math.abs(x - midX) < (excludeX * 0.5) and math.abs(y - midY) < (excludeY * 0.5)) then
-            return
-        end
-        if (buildType == 1 and uid <= 0) then
-            buildType = 2
-        end
-        if (buildType == 2 and did <= 0) then
-            buildType = -1
-        end
-        if (buildType == -1) then
-            return
-        end
-        if (buildType == 1) then
-            local tempUnit = cj.CreateUnit(
-                cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                units[math.random(1, #units)],
-                x, y,
-                bj_UNIT_FACING
-            )
-            table.insert(hRuntime.env[whichRect], tempUnit)
-        elseif (buildType == 2) then
-            cj.SetDestructableInvulnerable(cj.CreateDestructable(doodads[math.random(1, #doodads)], x, y, cj.GetRandomDirectionDeg(), cj.GetRandomReal(0.5, 1.1), 0), true)
-            if (ground ~= nil) then
-                cj.SetTerrainType(x, y, ground, -1, 1, 0)
+            if (x >= rectEndX) then
+                indexY = 1 + indexY
+                indexX = -1
+            end
+            if (y >= rectEndY) then
+                indexY = -1
+            end
+            indexX = 1 + indexX
+            if (math.abs(x - midX) < (excludeX * 0.5) and math.abs(y - midY) < (excludeY * 0.5)) then
+                return
+            end
+            if (buildType == 1 and uid <= 0) then
+                buildType = 2
+            end
+            if (buildType == 2 and did <= 0) then
+                buildType = -1
+            end
+            if (buildType == -1) then
+                return
+            end
+            if (buildType == 1) then
+                local tempUnit =
+                    cj.CreateUnit(
+                    cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                    units[math.random(1, #units)],
+                    x,
+                    y,
+                    bj_UNIT_FACING
+                )
+                table.insert(hRuntime.env[whichRect], tempUnit)
+            elseif (buildType == 2) then
+                cj.SetDestructableInvulnerable(
+                    cj.CreateDestructable(
+                        doodads[math.random(1, #doodads)],
+                        x,
+                        y,
+                        cj.GetRandomDirectionDeg(),
+                        cj.GetRandomReal(0.5, 1.1),
+                        0
+                    ),
+                    true
+                )
+                if (ground ~= nil) then
+                    cj.SetTerrainType(x, y, ground, -1, 1, 0)
+                end
             end
         end
-    end)
+    )
 end
 
 -- 随机构建区域装饰
@@ -143,7 +161,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             henvData.doodad.treeSummer,
             henvData.doodad.block,
             henvData.doodad.stone,
-            henvData.doodad.bucket,
+            henvData.doodad.bucket
         }
         unit = {
             hslk_global.env_model.flower0,
@@ -151,7 +169,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.flower2,
             hslk_global.env_model.flower3,
             hslk_global.env_model.flower4,
-            hslk_global.env_model.bird,
+            hslk_global.env_model.bird
         }
     elseif (typeStr == "autumn") then
         ground = henvData.ground.autumn
@@ -161,12 +179,12 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             henvData.doodad.stoneRed,
             henvData.doodad.bucket,
             henvData.doodad.cage,
-            henvData.doodad.supportColumn,
+            henvData.doodad.supportColumn
         }
         unit = {
             hslk_global.env_model.flower0,
             hslk_global.env_model.typha0,
-            hslk_global.env_model.typha1,
+            hslk_global.env_model.typha1
         }
     elseif (typeStr == "winter") then
         ground = henvData.ground.winter
@@ -174,7 +192,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             henvData.doodad.treeWinter,
             henvData.doodad.treeWinterShow,
             henvData.doodad.cage,
-            henvData.doodad.stoneIce,
+            henvData.doodad.stoneIce
         }
         unit = {
             hslk_global.env_model.stone0,
@@ -185,14 +203,14 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.stone_show1,
             hslk_global.env_model.stone_show2,
             hslk_global.env_model.stone_show3,
-            hslk_global.env_model.stone_show4,
+            hslk_global.env_model.stone_show4
         }
     elseif (typeStr == "winterDeep") then
         ground = henvData.ground.winterDeep
         doodad = {
             henvData.doodad.treeWinterShow,
             henvData.doodad.cage,
-            henvData.doodad.stoneIce,
+            henvData.doodad.stoneIce
         }
         unit = {
             hslk_global.env_model.stone_show5,
@@ -205,14 +223,14 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.ice2,
             hslk_global.env_model.ice3,
             hslk_global.env_model.bubble_geyser_steam,
-            hslk_global.env_model.snowman,
+            hslk_global.env_model.snowman
         }
     elseif (typeStr == "dark") then
         ground = henvData.ground.dark
         doodad = {
             henvData.doodad.treeDark,
             henvData.doodad.treeDarkUmbrella,
-            henvData.doodad.cage,
+            henvData.doodad.cage
         }
         unit = {
             hslk_global.env_model.rune0,
@@ -223,7 +241,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.rune5,
             hslk_global.env_model.rune6,
             hslk_global.env_model.impaled_body0,
-            hslk_global.env_model.impaled_body1,
+            hslk_global.env_model.impaled_body1
         }
     elseif (typeStr == "poor") then
         ground = henvData.ground.poor
@@ -231,7 +249,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             henvData.doodad.treePoor,
             henvData.doodad.treePoorUmbrella,
             henvData.doodad.cage,
-            henvData.doodad.box,
+            henvData.doodad.box
         }
         unit = {
             hslk_global.env_model.bone0,
@@ -248,14 +266,14 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.burn_body0,
             hslk_global.env_model.burn_body1,
             hslk_global.env_model.burn_body3,
-            hslk_global.env_model.bats,
+            hslk_global.env_model.bats
         }
     elseif (typeStr == "ruins") then
         ground = henvData.ground.ruins
         doodad = {
             henvData.doodad.treeRuins,
             henvData.doodad.treeRuinsUmbrella,
-            henvData.doodad.cage,
+            henvData.doodad.cage
         }
         unit = {
             hslk_global.env_model.break_column0,
@@ -265,14 +283,14 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.skull_pile0,
             hslk_global.env_model.skull_pile1,
             hslk_global.env_model.skull_pile2,
-            hslk_global.env_model.skull_pile3,
+            hslk_global.env_model.skull_pile3
         }
     elseif (typeStr == "fire") then
         ground = henvData.ground.fire
         doodad = {
             henvData.doodad.treeFire,
             henvData.doodad.volcano,
-            henvData.doodad.stoneRed,
+            henvData.doodad.stoneRed
         }
         unit = {
             hslk_global.env_model.fire_hole,
@@ -281,13 +299,13 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.burn_body2,
             hslk_global.env_model.firetrap,
             hslk_global.env_model.fire,
-            hslk_global.env_model.burn_build,
+            hslk_global.env_model.burn_build
         }
     elseif (typeStr == "underground") then
         ground = henvData.ground.underground
         doodad = {
             henvData.doodad.treeUnderground,
-            henvData.doodad.spiderEggs,
+            henvData.doodad.spiderEggs
         }
         unit = {
             hslk_global.env_model.mushroom0,
@@ -301,12 +319,12 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.mushroom8,
             hslk_global.env_model.mushroom9,
             hslk_global.env_model.mushroom10,
-            hslk_global.env_model.mushroom11,
+            hslk_global.env_model.mushroom11
         }
     elseif (typeStr == "sea") then
         ground = henvData.ground.ruins
         doodad = {
-            henvData.doodad.stone,
+            henvData.doodad.stone
         }
         unit = {
             hslk_global.env_model.seaweed0,
@@ -338,12 +356,12 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.shells6,
             hslk_global.env_model.shells7,
             hslk_global.env_model.shells8,
-            hslk_global.env_model.shells9,
+            hslk_global.env_model.shells9
         }
     elseif (typeStr == "river") then
         ground = henvData.ground.ruins
         doodad = {
-            henvData.doodad.stone,
+            henvData.doodad.stone
         }
         unit = {
             hslk_global.env_model.fish,
@@ -355,7 +373,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.river_rushes0,
             hslk_global.env_model.river_rushes1,
             hslk_global.env_model.river_rushes2,
-            hslk_global.env_model.river_rushes3,
+            hslk_global.env_model.river_rushes3
         }
     else
         return

@@ -16,7 +16,7 @@ hrect.create = function(x, y, w, h, name)
         startX = startX,
         startY = startY,
         endX = endX,
-        endY = endY,
+        endY = endY
     }
     return r
 end
@@ -81,14 +81,19 @@ hrect.getEndY = function(whichRect)
 end
 --删除区域
 hrect.del = function(whichRect, during)
-    if (during > 0) then
-        htime.setTimeout(during, function(t, td)
-            htime.delTimer(t)
-            htime.delDialog(td)
-            cj.RemoveRect(whichRect)
-        end)
-    else
+    if (during == nil or during <= 0) then
+        hRuntime.clear(whichRect)
         cj.RemoveRect(whichRect)
+    else
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delTimer(t)
+                htime.delDialog(td)
+                hRuntime.clear(whichRect)
+                cj.RemoveRect(whichRect)
+            end
+        )
     end
 end
 --区域单位锁定
@@ -113,133 +118,136 @@ hrect.lock = function(bean)
         return
     end
     if (bean.type == nil) then
-        bean.type = 'square'
+        bean.type = "square"
     end
     if (bean.type ~= "square" and bean.type ~= "circle") then
         return
     end
     local inc = 0
     local inGroups = {}
-    htime.setInterval(0.10, function(t, td)
-        inc = inc + 1
-        if (inc > (during / 0.10)) then
-            htime.delDialog(td)
-            htime.delTimer(t)
-            return
-        end
-        local x = bean.whichX
-        local y = bean.whichY
-        local w = bean.width
-        local h = bean.height
-        --点优先
-        if (bean.whichLoc) then
-            x = cj.GetLocationX(bean.whichLoc)
-            y = cj.GetLocationY(bean.whichLoc)
-        end
-        --单位优先
-        if (bean.whichUnit) then
-            if (his.death(bean.whichUnit)) then
+    htime.setInterval(
+        0.10,
+        function(t, td)
+            inc = inc + 1
+            if (inc > (during / 0.10)) then
                 htime.delDialog(td)
                 htime.delTimer(t)
                 return
             end
-            x = cj.GetUnitX(bean.whichUnit)
-            y = cj.GetUnitY(bean.whichUnit)
-        end
-        --区域优先
-        if (bean.whichRect) then
-            x = cj.GetRectCenter(bean.whichRect)
-            y = cj.GetRectCenter(bean.whichRect)
-            if (hrect.getWidth(bean.whichRect) < w) then
-                w = hrect.getWidth(bean.whichRect)
+            local x = bean.whichX
+            local y = bean.whichY
+            local w = bean.width
+            local h = bean.height
+            --点优先
+            if (bean.whichLoc) then
+                x = cj.GetLocationX(bean.whichLoc)
+                y = cj.GetLocationY(bean.whichLoc)
             end
-            if (hrect.getHeight(bean.whichRect) < h) then
-                h = hrect.getHeight(bean.whichRect)
+            --单位优先
+            if (bean.whichUnit) then
+                if (his.death(bean.whichUnit)) then
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    return
+                end
+                x = cj.GetUnitX(bean.whichUnit)
+                y = cj.GetUnitY(bean.whichUnit)
             end
-        end
-        local lockDegA = (180 * cj.Atan(h / w)) / bj_PI
-        local lockDegB = 90 - lockDegA
-        local lockRect
-        local lockGroup
-        if (bean.type == "square") then
-            lockRect = cj.Rect(x - (w * 0.5), y - (h * 0.5), x + (w * 0.5), y + (h * 0.5))
-            lockGroup = cj.CreateGroup()
-            cj.GroupEnumUnitsInRect(lockGroup. lockRect, nil)
-        elseif (bean.type == "circle") then
-            local rectCenter = cj.Location(x, y)
-            lockGroup = cj.CreateGroup()
-            cj.GroupEnumUnitsInRangeOfLoc(lockGroup, rectCenter, math.min(w / 2, h / 2), nil)
-            cj.removeLocation(rectCenter)
-        end
-        if (lockGroup ~= nil) then
-            while (cj.IsUnitGroupEmptyBJ(lockGroup) == false) do
-                local u = cj.FirstOfGroup(lockGroup)
-                cj.GroupRemoveUnit(lockGroup, u)
-                if (table.includes(u, inGroups) == false) then
-                    table.insert(inGroups, u)
+            --区域优先
+            if (bean.whichRect) then
+                x = cj.GetRectCenter(bean.whichRect)
+                y = cj.GetRectCenter(bean.whichRect)
+                if (hrect.getWidth(bean.whichRect) < w) then
+                    w = hrect.getWidth(bean.whichRect)
+                end
+                if (hrect.getHeight(bean.whichRect) < h) then
+                    h = hrect.getHeight(bean.whichRect)
                 end
             end
-            cj.GroupClear(lockGroup)
-            cj.DestroyGroup(lockGroup)
-        end
-        --锁
-        for k, u in pairs(inGroups) do
-            local distance = 0.000
-            local deg = 0
-            local xx = cj.GetUnitX(u)
-            local yy = cj.GetUnitY(u)
+            local lockDegA = (180 * cj.Atan(h / w)) / bj_PI
+            local lockDegB = 90 - lockDegA
+            local lockRect
+            local lockGroup
             if (bean.type == "square") then
-                if (his.borderRect(lockRect, xx, yy) == true) then
-                    deg = math.getDegBetweenXY(x, y, xx, yy)
-                    if (deg == 0 or deg == 180 or deg == -180) then
-                        -- 横
-                        distance = w
-                    elseif (deg == 90 or deg == -90) then
-                        -- 竖
-                        distance = h
-                    elseif (deg > 0 and deg <= lockDegA) then
-                        -- 第1三角区间
-                        distance = w / 2 / math.cos(deg * bj_DEGTORAD)
-                    elseif (deg > lockDegA and deg < 90) then
-                        -- 第2三角区间
-                        distance = h / 2 / math.cos(90 - deg * bj_DEGTORAD)
-                    elseif (deg > 90 and deg <= 90 + lockDegB) then
-                        -- 第3三角区间
-                        distance = h / 2 / math.cos((deg - 90) * bj_DEGTORAD)
-                    elseif (deg > 90 + lockDegB and deg < 180) then
-                        -- 第4三角区间
-                        distance = w / 2 / math.cos((180 - deg) * bj_DEGTORAD)
-                    elseif (deg < 0 and deg >= -lockDegA) then
-                        -- 第5三角区间
-                        distance = w / 2 / math.cos(deg * bj_DEGTORAD)
-                    elseif (deg < lockDegA and deg > -90) then
-                        -- 第6三角区间
-                        distance = h / 2 / math.cos((90 + deg) * bj_DEGTORAD)
-                    elseif (deg < -90 and deg >= -90 - lockDegB) then
-                        -- 第7三角区间
-                        distance = h / 2 / math.cos((-deg - 90) * bj_DEGTORAD)
-                    elseif (deg < -90 - lockDegB and deg > -180) then
-                        -- 第8三角区间
-                        distance = w / 2 / math.cos((180 + deg) * bj_DEGTORAD)
+                lockRect = cj.Rect(x - (w * 0.5), y - (h * 0.5), x + (w * 0.5), y + (h * 0.5))
+                lockGroup = cj.CreateGroup()
+                cj.GroupEnumUnitsInRect(lockGroup.lockRect, nil)
+            elseif (bean.type == "circle") then
+                local rectCenter = cj.Location(x, y)
+                lockGroup = cj.CreateGroup()
+                cj.GroupEnumUnitsInRangeOfLoc(lockGroup, rectCenter, math.min(w / 2, h / 2), nil)
+                cj.removeLocation(rectCenter)
+            end
+            if (lockGroup ~= nil) then
+                while (cj.IsUnitGroupEmptyBJ(lockGroup) == false) do
+                    local u = cj.FirstOfGroup(lockGroup)
+                    cj.GroupRemoveUnit(lockGroup, u)
+                    if (table.includes(u, inGroups) == false) then
+                        table.insert(inGroups, u)
                     end
                 end
-            elseif (bean.type == "circle") then
-                if (math.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
-                    deg = math.getDegBetweenXY(x, y, xx, yy)
-                    distance = math.min(w / 2, h / 2)
+                cj.GroupClear(lockGroup)
+                cj.DestroyGroup(lockGroup)
+            end
+            --锁
+            for k, u in pairs(inGroups) do
+                local distance = 0.000
+                local deg = 0
+                local xx = cj.GetUnitX(u)
+                local yy = cj.GetUnitY(u)
+                if (bean.type == "square") then
+                    if (his.borderRect(lockRect, xx, yy) == true) then
+                        deg = math.getDegBetweenXY(x, y, xx, yy)
+                        if (deg == 0 or deg == 180 or deg == -180) then
+                            -- 横
+                            distance = w
+                        elseif (deg == 90 or deg == -90) then
+                            -- 竖
+                            distance = h
+                        elseif (deg > 0 and deg <= lockDegA) then
+                            -- 第1三角区间
+                            distance = w / 2 / math.cos(deg * bj_DEGTORAD)
+                        elseif (deg > lockDegA and deg < 90) then
+                            -- 第2三角区间
+                            distance = h / 2 / math.cos(90 - deg * bj_DEGTORAD)
+                        elseif (deg > 90 and deg <= 90 + lockDegB) then
+                            -- 第3三角区间
+                            distance = h / 2 / math.cos((deg - 90) * bj_DEGTORAD)
+                        elseif (deg > 90 + lockDegB and deg < 180) then
+                            -- 第4三角区间
+                            distance = w / 2 / math.cos((180 - deg) * bj_DEGTORAD)
+                        elseif (deg < 0 and deg >= -lockDegA) then
+                            -- 第5三角区间
+                            distance = w / 2 / math.cos(deg * bj_DEGTORAD)
+                        elseif (deg < lockDegA and deg > -90) then
+                            -- 第6三角区间
+                            distance = h / 2 / math.cos((90 + deg) * bj_DEGTORAD)
+                        elseif (deg < -90 and deg >= -90 - lockDegB) then
+                            -- 第7三角区间
+                            distance = h / 2 / math.cos((-deg - 90) * bj_DEGTORAD)
+                        elseif (deg < -90 - lockDegB and deg > -180) then
+                            -- 第8三角区间
+                            distance = w / 2 / math.cos((180 + deg) * bj_DEGTORAD)
+                        end
+                    end
+                elseif (bean.type == "circle") then
+                    if (math.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
+                        deg = math.getDegBetweenXY(x, y, xx, yy)
+                        distance = math.min(w / 2, h / 2)
+                    end
+                end
+                if (distance > 0.0) then
+                    local polar = math.polarProjection(x, y, distance, deg)
+                    local loc = cj.Location(polar.x, polar.y)
+                    cj.SetUnitPositionLoc(u, loc)
+                    cj.RemoveLocation(loc)
+                    heffect.toUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
+                    hmsg.style(hmsg.ttg2Unit(u, "被困", 10, "dde6f3", 30, 1, 20), "shrink", 0, 0.2)
                 end
             end
-            if (distance > 0.0) then
-                local polar = math.polarProjection(x, y, distance, deg)
-                local loc = cj.Location(polar.x, polar.y)
-                cj.SetUnitPositionLoc(u, loc)
-                cj.RemoveLocation(loc)
-                heffect.toUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
-                hmsg.style(hmsg.ttg2Unit(u, "被困", 10, "dde6f3", 30, 1, 20), "shrink", 0, 0.2)
+            if (lockRect ~= nil) then
+                hrect.del(lockRect)
             end
         end
-        if (lockRect ~= nil) then
-            cj.RemoveRect(lockRect)
-        end
-    end)
+    )
 end

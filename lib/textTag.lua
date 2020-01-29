@@ -2,8 +2,21 @@
 htextTag = {}
 
 -- 删除漂浮字
-htextTag.del = function(ttg)
-    cj.DestroyTextTag(ttg)
+htextTag.del = function(ttg, during)
+    if (during == nil or during <= 0) then
+        hRuntime.clear(ttg)
+        cj.DestroyTextTag(ttg)
+    else
+        htime.setTimeout(
+            during,
+            function(t, td)
+                htime.delTimer(t)
+                htime.delDialog(td)
+                hRuntime.clear(ttg)
+                cj.DestroyTextTag(ttg)
+            end
+        )
+    end
 end
 -- 创建漂浮字
 -- 设置during为0则永久显示
@@ -39,8 +52,7 @@ htextTag.create = function(msg, size, color, opacity, during)
         cj.SetTextTagPermanent(ttg, true)
     else
         cj.SetTextTagPermanent(ttg, false)
-        cj.SetTextTagLifespan(ttg, during)
-        cj.SetTextTagFadepoint(ttg, during)
+        htextTag.del(ttg, during)
     end
     return ttg
 end

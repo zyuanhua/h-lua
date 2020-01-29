@@ -1971,7 +1971,7 @@ hskill.rectangleStrike = function(options)
                 break
             end
             local txy = math.polarProjection(options.x, options.y, d, options.deg)
-            if (options.effect ~= nil and d-effectOffset < distance) then
+            if (options.effect ~= nil and d - effectOffset < distance) then
                 local effUnitDur = 0.6
                 local effUnit =
                     hunit.create(
@@ -2029,7 +2029,7 @@ hskill.rectangleStrike = function(options)
                     return
                 end
                 local txy = math.polarProjection(options.x, options.y, d, options.deg)
-                if (options.effect ~= nil and d-effectOffset < distance) then
+                if (options.effect ~= nil and d - effectOffset < distance) then
                     local effUnitDur = 0.6
                     local effUnit =
                         hunit.create(

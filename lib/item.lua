@@ -31,16 +31,16 @@ hitem.del = function(it, during)
     if (during <= 0 and it ~= nil) then
         cj.SetWidgetLife(it, 1.00)
         cj.RemoveItem(it)
-        hRuntime.item[it] = nil
+        hRuntime.clear(it)
     else
         htime.setTimeout(
             during,
             function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
+                hRuntime.clear(it)
                 cj.SetWidgetLife(it, 1.00)
                 cj.RemoveItem(it)
-                hRuntime.item[it] = nil
             end
         )
     end
