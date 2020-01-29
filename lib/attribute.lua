@@ -194,9 +194,16 @@ end
 --- 为单位注册属性系统所需要的基础技能
 --- hslk_global.attr
 hattr.registerAll = function(whichUnit)
+    if (whichUnit == nil) then
+        return
+    end
     hattr.regAllAbility(whichUnit)
     --init
     local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
+    if (unitId == nil) then
+        print_err("unresgister unitId is nil")
+        return
+    end
     if (hslk_global.unitsKV[unitId] == nil) then
         print_err("unresgister hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
         return
