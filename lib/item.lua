@@ -56,8 +56,7 @@ hitem.getSlk = function(itOrId)
     local slk
     local itId
     if (itOrId == nil) then
-        print_err("itOrId is nil")
-        return nil
+        return
     end
     if (type(itOrId) == "string") then
         itId = itOrId
