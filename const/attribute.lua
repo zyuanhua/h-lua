@@ -132,7 +132,7 @@ CONST_ATTR = {
     range = "范围",
     reduce = "衰减",
     distance = "距离",
-    high = "高度",
+    high = "高度"
 }
 
 const_getItemDesc = function(attr)
@@ -142,17 +142,31 @@ const_getItemDesc = function(attr)
         if (k == "attack_speed_space") then
             v = v .. "击每秒"
         end
-        if (table.includes(k, { "life_back", "mana_back", })) then
+        if (table.includes(k, {"life_back", "mana_back"})) then
             v = v .. "每秒"
         end
-        if (table.includes(k, {
-            "resistance", "avoid", "aim",
-            "knocking", "violence",
-            "knocking_odds", "violence_odds",
-            "hemophagia", "hemophagia_skill",
-            "split", "luck", "invincible",
-            "damage_extent", "damage_rebound", "cure"
-        })) then
+        if
+            (table.includes(
+                k,
+                {
+                    "resistance",
+                    "avoid",
+                    "aim",
+                    "knocking",
+                    "violence",
+                    "knocking_odds",
+                    "violence_odds",
+                    "hemophagia",
+                    "hemophagia_skill",
+                    "split",
+                    "luck",
+                    "invincible",
+                    "damage_extent",
+                    "damage_rebound",
+                    "cure"
+                }
+            ))
+         then
             v = v .. "%"
         end
         local s = string.find(k, "oppose")
@@ -164,7 +178,7 @@ const_getItemDesc = function(attr)
         str = str .. CONST_ATTR[k] .. "："
         if (type(v) == "table") then
             local temp = ""
-            if (table.includes(k, { "attack_damage_type" })) then
+            if (table.includes(k, {"attack_damage_type"})) then
                 for _, vv in ipairs(v) do
                     if (temp == "") then
                         temp = temp .. CONST_ATTR[vv]
@@ -172,7 +186,12 @@ const_getItemDesc = function(attr)
                         temp = "," .. CONST_ATTR[vv]
                     end
                 end
-            elseif (table.includes(k, { "attack_buff", "attack_debuff", "skill_buff", "skill_debuff", "attack_effect", "skill_effect" })) then
+            elseif
+                (table.includes(
+                    k,
+                    {"attack_buff", "attack_debuff", "skill_buff", "skill_debuff", "attack_effect", "skill_effect"}
+                ))
+             then
                 for kk, vv in pairs(v) do
                     temp = temp .. CONST_ATTR[kk]
                     local temp2 = ""
@@ -180,7 +199,7 @@ const_getItemDesc = function(attr)
                         if (kkk == "during") then
                             vvv = vvv .. "秒"
                         end
-                        if (table.includes(kkk, { "odds", "reduce" })) then
+                        if (table.includes(kkk, {"odds", "reduce"})) then
                             vvv = vvv .. "%"
                         end
                         if (temp2 == "") then
@@ -223,4 +242,3 @@ const_getItemUbertip = function(attr)
     end
     return str
 end
-
