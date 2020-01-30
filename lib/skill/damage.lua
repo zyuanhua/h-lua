@@ -230,7 +230,7 @@ hskill.damage = function(options)
     end
 
     -- 计算护甲
-    if (targetUnitAttr.defend ~= 0 and typeRatio[CONST_DAMAGE_TYPE.physical] > 0) then
+    if (targetUnitAttr.defend ~= 0 and typeRatio[CONST_DAMAGE_TYPE.physical] ~= nil) then
         local defendPercent = 0
         if (targetUnitAttr.defend > 0) then
             defendPercent = targetUnitAttr.defend / (targetUnitAttr.defend + 200)
@@ -239,11 +239,11 @@ hskill.damage = function(options)
             defendPercent = -dfd / (dfd * 0.33 + 100)
         end
         defendPercent = defendPercent * typeRatio[CONST_DAMAGE_TYPE.physical]
-        lastDamagePercent = lastDamagePercent + defendPercent
+        lastDamagePercent = lastDamagePercent - defendPercent
     end
 
     -- 计算魔抗
-    if (targetUnitAttr.resistance ~= 0 and typeRatio[CONST_DAMAGE_TYPE.magic] > 0) then
+    if (targetUnitAttr.resistance ~= 0 and typeRatio[CONST_DAMAGE_TYPE.magic] ~= nil) then
         local resistancePercent = 0
         if (targetUnitAttr.resistance >= 100) then
             resistancePercent = -1
@@ -251,7 +251,7 @@ hskill.damage = function(options)
             resistancePercent = -targetUnitAttr.resistance * 0.01
         end
         resistancePercent = resistancePercent * typeRatio[CONST_DAMAGE_TYPE.magic]
-        lastDamagePercent = lastDamagePercent + resistancePercent
+        lastDamagePercent = lastDamagePercent - resistancePercent
     end
 
     -- 计算伤害增幅
