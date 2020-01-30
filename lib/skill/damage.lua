@@ -118,7 +118,14 @@ hskill.damage = function(options)
         damage = damage / (2 - cj.Pow(0.94, 20))
     end
     -- 攻击者的攻击里各种类型的占比
-    local typeRatio = 1 / #damageType
+    local dmgRatio = 1 / #damageType
+    local typeRatio = {}
+    for _, d in ipairs(damageType) do
+        if (typeRatio[d] == nil) then
+            typeRatio[d] = 0
+        end
+        typeRatio[d] = typeRatio[d] + dmgRatio
+    end
     -- 开始神奇的伤害计算
     lastDamage = damage
     -- 判断无视装甲类型
@@ -215,12 +222,38 @@ hskill.damage = function(options)
                 tempNatural[natural] = -100
             end
             if (table.includes(natural, damageType) and tempNatural[natural] ~= 0) then
-                lastDamagePercent = lastDamagePercent + typeRatio * tempNatural[natural] * 0.01
+                lastDamagePercent = lastDamagePercent + typeRatio[natural] * tempNatural[natural] * 0.01
                 damageString = damageString .. CONST_DAMAGE_TYPE_MAP[natural].label
                 damageStringColor = CONST_DAMAGE_TYPE_MAP[natural].color
             end
         end
     end
+
+    -- 计算护甲
+    if (targetUnitAttr.defend ~= 0 and typeRatio[CONST_DAMAGE_TYPE.physical] > 0) then
+        local defendPercent = 0
+        if (targetUnitAttr.defend > 0) then
+            defendPercent = targetUnitAttr.defend / (targetUnitAttr.defend + 200)
+        else
+            local dfd = math.abs(targetUnitAttr.defend)
+            defendPercent = -dfd / (dfd * 0.33 + 100)
+        end
+        defendPercent = defendPercent * typeRatio[CONST_DAMAGE_TYPE.physical]
+        lastDamagePercent = lastDamagePercent + defendPercent
+    end
+
+    -- 计算魔抗
+    if (targetUnitAttr.resistance ~= 0 and typeRatio[CONST_DAMAGE_TYPE.magic] > 0) then
+        local resistancePercent = 0
+        if (targetUnitAttr.resistance >= 100) then
+            resistancePercent = -1
+        else
+            resistancePercent = -targetUnitAttr.resistance * 0.01
+        end
+        resistancePercent = resistancePercent * typeRatio[CONST_DAMAGE_TYPE.magic]
+        lastDamagePercent = lastDamagePercent + resistancePercent
+    end
+
     -- 计算伤害增幅
     if (lastDamage > 0 and sourceUnitAttr.damage_extent ~= 0) then
         lastDamagePercent = lastDamagePercent + sourceUnitAttr.damage_extent * 0.01
@@ -519,7 +552,7 @@ hskill.damage = function(options)
                                 {
                                     whichUnit = targetUnit,
                                     odds = b.odds,
-                                    damage = typeRatio * damage,
+                                    damage = typeRatio[CONST_DAMAGE_TYPE.physical] * damage,
                                     percent = b.percent,
                                     sourceUnit = sourceUnit,
                                     effect = b.effect,
@@ -535,7 +568,7 @@ hskill.damage = function(options)
                                 {
                                     whichUnit = targetUnit,
                                     odds = b.odds,
-                                    damage = typeRatio * damage,
+                                    damage = typeRatio[CONST_DAMAGE_TYPE.magic] * damage,
                                     percent = b.percent,
                                     sourceUnit = sourceUnit,
                                     effect = b.effect,

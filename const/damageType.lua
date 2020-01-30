@@ -1,4 +1,4 @@
--- 伤害种类
+-- 伤害类型
 
 CONST_DAMAGE_TYPE = {
     common = "common",

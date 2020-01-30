@@ -5,21 +5,12 @@ txt = txt .. "|n包含多样丰富的属性系统，可以轻松做出平时难�
 txt = txt .. "|n内置多达几十种以上的自定义事件，轻松实现神奇的主动和被动效果"
 txt = txt .. "|n自带物品合成，免去自行编写的困惑。丰富的自定义技能模板"
 txt = txt .. "|n镜头、单位组、过滤器、背景音乐、天气等也应有尽有"
-txt = txt .. "|n想要了解更多，官方QQ群 325338043 官网教程 www.hunzsig.org"
+txt = txt .. "|n想要了解更多，官方QQ群：325338043 官网教程：hlua.book.hunzsig.org"
 bj.CreateQuestBJ(bj_QUESTTYPE_OPT_DISCOVERED, "h-lua", txt, "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp")
 txt = ""
 txt = txt .. "-random 随机选择"
 txt = txt .. "|n-repick 重新选择"
 bj.CreateQuestBJ(bj_QUESTTYPE_OPT_DISCOVERED, "h-lua选择英雄指令", txt, "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp")
-txt = ""
-txt = txt .. "-mbap 查看所有玩家统计"
-txt = txt .. "|n-mbme 查看你的个人实时状态"
-txt = txt .. "|n-mbsa 查看双击锁定单位的基本属性"
-txt = txt .. "|n-mbse 查看双击锁定单位的特效属性"
-txt = txt .. "|n-mbsn 查看双击锁定单位的自然属性"
-txt = txt .. "|n-mbsi 查看双击锁定单位的物品"
-txt = txt .. "|n-mbh 隐藏面板"
-bj.CreateQuestBJ(bj_QUESTTYPE_OPT_DISCOVERED, "如何使用h-lua多面板", txt, "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp")
 txt = ""
 txt = txt .. "-apc 设定是否自动转换黄金为木头"
 txt = txt .. "|n获得黄金超过100万时，自动按照比率转换多余的部分为木头"
