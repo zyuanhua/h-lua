@@ -241,7 +241,7 @@ hrect.lock = function(bean)
                     local loc = cj.Location(polar.x, polar.y)
                     cj.SetUnitPositionLoc(u, loc)
                     cj.RemoveLocation(loc)
-                    heffect.toUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
+                    heffect.bindUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
                     hmsg.style(hmsg.ttg2Unit(u, "被困", 10, "dde6f3", 30, 1, 20), "shrink", 0, 0.2)
                 end
             end

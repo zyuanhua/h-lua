@@ -347,7 +347,7 @@ hskill.damage = function(options)
             local hemophagia = sourceUnitAttr.hemophagia - targetUnitAttr.hemophagia_oppose
             if (hemophagia > 0) then
                 hunit.addCurLife(sourceUnit, lastDamage * hemophagia * 0.01)
-                heffect.toUnit(
+                heffect.bindUnit(
                     "Abilities\\Spells\\Undead\\VampiricAura\\VampiricAuraTarget.mdl",
                     sourceUnit,
                     "origin",
@@ -382,7 +382,7 @@ hskill.damage = function(options)
             local hemophagiaSkill = sourceUnitAttr.hemophagia_skill - targetUnitAttr.hemophagia_skill_oppose
             if (hemophagiaSkill > 0) then
                 hunit.addCurLife(sourceUnit, lastDamage * hemophagiaSkill * 0.01)
-                heffect.toUnit(
+                heffect.bindUnit(
                     "Abilities\\Spells\\Items\\HealingSalve\\HealingSalveTarget.mdl",
                     sourceUnit,
                     "origin",
