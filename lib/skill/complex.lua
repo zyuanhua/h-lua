@@ -2071,26 +2071,67 @@ hskill.rectangleStrike = function(options)
 end
 
 --[[
-    变身[参考 h-lua变身技能模板]
-    * modelFrom 技能模板 参考 h-lua SLK
-    * modelTo 技能模板 参考 h-lua SLK
+    变身
+    options = {
+        whichUnit, --哪个单位
+        during, --持续时间
+        toUnitId, --目标单位ID(可选)
+        toAbilityId, --目标替换技能ID(可选,与toUnitId互斥)
+        backAbilityId, --返回时的替换技能ID(可选,与toUnitId互斥)
+        effectStart = nil, --开始中心特效
+        effectEnd = nil, --结束中心特效
+        attr = {} --属性变动
+    }
 ]]
-hskill.shapeshift = function(u, during, modelFrom, modelTo, eff, attrData)
-    heffect.toUnit(eff, u, 1.5)
-    UnitAddAbility(u, modelTo)
-    UnitRemoveAbility(u, modelTo)
-    hattr.reRegister(u)
+hskill.shapeshift = function(options)
+    if (options.whichUnit == nil) then
+        print_err("shapeshift: -whichUnit")
+        return
+    end
+    if (options.toUnitId == nil and options.toAbilityId == nil and options.backAbilityId == nil) then
+        print_err("shapeshift: -target")
+        return
+    end
+    local during = options.during or 0
+    if (during <= 0) then
+        print_err("shapeshift: -during too small")
+        return
+    end
+    local deDur = 0.2
+    local attr = options.attr or {}
+    if (options.effectStart ~= nil) then
+        heffect.bindUnit(options.effectStart, options.whichUnit, "origin", 2.5)
+    end
+    local toAbilityId = options.toAbilityId
+    local backAbilityId = options.backAbilityId
+    if (toAbilityId == nil or backAbilityId == nil) then
+        toAbilityId = hslk_global.skill_shapeshift[options.toUnitId].toAbilityId
+        backAbilityId = hslk_global.skill_shapeshift[options.toUnitId].backAbilityId
+    end
+    cj.UnitAddAbility(options.whichUnit, toAbilityId)
+    cj.UnitRemoveAbility(options.whichUnit, toAbilityId)
+    hattr.reRegister(options.whichUnit)
     htime.setTimeout(
-        during,
+        deDur,
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            heffect.toUnit(eff, u, 1.5)
-            UnitAddAbility(u, modelFrom)
-            UnitRemoveAbility(u, modelFrom)
-            hattr.reRegister(u)
+            if (table.len(options.attr) > 0) then
+                hattr.set(options.whichUnit, during, options.attr)
+            end
+            htime.setTimeout(
+                during + deDur,
+                function(t, td)
+                    htime.delDialog(td)
+                    htime.delTimer(t)
+                    if (options.effectEnd ~= nil) then
+                        heffect.bindUnit(options.effectEnd, options.whichUnit, "origin", 2.5)
+                    end
+                    cj.UnitAddAbility(options.whichUnit, backAbilityId)
+                    cj.UnitRemoveAbility(options.whichUnit, backAbilityId)
+                    hattr.reRegister(options.whichUnit)
+                end
+            )
         end
     )
-    -- 根据data影响属性
-    hattr.set(u, during, attrData)
 end

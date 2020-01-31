@@ -1,4 +1,4 @@
-local slk = require "slk"
+slk = require "slk"
 
 local tempData = {}
 
@@ -43,7 +43,8 @@ HLUA_SLK_KEYS = {
     ATTR_SIGHT_ADD = 136,
     ATTR_SIGHT_SUB = 137,
     ENV_MODEL_NAME = 138,
-    ENV_MODEL = 139
+    ENV_MODEL = 139,
+    EX_SHAPESHIFT = 200
 }
 
 --获取一个table的正确长度
@@ -1193,59 +1194,39 @@ for k, v in ipairs(envs) do
 end
 
 -- #变身演示
-local obj = slk.unit.Edmm:new("skill_change_to_u")
-obj.EditorSuffix = "#h-lua"
-obj.Name = "技能系统 变身To 演示单位"
-obj.special = 0
-obj.abilList = ""
-obj.heroAbiList = ""
-obj.Requirescount = 0
-obj.Requires1 = ""
-obj.Requires2 = ""
-obj.file = "units\\demon\\HeroChaosBladeMaster\\HeroChaosBladeMaster.mdl"
-obj.Art = "ReplaceableTextures\\CommandButtons\\BTNChaosBlademaster.blp"
-obj.race = "other"
-local toUnitid = obj:get_id()
-local obj = slk.unit.Hpal:new("skill_change_from_u")
-obj.EditorSuffix = "#h-lua"
-obj.Name = "技能系统 变身From 演示单位"
-obj.abilList = ""
-obj.heroAbiList = ""
-obj.Requirescount = 0
-obj.Requires1 = ""
-obj.Requires2 = ""
-obj.DependencyOr = toUnitid
-obj.file = "units\\orc\\HeroBladeMaster\\HeroBladeMaster.mdl"
-obj.Art = "ReplaceableTextures\\CommandButtons\\BTNHeroBlademaster.blp"
-obj.race = "other"
-local fromUnitid = obj:get_id()
-local obj = slk.ability.AEme:new("skill_change_to")
-obj.EditorSuffix = "#h-lua"
-obj.Name = "技能系统 变身To"
-obj.UnitD1 = fromUnitid
-obj.DataE1 = 0
-obj.DataA1 = toUnitid
-obj.Tip = ""
-obj.Ubertip = ""
-obj.Art = ""
-obj.hero = 0
-obj.race = "other"
-obj.Cool1 = 0.00
-obj.Dur1 = 0.500
-obj.HeroDur1 = 0.001
-obj.Cost1 = 0
-local obj = slk.ability.AEme:new("skill_change_from")
-obj.EditorSuffix = "#h-lua"
-obj.Name = "技能系统 变身From"
-obj.UnitD1 = toUnitid
-obj.DataE1 = 0
-obj.DataA1 = fromUnitid
-obj.Tip = ""
-obj.Ubertip = ""
-obj.Art = ""
-obj.hero = 0
-obj.race = "other"
-obj.Cool1 = 0.00
-obj.Dur1 = 0.500
-obj.HeroDur1 = 0.001
-obj.Cost1 = 0
+local re =
+    slkHelper.shapeshift(
+    {
+        fromUnitId = "Obla", --来自
+        toName = "变身演示To",
+        toArt = "ReplaceableTextures\\CommandButtons\\BTNChaosBlademaster.blp",
+        toFile = "units\\demon\\HeroChaosBladeMaster\\HeroChaosBladeMaster.mdl"
+    }
+)
+table.insert(
+    tempData,
+    {
+        HLUA_SLK_KEYS.EX_SHAPESHIFT,
+        1,
+        re.toUnitId,
+        "int"
+    }
+)
+table.insert(
+    tempData,
+    {
+        HLUA_SLK_KEYS.EX_SHAPESHIFT,
+        2,
+        re.toAbilityId,
+        "int"
+    }
+)
+table.insert(
+    tempData,
+    {
+        HLUA_SLK_KEYS.EX_SHAPESHIFT,
+        3,
+        re.backAbilityId,
+        "int"
+    }
+)
