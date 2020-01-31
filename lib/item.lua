@@ -513,6 +513,14 @@ hitem.give = function(origin, target)
     end
 end
 
+-- 操作物品给一个单位
+hitem.pick = function(it, targetUnit)
+    if (it == nil or targetUnit == nil) then
+        return
+    end
+    cj.UnitAddItem(targetUnit, it)
+end
+
 -- 复制一个单位的所有物品给另一个单位
 hitem.copy = function(origin, target)
     if (origin == nil or target == nil) then
