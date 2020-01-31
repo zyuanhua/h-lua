@@ -427,8 +427,8 @@ end
 
 --设置单位可飞，用于设置单位飞行高度之前
 hunit.setCanFly = function(u)
-    cj.UnitAddAbility(u, "Amrf")
-    cj.UnitRemoveAbility(u, "Amrf")
+    cj.UnitAddAbility(u, "Arav")
+    cj.UnitRemoveAbility(u, "Arav")
 end
 
 --设置单位高度，用于设置单位可飞行之后

@@ -79,7 +79,7 @@ hslk_global.skill_item_separate = cj.LoadInteger(cg.hash_hslk, cj.StringHash("sk
 --skill_break
 for dur = 1, 0.5 / 0.05, 1 do
     local swDur = dur * 0.05
-    hslk_global.skill_break[swDur] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_break_"..swDur), 0)
+    hslk_global.skill_break[swDur] = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_break_" .. swDur), 0)
 end
 --skill_swim_unlimit
 hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, cj.StringHash("skill_swim_unlimit"), 0)

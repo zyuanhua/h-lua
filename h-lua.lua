@@ -15,14 +15,11 @@ require "const.index"
 -- 加载foundation
 hLuaStart = require "foundation.index"
 
--- 读取hSlk数据 # hash_hslk
-require "slkInit"
-
 --[[
     加载Dzapi库
-    需要网易魔兽官网平台支持
+    需要编辑器支持网易平台的DZAPI
     如果在lua中无法找到Dzapi，你需要检查下面的部分：
-    1. YDWE——配置——魔兽插件——[勾上]LUA引擎（不行就做第2步）
+    1. YDWE——配置——魔兽插件——[勾上]LUA引擎——[勾上]Dzapi（不行就做第2步）
     2. 打开触发窗口（F4），创建一个不运行的触发（无事件），在条件及动作补充你需要的Dzapi
 ]]
 require "lib.dzapi"

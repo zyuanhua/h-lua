@@ -25,6 +25,9 @@ require "foundation.color"
 -- 加载h-lua的F9
 require "foundation.f9"
 
+-- 加载runtime
+require "foundation.slk"
+
 hLuaStart = {
     run = function()
         -- 时钟初始化
