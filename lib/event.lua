@@ -1256,12 +1256,6 @@ hevent.onConstructFinish = function(whichPlayer, callFunc)
     return hevent.registerEvent(whichPlayer, key, callFunc)
 end
 
---任意单位注册进h-lua系统时(注意这是全局事件)
---triggerUnit 获取触发单位
-hevent.onRegister = function(callFunc)
-    return hevent.registerEvent("global", CONST_EVENT.register, callFunc)
-end
-
 --任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
 --triggerPlayer 获取触发玩家
 --triggerUnit 获取触发单位
