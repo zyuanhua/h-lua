@@ -38,6 +38,7 @@ hleaderBoard.create = function(key, refreshFrequency, yourData)
                     hplayer.players[playerIndex]
                 )
             end
+            cj.LeaderboardSortItemsByValue(hRuntime.leaderBoard[key], false) --降序
             hleaderBoard.LeaderboardResize(hRuntime.leaderBoard[key])
         end
     )
