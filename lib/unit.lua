@@ -384,8 +384,8 @@ hunit.del = function(targetUnit, during)
         htime.setTimeout(
             during,
             function(t, td)
-                htime.delTimer(t)
                 htime.delDialog(td)
+                htime.delTimer(t)
                 hRuntime.clear(targetUnit)
                 cj.RemoveUnit(targetUnit)
             end
