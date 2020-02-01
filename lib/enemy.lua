@@ -81,8 +81,8 @@ end
         y = nil, --创建坐标Y，可选
         loc = nil, --创建点，可选
         height = 高度，0，可选
-        timeScalePercent = 动作时间比例，1~，可选
-        modelScalePercent = 模型缩放比例，1~，可选
+        timeScale = 动作时间比例，1~，可选
+        modelScale = 模型缩放比例，1~，可选
         opacity = 透明，0～255，可选
         qty = 1, --数量，可选，可选
         life = nil, --生命周期，到期死亡，可选

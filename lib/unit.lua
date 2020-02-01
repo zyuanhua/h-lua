@@ -117,7 +117,7 @@ end
         y = nil, --创建坐标Y，可选
         loc = nil, --创建点，可选
         height = 高度，0，可选
-        timeScalePercent = 动作时间比例，1~，可选
+        timeScale = 动作时间比例，1~，可选
         modelScale = 模型缩放比例，1~，可选
         opacity = 透明，0.0～1.0，可选,0不可见
         qty = 1, --数量，可选，可选
@@ -206,9 +206,9 @@ hunit.create = function(bean)
             cj.SetUnitFlyHeight(u, bean.height, 10000)
         end
         -- 动作时间比例 %
-        if (bean.timeScalePercent ~= nil and bean.timeScalePercent > 0) then
-            bean.timeScalePercent = math.round(bean.timeScalePercent)
-            cj.SetUnitTimeScalePercent(u, timeScalePercent)
+        if (bean.timeScale ~= nil and bean.timeScale > 0) then
+            bean.timeScale = math.round(bean.timeScale)
+            cj.SetUnitTimeScalePercent(u, bean.timeScale)
         end
         -- 模型缩放比例 %
         if (bean.modelScale ~= nil and bean.modelScale > 0) then
