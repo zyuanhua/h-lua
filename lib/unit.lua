@@ -248,7 +248,7 @@ hunit.create = function(bean)
         end
         --是否无敌
         if (bean.isInvulnerable ~= nil and bean.isInvulnerable == true) then
-            cj.SetUnitInvulnerable(u, true)
+            cj.UnitAddAbility(u, "Avul")
         end
         --影子，无敌蝗虫暂停
         if (bean.isShadow ~= nil and bean.isShadow == true) then
