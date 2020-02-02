@@ -23,7 +23,7 @@ hskill.invulnerable = function(whichUnit, during, effect)
     if (during < 0) then
         during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
     end
-    cj.SetUnitInvulnerable(whichUnit, true)
+    cj.UnitAddAbility(whichUnit, "Avul")
     if (during > 0 and effect ~= nil) then
         heffect.bindUnit(effect, whichUnit, "origin", during)
     end
@@ -32,7 +32,7 @@ hskill.invulnerable = function(whichUnit, during, effect)
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            cj.SetUnitInvulnerable(whichUnit, false)
+            cj.UnitRemoveAbility(whichUnit, "Avul")
         end
     )
 end
