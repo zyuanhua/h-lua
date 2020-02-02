@@ -107,11 +107,6 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    --物品栏
-    if (cj.GetUnitAbilityLevel(whichUnit, hattr.DEFAULT_SKILL_ITEM_SLOT) < 1) then
-        cj.UnitAddAbility(whichUnit, hattr.DEFAULT_SKILL_ITEM_SLOT)
-        cj.UnitRemoveAbility(whichUnit, hattr.DEFAULT_SKILL_ITEM_SLOT)
-    end
     --绿字攻击
     for _, ability in pairs(hslk_global.attr.attack_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
@@ -230,11 +225,7 @@ hattr.registerAll = function(whichUnit)
         agi_white = cj.GetHeroAgi(whichUnit, false),
         int_white = cj.GetHeroInt(whichUnit, false),
         life_back = 0.0,
-        life_source = 0.0,
-        life_source_current = 0.0,
         mana_back = 0.0,
-        mana_source = 0.0,
-        mana_source_current = 0.0,
         resistance = 0.0,
         toughness = 0.0,
         avoid = 0.0,
@@ -763,18 +754,6 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     table.insert(hRuntime.attributeGroup[attr], whichUnit)
                 elseif (math.abs(futureVal) < 0.02) then
                     table.delete(whichUnit, hRuntime.attributeGroup[attr])
-                end
-            elseif (attr == "life_source_current" or attr == "mana_source_current") then
-                --- 生命源 魔法源(current)
-                local attrSource = string.gsub(attr, "_current", "", 1)
-                if (futureVal > hRuntime.attribute[whichUnit][attrSource]) then
-                    futureVal = hRuntime.attribute[whichUnit][attrSource]
-                    hRuntime.attribute[whichUnit][attr] = futureVal
-                end
-                if (math.abs(futureVal) > 1 and table.includes(whichUnit, hRuntime.attributeGroup[attrSource]) == false) then
-                    table.insert(hRuntime.attributeGroup[attrSource], whichUnit)
-                elseif (math.abs(futureVal) < 1) then
-                    table.delete(whichUnit, hRuntime.attributeGroup[attrSource])
                 end
             elseif (attr == "punish" and hunit.isOpenPunish(whichUnit)) then
                 --- 硬直

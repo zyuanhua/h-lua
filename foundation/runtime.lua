@@ -49,8 +49,6 @@ hRuntime = {
     attributeGroup = {
         life_back = {},
         mana_back = {},
-        life_source = {},
-        mana_source = {},
         punish = {},
         punish_current = {}
     },

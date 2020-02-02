@@ -101,7 +101,7 @@ hLuaStart = {
                 )
             end
         )
-        -- 单位进入区域注册
+        单位进入区域注册
         local triggerRegIn = cj.CreateTrigger()
         bj.TriggerRegisterEnterRectSimple(triggerRegIn, bj.GetPlayableMapRect())
         cj.TriggerAddAction(
@@ -159,47 +159,6 @@ hLuaStart = {
                         end
                     end
                 end
-                --- 源力只有在没受伤判定的情况下才会有效
-                for k, u in pairs(hRuntime.attributeGroup.life_source) do
-                    if (his.alive(u) and hunit.getCurLifePercent(u) < hplayer.getLifeSourceRatio(cj.GetOwningPlayer(u))) then
-                        if (hattr.get(u, "be_hunting") == false) then
-                            if (hattr.get(u, "life_source_current") > 0) then
-                                local fill = hunit.getMaxLife(u) - hunit.getCurLife(u)
-                                if (fill > hattr.get(u, "life_source_current")) then
-                                    fill = hattr.get(u, "life_source_current")
-                                end
-                                hattr.set(u, 0, {life_source_current = "-" .. fill})
-                                hunit.addCurLife(u, fill)
-                                htextTag.style(
-                                    htextTag.create2Unit(u, "命源+" .. fill, 6.00, "bce43a", 10, 1.00, 10.00),
-                                    "scale",
-                                    0,
-                                    0.2
-                                )
-                            end
-                        end
-                    end
-                end
-                for k, u in pairs(hRuntime.attributeGroup.mana_source) do
-                    if (his.alive(u) and hunit.getCurManaPercent(u) < hplayer.getManaSourceRatio(cj.GetOwningPlayer(u))) then
-                        if (hattr.get(u, "be_hunting") == false) then
-                            if (hattr.get(u, "mana_source_current") > 0) then
-                                local fill = hunit.getMaxLife(u) - hunit.getCurMana(u)
-                                if (fill > hattr.get(u, "mana_source_current")) then
-                                    fill = hattr.get(u, "mana_source_current")
-                                end
-                                hattr.set(u, 0, {mana_source_current = "-" .. fill})
-                                hunit.addCurMana(u, fill)
-                                htextTag.style(
-                                    htextTag.create2Unit(u, "魔源+" .. fill, 6.00, "93d3f1", 10, 1.00, 10.00),
-                                    "scale",
-                                    0,
-                                    0.2
-                                )
-                            end
-                        end
-                    end
-                end
             end
         )
         -- 硬直恢复(3秒内没收到伤害后,每1秒恢复1%)
@@ -214,22 +173,6 @@ hLuaStart = {
                         if (hattr.get(u, "be_hunting") == false) then
                             hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.01)})
                         end
-                    end
-                end
-            end
-        )
-        -- 源恢复
-        htime.setInterval(
-            15.00,
-            function(t, td)
-                for k, u in pairs(hRuntime.attributeGroup.life_source) do
-                    if (his.alive(u)) then
-                        hattr.set(u, 0, {life_source_current = "+100"})
-                    end
-                end
-                for k, u in pairs(hRuntime.attributeGroup.mana_source) do
-                    if (his.alive(u)) then
-                        hattr.set(u, 0, {mana_source_current = "+100"})
                     end
                 end
             end
