@@ -110,80 +110,54 @@ hattr.regAllAbility = function(whichUnit)
     --绿字攻击
     for _, ability in pairs(hslk_global.attr.attack_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.attack_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     --绿色属性
     for _, ability in pairs(hslk_global.attr.str_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.str_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.agi_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.agi_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.int_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.int_green.sub) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     --攻击速度
     for _, ability in pairs(hslk_global.attr.attack_speed.add) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.attack_speed.sub) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     --防御
     for _, ability in pairs(hslk_global.attr.defend.add) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
     for _, ability in pairs(hslk_global.attr.defend.sub) do
         cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
-    end
-    --白字攻击
-    for _, ability in pairs(hslk_global.attr.attack_white.add) do
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.attack_white.sub) do
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-    end
-    --视野
-    for _, ability in pairs(hslk_global.attr.sight.add) do
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.sight.sub) do
-        cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
+        cj.UnitRemoveAbility(whichUnit, ability)
     end
 end
 

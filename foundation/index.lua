@@ -34,6 +34,11 @@ hLuaStart = {
         -- 全局计时器
         cj.TimerStart(cj.CreateTimer(), 1.00, true, htime.clock)
 
+        --preread
+        local u = cj.CreateUnit(hplayer.player_passive, hslk_global.unit_token, 0, 0, 0)
+        hattr.regAllAbility(u)
+        hunit.del(u, 0)
+
         -- 玩家系统
         hplayer.init()
         -- 物品系统
