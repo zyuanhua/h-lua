@@ -101,7 +101,7 @@ hLuaStart = {
                 )
             end
         )
-        单位进入区域注册
+        --单位进入区域注册
         local triggerRegIn = cj.CreateTrigger()
         bj.TriggerRegisterEnterRectSimple(triggerRegIn, bj.GetPlayableMapRect())
         cj.TriggerAddAction(

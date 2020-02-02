@@ -186,13 +186,12 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitMakeAbilityPermanent(whichUnit, true, ability)
     end
 end
---- 为单位注册属性系统所需要的基础技能
---- hslk_global.attr
-hattr.registerAll = function(whichUnit)
+
+--为单位初始化属性系统的对象数据
+hattr.init = function(whichUnit)
     if (whichUnit == nil) then
         return
     end
-    hattr.regAllAbility(whichUnit)
     --init
     local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
     if (unitId == nil) then
@@ -673,10 +672,14 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     futureVal = 99999999
                 end
                 for _, ability in pairs(hslk_global.attr[attr].add) do
-                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    end
                 end
                 for _, ability in pairs(hslk_global.attr[attr].sub) do
-                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    end
                 end
                 tempVal = math.floor(math.abs(futureVal))
                 local max = 100000000
@@ -685,8 +688,14 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
                         if (futureVal > 0) then
+                            if (cj.GetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max]) < 1) then
+                                cj.UnitAddAbility(whichUnit, hslk_global.attr[attr].add[max])
+                            end
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max], level + 1)
                         else
+                            if (cj.GetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max]) < 1) then
+                                cj.UnitAddAbility(whichUnit, hslk_global.attr[attr].sub[max])
+                            end
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max], level + 1)
                         end
                         max = math.floor(max / 10)
@@ -700,10 +709,14 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     futureVal = 99999999
                 end
                 for _, ability in pairs(hslk_global.attr[attr].add) do
-                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    end
                 end
                 for _, ability in pairs(hslk_global.attr[attr].sub) do
-                    cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    end
                 end
                 tempVal = math.floor(math.abs(futureVal))
                 local max = 100000000
@@ -712,8 +725,14 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                         level = math.floor(tempVal / max)
                         tempVal = math.floor(tempVal - level * max)
                         if (futureVal > 0) then
+                            if (cj.GetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max]) < 1) then
+                                cj.UnitAddAbility(whichUnit, hslk_global.attr[attr].add[max])
+                            end
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].add[max], level + 1)
                         else
+                            if (cj.GetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max]) < 1) then
+                                cj.UnitAddAbility(whichUnit, hslk_global.attr[attr].sub[max])
+                            end
                             cj.SetUnitAbilityLevel(whichUnit, hslk_global.attr[attr].sub[max], level + 1)
                         end
                         max = math.floor(max / 10)
@@ -779,7 +798,7 @@ hattr.set = function(whichUnit, during, data)
         return
     end
     if (hRuntime.attribute[whichUnit] == nil) then
-        hattr.registerAll(whichUnit)
+        hattr.init(whichUnit)
     end
     -- 处理data
     if (type(data) ~= "table") then
@@ -838,7 +857,7 @@ hattr.get = function(whichUnit, attr)
         return nil
     end
     if (hRuntime.attribute[whichUnit] == nil) then
-        hattr.registerAll(whichUnit)
+        hattr.init(whichUnit)
     end
     if (attr == nil) then
         return hRuntime.attribute[whichUnit]
@@ -862,7 +881,7 @@ hattr.reRegister = function(whichUnit)
     local attackSpeed = hRuntime.attribute[whichUnit].attack_speed
     local defend = hRuntime.attribute[whichUnit].defend
     -- 注册技能
-    hattr.registerAll(whichUnit)
+    hattr.init(whichUnit)
     -- 弥补属性
     cj.SetHeroStr(whichUnit, cj.R2I(strWhite), true)
     cj.SetHeroAgi(whichUnit, cj.R2I(agiWhite), true)
