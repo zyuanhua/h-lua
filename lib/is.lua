@@ -97,6 +97,10 @@ end
 his.invincible = function(whichUnit)
     return cj.GetUnitAbilityLevel(whichUnit, "Avul") > 0
 end
+--是否隐身中
+his.invisible = function(whichUnit)
+    return cj.GetUnitAbilityLevel(whichUnit, hskill.SKILL_INVISIBLE) > 0
+end
 --是否英雄
 his.hero = function(whichUnit)
     return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or his.get(whichUnit, "isHero") == true
