@@ -75,32 +75,17 @@ hRuntime = {
 }
 
 hRuntime.clear = function(handle)
-    if (hRuntime.unit[handle] ~= nil) then
-        hRuntime.unit[handle] = nil
-    end
-    if (hRuntime.item[handle] ~= nil) then
-        hRuntime.item[handle] = nil
-    end
-    if (hRuntime.player[handle] ~= nil) then
-        hRuntime.player[handle] = nil
-    end
-    if (hRuntime.attribute[handle] ~= nil) then
-        hRuntime.attribute[handle] = nil
-    end
-    if (hRuntime.env[handle] ~= nil) then
-        hRuntime.env[handle] = nil
-    end
-    if (hRuntime.event[handle] ~= nil) then
-        hRuntime.event[handle] = nil
-    end
-    if (hRuntime.event.register[handle] ~= nil) then
-        hRuntime.event.register[handle] = nil
-    end
-    if (hRuntime.textTag[handle] ~= nil) then
-        hRuntime.textTag[handle] = nil
-    end
-    if (hRuntime.is[handle] ~= nil) then
-        hRuntime.is[handle] = nil
+    for k, v in pairs(hRuntime) do
+        if (type(v) == "table") then
+            if (v[handle] ~= nil) then
+                v[handle] = nil
+            end
+            if (k == "event") then
+                if (v.register[handle] ~= nil) then
+                    v.register[handle] = nil
+                end
+            end
+        end
     end
 end
 

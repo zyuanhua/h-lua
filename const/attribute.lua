@@ -185,7 +185,14 @@ const_getItemDesc = function(attr)
             elseif
                 (table.includes(
                     k,
-                    {"attack_buff", "attack_debuff", "skill_buff", "skill_debuff", "attack_effect", "skill_effect"}
+                    {
+                        "attack_buff",
+                        "attack_debuff",
+                        "skill_buff",
+                        "skill_debuff",
+                        "attack_effect",
+                        "skill_effect"
+                    }
                 ))
              then
                 for kk, vv in pairs(v) do

@@ -6,7 +6,8 @@ hskill = {
     SKILL_INVISIBLE = hslk_global.skill_invisible,
     SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
     SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
-    BUFF_SWIM = string.char2id("BPSE")
+    BUFF_SWIM = string.char2id("BPSE"),
+    BUFF_INVULNERABLE = string.char2id("Avul")
 }
 
 hskill.set = function(handle, key, val)
