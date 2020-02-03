@@ -81,12 +81,14 @@ hattr.setAttackWhite = function(u, itemId, qty)
         )
     end
 end
+
 --- 设置三围的影响
 hattr.setThreeBuff = function(buff)
     if (type(buff) == "table") then
         hRuntime.attributeThreeBuff = buff
     end
 end
+
 --- 为单位注册属性系统所需要的基础技能
 --- hslk_global.attr
 hattr.regAllAbility = function(whichUnit)
@@ -766,6 +768,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
         end
     end
 end
+
 hattr.set = function(whichUnit, during, data)
     if (whichUnit == nil) then
         print_stack("whichUnit is nil")

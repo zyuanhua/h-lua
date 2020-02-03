@@ -1,5 +1,5 @@
 print_stack = function(...)
-    local out = { "[TRACE]" }
+    local out = {"[TRACE]"}
     local n = select("#", ...)
     for i = 1, n, 1 do
         local v = select(i, ...)
@@ -28,32 +28,41 @@ print_err = function(val)
 end
 
 --打印对象table
-print_r = function(t)
+print_r = function(t, printMethod, showDetail)
     local print_r_cache = {}
+    printMethod = printMethod or print
+    if (showDetail == nil) then
+        showDetail = true
+    end
     local function sub_print_r(tt, indent)
         if (print_r_cache[tostring(tt)]) then
-            print(indent .. "*" .. tostring(tt))
+            printMethod(indent .. "*" .. tostring(tt))
         else
             print_r_cache[tostring(tt)] = true
             if (type(tt) == "table") then
                 for pos, val in pairs(tt) do
+                    if (type(pos) == "userdata") then
+                        pos = "userdata"
+                    end
                     if (type(val) == "table") then
-                        print(indent .. "[" .. pos .. "] => " .. tostring(tt) .. " {")
+                        print(indent .. "[" .. pos .. "](" .. table.len(val) .. ") => " .. tostring(tt) .. " {")
                         sub_print_r(val, indent .. string.rep(" ", string.len(pos) + 8))
                         print(indent .. string.rep(" ", string.len(pos) + 6) .. "}")
-                    elseif (type(val) == "string") then
-                        print(indent .. "[" .. pos .. '] => "' .. val .. '"')
-                    else
-                        print(indent .. "[" .. pos .. "] => " .. tostring(val))
+                    elseif (showDetail == true) then
+                        if (type(val) == "string") then
+                            printMethod(indent .. "[" .. pos .. '] => "' .. val .. '"')
+                        else
+                            print(indent .. "[" .. pos .. "] => " .. tostring(val))
+                        end
                     end
                 end
             else
-                print(indent .. tostring(tt))
+                printMethod(indent .. tostring(tt))
             end
         end
     end
     if (type(t) == "table") then
-        print(tostring(t) .. " {")
+        print(tostring(t) .. "(" .. table.len(t) .. ") {")
         sub_print_r(t, "  ")
         print("}")
     else
@@ -64,35 +73,5 @@ end
 
 --打印对象table,此方法可以打印出中文
 print_mbr = function(t)
-    local print_r_cache = {}
-    local function sub_print_r(tt, indent)
-        if (print_r_cache[tostring(tt)]) then
-            print_mb(indent .. "*" .. tostring(tt))
-        else
-            print_r_cache[tostring(tt)] = true
-            if (type(tt) == "table") then
-                for pos, val in pairs(tt) do
-                    if (type(val) == "table") then
-                        print_mb(indent .. "[" .. pos .. "] => " .. tostring(tt) .. " {")
-                        sub_print_r(val, indent .. string.rep(" ", string.len(pos) + 8))
-                        print_mb(indent .. string.rep(" ", string.len(pos) + 6) .. "}")
-                    elseif (type(val) == "string") then
-                        print_mb(indent .. "[" .. pos .. '] => "' .. val .. '"')
-                    else
-                        print_mb(indent .. "[" .. pos .. "] => " .. tostring(val))
-                    end
-                end
-            else
-                print_mb(indent .. tostring(tt))
-            end
-        end
-    end
-    if (type(t) == "table") then
-        print_mb(tostring(t) .. " {")
-        sub_print_r(t, "  ")
-        print_mb("}")
-    else
-        sub_print_r(t, "  ")
-    end
-    print()
+    print_r(t, print_mb, true)
 end

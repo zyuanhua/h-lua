@@ -1958,9 +1958,12 @@ hskill.rectangleStrike = function(options)
     local frequency = options.frequency or 0
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
     local damageType = options.damageType or {CONST_DAMAGE_TYPE.common}
-    local oneHitOnly = options.oneHitOnly or true
+    local oneHitOnly = options.oneHitOnly
     local effectScale = options.effectScale or 1.30
     local effectOffset = options.effectOffset or 0
+    if (oneHitOnly == nil) then
+        oneHitOnly = true
+    end
     if (frequency <= 0) then
         local i = 0
         local tg = cj.CreateGroup()
