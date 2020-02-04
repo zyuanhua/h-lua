@@ -18,10 +18,10 @@ rem = function(key1, key2)
     if (remStack == nil) then
         remStack = {}
     end
-    remStack[key1] = os.time()
+    remStack[key1] = os.clock()
     if (key2 ~= nil) then
-        remStack[key2] = os.time()
-        print("[rem]" .. key1 .. "->" .. key2 .. math.round(remStack[key2] - remStack[key1]))
+        remStack[key2] = os.clock()
+        print("[rem " .. key1 .. "->" .. key2 .. "]:" .. remStack[key2] - remStack[key1])
     end
 end
 
