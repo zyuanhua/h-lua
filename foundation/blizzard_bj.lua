@@ -217,12 +217,12 @@ bj.CreateQuestBJ = function(questType, title, description, iconPath)
     local required = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_REQ_UNDISCOVERED
     local discovered = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_OPT_DISCOVERED
     local cq = cj.CreateQuest()
-    cj.QuestSetTitle(bj_lastCreatedQuest, title)
-    cj.QuestSetDescription(bj_lastCreatedQuest, description)
-    cj.QuestSetIconPath(bj_lastCreatedQuest, iconPath)
-    cj.QuestSetRequired(bj_lastCreatedQuest, required)
-    cj.QuestSetDiscovered(bj_lastCreatedQuest, discovered)
-    cj.QuestSetCompleted(bj_lastCreatedQuest, false)
+    cj.QuestSetTitle(cq, title)
+    cj.QuestSetDescription(cq, description)
+    cj.QuestSetIconPath(cq, iconPath)
+    cj.QuestSetRequired(cq, required)
+    cj.QuestSetDiscovered(cq, discovered)
+    cj.QuestSetCompleted(cq, false)
     return cq;
 end
 
