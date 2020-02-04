@@ -171,11 +171,9 @@ hattr.init = function(whichUnit)
     --init
     local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
     if (unitId == nil) then
-        print_err("unresgister unitId is nil")
         return
     end
     if (hslk_global.unitsKV[unitId] == nil) then
-        print_err("unresgister hslk_global.unitsKV:" .. cj.GetUnitName(whichUnit) .. unitId)
         return
     end
     hRuntime.attribute[whichUnit] = {

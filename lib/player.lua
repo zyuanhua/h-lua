@@ -260,7 +260,7 @@ hplayer.subGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, -val, during)
 end
 hplayer.getGoldRatio = function(whichPlayer)
-    return hplayer.get(whichPlayer, "goldRatio")
+    return hplayer.get(whichPlayer, "goldRatio") or 100
 end
 
 --- 木头比率
@@ -412,6 +412,9 @@ hplayer.getGold = function(whichPlayer)
 end
 --- 设置玩家实时金钱
 hplayer.setGold = function(whichPlayer, gold)
+    if (whichPlayer == nil) then
+        return
+    end
     local exceedLumber = 0
     -- 满 100W 调用自动换算（至于换不换算，看玩家有没有开转换）
     if (gold > 1000000) then
@@ -429,6 +432,9 @@ hplayer.setGold = function(whichPlayer, gold)
 end
 --- 增加玩家金钱
 hplayer.addGold = function(whichPlayer, gold, u)
+    if (whichPlayer == nil) then
+        return
+    end
     gold = cj.R2I(gold * hplayer.getGoldRatio(whichPlayer) / 100)
     hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) + gold)
     if (u ~= nil) then
@@ -438,6 +444,9 @@ hplayer.addGold = function(whichPlayer, gold, u)
 end
 --- 减少玩家金钱
 hplayer.subGold = function(whichPlayer, gold)
+    if (whichPlayer == nil) then
+        return
+    end
     hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) - gold)
 end
 
@@ -447,20 +456,34 @@ hplayer.getLumber = function(whichPlayer)
 end
 --- 设置玩家实时木头
 hplayer.setLumber = function(whichPlayer, lumber)
+    if (whichPlayer == nil) then
+        return
+    end
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER, lumber)
     hplayer.adjustLumber(whichPlayer)
 end
 --- 增加玩家木头
 hplayer.addLumber = function(whichPlayer, lumber, u)
+    if (whichPlayer == nil) then
+        return
+    end
     lumber = cj.R2I(lumber * hplayer.getLumberRatio(whichPlayer) / 100)
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) + lumber)
     if (u ~= nil) then
-        htextTag.style(htextTag.create2Unit(u, "+" .. lumber .. " Lumber", 7, "80ff80", 1, 1.70, 60.00), "toggle", 0, 0.20)
+        htextTag.style(
+            htextTag.create2Unit(u, "+" .. lumber .. " Lumber", 7, "80ff80", 1, 1.70, 60.00),
+            "toggle",
+            0,
+            0.20
+        )
         hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, u)
     end
 end
 --- 减少玩家木头
 hplayer.subLumber = function(whichPlayer, lumber)
+    if (whichPlayer == nil) then
+        return
+    end
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) - lumber)
 end
 

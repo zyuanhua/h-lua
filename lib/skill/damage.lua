@@ -55,6 +55,12 @@ hskill.damage = function(options)
     if (his.alive(options.targetUnit) == false) then
         return
     end
+    --双方attr get
+    local targetUnitAttr = hattr.get(targetUnit)
+    local sourceUnitAttr = hattr.get(sourceUnit)
+    if (targetUnitAttr == nil or sourceUnitAttr == nil) then
+        return
+    end
     local damageKind = options.damageKind
     local damageType = options.damageType
     if (damageType == nil) then
@@ -93,9 +99,6 @@ hskill.damage = function(options)
         print_err("DAMAGE -damageKind")
         return
     end
-    --双方attr get
-    local targetUnitAttr = hattr.get(targetUnit)
-    local sourceUnitAttr = hattr.get(sourceUnit)
     -- 计算单位是否无敌且伤害类型不混合绝对伤害（无敌属性为百分比计算，被动触发抵挡一次）
     if (his.invincible(targetUnit) == true or math.random(1, 100) < targetUnitAttr.invincible) then
         if (table.includes(CONST_DAMAGE_TYPE.absolute, damageType) == false) then

@@ -6,9 +6,9 @@ local HSK = {
     UNIT_TOKEN_LEAP = 103,
     UNIT_TREE = 104,
     SKILL_ITEM_SEPARATE = 105,
-    SKILL_BREAK = 106,
-    SKILL_SWIM_UNLIMIT = 107,
-    SKILL_INVISIBLE = 108,
+    BUFF_BREAK = 106,
+    BUFF_SWIM_UNLIMIT = 107,
+    BUFF_INVISIBLE = 108,
     SKILL_HERO_TAVERN_SELECTION = 109,
     UNIT_HERO_TAVERN = 110,
     UNIT_HERO_TAVERN_TOKEN = 111,
@@ -125,12 +125,12 @@ hslk_global.skill_item_separate = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.S
 --skill_break
 for dur = 1, 10, 1 do
     local swDur = dur * 0.05
-    hslk_global.skill_break[swDur] = cj.LoadInteger(cg.hash_hslk, HSK.SKILL_BREAK, dur)
+    hslk_global.skill_break[swDur] = cj.LoadInteger(cg.hash_hslk, HSK.BUFF_BREAK, dur)
 end
 --skill_swim_unlimit
-hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_SWIM_UNLIMIT)
+hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.BUFF_SWIM_UNLIMIT)
 --skill_invisible
-hslk_global.skill_invisible = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_INVISIBLE)
+hslk_global.skill_invisible = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.BUFF_INVISIBLE)
 --skill_hero_tavern_selection
 hslk_global.skill_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_HERO_TAVERN_SELECTION)
 

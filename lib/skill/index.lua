@@ -1,11 +1,11 @@
 hskill = {
     SKILL_TOKEN = hslk_global.unit_token,
     SKILL_LEAP = hslk_global.unit_token_leap,
-    SKILL_BREAK = hslk_global.skill_break, --table[0.05~0.5]
-    SKILL_SWIM = hslk_global.skill_swim_unlimit,
-    SKILL_INVISIBLE = hslk_global.skill_invisible,
-    SKILL_AVOID_PLUS = hslk_global.attr.avoid.add,
-    SKILL_AVOID_MIUNS = hslk_global.attr.avoid.sub,
+    BUFF_BREAK = hslk_global.skill_break, --table[0.05~0.5]
+    BUFF_SWIM = hslk_global.skill_swim_unlimit,
+    BUFF_INVISIBLE = hslk_global.skill_invisible,
+    BUFF_AVOID_PLUS = hslk_global.attr.avoid.add,
+    BUFF_AVOID_MIUNS = hslk_global.attr.avoid.sub,
     BUFF_SWIM = string.char2id("BPSE"),
     BUFF_INVULNERABLE = string.char2id("Avul")
 }

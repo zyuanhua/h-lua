@@ -300,8 +300,8 @@ hskill.broken = function(options)
             y = cj.GetUnitY(u)
         }
     )
-    cj.UnitAddAbility(cu, hskill.SKILL_BREAK[0.05])
-    cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK[0.05], 1)
+    cj.UnitAddAbility(cu, hskill.BUFF_BREAK[0.05])
+    cj.SetUnitAbilityLevel(cu, hskill.BUFF_BREAK[0.05], 1)
     cj.IssueTargetOrder(cu, "thunderbolt", u)
     hunit.del(cu, 0.3)
     if (type(options.effect) == "string" and string.len(options.effect) > 0) then
@@ -418,14 +418,14 @@ hskill.swim = function(options)
     end
     if (during <= 0.5) then
         during = 0.05 * math.floor(during / 0.05) --必须是0.05的倍数
-        cj.UnitAddAbility(cu, hskill.SKILL_BREAK[during])
-        cj.SetUnitAbilityLevel(cu, hskill.SKILL_BREAK[during], 1)
+        cj.UnitAddAbility(cu, hskill.BUFF_BREAK[during])
+        cj.SetUnitAbilityLevel(cu, hskill.BUFF_BREAK[during], 1)
         cj.IssueTargetOrder(cu, "thunderbolt", u)
         hunit.del(cu, 0.4)
     else
         --无限法
-        cj.UnitAddAbility(cu, hskill.SKILL_SWIM)
-        cj.SetUnitAbilityLevel(cu, hskill.SKILL_SWIM, 1)
+        cj.UnitAddAbility(cu, hskill.BUFF_SWIM)
+        cj.SetUnitAbilityLevel(cu, hskill.BUFF_SWIM, 1)
         cj.IssueTargetOrder(cu, "thunderbolt", u)
         hunit.del(cu, 0.4)
         hskill.set(
@@ -1583,7 +1583,7 @@ hskill.leap = function(options)
     --无敌加无路径
     cj.SetUnitPathing(arrowUnit, false)
     if (leapType == "unit") then
-        cj.SetUnitInvulnerable(arrowUnit, true)
+        hunit.setInvulnerable(arrowUnit, true)
         cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 255 * tokenArrowOpacity)
     end
     --开始冲鸭
@@ -1604,7 +1604,7 @@ hskill.leap = function(options)
                     repeatGroup = nil
                 end
                 if (leapType == "unit") then
-                    cj.SetUnitInvulnerable(arrowUnit, false)
+                    hunit.setInvulnerable(arrowUnit, false)
                     cj.SetUnitPathing(arrowUnit, true)
                     cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 1)
                 else
@@ -1738,7 +1738,7 @@ hskill.leap = function(options)
                     cj.DestroyGroup(g)
                 end
                 if (leapType == "unit") then
-                    cj.SetUnitInvulnerable(arrowUnit, false)
+                    hunit.setInvulnerable(arrowUnit, false)
                     cj.SetUnitPathing(arrowUnit, true)
                     cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 1)
                     cj.SetUnitPosition(arrowUnit, txy.x, txy.y)

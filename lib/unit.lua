@@ -89,6 +89,18 @@ hunit.isOpenPunish = function(u)
     return hRuntime.unit[u].isOpenPunish
 end
 
+--设置单位无敌
+hunit.setInvulnerable = function(u, flag)
+    if (flag == nil) then
+        flag = true
+    end
+    if (flag == true and cj.GetUnitAbilityLevel(u, hskill.BUFF_INVULNERABLE) < 1) then
+        cj.UnitAddAbility(u, hskill.BUFF_INVULNERABLE)
+    else
+        cj.UnitRemoveAbility(u, hskill.BUFF_INVULNERABLE)
+    end
+end
+
 -- 设置单位的动画速度[比例尺1.00]
 hunit.setAnimateSpeed = function(u, speed, during)
     if (hRuntime.unit[u] == nil) then
@@ -251,13 +263,13 @@ hunit.create = function(bean)
         end
         --是否无敌
         if (bean.isInvulnerable ~= nil and bean.isInvulnerable == true) then
-            cj.UnitAddAbility(u, "Avul")
+            hunit.setInvulnerable(u, true)
         end
         --影子，无敌蝗虫暂停
         if (bean.isShadow ~= nil and bean.isShadow == true) then
             cj.UnitAddAbility(u, "Aloc")
             cj.PauseUnit(u, true)
-            cj.SetUnitInvulnerable(u, true)
+            hunit.setInvulnerable(u, true)
         end
         --是否与所有玩家共享视野
         if (bean.isShareSight ~= nil and bean.isShareSight == true) then
@@ -430,8 +442,8 @@ end
 
 --设置单位可飞，用于设置单位飞行高度之前
 hunit.setCanFly = function(u)
-    cj.UnitAddAbility(u, "Arav")
-    cj.UnitRemoveAbility(u, "Arav")
+    cj.UnitAddAbility(u, string.char2id("Arav"))
+    cj.UnitRemoveAbility(u, string.char2id("Arav"))
 end
 
 --设置单位高度，用于设置单位可飞行之后

@@ -150,7 +150,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         end
         table.insert(hhero.player_units[whichPlayer], u)
         hhero.setIsHero(u, true)
-        cj.SetUnitInvulnerable(u, false)
+        hunit.setInvulnerable(u, false)
         -- 触发英雄被选择事件(全局)
         hevent.triggerEvent(
             "global",
