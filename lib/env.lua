@@ -59,7 +59,7 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
     else
         --清理装饰单位
         for k, v in pairs(hRuntime.env[whichRect]) do
-            cj.RemoveUnit(v)
+            hunit.del(v)
         end
         hRuntime.env[whichRect] = {}
     end

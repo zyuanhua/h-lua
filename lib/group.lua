@@ -179,7 +179,7 @@ hgroup.clear = function(whichGroup, isDestroy, isDestroyUnit)
         local u = cj.FirstOfGroup(g)
         cj.GroupRemoveUnit(g, u)
         if (isDestroyUnit == true) then
-            cj.RemoveUnit(u)
+            hunit.del(u)
         end
     end
     if (isDestroy == true) then

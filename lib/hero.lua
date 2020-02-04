@@ -172,7 +172,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         local x = hRuntime.heroBuildSelection[u].x
         local y = hRuntime.heroBuildSelection[u].y
         hRuntime.heroBuildSelection[u] = nil
-        hunit.del(u, 0)
+        hunit.del(u)
         local u_new =
             hunit.create(
             {
@@ -193,7 +193,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         local heroId = cj.GetUnitTypeId(u)
         local itemId = hRuntime.heroBuildSelection[heroId].itemId
         local tavern = hRuntime.heroBuildSelection[heroId].tavern
-        hunit.del(u, 0)
+        hunit.del(u)
         cj.AddItemToStock(tavern, itemId, 1, 1)
     end
 end

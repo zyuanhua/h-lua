@@ -151,7 +151,7 @@ hplayer.defeat = function(whichPlayer, tips)
     while (hgroup.isEmpty(g) ~= true) do
         local u = cj.FirstOfGroup(g)
         cj.GroupRemoveUnit(g, u)
-        cj.RemoveUnit(u)
+        hunit.del(u)
     end
     cj.GroupClear(g)
     cj.DestroyGroup(g)
@@ -533,7 +533,7 @@ hplayer.init = function()
             while (hgroup.isEmpty(g) == false) do
                 local u = cj.FirstOfGroup(g)
                 cj.GroupRemoveUnit(g, u)
-                cj.RemoveUnit(u)
+                hunit.del(u)
             end
             cj.GroupClear(g)
             cj.DestroyGroup(g)

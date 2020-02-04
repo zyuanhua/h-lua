@@ -37,7 +37,7 @@ hLuaStart = {
         --preread
         local u = cj.CreateUnit(hplayer.player_passive, hslk_global.unit_token, 0, 0, 0)
         hattr.regAllAbility(u)
-        hunit.del(u, 0)
+        hunit.del(u)
 
         -- 玩家系统
         hplayer.init()
