@@ -83,6 +83,9 @@ end
 
 --单位是否启用硬直（系统默认不启用）
 hunit.isOpenPunish = function(u)
+    if (u == nil or hRuntime.unit[u]) then
+        return false
+    end
     return hRuntime.unit[u].isOpenPunish
 end
 
@@ -240,7 +243,7 @@ hunit.create = function(bean)
         end
         --是否可选
         if (bean.isUnSelectable ~= nil and bean.isUnSelectable == true) then
-            cj.UnitAddAbility(u, "Aloc")
+            cj.UnitAddAbility(u, string.char2id("Aloc"))
         end
         --是否暂停
         if (bean.isPause ~= nil and bean.isPause == true) then

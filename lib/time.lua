@@ -81,9 +81,14 @@ htime.setTimeout = function(time, yourFunc, title)
         cj.TimerDialogSetTitle(td, title)
         cj.TimerDialogDisplay(td, true)
     end
-    cj.TimerStart(t, time, false, function()
-        yourFunc(t, td)
-    end)
+    cj.TimerStart(
+        t,
+        time,
+        false,
+        function()
+            yourFunc(t, td)
+        end
+    )
     return t
 end
 -- 设置周期性计时器
@@ -95,9 +100,14 @@ htime.setInterval = function(time, yourFunc, title)
         cj.TimerDialogSetTitle(td, title)
         cj.TimerDialogDisplay(td, true)
     end
-    cj.TimerStart(t, time, true, function()
-        yourFunc(t, td)
-    end)
+    cj.TimerStart(
+        t,
+        time,
+        true,
+        function()
+            yourFunc(t, td)
+        end
+    )
     return t
 end
 -- 删除计时器Q
@@ -107,6 +117,7 @@ htime.delTimer = function(t)
     end
     cj.PauseTimer(t)
     cj.DestroyTimer(t)
+    t = nil
 end
 -- 删除计时器窗口
 htime.delDialog = function(td)
@@ -114,4 +125,5 @@ htime.delDialog = function(td)
         return
     end
     cj.DestroyTimerDialog(td)
+    td = nil
 end
