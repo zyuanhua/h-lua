@@ -26,11 +26,12 @@
     ├── ui - UI界面
     ├── const - 静态值
     │   ├── attritube - 属性
+    │   ├── breakArmorType - 破防类型
+    │   ├── damageKind - 伤害种类
+    │   ├── damageType - 伤害类型
     │   ├── event - 事件
     │   ├── hero - 英雄
     │   ├── hotKey - 热键
-    │   ├── damageKind - 伤害种类
-    │   ├── damageType - 伤害类型
     │   ├── item - 物品
     │   ├── playerColor - 玩家颜色
     │   ├── unit - 单位
@@ -52,7 +53,7 @@
     │   ├── table.lua - 表库
     │   └── start.lua - 开始准备
     └── lib
-        ├── attrbute.lua - 基础/拓展/伤害特效/自然/单位关联，万能属性系统，比h-vjass的更加自由及强大
+        ├── attrbute.lua - 基础/拓展/伤害特效/自然/单位关联，万能属性系统，自由、强大
         ├── award.lua - 奖励模块，用于控制玩家的黄金木头经验
         ├── camera.lua - 镜头模块，用于控制玩家镜头
         ├── dialog.lua - 对话框模块，用于显示对话框
@@ -71,6 +72,7 @@
         ├── message.lua - 消息模块(注意漂浮字模块与h-vjass不同，是一个独立的ttg模块)
         ├── multiBoard.lua - 多面板
         ├── player.lua - 玩家
+        ├── quest.lua - 任务
         ├── rect.lua - 区域
         ├── skill.lua - 高级技能
         ├── sound.lua - 声音模块
