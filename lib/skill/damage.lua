@@ -482,14 +482,14 @@ hskill.damage = function(options)
                     htextTag.create2Unit(
                         sourceUnit,
                         "反伤" .. (lastDamage * targetUnitDamageRebound * 0.01),
-                        10.00,
+                        12.00,
                         "f8aaeb",
                         10,
                         1.00,
                         10.00
                     ),
                     "shrink",
-                    -0.05,
+                    0.05,
                     0
                 )
                 -- @触发反伤事件

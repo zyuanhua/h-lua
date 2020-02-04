@@ -20,7 +20,6 @@ end
     创建一个任务
     options = {
         side = "left", --位置，默认left
-        isFinish = false, --任务是否已完成，默认false
         title = "", --标题
         content = "", --内容，你可以设置一个string或一个table，table会自动便利附加|n（换行）
         icon = "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp", --图标
@@ -41,22 +40,15 @@ hquest.create = function(options)
     if (content == nil) then
         return
     end
-    local questtype = bj_QUESTTYPE_OPT_DISCOVERED
-    if (isFinish) then
-        if (side == "right") then
-            questtype = bj_QUESTTYPE_OPT_DISCOVERED
-        else
-            questtype = bj_QUESTTYPE_REQ_DISCOVERED
-        end
-    else
-        if (side == "right") then
-            questtype = bj_QUESTTYPE_OPT_UNDISCOVERED
-        else
-            questtype = bj_QUESTTYPE_REQ_UNDISCOVERED
-        end
+    local questtype = bj_QUESTTYPE_REQ_DISCOVERED
+    if (side == "right") then
+        questtype = bj_QUESTTYPE_OPT_DISCOVERED
     end
     local icon = options.icon or "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
     local q = bj.CreateQuestBJ(questtype, title, content, icon)
+    if (isFinish == true) then
+        cj.QuestSetCompleted(q, true)
+    end
     if (options.during ~= nil and options.during > 0) then
         hquest.del(q, options.during)
     end
