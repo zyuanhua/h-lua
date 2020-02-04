@@ -781,7 +781,7 @@ hattr.set = function(whichUnit, during, data)
         return
     end
     for attr, v in pairs(data) do
-        if (hRuntime.attribute[whichUnit][attr] ~= nil) then
+        if (hRuntime.attribute[whichUnit] ~= nil and hRuntime.attribute[whichUnit][attr] ~= nil) then
             if (type(v) == "string") then
                 local opr = string.sub(v, 1, 1)
                 v = string.sub(v, 2, string.len(v))

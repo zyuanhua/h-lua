@@ -50,6 +50,7 @@ require "lib.item" -- 物品
 require "lib.dialog" -- 对话框
 require "lib.leaderBoard" -- 排行榜
 require "lib.multiBoard" -- 多面板
+require "lib.quest" -- 任务
 --别称
 hmsg = hmessage
 httg = htextTag
