@@ -7,21 +7,6 @@ math.polarProjection = function(x, y, dist, angle)
     }
 end
 
---获取物品几率叠加几率
---根据固定因子及增益因子计算几率因子
-math.oddsItem = function(odds_stable, odds_gain, timers)
-    return odds_stable + odds_stable * ((timers - 1) * odds_gain)
-end
-
---计算属性特效效果叠加
-math.coverAttrEffectVal = function(value1, value2)
-    if (math.abs(value1) > math.abs(value2)) then
-        return value2 * 0.15 + value1
-    else
-        return value1 * 0.15 + value2
-    end
-end
-
 -- 四舍五入
 math.round = function(decimal)
     return math.floor((decimal * 100) + 0.5) * 0.01
