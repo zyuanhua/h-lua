@@ -1,3 +1,31 @@
+--[[
+    记录运行时间rem方法
+    只有key1时为记录，有key2时会打印对应记录间的差值，如：
+    rem("a") --1
+    rem("b") --2
+    rem("c") --4
+    print rem("a","b") =1
+    print rem("b","c") =2
+    print rem("a","c") =3
+]]
+rem = function(key1, key2)
+    if (type(key1) ~= "string") then
+        return
+    end
+    if (key2 ~= nil and type(key2) ~= "string") then
+        return
+    end
+    if (remStack == nil) then
+        remStack = {}
+    end
+    remStack[key1] = os.time()
+    if (key2 ~= nil) then
+        remStack[key2] = os.time()
+        print("[rem]" .. key1 .. "->" .. key2 .. math.round(remStack[key2] - remStack[key1]))
+    end
+end
+
+--打印栈
 print_stack = function(...)
     local out = {"[TRACE]"}
     local n = select("#", ...)
