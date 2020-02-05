@@ -122,11 +122,17 @@ CONST_ATTR = {
     crack_fly = "击飞",
     --
     odds = "几率",
+    percent = "比例",
     val = "数值",
     during = "持续时间",
     qty = "数量",
     range = "范围",
     reduce = "衰减",
     distance = "距离",
-    high = "高度"
+    high = "高度",
+    --本身是在player实现
+    gold_ratio = "黄金获得率",
+    lumber_ratio = "木头获得率",
+    exp_ratio = "经验获得率",
+    sell_ratio = "售卖比率"
 }

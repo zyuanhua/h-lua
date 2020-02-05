@@ -19,10 +19,6 @@ slkHelper.attrForItemDesc = function(attr)
                     "resistance",
                     "avoid",
                     "aim",
-                    "knocking",
-                    "violence",
-                    "knocking_odds",
-                    "violence_odds",
                     "hemophagia",
                     "hemophagia_skill",
                     "split",
@@ -120,54 +116,39 @@ end
 -- 组装物品的描述
 slkHelper.itemDesc = function(v)
     local desc = ""
+    local d = {}
     if (v.ASDescription ~= nil) then
-        desc = desc .. hColor.yellow("主动：" .. v.ASDescription) .. "|n"
+        table.insert(d, hColor.red("主动：" .. v.ASDescription))
     end
     if (v.PSDescription ~= nil) then
-        desc = desc .. hColor.seaLight(v.PSDescription)
-        if (v.Attr == nil and v.Description ~= nil and v.Suffix ~= nil and v.Description ~= "" and v.Suffix ~= "") then
-            desc = desc .. "|n|n"
-        else
-            desc = desc .. "|n"
-        end
+        table.insert(d, hColor.seaLight(v.PSDescription))
     end
     if (v.Attr ~= nil and table.len(v.Attr) >= 1) then
-        desc = desc .. hColor.yellowLight(slkHelper.attrForItemDesc(v.Attr))
-        if ((v.Description ~= nil and v.Description ~= "") or (v.Suffix ~= nil and v.Suffix ~= "")) then
-            desc = desc .. "|n"
-        end
+        table.insert(d, hColor.yellow(slkHelper.attrForItemDesc(v.Attr)))
     end
     if (v.Description ~= nil and v.Description ~= "") then
-        desc = desc .. hColor.white(v.Description)
-        if (v.Suffix ~= nil and v.Suffix ~= "") then
-            desc = desc .. "|n"
-        end
+        table.insert(d, hColor.grey(v.Description))
     end
-    if (v.Suffix ~= nil and v.Suffix ~= "") then
-        desc = desc .. hColor.grey(v.Suffix)
-    end
-    return desc
+    return string.implode("|n", d)
 end
 
 -- 组装物品的说明
 slkHelper.itemUbertip = function(v)
     local desc = ""
+    local d = {}
     if (v.Attr ~= nil and table.len(v.Attr) >= 1) then
-        desc = desc .. slkHelper.attrForItemUbertip(v.Attr)
+        table.insert(d, slkHelper.attrForItemUbertip(v.Attr))
     end
     if (v.ASDescription ~= nil) then
-        desc = desc .. "主动使用时可" .. v.ASDescription .. ";"
+        table.insert(d, "主动使用时可" .. v.ASDescription)
     end
     if (v.PSDescription ~= nil) then
-        desc = desc .. v.PSDescription .. ";"
+        table.insert(d, v.PSDescription)
     end
     if (v.Description ~= nil) then
-        desc = desc .. v.Description
+        table.insert(d, v.Description)
     end
-    if (v.Suffix ~= nil) then
-        desc = desc .. ";" .. v.Suffix
-    end
-    return desc
+    return string.implode(";", d)
 end
 
 -- 创建一件物品的冷却技能
