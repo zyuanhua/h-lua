@@ -2,8 +2,9 @@ slkHelper = {
     shapeshiftIndex = 1
 }
 
-slkHelper.attrForItemDesc = function(attr)
+slkHelper.attrForItem = function(attr, sep)
     local str = ""
+    sep = sep or "|n"
     for k, v in pairs(attr) do
         -- 附加单位
         if (k == "attack_speed_space") then
@@ -26,7 +27,11 @@ slkHelper.attrForItemDesc = function(attr)
                     "invincible",
                     "damage_extent",
                     "damage_rebound",
-                    "cure"
+                    "cure",
+                    "gold_ratio",
+                    "lumber_ratio",
+                    "exp_ratio",
+                    "sell_ratio"
                 }
             ))
          then
@@ -38,77 +43,64 @@ slkHelper.attrForItemDesc = function(attr)
             v = v .. "%"
         end
         --
-        str = str .. CONST_ATTR[k] .. "："
-        if (type(v) == "table") then
+        str = str .. (CONST_ATTR[k] or "") .. "："
+        if (k == "attack_damage_type") then
             local temp = ""
-            if (table.includes(k, {"attack_damage_type"})) then
-                for _, vv in ipairs(v) do
-                    if (temp == "") then
-                        temp = temp .. CONST_ATTR[vv]
-                    else
-                        temp = "," .. CONST_ATTR[vv]
-                    end
-                end
-            elseif
-                (table.includes(
-                    k,
-                    {
-                        "attack_buff",
-                        "attack_debuff",
-                        "skill_buff",
-                        "skill_debuff",
-                        "attack_effect",
-                        "skill_effect"
-                    }
-                ))
-             then
-                for kk, vv in pairs(v) do
-                    temp = temp .. CONST_ATTR[kk]
-                    local temp2 = ""
-                    for kkk, vvv in pairs(vv) do
+            local opt = string.sub(v, 1, 1) or "+"
+            if (type(v) == "string") then
+                v = string.sub(v, 2)
+                v = string.explode(",", v)
+            end
+            local av = {}
+            for kk, vv in ipairs(v) do
+                table.insert(av, CONST_ATTR[vv] or "")
+            end
+            str = str .. opt .. string.implode(",", av)
+            av = nil
+        elseif
+            (table.includes(
+                k,
+                {
+                    "attack_buff",
+                    "attack_debuff",
+                    "skill_buff",
+                    "skill_debuff",
+                    "attack_effect",
+                    "skill_effect"
+                }
+            ))
+         then
+            local temp = ""
+            for kk, vv in pairs(v) do
+                temp = temp .. (CONST_ATTR[kk] or "")
+                local temp2 = ""
+                for kkk, vvv in pairs(vv) do
+                    if (kkk ~= "effect") then
                         if (kkk == "during") then
                             vvv = vvv .. "秒"
                         end
-                        if (table.includes(kkk, {"odds", "reduce"})) then
+                        if (table.includes(kkk, {"odds", "reduce", "percent"})) then
                             vvv = vvv .. "%"
                         end
-                        if (temp2 == "") then
-                            temp2 = temp2 .. CONST_ATTR[kkk] .. "[" .. vvv .. "]"
+                        if (kkk == "attr") then
+                            vvv = "类别[" .. CONST_ATTR[vvv] .. "]"
                         else
-                            temp2 = temp2 .. "," .. CONST_ATTR[kkk] .. "[" .. vvv .. "]"
+                            vvv = (CONST_ATTR[kkk] or "") .. "[" .. vvv .. "]"
+                        end
+                        if (temp2 == "") then
+                            temp2 = temp2 .. vvv
+                        else
+                            temp2 = temp2 .. "," .. vvv
                         end
                     end
-                    temp = temp .. temp2
                 end
+                temp = temp .. temp2
             end
             str = str .. temp
         else
             str = str .. v
         end
-        str = str .. "|n"
-    end
-    return str
-end
-
-slkHelper.attrForItemUbertip = function(attr)
-    local str = ""
-    for k, v in pairs(attr) do
-        str = str .. CONST_ATTR[k] .. ":"
-        if (type(v) == "table") then
-            local temp = ""
-            if (k == "attack_damage_type") then
-                for _, vv in ipairs(v) do
-                    if (temp == "") then
-                        temp = temp .. CONST_ATTR[vv]
-                    else
-                        temp = "," .. CONST_ATTR[vv]
-                    end
-                end
-            end
-        else
-            str = str .. v
-        end
-        str = str .. ","
+        str = str .. sep
     end
     return str
 end
@@ -117,14 +109,14 @@ end
 slkHelper.itemDesc = function(v)
     local desc = ""
     local d = {}
-    if (v.ASDescription ~= nil) then
-        table.insert(d, hColor.red("主动：" .. v.ASDescription))
+    if (v.ACTIVE ~= nil) then
+        table.insert(d, hColor.red("主动：" .. v.ACTIVE))
     end
-    if (v.PSDescription ~= nil) then
-        table.insert(d, hColor.seaLight(v.PSDescription))
+    if (v.PASSIVE ~= nil) then
+        table.insert(d, hColor.seaLight(v.PASSIVE))
     end
-    if (v.Attr ~= nil and table.len(v.Attr) >= 1) then
-        table.insert(d, hColor.yellow(slkHelper.attrForItemDesc(v.Attr)))
+    if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
+        table.insert(d, hColor.yellow(slkHelper.attrForItem(v.ATTR)))
     end
     if (v.Description ~= nil and v.Description ~= "") then
         table.insert(d, hColor.grey(v.Description))
@@ -136,28 +128,28 @@ end
 slkHelper.itemUbertip = function(v)
     local desc = ""
     local d = {}
-    if (v.Attr ~= nil and table.len(v.Attr) >= 1) then
-        table.insert(d, slkHelper.attrForItemUbertip(v.Attr))
+    if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
+        table.insert(d, slkHelper.attrForItem(v.ATTR, ";"))
     end
-    if (v.ASDescription ~= nil) then
-        table.insert(d, "主动使用时可" .. v.ASDescription)
+    if (v.ACTIVE ~= nil) then
+        table.insert(d, "主动使用：" .. v.ACTIVE)
     end
-    if (v.PSDescription ~= nil) then
-        table.insert(d, v.PSDescription)
+    if (v.PASSIVE ~= nil) then
+        table.insert(d, v.PASSIVE)
     end
     if (v.Description ~= nil) then
         table.insert(d, v.Description)
     end
-    return string.implode(";", d)
+    return string.implode("|n", d)
 end
 
 -- 创建一件物品的冷却技能
 slkHelper.itemCooldownID = function(v)
-    if (v.cooldownID == nil) then
+    if (v.cooldown == nil) then
         return "AIat"
     end
-    if (v.cooldownID < 0) then
-        v.cooldownID = 0
+    if (v.cooldown < 0) then
+        v.cooldown = 0
     end
     local oobTips = "ITEMS_DEFCD_ID_" .. v.Name
     local oob = slk.ability.AIgo:new("items_default_cooldown_" .. v.Name)
@@ -171,7 +163,7 @@ slkHelper.itemCooldownID = function(v)
     oob.DataA1 = 0
     oob.Art = ""
     oob.CasterArt = v.CasterArt or ""
-    oob.Cool = v.cooldownID
+    oob.Cool = v.cooldown
     return oob:get_id()
 end
 
