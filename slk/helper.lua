@@ -178,7 +178,7 @@ slkHelper.itemCooldownID = function(v)
     if (v.cooldownID < 0) then
         v.cooldownID = 0
     end
-    local oobTips = "ITEMS_DEFCD_ID_" .. k
+    local oobTips = "ITEMS_DEFCD_ID_" .. v.Name
     local oob = slk.ability.AIgo:new("items_default_cooldown_" .. v.Name)
     oob.Effectsound = ""
     oob.Name = oobTips
