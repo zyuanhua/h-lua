@@ -17,6 +17,7 @@ slkHelper.attrForItem = function(attr, sep)
             (table.includes(
                 k,
                 {
+                    "attack_speed",
                     "resistance",
                     "avoid",
                     "aim",
