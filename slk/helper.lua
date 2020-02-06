@@ -130,7 +130,7 @@ slkHelper.itemUbertip = function(v)
     local desc = ""
     local d = {}
     if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
-        table.insert(d, slkHelper.attrForItem(v.ATTR, "|n"))
+        table.insert(d, hColor.yellow(slkHelper.attrForItem(v.ATTR, "|n")))
     end
     if (v.ACTIVE ~= nil) then
         table.insert(d, "主动使用：" .. v.ACTIVE)

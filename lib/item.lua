@@ -19,6 +19,7 @@ hitem = {
 
 -- 删除物品，可延时
 hitem.del = function(it, during)
+    during = during or 0
     if (during <= 0 and it ~= nil) then
         cj.SetWidgetLife(it, 1.00)
         cj.RemoveItem(it)
@@ -334,11 +335,18 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
             diff[k] = tempDiff
         end
     end
-    diff.weight_current = "+" .. weight
-    print_r(attr)
+    if (weight ~= 0) then
+        local opt = "+"
+        if (isAdd == false) then
+            opt = "-"
+        end
+        diff.weight_current = opt .. weight
+    end
     print_r(diff)
     print_r(diffPlayer)
-    hattr.set(whichUnit, 0, diff)
+    if (table.len(diff) > 0) then
+        hattr.set(whichUnit, 0, diff)
+    end
     if (table.len(diffPlayer) > 0) then
         local p = cj.GetOwningPlayer(whichUnit)
         for pk, pv in pairs(diffPlayer) do
@@ -810,7 +818,6 @@ hitem.init = function()
                     end
                 end
             end
-            print_r(hRuntime.item, print_mb)
         end
     )
     --使用物品
@@ -820,8 +827,9 @@ hitem.init = function()
             local u = cj.GetTriggerUnit()
             local it = cj.GetManipulatedItem()
             local itId = cj.GetItemTypeId(it)
+            local perishable = hitem.getIsPerishable(itId)
             --检测是否使用后自动消失，如果不是，次数补回1
-            if (hitem.getIsPerishable(itId) == false) then
+            if (perishable == false) then
                 hitem.setCharges(it, hitem.getCharges(it) + 1)
             end
             --检测是否有回调动作
@@ -838,6 +846,10 @@ hitem.init = function()
                     triggerItem = it
                 }
             )
+            --消失的清理cache
+            if (perishable == true and hitem.getCharges(it) <= 0) then
+                hitem.del(it)
+            end
         end
     )
     --拆分物品
