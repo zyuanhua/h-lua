@@ -111,16 +111,16 @@ slkHelper.itemDesc = function(v)
     local desc = ""
     local d = {}
     if (v.ACTIVE ~= nil) then
-        table.insert(d, hColor.red("主动：" .. v.ACTIVE))
+        table.insert(d, "主动：" .. v.ACTIVE)
     end
     if (v.PASSIVE ~= nil) then
-        table.insert(d, hColor.seaLight(v.PASSIVE))
+        table.insert(d, v.PASSIVE)
     end
     if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
-        table.insert(d, hColor.yellow(slkHelper.attrForItem(v.ATTR, ";")))
+        table.insert(d, slkHelper.attrForItem(v.ATTR, ";"))
     end
     if (v.Description ~= nil and v.Description ~= "") then
-        table.insert(d, hColor.grey(v.Description))
+        table.insert(d, v.Description)
     end
     return string.implode("|n", d)
 end
@@ -133,13 +133,13 @@ slkHelper.itemUbertip = function(v)
         table.insert(d, hColor.yellow(slkHelper.attrForItem(v.ATTR, "|n")))
     end
     if (v.ACTIVE ~= nil) then
-        table.insert(d, "主动使用：" .. v.ACTIVE)
+        table.insert(d, hColor.red("主动：" .. v.ACTIVE))
     end
     if (v.PASSIVE ~= nil) then
-        table.insert(d, v.PASSIVE)
+        table.insert(d, hColor.seaLight(v.PASSIVE))
     end
     if (v.Description ~= nil) then
-        table.insert(d, v.Description)
+        table.insert(d, hColor.grey(v.Description))
     end
     return string.implode("|n", d)
 end
