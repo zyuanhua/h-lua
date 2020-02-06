@@ -393,6 +393,7 @@ end
 -- 删除单位，延时during秒
 hunit.del = function(targetUnit, during)
     if (during == nil or during <= 0) then
+        hitem.clearUnitCache(targetUnit)
         hRuntime.clear(targetUnit)
         cj.RemoveUnit(targetUnit)
     else
@@ -401,6 +402,7 @@ hunit.del = function(targetUnit, during)
             function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
+                hitem.clearUnitCache(targetUnit)
                 hRuntime.clear(targetUnit)
                 cj.RemoveUnit(targetUnit)
             end

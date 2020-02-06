@@ -42,6 +42,11 @@ hitem.getId = function(it)
     return string.id2char(cj.GetItemTypeId(it))
 end
 
+-- 获取物品名称
+hitem.getName = function(it)
+    return cj.GetItemName(it)
+end
+
 -- 获取物品SLK数据集
 hitem.getSlk = function(itOrId)
     local slk
@@ -330,10 +335,11 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
         end
     end
     diff.weight_current = "+" .. weight
+    print_r(attr)
     print_r(diff)
     print_r(diffPlayer)
     hattr.set(whichUnit, 0, diff)
-    if (table.len(diffPlayer > 0)) then
+    if (table.len(diffPlayer) > 0) then
         local p = cj.GetOwningPlayer(whichUnit)
         for pk, pv in pairs(diffPlayer) do
             if (pv ~= 0) then
@@ -537,6 +543,7 @@ hitem.create = function(bean)
     end
     cj.SetItemCharges(it, charges)
     hRuntime.item[it] = {
+        name = hitem.getName(it),
         itemId = bean.itemId,
         during = bean.during,
         type = type
@@ -645,6 +652,18 @@ hitem.registerAll = function(whichUnit)
     cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.use, whichUnit, EVENT_UNIT_USE_ITEM)
 end
 
+--令单位的物品在runtime内存中释放
+hitem.clearUnitCache = function(whichUnit)
+    if (hRuntime.item[whichUnit] ~= nil) then
+        for i = 0, 5, 1 do
+            local it = cj.UnitItemInSlot(whichUnit, i)
+            if (it ~= nil) then
+                hRuntime.clear(it)
+            end
+        end
+    end
+end
+
 -- 初始化(已内部调用)
 hitem.init = function()
     hitem.PRIVATE_TRIGGER = {
@@ -726,29 +745,31 @@ hitem.init = function()
             local orderId = cj.OrderId("dropitem")
             local charges = cj.GetItemCharges(it)
             if (cj.GetUnitCurrentOrder(u) == orderId) then
-                if (faceId == nil) then
-                    hRuntime.item[it].type = hitem.TYPE.COORDINATE
-                else
-                    htime.setTimeout(
-                        0,
-                        function(t, td)
-                            htime.delDialog(td)
-                            htime.delTimer(t)
-                            local x = cj.GetItemX(it)
-                            local y = cj.GetItemX(it)
-                            hitem.del(it, 0)
-                            --这里是实现表面物品的关键
-                            hitem.create(
-                                {
-                                    itemId = faceId,
-                                    x = x,
-                                    y = y,
-                                    charges = charges,
-                                    during = 0
-                                }
-                            )
-                        end
-                    )
+                if (hRuntime.item[it] ~= nil) then
+                    if (faceId ~= nil) then
+                        htime.setTimeout(
+                            0,
+                            function(t, td)
+                                htime.delDialog(td)
+                                htime.delTimer(t)
+                                local x = cj.GetItemX(it)
+                                local y = cj.GetItemX(it)
+                                hitem.del(it, 0)
+                                --这里是实现表面物品的关键
+                                hitem.create(
+                                    {
+                                        itemId = faceId,
+                                        x = x,
+                                        y = y,
+                                        charges = charges,
+                                        during = 0
+                                    }
+                                )
+                            end
+                        )
+                    else
+                        hRuntime.item[it].type = hitem.TYPE.COORDINATE
+                    end
                 end
                 hitem.subAttribute(u, itId, charges)
             end
@@ -765,30 +786,31 @@ hitem.init = function()
         hitem.PRIVATE_TRIGGER.pawn,
         function()
             local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
+            local it = cj.GetSoldItem()
             local goldcost = hitem.getGoldCost(it)
             local lumbercost = hitem.getLumberCost(it)
-            if (goldcost == 0 and lumbercost == 0) then
-                return
+            hRuntime.clear(it)
+            if (goldcost ~= 0 or lumbercost ~= 0) then
+                local p = cj.GetOwningPlayer(u)
+                local sellRatio = hplayer.getSellRatio(u)
+                if (sellRatio ~= 50) then
+                    if (sellRatio < 0) then
+                        sellRatio = 0
+                    elseif (sellRatio > 1000) then
+                        sellRatio = 1000
+                    end
+                    local tempRatio = sellRatio - 50.0
+                    local tempGold = math.floor(goldcost * tempRatio * 0.01)
+                    local tempLumber = math.floor(lumbercost * tempRatio * 0.01)
+                    if (goldcost ~= 0 and tempGold ~= 0) then
+                        hplayer.addGold(p, tempGold)
+                    end
+                    if (lumbercost ~= 0 and tempLumber ~= 0) then
+                        hplayer.addLumber(p, tempLumber)
+                    end
+                end
             end
-            local p = cj.GetOwningPlayer(u)
-            local sellRatio = hplayer.getSellRatio(u)
-            if (sellRatio ~= 50) then
-                if (sellRatio < 0) then
-                    sellRatio = 0
-                elseif (sellRatio > 1000) then
-                    sellRatio = 1000
-                end
-                local tempRatio = sellRatio - 50.0
-                local tempGold = math.floor(goldcost * tempRatio * 0.01)
-                local tempLumber = math.floor(lumbercost * tempRatio * 0.01)
-                if (goldcost ~= 0 and tempGold ~= 0) then
-                    hplayer.addGold(p, tempGold)
-                end
-                if (lumbercost ~= 0 and tempLumber ~= 0) then
-                    hplayer.addLumber(p, tempLumber)
-                end
-            end
+            print_r(hRuntime.item, print_mb)
         end
     )
     --使用物品

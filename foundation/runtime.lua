@@ -75,6 +75,9 @@ hRuntime = {
 }
 
 hRuntime.clear = function(handle)
+    if (handle == nil) then
+        return
+    end
     for k, v in pairs(hRuntime) do
         if (type(v) == "table") then
             if (v[handle] ~= nil) then

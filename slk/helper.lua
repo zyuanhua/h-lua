@@ -117,7 +117,7 @@ slkHelper.itemDesc = function(v)
         table.insert(d, hColor.seaLight(v.PASSIVE))
     end
     if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
-        table.insert(d, hColor.yellow(slkHelper.attrForItem(v.ATTR)))
+        table.insert(d, hColor.yellow(slkHelper.attrForItem(v.ATTR, ";")))
     end
     if (v.Description ~= nil and v.Description ~= "") then
         table.insert(d, hColor.grey(v.Description))
@@ -130,7 +130,7 @@ slkHelper.itemUbertip = function(v)
     local desc = ""
     local d = {}
     if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
-        table.insert(d, slkHelper.attrForItem(v.ATTR, ";"))
+        table.insert(d, slkHelper.attrForItem(v.ATTR, "|n"))
     end
     if (v.ACTIVE ~= nil) then
         table.insert(d, "主动使用：" .. v.ACTIVE)
