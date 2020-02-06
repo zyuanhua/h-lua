@@ -197,7 +197,7 @@ end
 hitem.getAttribute = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.ATTRIBUTE or {}
+        return slk.ATTR or slk.ATTRIBUTE or {}
     else
         return {}
     end
@@ -251,35 +251,112 @@ hitem.setAllowSeparate = function(whichUnit)
     cj.SetUnitAbilityLevel(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE, 1)
 end
 
--- 附加单位获得物品后的属性
-hitem.addAttribute = function(whichUnit, itId, charges)
+-- 计算单位获得物品后的属性
+hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
+    if (isAdd == nil) then
+        isAdd = true
+    end
+    charges = charges or 1
     local weight = hitem.getWeight(itId, charges)
     local attr = hitem.getAttribute(itId)
+    local diff = {}
+    local diffPlayer = {}
     for k, v in pairs(attr) do
-        if (v > 0) then
-            attr[k] = "+" .. (v * charges)
-        elseif (v < 0) then
-            attr[k] = v * charges
+        local typev = type(v)
+        local tempDiff
+        if (k == "attack_damage_type") then
+            local opt = "+"
+            if (isAdd == false) then
+                opt = "-"
+            end
+            local nv
+            if (typev == "string") then
+                opt = string.sub(v, 1, 1) or "+"
+                nv = string.sub(v, 2)
+            elseif (typev == "table") then
+                nv = string.implode(",", v)
+            end
+            local nvs = {}
+            for i = 1, charges do
+                table.insert(nvs, nv)
+            end
+            tempDiff = opt .. string.implode(",", nvs)
+        elseif (typev == "string") then
+            local opt = string.sub(v, 1, 1)
+            local nv = charges * tonumber(string.sub(v, 2))
+            if (isAdd == false) then
+                if (opt == "+") then
+                    opt = "-"
+                else
+                    opt = "+"
+                end
+            end
+            tempDiff = opt .. nv
+        elseif (typev == "number") then
+            if ((v > 0 and isAdd == true) or (v < 0 and isAdd == false)) then
+                tempDiff = "+" .. (v * charges)
+            elseif (v < 0) then
+                tempDiff = "-" .. (v * charges)
+            end
+        elseif (typev == "table") then
+            local tempTable = {}
+            for i = 1, charges do
+                for _, vv in pairs(v) do
+                    table.insert(tempTable, vv)
+                end
+            end
+            local opt = "add"
+            if (isAdd == false) then
+                opt = "sub"
+            end
+            tempDiff = {
+                [opt] = tempTable
+            }
+        end
+        if
+            (table.includes(
+                k,
+                {
+                    "gold_ratio",
+                    "lumber_ratio",
+                    "exp_ratio",
+                    "sell_ratio"
+                }
+            ))
+         then
+            diffPlayer[k] = tonumber(tempDiff)
+        else
+            diff[k] = tempDiff
         end
     end
-    attr.weight_current = "+" .. weight
-    print_r(attr)
-    hattr.set(whichUnit, 0, attr)
+    diff.weight_current = "+" .. weight
+    print_r(diff)
+    print_r(diffPlayer)
+    hattr.set(whichUnit, 0, diff)
+    if (table.len(diffPlayer > 0)) then
+        local p = cj.GetOwningPlayer(whichUnit)
+        for pk, pv in pairs(diffPlayer) do
+            if (pv ~= 0) then
+                if (pk == "gold_ratio") then
+                    hplayer.addGoldRatio(p, pv, 0)
+                elseif (pk == "lumber_ratio") then
+                    hplayer.addLumberRatio(p, pv, 0)
+                elseif (pk == "exp_ratio") then
+                    hplayer.addExpRatio(p, pv, 0)
+                elseif (pk == "sell_ratio") then
+                    hplayer.addSellRatio(p, pv, 0)
+                end
+            end
+        end
+    end
 end
--- 削减单位获得物品后的属性
+--附加单位获得物品后的属性
+hitem.addAttribute = function(whichUnit, itId, charges)
+    hitem.caleAttribute(true, whichUnit, itId, charges)
+end
+--削减单位获得物品后的属性
 hitem.subAttribute = function(whichUnit, itId, charges)
-    local weight = hitem.getWeight(itId, charges)
-    local attr = hitem.getAttribute(itId)
-    for k, v in pairs(attr) do
-        if (v > 0) then
-            attr[k] = "-" .. (v * charges)
-        elseif (v < 0) then
-            attr[k] = "+" .. math.abs(v * charges)
-        end
-    end
-    attr.weight_current = "-" .. weight
-    print_r(attr)
-    hattr.set(whichUnit, 0, attr)
+    hitem.caleAttribute(false, whichUnit, itId, charges)
 end
 
 --[[
