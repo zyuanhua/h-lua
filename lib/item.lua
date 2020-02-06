@@ -342,8 +342,6 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
         end
         diff.weight_current = opt .. weight
     end
-    print_r(diff)
-    print_r(diffPlayer)
     if (table.len(diff) > 0) then
         hattr.set(whichUnit, 0, diff)
     end
