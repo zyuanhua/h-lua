@@ -136,7 +136,7 @@ hitem.getIsPerishable = function(itOrId)
     if (slk ~= nil) then
         return slk.perishable == 1
     else
-        return false
+        return nil
     end
 end
 -- 获取物品是否可卖
