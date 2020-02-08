@@ -56,17 +56,34 @@ string.md5 = function(t)
     if (type(t) == "string") then
         return md5.sumhexa(t)
     elseif (type(t) == "table") then
+        table.sort(t)
+        return md5.sumhexa(json.stringify(t))
+    end
+    print_err("MD5 fail!")
+    return
+end
+
+--根据值获取一个key
+string.vkey = function(t)
+    if (type(t) == "string") then
+        return t
+    elseif (type(t) == "table") then
         local j = ""
-        if (table ~= nil) then
-            table.sort(t)
-            j = json.stringify(t)
+        table.sort(t)
+        print_r(t)
+        for k, v in ipairs(t) do
+            if (type(v) == "table") then
+                j = j .. "T"
+            else
+                j = j .. tostring(v)
+            end
         end
         if (j == nil) then
             j = ""
         end
-        return md5.sumhexa(j)
+        return j
     end
-    print_err("MD5 fail!")
+    print_err("ukey fail!")
     return
 end
 

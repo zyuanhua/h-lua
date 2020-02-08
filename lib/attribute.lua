@@ -415,7 +415,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
         -- table类型只有+-没有别的
         if (opr == "+") then
             -- 添加
-            local hkey = string.md5(val)
+            local hkey = string.vkey(val)
             table.insert(params[attr], {hash = hkey, table = val})
             if (dur > 0) then
                 htime.setTimeout(
@@ -429,7 +429,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             end
         elseif (opr == "-") then
             -- 减少
-            local hkey = string.md5(val)
+            local hkey = string.vkey(val)
             local hasKey = false
             for k, v in pairs(params[attr]) do
                 if (v.hash == hkey) then
