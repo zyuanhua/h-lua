@@ -477,31 +477,26 @@ hskill.damage = function(options)
         if (his.invincible(sourceUnit) == false) then
             local targetUnitDamageRebound = targetUnitAttr.damage_rebound - sourceUnitAttr.damage_rebound_oppose
             if (targetUnitDamageRebound > 0) then
-                hunit.subCurLife(sourceUnit, lastDamage * targetUnitDamageRebound * 0.01)
-                htextTag.style(
-                    htextTag.create2Unit(
-                        sourceUnit,
-                        "反伤" .. (lastDamage * targetUnitDamageRebound * 0.01),
-                        12.00,
-                        "f8aaeb",
-                        10,
-                        1.00,
-                        10.00
-                    ),
-                    "shrink",
-                    0.05,
-                    0
-                )
-                -- @触发反伤事件
-                hevent.triggerEvent(
-                    targetUnit,
-                    CONST_EVENT.rebound,
-                    {
-                        triggerUnit = targetUnit,
-                        sourceUnit = sourceUnit,
-                        damage = lastDamage * targetUnitDamageRebound * 0.01
-                    }
-                )
+                local ldr = math.round(lastDamage * targetUnitDamageRebound * 0.01)
+                if (ldr > 0.01) then
+                    hunit.subCurLife(sourceUnit, ldr)
+                    htextTag.style(
+                        htextTag.create2Unit(sourceUnit, "反伤" .. ldr, 12.00, "f8aaeb", 10, 1.00, 10.00),
+                        "shrink",
+                        0.05,
+                        0
+                    )
+                    -- @触发反伤事件
+                    hevent.triggerEvent(
+                        targetUnit,
+                        CONST_EVENT.rebound,
+                        {
+                            triggerUnit = targetUnit,
+                            sourceUnit = sourceUnit,
+                            damage = lastDamage * targetUnitDamageRebound * 0.01
+                        }
+                    )
+                end
             end
         end
         -- 特殊效果,需要非无敌并处于效果启动状态下
