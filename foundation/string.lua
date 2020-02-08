@@ -69,18 +69,21 @@ string.vkey = function(t)
         return t
     elseif (type(t) == "table") then
         local j = ""
-        table.sort(t)
-        print_r(t)
-        for k, v in ipairs(t) do
+        local nt = {}
+        for _, v in ipairs(t) do
+            table.insert(nt, v)
+        end
+        print_r(nt)
+        table.sort(nt)
+        print_r(nt)
+        for _, v in ipairs(nt) do
             if (type(v) == "table") then
                 j = j .. "T"
             else
                 j = j .. tostring(v)
             end
         end
-        if (j == nil) then
-            j = ""
-        end
+        nt = nil
         return j
     end
     print_err("ukey fail!")
