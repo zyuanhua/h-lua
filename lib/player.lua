@@ -136,8 +136,8 @@ hplayer.getRandomHero = function()
         cj.GetRandomInt(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
     )
 end
---- 令玩家失败
-hplayer.defeat = function(whichPlayer, tips)
+--- 令玩家单位全部删除
+hplayer.clearUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
     end
@@ -155,6 +155,13 @@ hplayer.defeat = function(whichPlayer, tips)
     end
     cj.GroupClear(g)
     cj.DestroyGroup(g)
+end
+--- 令玩家失败
+hplayer.defeat = function(whichPlayer, tips)
+    if (whichPlayer == nil) then
+        return
+    end
+    hplayer.clearUnit(whichPlayer)
     if (tips == "" or tips == nil) then
         tips = "失败"
     end

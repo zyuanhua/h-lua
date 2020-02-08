@@ -47,7 +47,12 @@ hunit.getCurLifePercent = function(u)
 end
 -- 设置单位百分比生命
 hunit.setCurLifePercent = function(u, val)
-    hunit.setCurLife(u, math.floor(hunit.getMaxLife(u) * val * 0.01))
+    local max = hunit.getMaxLife(u)
+    local life = math.floor(max * val * 0.01)
+    if (max > 0 and life < 1) then
+        life = 1
+    end
+    hunit.setCurLife(u, life)
 end
 -- 获取单位百分比魔法
 hunit.getCurManaPercent = function(u)
@@ -55,7 +60,12 @@ hunit.getCurManaPercent = function(u)
 end
 -- 设置单位百分比魔法
 hunit.setCurManaPercent = function(u, val)
-    hunit.setCurLife(u, math.floor(hunit.getMaxMana(u) * val * 0.01))
+    local max = hunit.getMaxMana(u)
+    local mana = math.floor(max * val * 0.01)
+    if (max > 0 and mana < 1) then
+        mana = 1
+    end
+    hunit.setCurLife(u, mana)
 end
 
 --增加单位的经验值
