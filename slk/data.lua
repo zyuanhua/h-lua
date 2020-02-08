@@ -10,9 +10,9 @@ HLUA_SLK_KEYS = {
     UNIT_TOKEN_LEAP = 103,
     UNIT_TREE = 104,
     SKILL_ITEM_SEPARATE = 105,
-    BUFF_BREAK = 106,
-    BUFF_SWIM_UNLIMIT = 107,
-    BUFF_INVISIBLE = 108,
+    SKILL_BREAK = 106,
+    SKILL_SWIM_UNLIMIT = 107,
+    SKILL_INVISIBLE = 108,
     SKILL_HERO_TAVERN_SELECTION = 109,
     UNIT_HERO_TAVERN = 110,
     UNIT_HERO_TAVERN_TOKEN = 111,
@@ -250,7 +250,7 @@ for dur = 1, 10, 1 do
     table.insert(
         tempData,
         {
-            HLUA_SLK_KEYS.BUFF_BREAK,
+            HLUA_SLK_KEYS.SKILL_BREAK,
             dur,
             obj:get_id(),
             "int"
@@ -283,7 +283,7 @@ table.insert(
     tempData,
     {
         HLUA_SLK_KEYS.COMMON,
-        HLUA_SLK_KEYS.BUFF_SWIM_UNLIMIT,
+        HLUA_SLK_KEYS.SKILL_SWIM_UNLIMIT,
         obj:get_id(),
         "int"
     }
@@ -305,7 +305,7 @@ table.insert(
     tempData,
     {
         HLUA_SLK_KEYS.COMMON,
-        HLUA_SLK_KEYS.BUFF_INVISIBLE,
+        HLUA_SLK_KEYS.SKILL_INVISIBLE,
         obj:get_id(),
         "int"
     }

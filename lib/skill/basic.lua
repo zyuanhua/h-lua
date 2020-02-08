@@ -1,16 +1,16 @@
 --回避
 hskill.avoid = function(whichUnit)
-    cj.UnitAddAbility(whichUnit, hskill.BUFF_AVOID_PLUS)
-    cj.SetUnitAbilityLevel(whichUnit, hskill.BUFF_AVOID_PLUS, 2)
-    cj.UnitRemoveAbility(whichUnit, hskill.BUFF_AVOID_PLUS)
+    cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
+    cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
+    cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
     htime.setTimeout(
         0.00,
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            cj.UnitAddAbility(whichUnit, hskill.BUFF_AVOID_MIUNS)
-            cj.SetUnitAbilityLevel(whichUnit, hskill.BUFF_AVOID_MIUNS, 2)
-            cj.UnitRemoveAbility(whichUnit, hskill.BUFF_AVOID_MIUNS)
+            cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
+            cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
+            cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
         end
     )
 end
@@ -139,11 +139,11 @@ hskill.invisible = function(whichUnit, during, transition, effect)
             function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hskill.add(whichUnit, hskill.BUFF_INVISIBLE, during)
+                hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
             end
         )
     else
-        hskill.add(whichUnit, hskill.BUFF_INVISIBLE, during)
+        hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
     end
 end
 
@@ -165,11 +165,11 @@ hskill.visible = function(whichUnit, during, transition, effect)
             function(t, td)
                 htime.delDialog(td)
                 htime.delTimer(t)
-                hskill.del(whichUnit, hskill.BUFF_INVISIBLE, during)
+                hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
             end
         )
     else
-        hskill.del(whichUnit, hskill.BUFF_INVISIBLE, during)
+        hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
     end
 end
 

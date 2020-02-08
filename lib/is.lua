@@ -99,7 +99,7 @@ his.invincible = function(whichUnit)
 end
 --是否隐身中
 his.invisible = function(whichUnit)
-    return cj.GetUnitAbilityLevel(whichUnit, hskill.BUFF_INVISIBLE) > 0
+    return cj.GetUnitAbilityLevel(whichUnit, hskill.SKILL_INVISIBLE) > 0
 end
 --是否英雄
 his.hero = function(whichUnit)
