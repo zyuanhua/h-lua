@@ -19,9 +19,9 @@ his.get = function(handle, key)
     if (handle == nil or key == nil) then
         return false
     end
-    if (hRuntime.is[handle] == nil) then
+    if (hRuntime.is[handle] == nil or type(hRuntime.is[handle][key] == nil) then
         return false
-    elseif (type(hRuntime.is[handle]) == "boolean") then
+    elseif (type(hRuntime.is[handle][key]) == "boolean") then
         return hRuntime.is[handle][key]
     else
         return false
