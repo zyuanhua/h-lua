@@ -166,15 +166,15 @@ end
 --为单位初始化属性系统的对象数据
 hattr.init = function(whichUnit)
     if (whichUnit == nil) then
-        return
+        return false
     end
     --init
     local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
     if (unitId == nil) then
-        return
+        return false
     end
     if (hslk_global.unitsKV[unitId] == nil) then
-        return
+        return false
     end
     hRuntime.attribute[whichUnit] = {
         primary = hslk_global.unitsKV[unitId].Primary or "NIL",
@@ -312,6 +312,7 @@ hattr.init = function(whichUnit)
     else
         hRuntime.attribute[whichUnit].attack_damage_type = {CONST_DAMAGE_TYPE.physical}
     end
+    return true
 end
 
 --积累性diff
@@ -773,7 +774,9 @@ hattr.set = function(whichUnit, during, data)
         return
     end
     if (hRuntime.attribute[whichUnit] == nil) then
-        hattr.init(whichUnit)
+        if (hattr.init(whichUnit) == false) then
+            return
+        end
     end
     -- 处理data
     if (type(data) ~= "table") then
@@ -832,7 +835,9 @@ hattr.get = function(whichUnit, attr)
         return nil
     end
     if (hRuntime.attribute[whichUnit] == nil) then
-        hattr.init(whichUnit)
+        if (hattr.init(whichUnit) == false) then
+            return nil
+        end
     end
     if (attr == nil) then
         return hRuntime.attribute[whichUnit]
@@ -856,7 +861,9 @@ hattr.reRegister = function(whichUnit)
     local attackSpeed = hRuntime.attribute[whichUnit].attack_speed
     local defend = hRuntime.attribute[whichUnit].defend
     -- 注册技能
-    hattr.init(whichUnit)
+    if (hattr.init(whichUnit) == false) then
+        return
+    end
     -- 弥补属性
     cj.SetHeroStr(whichUnit, cj.R2I(strWhite), true)
     cj.SetHeroAgi(whichUnit, cj.R2I(agiWhite), true)
