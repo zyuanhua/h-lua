@@ -149,7 +149,7 @@ hskill.damage = function(options)
             damageStringColor = "6fa8dc"
         end
         if (table.includes("avoid", breakArmorType)) then
-            targetUnitAttr.avoid = -999
+            targetUnitAttr.avoid = -9999
             damageString = damageString .. "回避"
             damageStringColor = "76a5af"
         end
