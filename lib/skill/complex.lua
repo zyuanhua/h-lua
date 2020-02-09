@@ -662,8 +662,8 @@ hskill.unarm = function(options)
         cj.TriggerAddAction(
             hRuntime.skill.unarmTrigger,
             function()
-                local u1 = cj.GetTriggerUnit()
-                if (table.includes(u1, hRuntime.skill.unarmUnits)) then
+                local u1 = cj.GetAttacker()
+                if (table.includes(u1, hRuntime.skill.unarmUnits) == true) then
                     cj.IssueImmediateOrder(u1, "stop")
                 end
             end
