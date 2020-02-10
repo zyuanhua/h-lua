@@ -136,6 +136,26 @@ hplayer.getRandomHero = function()
         cj.GetRandomInt(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
     )
 end
+--- 令玩家单位全部隐藏
+hplayer.hideUnit = function(whichPlayer)
+    if (whichPlayer == nil) then
+        return
+    end
+    local g =
+        hgroup.createByRect(
+        cj.GetWorldBounds(),
+        function()
+            return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
+        end
+    )
+    while (hgroup.isEmpty(g) ~= true) do
+        local u = cj.FirstOfGroup(g)
+        cj.GroupRemoveUnit(g, u)
+        cj.ShowUnit(u, false)
+    end
+    cj.GroupClear(g)
+    cj.DestroyGroup(g)
+end
 --- 令玩家单位全部删除
 hplayer.clearUnit = function(whichPlayer)
     if (whichPlayer == nil) then
