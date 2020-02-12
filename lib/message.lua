@@ -11,7 +11,7 @@ hmessage.echo = function(msg, duration)
         end
     end
 end
--- 在屏幕(x.y)处打印信息给某玩家
+-- 在屏幕(x,y)处打印信息给某玩家
 hmessage.echoXY = function(whichPlayer, msg, x, y, duration)
     if (duration == nil or duration < 5) then
         cj.DisplayTextToPlayer(whichPlayer, x, y, msg)
