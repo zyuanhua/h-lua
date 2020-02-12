@@ -174,7 +174,7 @@ hattr.init = function(whichUnit)
         return false
     end
     if (hslk_global.unitsKV[unitId] == nil) then
-        return false
+        hslk_global.unitsKV[unitId] = {}
     end
     hRuntime.attribute[whichUnit] = {
         primary = hslk_global.unitsKV[unitId].Primary or "NIL",

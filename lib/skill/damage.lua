@@ -57,7 +57,12 @@ hskill.damage = function(options)
     --双方attr get
     local targetUnitAttr = hattr.get(targetUnit)
     local sourceUnitAttr = hattr.get(sourceUnit)
-    if (targetUnitAttr == nil or sourceUnitAttr == nil) then
+    if (sourceUnitAttr == nil) then
+        print("sourceUnit unregister")
+        return
+    end
+    if (targetUnitAttr == nil) then
+        print("targetUnit unregister")
         return
     end
     local damageKind = options.damageKind

@@ -136,6 +136,8 @@ hLuaStart = {
                     -- 受伤与死亡
                     cj.TriggerRegisterUnitEvent(triggerBeHunt, u, EVENT_UNIT_DAMAGED)
                     cj.TriggerRegisterUnitEvent(triggerDeath, u, EVENT_UNIT_DEATH)
+                    -- 属性系统系统
+                    hattr.init(u)
                     -- 物品系统
                     if (his.hasSlot(u)) then
                         hitem.registerAll(u)
