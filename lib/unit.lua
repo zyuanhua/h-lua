@@ -265,6 +265,7 @@ end
         attackY = nil, --攻击Y，可选
         attackLoc = nil, --攻击点，可选
         attackUnit = nil, --攻击单位，可选
+        isOpenSolt = false, --是否开启物品栏，可选
         isOpenPunish = false, --是否开启硬直系统，可选
         isShadow = false, --是否影子，可选
         isUnSelectable = false, --是否不可鼠标选中，可选
@@ -419,6 +420,9 @@ hunit.create = function(bean)
             hattr.init(u)
             -- 物品系统
             if (his.hasSlot(u)) then
+                hitem.registerAll(u)
+            elseif (bean.isOpenSolt == true) then
+                hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
                 hitem.registerAll(u)
             end
             --标志位

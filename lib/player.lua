@@ -95,6 +95,14 @@ end
 hplayer.index = function(whichPlayer)
     return cj.GetPlayerId(whichPlayer) + 1
 end
+--- 获取玩家名称
+hplayer.getName = function(whichPlayer)
+    return cj.GetPlayerName(whichPlayer)
+end
+--- 设置玩家名称
+hplayer.setName = function(whichPlayer, name)
+    cj.SetPlayerName(whichPlayer, name)
+end
 --- 获取玩家当前选中的单位
 hplayer.getSelection = function(whichPlayer)
     return hplayer.get(whichPlayer, "selection", nil)

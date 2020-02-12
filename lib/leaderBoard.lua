@@ -50,3 +50,29 @@ end
 hleaderBoard.setTitle = function(whichBoard, title)
     cj.LeaderboardSetLabel(whichBoard, title)
 end
+
+--获取排行第N的玩家
+hleaderBoard.pos = function(whichBoard, n)
+    if (n < 1 or n > hplayer.qty_max) then
+        return
+    end
+    local pos
+    n = n - 1
+    for i = 1, hplayer.qty_max, 1 do
+        if (cj.LeaderboardGetPlayerIndex(whichBoard, hplayer.players[i]) == n) then
+            pos = hplayer.players[i]
+            break
+        end
+    end
+    return pos
+end
+
+--获取排行第一的玩家
+hleaderBoard.top = function(whichBoard)
+    return hleaderBoard.pos(whichBoard, 1)
+end
+
+--获取排行最后的玩家
+hleaderBoard.bottom = function(whichBoard)
+    return hleaderBoard.pos(whichBoard, hplayer.qty_max)
+end
