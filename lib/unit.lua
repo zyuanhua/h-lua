@@ -408,7 +408,7 @@ hunit.create = function(bean)
             isShadow = bean.isShadow
         }
         --注册系统(默认注册)
-        if (type(bean.register) == "boolean") then
+        if (type(bean.register) ~= "boolean") then
             bean.register = true
         end
         if (bean.register == true) then
