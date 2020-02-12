@@ -1,4 +1,111 @@
-hunit = {}
+hunit = {
+    TRIGGER_DAMAGED = nil,
+    TRIGGER_DEATH = nil
+}
+
+-- 初始化(in index)
+hunit.init = function()
+    -- trigger
+    hunit.TRIGGER_DAMAGED = cj.CreateTrigger()
+    hunit.TRIGGER_DEATH = cj.CreateTrigger()
+    -- 单位受伤
+    cj.TriggerAddAction(
+        hunit.TRIGGER_DAMAGED,
+        function()
+            local sourceUnit = cj.GetEventDamageSource()
+            local targetUnit = cj.GetTriggerUnit()
+            local damage = cj.GetEventDamage()
+            local oldLife = hunit.getCurLife(targetUnit)
+            if (damage > 0.125) then
+                hattr.set(targetUnit, 0, {life = "+" .. damage})
+                htime.setTimeout(
+                    0,
+                    function(t, td)
+                        htime.delDialog(td)
+                        htime.delTimer(t)
+                        hattr.set(targetUnit, 0, {life = "-" .. damage})
+                        hunit.setCurLife(targetUnit, oldLife)
+                        hskill.damage(
+                            {
+                                sourceUnit = sourceUnit,
+                                targetUnit = targetUnit,
+                                damage = damage,
+                                damageKind = "attack"
+                            }
+                        )
+                    end
+                )
+            end
+        end
+    )
+    -- 单位死亡
+    cj.TriggerAddAction(
+        hunit.TRIGGER_DEATH,
+        function()
+            local u = cj.GetTriggerUnit()
+            local killer = hevent.getLastDamageUnit(u)
+            if (killer ~= nil) then
+                hplayer.addKill(cj.GetOwningPlayer(killer), 1)
+            end
+            -- @触发死亡事件
+            hevent.triggerEvent(
+                u,
+                CONST_EVENT.dead,
+                {
+                    triggerUnit = u,
+                    killer = killer
+                }
+            )
+            -- @触发击杀事件
+            hevent.triggerEvent(
+                killer,
+                CONST_EVENT.kill,
+                {
+                    triggerUnit = killer,
+                    killer = killer,
+                    targetUnit = u
+                }
+            )
+        end
+    )
+    -- 生命魔法恢复
+    htime.setInterval(
+        0.50,
+        function(t, td)
+            local period = cj.TimerGetTimeout(t)
+            for k, u in pairs(hRuntime.attributeGroup.life_back) do
+                if (his.alive(u)) then
+                    if (hattr.get(u, "life_back") ~= 0) then
+                        hunit.addCurLife(u, hattr.get(u, "life_back") * period)
+                    end
+                end
+            end
+            for k, u in pairs(hRuntime.attributeGroup.mana_back) do
+                if (his.alive(u)) then
+                    if (hattr.get(u, "mana_back") ~= 0) then
+                        hunit.addCurMana(u, hattr.get(u, "mana_back") * period)
+                    end
+                end
+            end
+        end
+    )
+    -- 硬直恢复(3秒内没收到伤害后,每1秒恢复1%)
+    htime.setInterval(
+        1.00,
+        function(t, td)
+            for k, u in pairs(hRuntime.attributeGroup.punish_current) do
+                if
+                    (his.alive(u) and hattr.get(u, "punish") > 0 and
+                        hattr.get(u, "punish_current") < hattr.get(u, "punish"))
+                 then
+                    if (hattr.get(u, "be_hunting") == false) then
+                        hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.01)})
+                    end
+                end
+            end
+        end
+    )
+end
 
 -- 获取单位的最大生命值
 hunit.getMaxLife = function(u)
@@ -136,6 +243,7 @@ end
     创建单位/单位组
     @return 最后创建单位/单位组
     {
+        register = true, --是否注册进系统
         whichPlayer = nil, --归属玩家
         unitId = nil, --类型id,如'H001'
         x = nil, --创建坐标X，可选
@@ -275,11 +383,12 @@ hunit.create = function(bean)
         if (bean.isInvulnerable ~= nil and bean.isInvulnerable == true) then
             hunit.setInvulnerable(u, true)
         end
-        --影子，无敌蝗虫暂停
+        --影子，无敌蝗虫暂停,且不注册系统
         if (bean.isShadow ~= nil and bean.isShadow == true) then
             cj.UnitAddAbility(u, "Aloc")
             cj.PauseUnit(u, true)
             hunit.setInvulnerable(u, true)
+            bean.register = false
         end
         --是否与所有玩家共享视野
         if (bean.isShareSight ~= nil and bean.isShareSight == true) then
@@ -298,6 +407,23 @@ hunit.create = function(bean)
             isOpenPunish = bean.isOpenPunish,
             isShadow = bean.isShadow
         }
+        --注册系统(默认注册)
+        if (type(bean.register) == "boolean") then
+            bean.register = true
+        end
+        if (bean.register == true) then
+            -- 受伤与死亡
+            cj.TriggerRegisterUnitEvent(hunit.TRIGGER_DAMAGED, u, EVENT_UNIT_DAMAGED)
+            cj.TriggerRegisterUnitEvent(hunit.TRIGGER_DEATH, u, EVENT_UNIT_DEATH)
+            -- 属性系统
+            hattr.init(u)
+            -- 物品系统
+            if (his.hasSlot(u)) then
+                hitem.registerAll(u)
+            end
+            --标志位
+            hRuntime.unit[u].init = 1
+        end
     end
     if (g ~= nil) then
         return g

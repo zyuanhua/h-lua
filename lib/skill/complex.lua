@@ -294,6 +294,7 @@ hskill.broken = function(options)
     local cu =
         hunit.create(
         {
+            register = false,
             unitId = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
             x = cj.GetUnitX(u),
@@ -402,6 +403,7 @@ hskill.swim = function(options)
     local cu =
         hunit.create(
         {
+            register = false,
             unitId = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
             x = cj.GetUnitX(u),
@@ -1560,6 +1562,7 @@ hskill.leap = function(options)
         arrowUnit =
             hunit.create(
             {
+                register = false,
                 whichPlayer = cj.GetOwningPlayer(sourceUnit),
                 unitId = hskill.SKILL_LEAP,
                 x = cxy.x,
@@ -1979,6 +1982,7 @@ hskill.rectangleStrike = function(options)
                 local effUnit =
                     hunit.create(
                     {
+                        register = false,
                         whichPlayer = hplayer.player_passive,
                         unitId = hskill.SKILL_LEAP,
                         x = txy.x,
@@ -2037,6 +2041,7 @@ hskill.rectangleStrike = function(options)
                     local effUnit =
                         hunit.create(
                         {
+                            register = false,
                             whichPlayer = hplayer.player_passive,
                             unitId = hskill.SKILL_LEAP,
                             x = txy.x,
