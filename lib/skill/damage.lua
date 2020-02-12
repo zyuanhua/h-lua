@@ -48,12 +48,11 @@ hskill.damage = function(options)
     if (sourceUnit == nil) then
         return
     end
-    if (options.damageKind == nil) then
-        options.damageKind = CONST_DAMAGE_KIND.special
-        return
-    end
     if (his.alive(options.targetUnit) == false) then
         return
+    end
+    if (options.damageKind == nil) then
+        options.damageKind = CONST_DAMAGE_KIND.special
     end
     --双方attr get
     local targetUnitAttr = hattr.get(targetUnit)
