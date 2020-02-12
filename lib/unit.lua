@@ -69,10 +69,10 @@ hunit.init = function()
         end
     )
     -- 生命魔法恢复
+    local period = 0.50
     htime.setInterval(
-        0.50,
+        period,
         function(t, td)
-            local period = cj.TimerGetTimeout(t)
             for k, u in pairs(hRuntime.attributeGroup.life_back) do
                 if (his.alive(u)) then
                     if (hattr.get(u, "life_back") ~= 0) then

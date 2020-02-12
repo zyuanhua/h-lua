@@ -1,5 +1,4 @@
 ?>
-
 globals
     hashtable hash_hslk = null
 endglobals
@@ -11,6 +10,7 @@ library hSlk initializer Init
         local integer key2 = 0
         local string vs = null
         local integer vi = 0
+        //slk注册
         call FlushParentHashtable(hash_hslk)
         set hash_hslk = InitHashtable()
         <?
@@ -39,8 +39,10 @@ library hSlk initializer Init
             end
         end
         ?>
-
+        //exec
+        call Cheat( "exec-lua:\"main\"" )
     endfunction
 
 endlibrary
+
 <?

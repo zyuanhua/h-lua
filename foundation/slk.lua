@@ -220,3 +220,5 @@ hslk_global.skill_shapeshift[toUnitId] = {
     toAbilityId = toAbilityId,
     backAbilityId = backAbilityId
 }
+
+cj.FlushParentHashtable(cg.hash_hslk)
