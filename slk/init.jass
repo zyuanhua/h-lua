@@ -3,7 +3,7 @@ globals
     hashtable hash_hslk = null
 endglobals
 
-library hSlk initializer Init
+library zzzSlk initializer Init
 
     private function Init takes nothing returns nothing
         local integer key1 = 0
