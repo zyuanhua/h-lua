@@ -228,6 +228,10 @@ hplayer.getDamage = function(whichPlayer)
 end
 --- 增加玩家造成的总伤害
 hplayer.addDamage = function(whichPlayer, val)
+    if (whichPlayer == nil) then
+        return
+    end
+    val = val or 0
     hplayer.set(whichPlayer, "damage", hplayer.getDamage(whichPlayer) + val)
 end
 --- 获取玩家受到的总伤害
@@ -236,6 +240,10 @@ hplayer.getBeDamage = function(whichPlayer)
 end
 --- 增加玩家受到的总伤害
 hplayer.addBeDamage = function(whichPlayer, val)
+    if (whichPlayer == nil) then
+        return
+    end
+    val = val or 0
     hplayer.set(whichPlayer, "beDamage", hplayer.getBeDamage(whichPlayer) + val)
 end
 --- 获取玩家杀敌数
@@ -247,9 +255,7 @@ hplayer.addKill = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
     end
-    if (val == nil) then
-        val = 1
-    end
+    val = val or 1
     hplayer.set(whichPlayer, "kill", hplayer.getKill(whichPlayer) + val)
 end
 --- 获取玩家生命源设定百分比
