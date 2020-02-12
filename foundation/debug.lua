@@ -46,13 +46,14 @@ end
 
 --错误调试
 print_err = function(val)
-    if (type(val) == "string") then
-        print_mb("[h-lua-err]" .. val)
-    else
-        print("*****h-lua-err*****")
+    print("---------h-lua-err---------")
+    if (type(val) == "table") then
         print_mbr(val)
-        print("*****---------*****")
+    else
+        print_mb(val)
     end
+    print_stack()
+    print("---------------------------")
 end
 
 --打印对象table
