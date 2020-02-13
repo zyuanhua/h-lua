@@ -33,7 +33,7 @@ hdzapi.server.ready = function(whichPlayer)
     if (whichPlayer == nil) then
         return false
     end
-    return japi.GetPlayerServerValueSuccess(whichPlayer)
+    return japi.DzAPI_Map_GetServerValueErrorCode(whichPlayer) == 0
 end
 
 -- save / load
