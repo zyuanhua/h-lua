@@ -1108,6 +1108,12 @@ hevent.onUnSelection = function(whichPlayer, callFunc)
     return hevent.registerEvent(whichPlayer, key, callFunc)
 end
 
+--玩家离开游戏事件(注意这是全局事件)
+--triggerPlayer 获取触发玩家
+hevent.onPlayerLeave = function(callFunc)
+    return hevent.registerEvent("global", CONST_EVENT.playerLeave, callFunc)
+end
+
 --建筑升级开始时
 --triggerUnit 获取触发单位
 hevent.onUpgradeStart = function(whichUnit, callFunc)

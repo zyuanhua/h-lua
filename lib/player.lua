@@ -550,25 +550,16 @@ hplayer.init = function()
             local g
             hplayer.set(p, "status", hplayer.player_status.leave)
             hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
-            g =
-                hgroup.createByRect(
-                cj.GetWorldBounds(),
-                function()
-                    local b = false
-                    if (cj.GetOwningPlayer(cj.GetFilterUnit()) == p) then
-                        b = true
-                    end
-                    return b
-                end
-            )
-            while (hgroup.isEmpty(g) == false) do
-                local u = cj.FirstOfGroup(g)
-                cj.GroupRemoveUnit(g, u)
-                hunit.del(u)
-            end
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
+            hplayer.clearUnit(p)
             hplayer.qty_current = hplayer.qty_current - 1
+            -- 触发玩家离开事件(全局)
+            hevent.triggerEvent(
+                "global",
+                CONST_EVENT.playerLeave,
+                {
+                    triggerPlayer = p
+                }
+            )
         end
     )
     cj.TriggerAddAction(

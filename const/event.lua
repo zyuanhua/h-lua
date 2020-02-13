@@ -77,5 +77,6 @@ CONST_EVENT = {
     constructStart = "constructStart",
     constructCancel = "constructCancel",
     constructFinish = "constructFinish",
-    pickHero = "pickHero"
+    pickHero = "pickHero",
+    playerLeave = "playerLeave",
 }
