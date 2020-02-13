@@ -266,14 +266,6 @@ hplayer.addKill = function(whichPlayer, val)
     val = val or 1
     hplayer.set(whichPlayer, "kill", hplayer.getKill(whichPlayer) + val)
 end
---- 获取玩家生命源设定百分比
-hplayer.getLifeSourceRatio = function(whichPlayer)
-    return hplayer.get(whichPlayer, "lifeSourceRatio")
-end
---- 获取玩家魔法源设定百分比
-hplayer.getManaSourceRatio = function(whichPlayer)
-    return hplayer.get(whichPlayer, "manaSourceRatio")
-end
 
 --- 黄金比率
 hplayer.diffGoldRatio = function(whichPlayer, diff, during)
@@ -534,8 +526,6 @@ hplayer.init = function()
     local triggerApmUnit = cj.CreateTrigger()
     local triggerLeave = cj.CreateTrigger()
     local triggerDeSelection = cj.CreateTrigger()
-    local triggerLSR = cj.CreateTrigger()
-    local triggerMSR = cj.CreateTrigger()
     local triggerConvert = cj.CreateTrigger()
     cj.TriggerAddAction(
         triggerApm,
@@ -588,68 +578,6 @@ hplayer.init = function()
         end
     )
     cj.TriggerAddAction(
-        triggerLSR,
-        function()
-            local p = cj.GetTriggerPlayer()
-            local d = cj.DialogCreate()
-            local b
-            local tg
-            cj.DialogSetMessage(d, "设定某个比例触发生命源恢复")
-            local bValue = {}
-            for i = 100, 10, -10 do
-                b = cj.DialogAddButton(d, i .. "%", 0)
-                bValue[b] = i
-            end
-            tg = cj.CreateTrigger()
-            cj.TriggerAddAction(
-                tg,
-                function()
-                    local dd = cj.GetClickedDialog()
-                    local bb = cj.GetClickedButton()
-                    hmessage.echoXY0(p, "已设定生命源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
-                    hplayer.set(p, "lifeSourceRatio", bValue[bb])
-                    cj.DialogClear(dd)
-                    cj.DialogDestroy(dd)
-                    cj.DisableTrigger(cj.GetTriggeringTrigger())
-                    cj.DestroyTrigger(cj.GetTriggeringTrigger())
-                end
-            )
-            cj.TriggerRegisterDialogEvent(tg, d)
-            cj.DialogDisplay(p, d, true)
-        end
-    )
-    cj.TriggerAddAction(
-        triggerMSR,
-        function()
-            local p = cj.GetTriggerPlayer()
-            local d = cj.DialogCreate()
-            local b
-            local tg
-            cj.DialogSetMessage(d, "设定某个比例触发魔法源恢复")
-            local bValue = {}
-            for i = 100, 10, -10 do
-                b = cj.DialogAddButton(d, i .. "%", 0)
-                bValue[b] = i
-            end
-            tg = cj.CreateTrigger()
-            cj.TriggerAddAction(
-                tg,
-                function()
-                    local dd = cj.GetClickedDialog()
-                    local bb = cj.GetClickedButton()
-                    hmessage.echoXY0(p, "已设定魔法源触发比例为：|cffffff80" .. bValue[bb] .. "%|r", 0)
-                    hplayer.set(p, "manaSourceRatio", bValue[bb])
-                    cj.DialogClear(dd)
-                    cj.DialogDestroy(dd)
-                    cj.DisableTrigger(cj.GetTriggeringTrigger())
-                    cj.DestroyTrigger(cj.GetTriggeringTrigger())
-                end
-            )
-            cj.TriggerRegisterDialogEvent(tg, d)
-            cj.DialogDisplay(p, d, true)
-        end
-    )
-    cj.TriggerAddAction(
         triggerConvert,
         function()
             local p = cj.GetTriggerPlayer()
@@ -678,8 +606,6 @@ hplayer.init = function()
         hplayer.set(hplayer.players[i], "lumberRatio", 100)
         hplayer.set(hplayer.players[i], "expRatio", 100)
         hplayer.set(hplayer.players[i], "sellRatio", 50)
-        hplayer.set(hplayer.players[i], "lifeSourceRatio", 50)
-        hplayer.set(hplayer.players[i], "manaSourceRatio", 50)
         hplayer.set(hplayer.players[i], "apm", 0)
         hplayer.set(hplayer.players[i], "damage", 0)
         hplayer.set(hplayer.players[i], "beDamage", 0)
@@ -720,8 +646,6 @@ hplayer.init = function()
                 bj_KEYEVENTKEY_UP
             )
             cj.TriggerRegisterPlayerUnitEvent(triggerDeSelection, hplayer.players[i], EVENT_PLAYER_UNIT_DESELECTED, nil)
-            cj.TriggerRegisterPlayerChatEvent(triggerLSR, hplayer.players[i], "-lsr", true)
-            cj.TriggerRegisterPlayerChatEvent(triggerMSR, hplayer.players[i], "-msr", true)
             cj.TriggerRegisterPlayerChatEvent(triggerConvert, hplayer.players[i], "-apc", true)
             hevent.onSelection(
                 hplayer.players[i],
