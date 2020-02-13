@@ -20,10 +20,6 @@ htime.clock = function()
             htime.min = 0
         end
     end
-    if (HLUA_DEBUG == true) then
-        cj.FogEnable(true)
-        cj.FogMaskEnable(true)
-    end
 end
 -- 获取时分秒
 htime.his = function()
