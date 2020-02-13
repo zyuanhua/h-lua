@@ -1,3 +1,6 @@
+-- debug标志位
+HLUA_DEBUG = true
+
 --[[
     记录运行时间rem方法
     只有key1时为记录，有key2时会打印对应记录间的差值，如：
@@ -9,6 +12,9 @@
     print rem("a","c") =3
 ]]
 rem = function(key1, key2)
+    if (HLUA_DEBUG == false) then
+        return
+    end
     if (type(key1) ~= "string") then
         return
     end
@@ -27,6 +33,9 @@ end
 
 --打印栈
 print_stack = function(...)
+    if (HLUA_DEBUG == false) then
+        return
+    end
     local out = {"[TRACE]"}
     local n = select("#", ...)
     for i = 1, n, 1 do
@@ -41,11 +50,17 @@ end
 
 --打印utf8->ansi编码,此方法可以打印出中文
 print_mb = function(str)
+    if (HLUA_DEBUG == false) then
+        return
+    end
     console.write(str)
 end
 
 --错误调试
 print_err = function(val)
+    if (HLUA_DEBUG == false) then
+        return
+    end
     print("---------h-lua-err---------")
     if (type(val) == "table") then
         print_mbr(val)
@@ -58,6 +73,9 @@ end
 
 --打印对象table
 print_r = function(t, printMethod, showDetail)
+    if (HLUA_DEBUG == false) then
+        return
+    end
     local print_r_cache = {}
     printMethod = printMethod or print
     if (showDetail == nil) then
