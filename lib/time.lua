@@ -20,7 +20,7 @@ htime.clock = function()
             htime.min = 0
         end
     end
-    if (console.enable ~= true) then
+    if (HLUA_DEBUG == true) then
         cj.FogEnable(true)
         cj.FogMaskEnable(true)
     end
