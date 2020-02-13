@@ -97,6 +97,10 @@ end
 his.alive = function(whichUnit)
     return cj.GetUnitState(whichUnit, UNIT_STATE_LIFE) > 0
 end
+--是否已被删除
+his.deleted = function(whichUnit)
+    return cj.GetUnitName(whichUnit) == nil
+end
 --是否无敌
 his.invincible = function(whichUnit)
     return cj.GetUnitAbilityLevel(whichUnit, hskill.BUFF_INVULNERABLE) > 0
@@ -168,6 +172,10 @@ end
 --是否被击飞
 his.crackFly = function(whichUnit)
     return his.get(whichUnit, "isCrackFly")
+end
+--是否正在受伤
+his.damaging = function(whichUnit)
+    return his.get(whichUnit, "isDamaging")
 end
 --判断是否处在水面
 his.water = function(whichUnit)

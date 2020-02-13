@@ -46,6 +46,7 @@ hRuntime = {
     skill = {},
     attribute = {},
     attributeDiff = {},
+    attributeDamaging = {},
     attributeGroup = {
         life_back = {},
         mana_back = {},

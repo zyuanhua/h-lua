@@ -286,6 +286,21 @@ hskill.damage = function(options)
     end
     -- 上面都是先行计算 ------------------
     if (lastDamage > 0.125) then
+        -- 设置单位正在受伤
+        if (hRuntime.attributeDamaging[targetUnit] ~= nil) then
+            htime.delTimer(hRuntime.attributeDamaging[targetUnit])
+            hRuntime.attributeDamaging[targetUnit] = nil
+        end
+        his.set(targetUnit, "isDamaging", true)
+        hRuntime.attributeDamaging[targetUnit] =
+            htime.setTimeout(
+            2.5,
+            function(t)
+                htime.delTimer(t)
+                hRuntime.attributeDamaging[targetUnit] = nil
+                his.set(targetUnit, "isDamaging", false)
+            end
+        )
         -- 造成伤害及漂浮字
         _damageTtg(targetUnit, lastDamage, damageString, damageStringColor)
         --
@@ -477,7 +492,7 @@ hskill.damage = function(options)
                 }
             )
         end
-        -- 反射
+        -- 反伤
         if (his.invincible(sourceUnit) == false) then
             local targetUnitDamageRebound = targetUnitAttr.damage_rebound - sourceUnitAttr.damage_rebound_oppose
             if (targetUnitDamageRebound > 0) then

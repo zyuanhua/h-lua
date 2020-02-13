@@ -178,7 +178,6 @@ hattr.init = function(whichUnit)
     end
     hRuntime.attribute[whichUnit] = {
         primary = hslk_global.unitsKV[unitId].Primary or "NIL",
-        be_hunting = false,
         --
         life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE),
         mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA),

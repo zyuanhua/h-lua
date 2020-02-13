@@ -73,33 +73,37 @@ hunit.init = function()
     htime.setInterval(
         period,
         function(t, td)
-            for k, u in pairs(hRuntime.attributeGroup.life_back) do
-                if (his.alive(u)) then
-                    if (hattr.get(u, "life_back") ~= 0) then
+            for k, u in ipairs(hRuntime.attributeGroup.life_back) do
+                if (his.deleted(u) == true) then
+                    table.remove(hRuntime.attributeGroup.life_back, k)
+                else
+                    if (his.alive(u) and hattr.get(u, "life_back") ~= 0) then
                         hunit.addCurLife(u, hattr.get(u, "life_back") * period)
                     end
                 end
             end
-            for k, u in pairs(hRuntime.attributeGroup.mana_back) do
-                if (his.alive(u)) then
-                    if (hattr.get(u, "mana_back") ~= 0) then
+            for k, u in ipairs(hRuntime.attributeGroup.mana_back) do
+                if (his.deleted(u) == true) then
+                    table.remove(hRuntime.attributeGroup.mana_back, k)
+                else
+                    if (his.alive(u) and hattr.get(u, "mana_back") ~= 0) then
                         hunit.addCurMana(u, hattr.get(u, "mana_back") * period)
                     end
                 end
             end
         end
     )
-    -- 硬直恢复(3秒内没收到伤害后,每1秒恢复1%)
+    -- 没收到伤害时,每1.5秒恢复1.5%硬直
     htime.setInterval(
-        1.00,
+        1.5,
         function(t, td)
             for k, u in pairs(hRuntime.attributeGroup.punish_current) do
                 if
                     (his.alive(u) and hattr.get(u, "punish") > 0 and
                         hattr.get(u, "punish_current") < hattr.get(u, "punish"))
                  then
-                    if (hattr.get(u, "be_hunting") == false) then
-                        hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.01)})
+                    if (his.damaging(u) == false) then
+                        hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.015)})
                     end
                 end
             end
