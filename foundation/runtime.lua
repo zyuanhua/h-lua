@@ -51,7 +51,6 @@ hRuntime = {
         life_back = {},
         mana_back = {},
         punish = {},
-        punish_current = {}
     },
     attributeThreeBuff = {
         --- 每一点三围对属性的影响，默认会写一些，可以通过 hattr.setThreeBuff 方法来改变系统构成

@@ -97,14 +97,11 @@ hunit.init = function()
     htime.setInterval(
         1.5,
         function(t, td)
-            for k, u in pairs(hRuntime.attributeGroup.punish_current) do
-                if
-                    (his.alive(u) and hattr.get(u, "punish") > 0 and
-                        hattr.get(u, "punish_current") < hattr.get(u, "punish"))
-                 then
-                    if (his.damaging(u) == false) then
-                        hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.015)})
-                    end
+            for k, u in ipairs(hRuntime.attributeGroup.punish) do
+                if (his.deleted(u) == true) then
+                    table.remove(hRuntime.attributeGroup.punish, k)
+                elseif (his.alive(u) == true and his.damaging(u) == false) then
+                    hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.015)})
                 end
             end
         end
@@ -387,6 +384,10 @@ hunit.create = function(bean)
         --是否无敌
         if (bean.isInvulnerable ~= nil and bean.isInvulnerable == true) then
             hunit.setInvulnerable(u, true)
+        end
+        --开启硬直，执行硬直计算
+        if (bean.isOpenPunish ~= nil and bean.isOpenPunish == true) then
+            table.insert(hRuntime.attributeGroup.punish, u)
         end
         --影子，无敌蝗虫暂停,且不注册系统
         if (bean.isShadow ~= nil and bean.isShadow == true) then
