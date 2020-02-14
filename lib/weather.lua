@@ -32,7 +32,6 @@ hweather.del = function(w, during)
         )
     end
 end
- --
 --[[
     创建天气
     options = {
