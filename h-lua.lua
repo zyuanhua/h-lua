@@ -2,7 +2,6 @@
 cj = require "jass.common"
 gctl = require "jass.message"
 cg = require "jass.globals"
-japi = require "jass.japi"
 
 -- 加载blizzard
 require "foundation.blizzard_c"
