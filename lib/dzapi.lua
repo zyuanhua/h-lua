@@ -8,7 +8,7 @@ hdzapi = {
         return hdzapi.commandHashCache[command]
     end,
     exec = function(command, ...)
-        if (hdzapi.hdzapi ~= true) then
+        if (hdzapi.enable ~= true) then
             print_err("Please copy ./plugin/dzapi.jass")
             return
         end
