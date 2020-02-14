@@ -1,5 +1,5 @@
  * [github网址](https://github.com/hunzsig-warcraft3/h-lua)
- * [最佳实践：暂未公开](https://github.com/hunzsig/w3x-my-tower)
+ * [最佳实践：我塔非凡](https://github.com/hunzsig/w3x-my-tower)
  * [极速上手文档](https://docs.qq.com/doc/DTUZZZWZzYVpyeW1o)
  * author hunzsig
  * QQ 325338043
@@ -71,6 +71,8 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── time.lua - 时间/计时器 * 常用
     │   ├── unit.lua - 单位
     │   └── weather.lua - 天气
+    ├── plugins
+    │   └── dzapi.jass - 拓展dzapi，使用时复制到触发内
     ├── resource - 资源数据(不需要在意的)
     └── slk - SLK物编生成数据
         ├── data.lua - 需要在触发编辑器加载的文件，slk数据
