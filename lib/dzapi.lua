@@ -65,8 +65,9 @@ hdzapi.mapLv = function(whichPlayer)
     return lv
 end
 
--- 是否有商城道具
+-- 是否有商城道具,由于官方设置的key必须大写，所以这里自动转换
 hdzapi.hasMallItem = function(whichPlayer, key)
+    key = string.upper(key)
     return hdzapi.exec("Hlua_DzAPI_Map_HasMallItem", whichPlayer, key) == "1"
 end
 
