@@ -1,16 +1,14 @@
 -- debug标志位
 HLUA_DEBUG = true
 
---[[
-    记录运行时间rem方法
-    只有key1时为记录，有key2时会打印对应记录间的差值，如：
-    rem("a") --1
-    rem("b") --2
-    rem("c") --4
-    print rem("a","b") =1
-    print rem("b","c") =2
-    print rem("a","c") =3
-]]
+--记录运行时间rem方法
+--只有key1时为记录，有key2时会打印对应记录间的差值，如：
+--rem("a") --1
+--rem("b") --2
+--rem("c") --4
+--print rem("a","b") =1
+--print rem("b","c") =2
+--print rem("a","c") =3
 rem = function(key1, key2)
     if (HLUA_DEBUG == false) then
         return

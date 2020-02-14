@@ -1,19 +1,19 @@
 -- 声音
 hsound = {}
 
---- 播放音效
+-- 播放音效
 hsound.sound = function(s)
     if (s ~= nil) then
         cj.StartSound(s)
     end
 end
---- 播放音效对某个玩家
+-- 播放音效对某个玩家
 hsound.sound2Player = function(s, whichPlayer)
     if (s ~= nil and cj.GetLocalPlayer() == whichPlayer) then
         cj.StartSound(s)
     end
 end
---- 绑定单位音效
+-- 绑定单位音效
 hsound.sound2Unit = function(s, volumePercent, u)
     if (s ~= nil) then
         cj.AttachSoundToUnit(s, u)
@@ -21,13 +21,13 @@ hsound.sound2Unit = function(s, volumePercent, u)
         cj.StartSound(s)
     end
 end
---- 绑定坐标音效
+-- 绑定坐标音效
 hsound.sound2XYZ = function(s, x, y, z)
     if (s ~= nil) then
         cj.SetSoundPosition(s, x, y, z)
     end
 end
---- 绑定点音效
+-- 绑定点音效
 hsound.sound2Loc = function(s, loc)
     hsound.sound2XYZ(s, cj.GetLocationX(loc), cj.GetLocationY(loc), cj.GetLocationZ(loc))
 end
@@ -66,7 +66,7 @@ hsound.bgm = function(musicFileName, whichPlayer)
         end
     end
 end
---- 停止BGM
+-- 停止BGM
 hsound.bgmStop = function(whichPlayer)
     if (whichPlayer == nil) then
         cj.StopMusic(true)

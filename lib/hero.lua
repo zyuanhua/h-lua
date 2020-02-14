@@ -13,7 +13,7 @@ for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
     hhero.player_current_qty[p] = 0
     hhero.player_units[p] = {}
 end
---- 初始化英雄升级触发器
+-- 初始化英雄升级触发器
 hhero.trigger_hero_lvup = cj.CreateTrigger()
 cj.TriggerAddAction(
     hhero.trigger_hero_lvup,
@@ -44,14 +44,14 @@ cj.TriggerAddAction(
         hhero.setPrevLevel(u, cj.GetHeroLevel(u))
     end
 )
---- 设置英雄之前的等级
+-- 设置英雄之前的等级
 hhero.setPrevLevel = function(u, lv)
     if (hRuntime.hero[u] == nil) then
         hRuntime.hero[u] = {}
     end
     hRuntime.hero[u].prevLevel = lv
 end
---- 获取英雄之前的等级
+-- 获取英雄之前的等级
 hhero.getPrevLevel = function(u)
     if (hRuntime.hero[u] == nil) then
         hRuntime.hero[u] = {}
@@ -62,7 +62,7 @@ end
 hhero.getCurLevel = function(u)
     return cj.GetHeroLevel(u) or 1
 end
---- 设置英雄当前的等级
+-- 设置英雄当前的等级
 hhero.setCurLevel = function(u, newLevel, showEffect)
     if (type(showEffect) ~= "boolean") then
         showEffect = false
@@ -77,7 +77,7 @@ hhero.setCurLevel = function(u, newLevel, showEffect)
     end
     hhero.setPrevLevel(u, newLevel)
 end
---- 设定酒馆参数
+-- 设定酒馆参数
 hhero.setBuildParams = function(x, y, distance, per_row, allow_qty)
     hhero.build_params.x = x
     hhero.build_params.y = y
@@ -85,12 +85,12 @@ hhero.setBuildParams = function(x, y, distance, per_row, allow_qty)
     hhero.build_params.per_row = per_row
     hhero.build_params.allow_qty = allow_qty
 end
---- 设定英雄创建参数
+-- 设定英雄创建参数
 hhero.setHeroBornParams = function(x, y)
     hhero.hero_born_params.x = x
     hhero.hero_born_params.y = y
 end
---- 设置玩家最大英雄数量,支持1 - 7
+-- 设置玩家最大英雄数量,支持1 - 7
 hhero.setPlayerAllowQty = function(whichPlayer, max)
     if (max > 0 and max <= 7) then
         heros.player_allow_qty[whichPlayer] = max
@@ -98,11 +98,11 @@ hhero.setPlayerAllowQty = function(whichPlayer, max)
         print_err("hhero.setPlayerMaxQty error")
     end
 end
---- 获取玩家最大英雄数量
+-- 获取玩家最大英雄数量
 hhero.getPlayerAllowQty = function(whichPlayer)
     return heros.player_allow_qty[whichPlayer]
 end
---- 添加一个英雄给玩家
+-- 添加一个英雄给玩家
 hhero.addPlayerUnit = function(whichPlayer, sItem, type)
     if (sItem ~= nil) then
         hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] + 1
@@ -162,7 +162,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         )
     end
 end
---- 删除一个英雄单位对玩家
+-- 删除一个英雄单位对玩家
 hhero.removePlayerUnit = function(whichPlayer, u, type)
     table.delete(u, hhero.player_units[whichPlayer])
     hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
@@ -197,7 +197,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         cj.AddItemToStock(tavern, itemId, 1, 1)
     end
 end
---- 设置一个单位是否使用英雄判定(请勿重复设置)
+-- 设置一个单位是否使用英雄判定(请勿重复设置)
 -- 请不要乱设置[一般单位]为[英雄]，以致于力量敏捷智力等不属于一般单位的属性引起崩溃报错
 -- 设定后 his.hero 方法会认为单位为英雄，同时属性系统才会认定它为英雄，从而生效
 hhero.setIsHero = function(u, flag)
@@ -209,16 +209,16 @@ hhero.setIsHero = function(u, flag)
         cj.TriggerRegisterUnitEvent(hhero.trigger_hero_lvup, u, EVENT_UNIT_HERO_LEVEL)
     end
 end
---- 获取英雄的类型（STR AGI INT）
+-- 获取英雄的类型（STR AGI INT）
 hhero.getHeroType = function(u)
     return hslk_global.heroesKV[cj.GetUnitTypeId(u)].Primary
 end
---- 获取英雄的类型文本（力量 敏捷 智力）
+-- 获取英雄的类型文本（力量 敏捷 智力）
 hhero.getHeroTypeLabel = function(u)
     return CONST_HERO_PRIMARY[hhero.getHeroType(u)]
 end
 
---- 构建选择单位给玩家（clickQty 击）
+-- 构建选择单位给玩家（clickQty 击）
 hhero.buildClick = function(during, clickQty)
     if (during <= 20) then
         print_err("建立点击选英雄模式必须设定during大于20秒")
@@ -409,7 +409,7 @@ hhero.buildClick = function(during, clickQty)
     hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
 end
 
---- 构建选择单位给玩家（商店物品）
+-- 构建选择单位给玩家（商店物品）
 hhero.buildTavern = function(during)
     if (during <= 20) then
         print_err("建立酒馆选英雄模式必须设定during大于20秒")

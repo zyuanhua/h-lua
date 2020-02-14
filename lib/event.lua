@@ -849,7 +849,7 @@ hevent.onKill = function(whichUnit, callFunc)
 end
 
 --triggerUnit 获取触发单位
---- 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
+-- 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
 hevent.onReborn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.reborn, callFunc)
 end

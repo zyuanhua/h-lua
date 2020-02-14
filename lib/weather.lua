@@ -41,7 +41,8 @@ end
         type=hweather.sun 天气类型
         during=10 持续时间小于等于0=无限
     }
-]] hweather.create = function(
+]]
+hweather.create = function(
     bean)
     if (bean.w == nil or bean.h == nil or bean.w <= 0 or bean.h <= 0) then
         print_err("hweather.create -w-h")

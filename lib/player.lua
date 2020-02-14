@@ -49,7 +49,7 @@ hplayer.get = function(whichPlayer, key, default)
     return hRuntime.player[index][key] or default
 end
 
---- 循环玩家
+-- 循环玩家
 hplayer.loop = function(call)
     if (call == nil) then
         return
@@ -83,51 +83,51 @@ hplayer.setPlayerState = function(whichPlayer, whichPlayerState, value)
     hplayer.adjustPlayerState(value - oldValue, whichPlayer, whichPlayerState)
 end
 
---- 设置换算比率
+-- 设置换算比率
 hplayer.setConvertRatio = function(ratio)
     hplayer.convert_ratio = ratio
 end
---- 获取换算比率
+-- 获取换算比率
 hplayer.getConvertRatio = function()
     return hplayer.convert_ratio
 end
---- 获取玩家ID，例如：玩家一等于1，玩家三等于3
+-- 获取玩家ID，例如：玩家一等于1，玩家三等于3
 hplayer.index = function(whichPlayer)
     return cj.GetPlayerId(whichPlayer) + 1
 end
---- 获取玩家名称
+-- 获取玩家名称
 hplayer.getName = function(whichPlayer)
     return cj.GetPlayerName(whichPlayer)
 end
---- 设置玩家名称
+-- 设置玩家名称
 hplayer.setName = function(whichPlayer, name)
     cj.SetPlayerName(whichPlayer, name)
 end
---- 获取玩家当前选中的单位
+-- 获取玩家当前选中的单位
 hplayer.getSelection = function(whichPlayer)
     return hplayer.get(whichPlayer, "selection", nil)
 end
---- 获取玩家当前状态
+-- 获取玩家当前状态
 hplayer.getStatus = function(whichPlayer)
     return hplayer.get(whichPlayer, "status", hplayer.player_status.none)
 end
---- 设置玩家当前状态
+-- 设置玩家当前状态
 hplayer.setStatus = function(whichPlayer, status)
     hplayer.set(whichPlayer, "status", status)
 end
---- 获取玩家当前称号
+-- 获取玩家当前称号
 hplayer.getPrestige = function(whichPlayer)
     return hplayer.get(whichPlayer, "prestige", "初出茅庐")
 end
---- 设置玩家当前称号
+-- 设置玩家当前称号
 hplayer.setPrestige = function(whichPlayer, prestige)
     hplayer.set(whichPlayer, "prestige", prestige)
 end
---- 获取玩家APM
+-- 获取玩家APM
 hplayer.getApm = function(whichPlayer)
     return hplayer.get(whichPlayer, "apm", 0)
 end
---- 在所有玩家里获取一个随机的英雄
+-- 在所有玩家里获取一个随机的英雄
 hplayer.getRandomHero = function()
     local pi = {}
     for k, v in ipairs(hplayer.players) do
@@ -144,7 +144,7 @@ hplayer.getRandomHero = function()
         cj.GetRandomInt(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
     )
 end
---- 令玩家单位全部隐藏
+-- 令玩家单位全部隐藏
 hplayer.hideUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -164,7 +164,7 @@ hplayer.hideUnit = function(whichPlayer)
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end
---- 令玩家单位全部删除
+-- 令玩家单位全部删除
 hplayer.clearUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -184,7 +184,7 @@ hplayer.clearUnit = function(whichPlayer)
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end
---- 令玩家失败
+-- 令玩家失败
 hplayer.defeat = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
@@ -195,22 +195,22 @@ hplayer.defeat = function(whichPlayer, tips)
     end
     bj.CustomDefeatBJ(whichPlayer, tips)
 end
---- 令玩家胜利
+-- 令玩家胜利
 hplayer.victory = function(whichPlayer)
     if (whichPlayer == nil) then
         return
     end
     bj.CustomVictoryBJ(whichPlayer, true, true)
 end
---- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
+-- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
 hplayer.setIsAutoConvert = function(whichPlayer, b)
     hplayer.set(whichPlayer, "isAutoConvert", b)
 end
---- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
+-- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
 hplayer.getIsAutoConvert = function(whichPlayer)
     return hplayer.get(whichPlayer, "isAutoConvert", false)
 end
---- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
+-- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
 hplayer.getExceedLumber = function(whichPlayer, exceedGold)
     local index = hplayer.index(whichPlayer)
     local current = hplayer.get(whichPlayer, "exceed_gold", 0)
@@ -230,11 +230,11 @@ hplayer.getExceedLumber = function(whichPlayer, exceedGold)
     hplayer.set(whichPlayer, "exceed_gold", current)
     return l
 end
---- 获取玩家造成的总伤害
+-- 获取玩家造成的总伤害
 hplayer.getDamage = function(whichPlayer)
     return hplayer.get(whichPlayer, "damage", 0)
 end
---- 增加玩家造成的总伤害
+-- 增加玩家造成的总伤害
 hplayer.addDamage = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -242,11 +242,11 @@ hplayer.addDamage = function(whichPlayer, val)
     val = val or 0
     hplayer.set(whichPlayer, "damage", hplayer.getDamage(whichPlayer) + val)
 end
---- 获取玩家受到的总伤害
+-- 获取玩家受到的总伤害
 hplayer.getBeDamage = function(whichPlayer)
     return hplayer.get(whichPlayer, "beDamage", 0)
 end
---- 增加玩家受到的总伤害
+-- 增加玩家受到的总伤害
 hplayer.addBeDamage = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -254,11 +254,11 @@ hplayer.addBeDamage = function(whichPlayer, val)
     val = val or 0
     hplayer.set(whichPlayer, "beDamage", hplayer.getBeDamage(whichPlayer) + val)
 end
---- 获取玩家杀敌数
+-- 获取玩家杀敌数
 hplayer.getKill = function(whichPlayer)
     return hplayer.get(whichPlayer, "kill", 0)
 end
---- 增加玩家杀敌数
+-- 增加玩家杀敌数
 hplayer.addKill = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -267,7 +267,7 @@ hplayer.addKill = function(whichPlayer, val)
     hplayer.set(whichPlayer, "kill", hplayer.getKill(whichPlayer) + val)
 end
 
---- 黄金比率
+-- 黄金比率
 hplayer.diffGoldRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "goldRatio", hplayer.get(whichPlayer, "goldRatio") + diff)
@@ -296,7 +296,7 @@ hplayer.getGoldRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "goldRatio") or 100
 end
 
---- 木头比率
+-- 木头比率
 hplayer.diffLumberRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "lumberRatio", hplayer.get(whichPlayer, "lumberRatio") + diff)
@@ -326,7 +326,7 @@ hplayer.getLumberRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "lumberRatio")
 end
 
---- 经验比率
+-- 经验比率
 hplayer.diffExpRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "expRatio", hplayer.get(whichPlayer, "expRatio") + diff)
@@ -356,7 +356,7 @@ hplayer.getExpRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "expRatio")
 end
 
---- 售卖比率
+-- 售卖比率
 hplayer.diffSellRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "sellRatio", hplayer.get(whichPlayer, "sellRatio") + diff)
@@ -386,14 +386,14 @@ hplayer.getSellRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "sellRatio", 50)
 end
 
---- 玩家总获金量
+-- 玩家总获金量
 hplayer.getTotalGold = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalGold")
 end
 hplayer.addTotalGold = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalGold", hplayer.getTotalGold(whichPlayer) + val)
 end
---- 玩家总耗金量
+-- 玩家总耗金量
 hplayer.getTotalGoldCost = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalGoldCost")
 end
@@ -401,14 +401,14 @@ hplayer.addTotalGoldCost = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalGoldCost", hplayer.getTotalGoldCost(whichPlayer) + val)
 end
 
---- 玩家总获木量
+-- 玩家总获木量
 hplayer.getTotalLumber = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalLumber")
 end
 hplayer.addTotalLumber = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalLumber", hplayer.getTotalLumber(whichPlayer) + val)
 end
---- 玩家总耗木量
+-- 玩家总耗木量
 hplayer.getTotalLumberCost = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalLumberCost")
 end
@@ -416,7 +416,7 @@ hplayer.addTotalLumberCost = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalLumberCost", hplayer.getTotalLumberCost(whichPlayer) + val)
 end
 
---- 核算玩家金钱
+-- 核算玩家金钱
 hplayer.adjustGold = function(whichPlayer)
     local prvSys = hplayer.get(whichPlayer, "prevGold")
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
@@ -427,7 +427,7 @@ hplayer.adjustGold = function(whichPlayer)
     end
     hplayer.set(whichPlayer, "prevGold", relSys)
 end
---- 核算玩家木头
+-- 核算玩家木头
 hplayer.adjustLumber = function(whichPlayer)
     local prvSys = hplayer.get(whichPlayer, "prevLumber")
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
@@ -439,11 +439,11 @@ hplayer.adjustLumber = function(whichPlayer)
     hplayer.set(whichPlayer, "prevLumber", relSys)
 end
 
---- 获取玩家实时金钱
+-- 获取玩家实时金钱
 hplayer.getGold = function(whichPlayer)
     return cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
 end
---- 设置玩家实时金钱
+-- 设置玩家实时金钱
 hplayer.setGold = function(whichPlayer, gold)
     if (whichPlayer == nil) then
         return
@@ -463,7 +463,7 @@ hplayer.setGold = function(whichPlayer, gold)
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD, gold)
     hplayer.adjustGold(whichPlayer)
 end
---- 增加玩家金钱
+-- 增加玩家金钱
 hplayer.addGold = function(whichPlayer, gold, u)
     if (whichPlayer == nil) then
         return
@@ -475,7 +475,7 @@ hplayer.addGold = function(whichPlayer, gold, u)
         hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, u)
     end
 end
---- 减少玩家金钱
+-- 减少玩家金钱
 hplayer.subGold = function(whichPlayer, gold)
     if (whichPlayer == nil) then
         return
@@ -483,11 +483,11 @@ hplayer.subGold = function(whichPlayer, gold)
     hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) - gold)
 end
 
---- 获取玩家实时木头
+-- 获取玩家实时木头
 hplayer.getLumber = function(whichPlayer)
     return cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
 end
---- 设置玩家实时木头
+-- 设置玩家实时木头
 hplayer.setLumber = function(whichPlayer, lumber)
     if (whichPlayer == nil) then
         return
@@ -495,7 +495,7 @@ hplayer.setLumber = function(whichPlayer, lumber)
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER, lumber)
     hplayer.adjustLumber(whichPlayer)
 end
---- 增加玩家木头
+-- 增加玩家木头
 hplayer.addLumber = function(whichPlayer, lumber, u)
     if (whichPlayer == nil) then
         return
@@ -512,7 +512,7 @@ hplayer.addLumber = function(whichPlayer, lumber, u)
         hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, u)
     end
 end
---- 减少玩家木头
+-- 减少玩家木头
 hplayer.subLumber = function(whichPlayer, lumber)
     if (whichPlayer == nil) then
         return

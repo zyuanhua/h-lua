@@ -8,29 +8,29 @@ henemy = {
     shareSight = false,
 }
 
---- 设置敌人的名称
+-- 设置敌人的名称
 henemy.setName = function(name)
     henemy.name = name
 end
---- 获取敌人的名称
+-- 获取敌人的名称
 henemy.getName = function()
     return henemy.name
 end
 
---- 设置敌人的颜色
+-- 设置敌人的颜色
 henemy.setColor = function(color)
     henemy.color = color
 end
---- 获取敌人的颜色
+-- 获取敌人的颜色
 henemy.getColor = function()
     return henemy.color
 end
 
---- 设置敌人是否共享视野
+-- 设置敌人是否共享视野
 henemy.setShareSight = function(b)
     henemy.shareSight = b
 end
---- 获取敌人是否共享视野
+-- 获取敌人是否共享视野
 henemy.isShareSight = function()
     if (type(henemy.shareSight) == 'boolean') then
         return henemy.shareSight
@@ -38,7 +38,7 @@ henemy.isShareSight = function()
     return false
 end
 
---- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
+-- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
 henemy.setPlayer = function(whichPlayer)
     table.insert(henemy.players, whichPlayer)
     if (henemy.numbers[whichPlayer] == nil) then
@@ -47,7 +47,7 @@ henemy.setPlayer = function(whichPlayer)
     cj.SetPlayerName(whichPlayer, henemy.name)
     cj.SetPlayerColor(whichPlayer, henemy.getColor())
 end
---- 最优化自动获取一个敌人玩家
+-- 最优化自动获取一个敌人玩家
 -- createQty 可设定创建单位数，更精准调用，默认权重 1
 henemy.getPlayer = function(createQty)
     local len = #henemy.players

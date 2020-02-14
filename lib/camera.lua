@@ -107,7 +107,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
     end
 end
 
---- 获取镜头模型
+-- 获取镜头模型
 hcamera.getModel = function(whichPlayer)
     local index = hplayer.index(whichPlayer)
     if (hRuntime.camera[index] == nil) then
@@ -117,7 +117,7 @@ hcamera.getModel = function(whichPlayer)
     end
     return hRuntime.camera[index].model
 end
---- 设置镜头模式
+-- 设置镜头模式
 --[[
  bean = {
     model = "normal" | "lock",

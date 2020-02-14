@@ -71,11 +71,21 @@ bj.CustomDefeatDialogBJ = function(whichPlayer, message)
     local t = cj.CreateTrigger()
     local d = cj.DialogCreate()
     cj.DialogSetMessage(d, message)
-    cj.TriggerRegisterDialogButtonEvent(t, cj.DialogAddButton(d, cj.GetLocalizedString("GAMEOVER_QUIT_MISSION"), cj.GetLocalizedHotkey("GAMEOVER_QUIT_MISSION")))
-    cj.TriggerAddAction(t, function()
-        cj.PauseGame(false)
-        cj.RestartGame(true)
-    end)
+    cj.TriggerRegisterDialogButtonEvent(
+        t,
+        cj.DialogAddButton(
+            d,
+            cj.GetLocalizedString("GAMEOVER_QUIT_MISSION"),
+            cj.GetLocalizedHotkey("GAMEOVER_QUIT_MISSION")
+        )
+    )
+    cj.TriggerAddAction(
+        t,
+        function()
+            cj.PauseGame(false)
+            cj.RestartGame(true)
+        end
+    )
     if (cj.GetLocalPlayer() == whichPlayer) then
         cj.EnableUserControl(true)
         if cg.bj_isSinglePlayer then
@@ -102,22 +112,35 @@ bj.CustomVictoryDialogBJ = function(whichPlayer)
 
     cj.DialogSetMessage(d, cj.GetLocalizedString("GAMEOVER_VICTORY_MSG"))
     t = cj.CreateTrigger()
-    cj.TriggerRegisterDialogButtonEvent(t, cj.DialogAddButton(d, cj.GetLocalizedString("GAMEOVER_CONTINUE"), cj.GetLocalizedHotkey("GAMEOVER_CONTINUE")))
-    cj.TriggerAddAction(t, function()
-        if cg.bj_isSinglePlayer then
-            cj.PauseGame(false)
-            -- Bump the difficulty back up to the default.
-            cj.SetGameDifficulty(cj.GetDefaultDifficulty())
-        end
+    cj.TriggerRegisterDialogButtonEvent(
+        t,
+        cj.DialogAddButton(d, cj.GetLocalizedString("GAMEOVER_CONTINUE"), cj.GetLocalizedHotkey("GAMEOVER_CONTINUE"))
+    )
+    cj.TriggerAddAction(
+        t,
+        function()
+            if cg.bj_isSinglePlayer then
+                cj.PauseGame(false)
+                -- Bump the difficulty back up to the default.
+                cj.SetGameDifficulty(cj.GetDefaultDifficulty())
+            end
 
-        if cg.bj_changeLevelMapName == nil then
-            cj.EndGame(cg.bj_changeLevelShowScores)
-        else
-            cj.ChangeLevel(cg.bj_changeLevelMapName, cg.bj_changeLevelShowScores)
+            if cg.bj_changeLevelMapName == nil then
+                cj.EndGame(cg.bj_changeLevelShowScores)
+            else
+                cj.ChangeLevel(cg.bj_changeLevelMapName, cg.bj_changeLevelShowScores)
+            end
         end
-    end)
+    )
     t = cj.CreateTrigger()
-    cj.TriggerRegisterDialogButtonEvent(t, cj.DialogAddButton(d, cj.GetLocalizedString("GAMEOVER_QUIT_MISSION"), cj.GetLocalizedHotkey("GAMEOVER_QUIT_MISSION")))
+    cj.TriggerRegisterDialogButtonEvent(
+        t,
+        cj.DialogAddButton(
+            d,
+            cj.GetLocalizedString("GAMEOVER_QUIT_MISSION"),
+            cj.GetLocalizedHotkey("GAMEOVER_QUIT_MISSION")
+        )
+    )
     cj.TriggerAddAction(t, bj.CustomDefeatQuitBJ)
 
     if cj.GetLocalPlayer() == whichPlayer then
@@ -205,13 +228,29 @@ bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0
     cj.SetCineFilterTexMapFlags(TEXMAP_FLAG_NONE)
     cj.SetCineFilterStartUV(0, 0, 1, 1)
     cj.SetCineFilterEndUV(0, 0, 1, 1)
-    cj.SetCineFilterStartColor(bj.PercentTo255(red0), bj.PercentTo255(green0), bj.PercentTo255(blue0), bj.PercentTo255(100 - trans0))
-    cj.SetCineFilterEndColor(bj.PercentTo255(red1), bj.PercentTo255(green1), bj.PercentTo255(blue1), bj.PercentTo255(100 - trans1))
+    cj.SetCineFilterStartColor(
+        bj.PercentTo255(red0),
+        bj.PercentTo255(green0),
+        bj.PercentTo255(blue0),
+        bj.PercentTo255(100 - trans0)
+    )
+    cj.SetCineFilterEndColor(
+        bj.PercentTo255(red1),
+        bj.PercentTo255(green1),
+        bj.PercentTo255(blue1),
+        bj.PercentTo255(100 - trans1)
+    )
     cj.SetCineFilterDuration(duration)
     cj.DisplayCineFilter(true)
 end
 bj.SetUnitVertexColorBJ = function(whichUnit, red, green, blue, transparency)
-    cj.SetUnitVertexColor(whichUnit, bj.PercentTo255(red), bj.PercentTo255(green), bj.PercentTo255(blue), bj.PercentTo255(100.0 - transparency))
+    cj.SetUnitVertexColor(
+        whichUnit,
+        bj.PercentTo255(red),
+        bj.PercentTo255(green),
+        bj.PercentTo255(blue),
+        bj.PercentTo255(100.0 - transparency)
+    )
 end
 bj.CreateQuestBJ = function(questType, title, description, iconPath)
     local required = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_REQ_UNDISCOVERED
@@ -223,7 +262,7 @@ bj.CreateQuestBJ = function(questType, title, description, iconPath)
     cj.QuestSetRequired(cq, required)
     cj.QuestSetDiscovered(cq, discovered)
     cj.QuestSetCompleted(cq, false)
-    return cq;
+    return cq
 end
 
 bj.TriggerRegisterEnterRectSimple = function(trig, r)
@@ -248,7 +287,13 @@ bj.GetCurrentCameraBoundsMapRectBJ = function()
     return cj.Rect(cj.GetCameraBoundMinX(), cj.GetCameraBoundMinY(), cj.GetCameraBoundMaxX(), cj.GetCameraBoundMaxY())
 end
 
-bj_mapInitialPlayableArea = cj.Rect(cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT), cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM), cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT), cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP))
+bj_mapInitialPlayableArea =
+    cj.Rect(
+    cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
+    cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+    cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
+    cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+)
 bj_mapInitialCameraBounds = bj.GetCurrentCameraBoundsMapRectBJ()
 
 bj.TriggerRegisterEnterRectSimple = function(trig, r)
@@ -256,5 +301,3 @@ bj.TriggerRegisterEnterRectSimple = function(trig, r)
     cj.RegionAddRect(rectRegion, r)
     return cj.TriggerRegisterEnterRegion(trig, rectRegion, null)
 end
-
-return bj

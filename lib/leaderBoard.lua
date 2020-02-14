@@ -1,4 +1,4 @@
--- [[排行榜]]
+-- 排行榜
 hleaderBoard = {}
 
 hleaderBoard.LeaderboardResize = function(lb)

@@ -1,8 +1,5 @@
 hRuntime = {
-    --[[
-        注册runtime的数据
-        unit,item,ability
-    ]]
+    --注册runtime的数据
     register = {
         unit = function(json)
             hslk_global.unitsKV[json.UNIT_ID] = json
@@ -50,11 +47,11 @@ hRuntime = {
     attributeGroup = {
         life_back = {},
         mana_back = {},
-        punish = {},
+        punish = {}
     },
     attributeThreeBuff = {
-        --- 每一点三围对属性的影响，默认会写一些，可以通过 hattr.setThreeBuff 方法来改变系统构成
-        --- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
+        -- 每一点三围对属性的影响，默认会写一些，可以通过 hattr.setThreeBuff 方法来改变系统构成
+        -- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
         str = {
             life = 10, -- 每点力量提升10生命（默认例子）
             life_back = 0.1 -- 每点力量提升0.1生命恢复（默认例子）

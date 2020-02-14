@@ -86,7 +86,3 @@ hskill.has = function(whichUnit, ability_id)
     end
     return false
 end
-
-require "lib.skill.basic"
-require "lib.skill.damage"
-require "lib.skill.complex"
