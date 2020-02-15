@@ -46,12 +46,12 @@ hskill.invulnerableRange = function(x, y, radius, filter, during, effect)
         during = 0.00 -- 如果设置持续时间错误，则0秒无敌，跟回避效果相同
     end
     local g = hgroup.createByXY(x, y, radius, filter)
-    cj.ForGroup(
+    hgroup.loop(
         g,
-        function()
-            hunit.setInvulnerable(cj.GetEnumUnit(), true)
+        function(eu)
+            hunit.setInvulnerable(eu, true)
             if (during > 0 and effect ~= nil) then
-                heffect.bindUnit(effect, cj.GetEnumUnit(), "origin", during)
+                heffect.bindUnit(effect, eu, "origin", during)
             end
         end
     )
@@ -60,10 +60,10 @@ hskill.invulnerableRange = function(x, y, radius, filter, during, effect)
         function(t, td)
             htime.delDialog(td)
             htime.delTimer(t)
-            cj.ForGroup(
+            hgroup.loop(
                 g,
-                function()
-                    hunit.setInvulnerable(cj.GetEnumUnit(), false)
+                function(eu)
+                    hunit.setInvulnerable(eu, false)
                 end
             )
             cj.GroupClear(g)

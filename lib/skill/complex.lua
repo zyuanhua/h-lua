@@ -205,10 +205,9 @@ hskill.split = function(options)
         local splitDamage = damage * percent * 0.01
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
         local damageType = options.damageType or {}
-        cj.ForGroup(
+        hgroup.loop(
             g,
-            function()
-                local eu = cj.GetEnumUnit()
+            function(eu)
                 if (eu ~= targetUnit) then
                     hskill.damage(
                         {
@@ -889,11 +888,11 @@ hskill.bomb = function(options)
         print_err("lost bomb target")
         return
     end
-    cj.ForGroup(
+    hgroup.loop(
         whichGroup,
-        function()
+        function(eu)
             --计算抵抗
-            local oppose = hattr.get(cj.GetEnumUnit(), "bomb_oppose")
+            local oppose = hattr.get(eu, "bomb_oppose")
             local tempOdds = odds - oppose --(%)
             local damage = options.damage
             if (tempOdds <= 0) then
@@ -907,7 +906,7 @@ hskill.bomb = function(options)
             hskill.damage(
                 {
                     sourceUnit = options.sourceUnit,
-                    targetUnit = cj.GetEnumUnit(),
+                    targetUnit = eu,
                     damage = damage,
                     damageKind = damageKind,
                     damageType = damageType,
@@ -921,7 +920,7 @@ hskill.bomb = function(options)
                 CONST_EVENT.bomb,
                 {
                     triggerUnit = options.sourceUnit,
-                    targetUnit = cj.GetEnumUnit(),
+                    targetUnit = eu,
                     odds = odds,
                     damage = options.damage,
                     range = range
@@ -929,20 +928,19 @@ hskill.bomb = function(options)
             )
             -- @触发被爆破事件
             hevent.triggerEvent(
-                cj.GetEnumUnit(),
+                eu,
                 CONST_EVENT.beBomb,
                 {
-                    triggerUnit = cj.GetEnumUnit(),
+                    triggerUnit = eu,
                     sourceUnit = options.sourceUnit,
                     odds = odds,
                     damage = options.damage,
                     range = range
                 }
             )
-        end
+        end,
+        true
     )
-    cj.GroupClear(whichGroup)
-    cj.DestroyGroup(whichGroup)
 end
 
 --[[
@@ -1347,13 +1345,13 @@ hskill.rangeSwim = function(options)
     if (hgroup.count(g) <= 0) then
         return
     end
-    cj.ForGroup(
+    hgroup.loop(
         g,
-        function()
+        function(eu)
             hskill.swim(
                 {
                     odds = odds,
-                    whichUnit = cj.GetEnumUnit(),
+                    whichUnit = eu,
                     during = during,
                     damage = damage,
                     sourceUnit = options.sourceUnit,
@@ -1361,10 +1359,9 @@ hskill.rangeSwim = function(options)
                     damageType = options.damageType
                 }
             )
-        end
+        end,
+        true
     )
-    cj.GroupClear(g)
-    cj.DestroyGroup(g)
 end
 
 --[[
@@ -1444,24 +1441,22 @@ hskill.whirlwind = function(options)
             if (hgroup.count(g) <= 0) then
                 return
             end
-            cj.ForGroup(
+            hgroup.loop(
                 g,
-                function()
+                function(eu)
                     hskill.damage(
                         {
                             sourceUnit = options.sourceUnit,
-                            targetUnit = cj.GetEnumUnit(),
+                            targetUnit = eu,
                             effect = options.effectSingle,
                             damage = damage,
                             damageKind = options.damageKind,
                             damageType = options.damageType
                         }
                     )
-                end
+                end,
+                true
             )
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
-            g = nil
         end
     )
 end
@@ -1654,17 +1649,17 @@ hskill.leap = function(options)
                     if (oneHitOnly == true) then
                         hunit.kill(arrowUnit, 0)
                     end
-                    cj.ForGroup(
+                    hgroup.loop(
                         g,
-                        function()
+                        function(eu)
                             if (damageMovementRepeat ~= true) then
-                                hgroup.addUnit(repeatGroup, cj.GetEnumUnit())
+                                hgroup.addUnit(repeatGroup, eu)
                             end
                             if (damageMovement > 0) then
                                 hskill.damage(
                                     {
                                         sourceUnit = sourceUnit,
-                                        targetUnit = cj.GetEnumUnit(),
+                                        targetUnit = eu,
                                         damage = damageMovement,
                                         damageKind = options.damageKind,
                                         damageType = options.damageType,
@@ -1673,16 +1668,15 @@ hskill.leap = function(options)
                                 )
                             end
                             if (damageMovementDrag == true) then
-                                cj.SetUnitPosition(cj.GetEnumUnit(), txy.x, txy.y)
+                                cj.SetUnitPosition(eu, txy.x, txy.y)
                             end
                             if (type(extraInfluence) == "function") then
-                                extraInfluence(cj.GetEnumUnit())
+                                extraInfluence(eu)
                             end
-                        end
+                        end,
+                        true
                     )
                 end
-                cj.GroupClear(g)
-                cj.DestroyGroup(g)
             end
             local distance = math.getDistanceBetweenXY(cj.GetUnitX(arrowUnit), cj.GetUnitY(arrowUnit), tx, ty)
             if (distance <= speed or speed <= 0 or his.death(arrowUnit) == true) then
@@ -1717,14 +1711,14 @@ hskill.leap = function(options)
                     end
                 elseif (damageEndRange > 0) then
                     local g = hgroup.createByUnit(arrowUnit, damageEndRange, filter)
-                    cj.ForGroup(
+                    hgroup.loop(
                         g,
-                        function()
+                        function(eu)
                             if (damageEnd > 0) then
                                 hskill.damage(
                                     {
                                         sourceUnit = options.sourceUnit,
-                                        targetUnit = cj.GetEnumUnit(),
+                                        targetUnit = eu,
                                         damage = damageEnd,
                                         damageKind = options.damageKind,
                                         damageType = options.damageType,
@@ -1733,12 +1727,11 @@ hskill.leap = function(options)
                                 )
                             end
                             if (type(extraInfluence) == "function") then
-                                extraInfluence(cj.GetEnumUnit())
+                                extraInfluence(eu)
                             end
-                        end
+                        end,
+                        true
                     )
-                    cj.GroupClear(g)
-                    cj.DestroyGroup(g)
                 end
                 if (leapType == "unit") then
                     hunit.setInvulnerable(arrowUnit, false)
@@ -1849,10 +1842,9 @@ hskill.leapRange = function(options)
         y = options.y
     end
     local g = hgroup.createByXY(x, y, targetRange, filter)
-    cj.ForGroup(
+    hgroup.loop(
         g,
-        function()
-            local eu = cj.GetEnumUnit()
+        function(eu)
             local tmp = table.clone(options)
             if (options.targetUnit ~= nil) then
                 tmp.targetUnit = eu
@@ -1861,7 +1853,8 @@ hskill.leapRange = function(options)
                 tmp.y = cj.GetUnitY(eu)
             end
             hskill.leap(tmp)
-        end
+        end,
+        true
     )
 end
 

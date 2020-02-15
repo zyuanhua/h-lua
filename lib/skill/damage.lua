@@ -900,13 +900,13 @@ hskill.damageGroup = function(options)
         return
     end
     if (times <= 1) then
-        cj.ForGroup(
+        hgroup.loop(
             options.whichGroup,
-            function()
+            function(eu)
                 hskill.damage(
                     {
                         sourceUnit = options.sourceUnit,
-                        targetUnit = cj.GetEnumUnit(),
+                        targetUnit = eu,
                         effect = options.effect,
                         damage = damage,
                         damageKind = options.damageKind,
@@ -914,7 +914,7 @@ hskill.damageGroup = function(options)
                     }
                 )
                 if (type(options.extraInfluence) == "function") then
-                    options.extraInfluence(cj.GetEnumUnit())
+                    options.extraInfluence(eu)
                 end
             end
         )
@@ -929,13 +929,13 @@ hskill.damageGroup = function(options)
                     htime.delTimer(t)
                     return
                 end
-                cj.ForGroup(
+                hgroup.loop(
                     options.whichGroup,
-                    function()
+                    function(eu)
                         hskill.damage(
                             {
                                 sourceUnit = options.sourceUnit,
-                                targetUnit = cj.GetEnumUnit(),
+                                targetUnit = eu,
                                 effect = options.effect,
                                 damage = damage,
                                 damageKind = options.damageKind,
@@ -943,7 +943,7 @@ hskill.damageGroup = function(options)
                             }
                         )
                         if (type(options.extraInfluence) == "function") then
-                            options.extraInfluence(cj.GetEnumUnit())
+                            options.extraInfluence(eu)
                         end
                     end
                 )
