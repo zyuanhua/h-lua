@@ -29,6 +29,10 @@ func getCodes(flip string, allCodes string) string {
 			reSub, _ := regexp.Compile("^require (.*)")
 			sub := reSub.FindSubmatch([]byte(f))
 			if len(sub) == 0 {
+				f = php2go.StrReplace("HLUA_DEBUG = true", "HLUA_DEBUG = false", f, -1)
+				f = php2go.StrReplace("HLUA_DEBUG = TRUE", "HLUA_DEBUG = false", f, -1)
+				f = php2go.StrReplace("HLUA_DEBUG=true", "HLUA_DEBUG = false", f, -1)
+				f = php2go.StrReplace("HLUA_DEBUG=TRUE", "HLUA_DEBUG = false", f, -1)
 				allCodes = allCodes + f + "\n"
 			} else {
 				//require
