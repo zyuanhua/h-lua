@@ -19,7 +19,7 @@ hdzapi = {
             return
         end
         if (his.playing(whichPlayer) == false) then
-            return false
+            return
         end
         cj.SavePlayerHandle(cg.hash_hlua_dzapi, hdzapi.commandHash(command), cg.HLDK_PLAYER, whichPlayer)
         if (key ~= nil) then
