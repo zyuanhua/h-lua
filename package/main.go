@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -72,8 +73,9 @@ func main() {
 		}
 	}
 	iniPaths = php2go.Explode(",", iniRawData["paths"])
-	allCodes = getCodes(iniRawData["enter"], allCodes)
-	f, err := os.Create(iniRawData["dist"] + "/dist.lua")
+	allCodes = getCodes(iniRawData["index"], allCodes)
+	distPath := filepath.Dir(iniRawData["index"])
+	f, err := os.Create(distPath + "/dist.lua")
 	defer f.Close()
 	if err != nil {
 		// 创建文件失败处理
