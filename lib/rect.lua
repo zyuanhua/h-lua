@@ -179,15 +179,15 @@ hrect.lock = function(bean)
                 cj.removeLocation(rectCenter)
             end
             if (lockGroup ~= nil) then
-                while (cj.IsUnitGroupEmptyBJ(lockGroup) == false) do
-                    local u = cj.FirstOfGroup(lockGroup)
-                    cj.GroupRemoveUnit(lockGroup, u)
-                    if (table.includes(u, inGroups) == false) then
-                        table.insert(inGroups, u)
-                    end
-                end
-                cj.GroupClear(lockGroup)
-                cj.DestroyGroup(lockGroup)
+                hgroup.loop(
+                    lockGroup,
+                    function(eu)
+                        if (table.includes(eu, inGroups) == false) then
+                            table.insert(inGroups, eu)
+                        end
+                    end,
+                    true
+                )
             end
             --锁
             for k, u in pairs(inGroups) do

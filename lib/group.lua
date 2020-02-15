@@ -8,22 +8,24 @@ hgroup.loop = function(whichGroup, actions, autoDel)
     if (type(autoDel) ~= "boolean") then
         autoDel = false
     end
-    local g = cj.CreateGroup()
-    cj.GroupAddGroup(g, whichGroup)
+    local tempUnits = {}
     while (true) do
-        local u = cj.FirstOfGroup(g)
+        local u = cj.FirstOfGroup(whichGroup)
         if (u == nil) then
-            cj.GroupClear(g)
-            cj.DestroyGroup(g)
             break
         end
-        cj.GroupRemoveUnit(g, u)
+        table.insert(tempUnits, u)
         actions(u)
+        cj.GroupRemoveUnit(whichGroup, u)
     end
     if (autoDel == true) then
-        cj.GroupClear(whichGroup)
         cj.DestroyGroup(whichGroup)
+    else
+        for _, u in ipairs(tempUnits) do
+            cj.GroupAddUnit(whichGroup, u)
+        end
     end
+    tempUnits = nil
 end
 
 -- 统计单位组当前单位数
@@ -113,21 +115,18 @@ hgroup.move = function(whichGroup, loc, eff, isFollow)
     if (whichGroup == nil or loc == nil) then
         return
     end
-    local g = cj.CreateGroup()
-    cj.GroupAddGroup(g, whichGroup)
-    while (cj.IsUnitGroupEmptyBJ(g) ~= true) do
-        local u = cj.FirstOfGroup(g)
-        cj.GroupRemoveUnit(g, u)
-        cj.SetUnitPositionLoc(u, loc)
-        if (isFollow == true) then
-            cj.PanCameraToTimedLocForPlayer(cj.GetOwningPlayer(u), loc, 0.00)
+    hgroup.loop(
+        whichGroup,
+        function(eu)
+            cj.SetUnitPositionLoc(eu, loc)
+            if (isFollow == true) then
+                cj.PanCameraToTimedLocForPlayer(cj.GetOwningPlayer(eu), loc, 0.00)
+            end
+            if (eff ~= nil) then
+                heffect.toLoc(eff, loc, 0)
+            end
         end
-        if (eff ~= nil) then
-            heffect.toLoc(eff, loc, 0)
-        end
-    end
-    cj.GroupClear(g)
-    cj.DestroyGroup(g)
+    )
 end
 
 -- 指挥单位组所有单位做动作
@@ -136,17 +135,14 @@ hgroup.animate = function(whichGroup, animateStr)
     if (whichGroup == nil or animateStr == nil) then
         return
     end
-    local g = cj.CreateGroup()
-    cj.GroupAddGroup(g, whichGroup)
-    while (cj.IsUnitGroupEmptyBJ(g) ~= true) do
-        local u = cj.FirstOfGroup(g)
-        cj.GroupRemoveUnit(g, u)
-        if (his.death(u) == false) then
-            cj.SetUnitAnimation(u, animateStr)
+    hgroup.loop(
+        whichGroup,
+        function(eu)
+            if (his.death(eu) == false) then
+                cj.SetUnitAnimation(eu, animateStr)
+            end
         end
-    end
-    cj.GroupClear(g)
-    cj.DestroyGroup(g)
+    )
 end
 
 -- 获取单位组内离选定的(x,y)最近的单位
@@ -180,16 +176,16 @@ hgroup.clear = function(whichGroup, isDestroy, isDestroyUnit)
     if (whichGroup == nil) then
         return
     end
-    local g = cj.CreateGroup()
-    cj.GroupAddGroup(g, whichGroup)
-    while (cj.IsUnitGroupEmptyBJ(g) ~= true) do
-        local u = cj.FirstOfGroup(g)
-        cj.GroupRemoveUnit(g, u)
-        if (isDestroyUnit == true) then
-            hunit.del(u)
+    hgroup.loop(
+        whichGroup,
+        function(eu)
+            cj.GroupRemoveUnit(whichGroup, eu)
+            if (isDestroyUnit == true) then
+                hunit.del(eu)
+            end
         end
-    end
+    )
     if (isDestroy == true) then
-        cj.DestroyGroup(g)
+        cj.DestroyGroup(whichGroup)
     end
 end
