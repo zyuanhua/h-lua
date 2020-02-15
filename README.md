@@ -71,6 +71,7 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── time.lua - 时间/计时器 * 常用
     │   ├── unit.lua - 单位
     │   └── weather.lua - 天气
+    ├── package - 打包上线用exe
     ├── plugins
     │   └── dzapi.jass - 拓展dzapi，使用时复制到触发内
     ├── resource - 资源数据(不需要在意的)
@@ -97,10 +98,12 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
 #include "[YOUR PATH]/h-lua/slk/helper.lua"
 #include "[YOUR PATH]/h-lua/slk/data.lua"
 #include "[YOUR PATH]/h-lua/slk/init.jass"
-import("main.lua") ("main.lua", true)
+import("main.lua") ("hot.lua", true)
 ?>
 ```
 > （不建议路径存在有中文）
+
+> 上线打包package用 import("main.lua") ("dist.lua", true)
 
 > 注意：
 h-lua库开源，不定时更新，可访问 http://hlua.book.hunzsig.org 查看最新文档
