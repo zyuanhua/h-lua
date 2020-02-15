@@ -32,7 +32,7 @@ hsound.sound2Loc = function(s, loc)
     hsound.sound2XYZ(s, cj.GetLocationX(loc), cj.GetLocationY(loc), cj.GetLocationZ(loc))
 end
 
----播放BGM
+-- 播放BGM
 -- 当whichPlayer为nil时代表对全员操作
 -- 如果背景音乐无法循环播放，尝试格式工厂转wav再转回mp3
 -- 由于音乐快速切换会卡顿，所以有3秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）

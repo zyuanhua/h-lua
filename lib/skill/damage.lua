@@ -284,7 +284,7 @@ hskill.damage = function(options)
             lastDamage = lastDamage - targetUnitAttr.toughness
         end
     end
-    -- 上面都是先行计算 ------------------
+    -- 上面都是先行计算
     if (lastDamage > 0.125) then
         -- 设置单位正在受伤
         if (hRuntime.attributeDamaging[targetUnit] ~= nil) then

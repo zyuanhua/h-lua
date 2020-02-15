@@ -1,7 +1,7 @@
 -- 特效
 heffect = {}
 
---删除特效
+-- 删除特效
 heffect.del = function(e)
     if (e ~= nil) then
         cj.DestroyEffect(e)

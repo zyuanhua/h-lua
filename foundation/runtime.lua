@@ -1,5 +1,5 @@
 hRuntime = {
-    --注册runtime的数据
+    -- 注册runtime的数据
     register = {
         unit = function(json)
             hslk_global.unitsKV[json.UNIT_ID] = json

@@ -1,4 +1,4 @@
---获取一个对象的id
+-- 获取一个对象的id
 string.char2id = function(idChar)
     if (idChar == nil or type(idChar) ~= "string") then
         print_stack()
@@ -16,7 +16,7 @@ string.char2id = function(idChar)
     return id
 end
 
---获取一个对象的id字符串
+-- 获取一个对象的id字符串
 string.id2char = function(id)
     if (id == nil or type(id) ~= "number") then
         print_stack()
@@ -27,7 +27,7 @@ string.id2char = function(id)
         string.char(id // 0x10000 % 0x100) .. string.char(id // 0x100 % 0x100) .. string.char(id % 0x100)
 end
 
---获取字符串真实长度
+-- 获取字符串真实长度
 string.mb_len = function(inputstr)
     local lenInByte = #inputstr
     local width = 0
@@ -36,13 +36,13 @@ string.mb_len = function(inputstr)
         local curByte = string.byte(inputstr, i)
         local byteCount = 1
         if curByte > 0 and curByte <= 127 then
-            byteCount = 1 --1字节字符
+            byteCount = 1 -- 1字节字符
         elseif curByte >= 192 and curByte < 223 then
-            byteCount = 2 --双字节字符
+            byteCount = 2 -- 双字节字符
         elseif curByte >= 224 and curByte < 239 then
-            byteCount = 3 --汉字
+            byteCount = 3 -- 汉字
         elseif curByte >= 240 and curByte <= 247 then
-            byteCount = 4 --4字节字符
+            byteCount = 4 -- 4字节字符
         end
         local char = string.sub(inputstr, i, i + byteCount - 1)
         i = i + byteCount -- 重置下一字节的索引
@@ -51,7 +51,7 @@ string.mb_len = function(inputstr)
     return width
 end
 
---生成MD5
+-- 生成MD5
 string.md5 = function(t)
     if (type(t) == "string") then
         return md5.sumhexa(t)
@@ -63,7 +63,7 @@ string.md5 = function(t)
     return
 end
 
---根据值获取一个key
+-- 根据值获取一个key
 string.vkey = function(t)
     if (type(t) == "string") then
         return t
@@ -91,7 +91,7 @@ string.vkey = function(t)
     end
 end
 
---转义
+-- 转义
 string.addslashes = function(s)
     local in_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
     local out_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
@@ -101,7 +101,7 @@ string.addslashes = function(s)
     return s
 end
 
---反转义
+-- 反转义
 string.stripslashes = function(s)
     local in_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
     local out_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
@@ -112,7 +112,7 @@ string.stripslashes = function(s)
     return s
 end
 
---base64编码
+-- base64编码
 string.base64Encode = function(source_str)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local s64 = ""
@@ -145,7 +145,7 @@ string.base64Encode = function(source_str)
     return s64
 end
 
---base64解码
+-- base64解码
 string.base64Decode = function(str64)
     local b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     local temp = {}
@@ -188,7 +188,7 @@ string.base64Decode = function(str64)
     return str
 end
 
---把字符串以分隔符打散为数组
+-- 把字符串以分隔符打散为数组
 string.explode = function(delimeter, str)
     local res = {}
     local start, start_pos, end_pos = 1, 1, 1
@@ -204,7 +204,7 @@ string.explode = function(delimeter, str)
     return res
 end
 
---把数组以分隔符拼接回字符串
+-- 把数组以分隔符拼接回字符串
 string.implode = function(delimeter, table)
     local str
     for _, v in ipairs(table) do
@@ -217,7 +217,7 @@ string.implode = function(delimeter, table)
     return str
 end
 
---统计某个子串出现的次数
+-- 统计某个子串出现的次数
 string.findCount = function(str, pattern)
     if (str == nil or pattern == nil) then
         return

@@ -409,8 +409,6 @@ local function transform(A, B, C, D, X)
     )
 end
 
-----------------------------------------------------------------
-
 local function md5_update(self, s)
     self.pos = self.pos + #s
     s = self.buf .. s
@@ -443,8 +441,6 @@ local function md5_finish(self)
     assert(self.pos % 64 == 0)
     return lei2str(self.a) .. lei2str(self.b) .. lei2str(self.c) .. lei2str(self.d)
 end
-
-----------------------------------------------------------------
 
 function md5.new()
     return {

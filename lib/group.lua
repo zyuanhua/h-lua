@@ -5,13 +5,21 @@ hgroup.loop = function(whichGroup, actions, autoDel)
     if (whichGroup == nil or type(actions) ~= "function") then
         return
     end
-    autoDel = autoDel or false
-    cj.ForGroup(
-        whichGroup,
-        function()
-            actions(cj.GetEnumUnit())
+    if (type(autoDel) ~= "boolean") then
+        autoDel = false
+    end
+    local g = cj.CreateGroup()
+    cj.GroupAddGroup(g, whichGroup)
+    while (true) do
+        local u = cj.FirstOfGroup(g)
+        if (u == nil) then
+            cj.GroupClear(g)
+            cj.DestroyGroup(g)
+            break
         end
-    )
+        cj.GroupRemoveUnit(g, u)
+        actions(u)
+    end
     if (autoDel == true) then
         cj.GroupClear(whichGroup)
         cj.DestroyGroup(whichGroup)
@@ -24,7 +32,7 @@ hgroup.count = function(whichGroup)
         return 0
     end
     local count = 0
-    cj.ForGroup(
+    hgroup.loop(
         whichGroup,
         function()
             count = count + 1
@@ -46,7 +54,7 @@ hgroup.isEmpty = function(whichGroup)
         return true
     end
     local isUnitGroupEmptyResult = true
-    cj.ForGroup(
+    hgroup.loop(
         whichGroup,
         function()
             isUnitGroupEmptyResult = false
@@ -151,10 +159,9 @@ hgroup.getClosest = function(whichGroup, x, y)
     end
     local closeDist = 99999
     local closeUnit
-    cj.ForGroup(
+    hgroup.loop(
         whichGroup,
-        function()
-            local u = cj.GetEnumUnit()
+        function(u)
             local tx = cj.GetUnitX(u)
             local ty = cj.GetUnitY(u)
             local dist = math.getDistanceBetweenXY(x, y, tx, ty)

@@ -1,4 +1,4 @@
----遮罩
+-- 遮罩
 hmark = {}
 
 hmark.create = function(path, during, whichPlayer)

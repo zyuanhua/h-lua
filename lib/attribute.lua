@@ -92,7 +92,7 @@ end
 -- 为单位注册属性系统所需要的基础技能
 -- hslk_global.attr
 hattr.regAllAbility = function(whichUnit)
-    --生命魔法
+    -- 生命魔法
     for _, ability in pairs(hslk_global.attr.life.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
@@ -109,7 +109,7 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    --绿字攻击
+    -- 绿字攻击
     for _, ability in pairs(hslk_global.attr.attack_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
@@ -118,7 +118,7 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    --绿色属性
+    -- 绿色属性
     for _, ability in pairs(hslk_global.attr.str_green.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
@@ -143,7 +143,7 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    --攻击速度
+    -- 攻击速度
     for _, ability in pairs(hslk_global.attr.attack_speed.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
@@ -152,7 +152,7 @@ hattr.regAllAbility = function(whichUnit)
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
     end
-    --防御
+    -- 防御
     for _, ability in pairs(hslk_global.attr.defend.add) do
         cj.UnitAddAbility(whichUnit, ability)
         cj.UnitRemoveAbility(whichUnit, ability)
@@ -163,12 +163,12 @@ hattr.regAllAbility = function(whichUnit)
     end
 end
 
---为单位初始化属性系统的对象数据
+-- 为单位初始化属性系统的对象数据
 hattr.init = function(whichUnit)
     if (whichUnit == nil) then
         return false
     end
-    --init
+    -- init
     local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
     if (unitId == nil) then
         return false
@@ -178,12 +178,11 @@ hattr.init = function(whichUnit)
     end
     hRuntime.attribute[whichUnit] = {
         primary = hslk_global.unitsKV[unitId].Primary or "NIL",
-        --
         life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE),
         mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA),
         move = hslk_global.unitsKV[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
         defend = hslk_global.unitsKV[unitId].def or 0.0,
-        attack_damage_type = {}, -- sp
+        attack_damage_type = {},
         attack_speed = 0.0,
         attack_speed_space = hslk_global.unitsKV[unitId].cool1 or hattr.default_attack_speed_space,
         attack_white = 0.0,
@@ -262,11 +261,10 @@ hattr.init = function(whichUnit)
         natural_dragon_oppose = 0.0,
         natural_insect_oppose = 0.0,
         natural_god_oppose = 0.0,
-        --
-        attack_buff = {}, -- array
-        attack_debuff = {}, -- array
-        skill_buff = {}, -- array
-        skill_debuff = {}, -- array
+        attack_buff = {},
+        attack_debuff = {},
+        skill_buff = {},
+        skill_debuff = {},
         -- 特殊特效
         attack_effect = {},
         skill_effect = {}
@@ -314,7 +312,7 @@ hattr.init = function(whichUnit)
     return true
 end
 
---积累性diff
+-- 积累性diff
 hattr.getAccumuDiff = function(whichUnit, attr)
     if (hRuntime.attributeDiff[whichUnit] == nil) then
         hRuntime.attributeDiff[whichUnit] = {}
@@ -337,7 +335,7 @@ hattr.subAccumuDiff = function(whichUnit, attr, value)
     hattr.setAccumuDiff(whichUnit, attr, hattr.getAccumuDiff(whichUnit, attr) - value)
 end
 
----设定属性
+-- 设定属性
 --[[
     白字攻击 绿字攻击
     攻速 视野 射程
@@ -844,7 +842,7 @@ hattr.get = function(whichUnit, attr)
     return hRuntime.attribute[whichUnit][attr]
 end
 
----重置注册
+-- 重置注册
 hattr.reRegister = function(whichUnit)
     local life = hRuntime.attribute[whichUnit].life
     local mana = hRuntime.attribute[whichUnit].mana

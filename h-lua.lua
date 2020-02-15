@@ -77,7 +77,7 @@ require "lib.dialog"
 require "lib.leaderBoard"
 require "lib.multiBoard"
 require "lib.quest"
---别称
+-- 别称
 hmsg = hmessage
 httg = htextTag
 hattribute = hattr
@@ -98,7 +98,7 @@ hitem.init()
 -- 单位
 hunit.init()
 
---DzApi
+-- DzApi
 if (cg.HLUA_DZAPI_FLAG == true) then
     hdzapi.init()
 end

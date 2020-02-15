@@ -18,7 +18,9 @@ func getCodes(flip string, allCodes string) string {
 	}
 	codes = php2go.StrReplace("\r\n", "\n", codes, -1)
 	codes = php2go.StrReplace("\r", "\n", codes, -1)
-	re, _ := regexp.Compile("-- (.*)")
+	re, _ := regexp.Compile(`--(.*)\[\[[\s\S]*?\]\]`)
+	codes = re.ReplaceAllString(codes, "")
+	re, _ = regexp.Compile("--(.*)")
 	codes = re.ReplaceAllString(codes, "")
 	re, _ = regexp.Compile("package.path(.*)")
 	codes = re.ReplaceAllString(codes, "")

@@ -1,4 +1,4 @@
---获取一个table的正确长度
+-- 获取一个table的正确长度
 table.len = function(table)
     local len = 0
     for _, _ in pairs(table) do
@@ -7,7 +7,7 @@ table.len = function(table)
     return len
 end
 
---随机在数组内取一个
+-- 随机在数组内取一个
 table.random = function(arr)
     local keys = {}
     for k, _ in pairs(arr) do
@@ -18,7 +18,7 @@ table.random = function(arr)
     return val
 end
 
---克隆table
+-- 克隆table
 table.clone = function(org)
     local function copy(org1, res)
         for k, v in pairs(org1) do
@@ -35,7 +35,7 @@ table.clone = function(org)
     return res
 end
 
---合并table
+-- 合并table
 table.merge = function(table1, table2)
     local tempTable = {}
     if (table1 ~= nil) then
@@ -56,7 +56,7 @@ table.merge = function(table1, table2)
     return tempTable
 end
 
---在数组内
+-- 在数组内
 table.includes = function(val, arr)
     local isin = false
     if (val == nil or #arr <= 0) then
@@ -71,7 +71,7 @@ table.includes = function(val, arr)
     return isin
 end
 
---删除数组一次某个值(qty次,默认删除全部)
+-- 删除数组一次某个值(qty次,默认删除全部)
 table.delete = function(val, arr, qty)
     qty = qty or -1
     local q = 0

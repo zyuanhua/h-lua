@@ -1,4 +1,4 @@
---武器类型
+-- 武器类型
 CONST_WEAPON_TYPE = {
     missile = "箭矢",
     msplash = "箭矢(溅射)",
@@ -10,7 +10,7 @@ CONST_WEAPON_TYPE = {
     aline = "炮火(穿透)",
 }
 
---武器声音
+-- 武器声音
 CONST_WEAPON_SOUND = {
     MetalHeavyBash = "金属重击",
     MetalMediumBash = "金属中击",
@@ -27,7 +27,7 @@ CONST_WEAPON_SOUND = {
     WoodLightBash = "木头轻击",
 }
 
---移动类型
+-- 移动类型
 CONST_MOVE_TYPE = {
     foot = "步行",
     horse = "坐骑",

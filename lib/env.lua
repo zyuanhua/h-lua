@@ -57,13 +57,13 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
     if (hRuntime.env[whichRect] == nil) then
         hRuntime.env[whichRect] = {}
     else
-        --清理装饰单位
+        -- 清理装饰单位
         for k, v in pairs(hRuntime.env[whichRect]) do
             hunit.del(v)
         end
         hRuntime.env[whichRect] = {}
     end
-    --清理装饰物
+    -- 清理装饰物
     cj.EnumDestructablesInRectAll(
         whichRect,
         function()

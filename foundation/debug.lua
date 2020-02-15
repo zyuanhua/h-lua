@@ -1,14 +1,14 @@
 -- debug标志位
 HLUA_DEBUG = true
 
---记录运行时间rem方法
---只有key1时为记录，有key2时会打印对应记录间的差值，如：
---rem("a") --1
---rem("b") --2
---rem("c") --4
---print rem("a","b") =1
---print rem("b","c") =2
---print rem("a","c") =3
+--[[
+    记录运行时间rem方法。只有key1时为记录，有key2时会打印对应记录间的差值，如：
+    rem("a") --1
+    rem("b") --2
+    rem("c") --4
+    print rem("a","b") =1
+    print rem("a","c") =3
+]]
 rem = function(key1, key2)
     if (HLUA_DEBUG == false) then
         return
@@ -29,7 +29,7 @@ rem = function(key1, key2)
     end
 end
 
---打印栈
+-- 打印栈
 print_stack = function(...)
     if (HLUA_DEBUG == false) then
         return
@@ -46,7 +46,7 @@ print_stack = function(...)
     -- print(debug.traceback("Stack trace"))
 end
 
---打印utf8->ansi编码,此方法可以打印出中文
+-- 打印utf8->ansi编码,此方法可以打印出中文
 print_mb = function(str)
     if (HLUA_DEBUG == false) then
         return
@@ -54,22 +54,22 @@ print_mb = function(str)
     console.write(str)
 end
 
---错误调试
+-- 错误调试
 print_err = function(val)
     if (HLUA_DEBUG == false) then
         return
     end
-    print("---------h-lua-err---------")
+    print("========h-lua-err========")
     if (type(val) == "table") then
         print_mbr(val)
     else
         print_mb(val)
     end
     print_stack()
-    print("---------------------------")
+    print("=========================")
 end
 
---打印对象table
+-- 打印对象table
 print_r = function(t, printMethod, showDetail)
     if (HLUA_DEBUG == false) then
         return
@@ -116,7 +116,7 @@ print_r = function(t, printMethod, showDetail)
     print()
 end
 
---打印对象table,此方法可以打印出中文
+-- 打印对象table,此方法可以打印出中文
 print_mbr = function(t)
     print_r(t, print_mb, true)
 end

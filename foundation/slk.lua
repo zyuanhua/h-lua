@@ -120,46 +120,46 @@ hslk_global = {
     }
 }
 
---skill_item_separate
+-- skill_item_separate
 hslk_global.skill_item_separate = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_ITEM_SEPARATE)
---skill_break
+-- skill_break
 for dur = 1, 10, 1 do
     local swDur = dur * 0.05
     hslk_global.skill_break[swDur] = cj.LoadInteger(cg.hash_hslk, HSK.SKILL_BREAK, dur)
 end
---skill_swim_unlimit
+-- skill_swim_unlimit
 hslk_global.skill_swim_unlimit = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_SWIM_UNLIMIT)
---skill_invisible
+-- skill_invisible
 hslk_global.skill_invisible = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_INVISIBLE)
---skill_hero_tavern_selection
+-- skill_hero_tavern_selection
 hslk_global.skill_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.SKILL_HERO_TAVERN_SELECTION)
 
---unit_token
+-- unit_token
 hslk_global.unit_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TOKEN)
---unit_token_leap
+-- unit_token_leap
 hslk_global.unit_token_leap = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TOKEN_LEAP)
---unit_tree
+-- unit_tree
 hslk_global.unit_tree = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TREE)
---unit_hero_tavern
+-- unit_hero_tavern
 hslk_global.unit_hero_tavern = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_HERO_TAVERN)
---unit_hero_tavern_token
+-- unit_hero_tavern_token
 hslk_global.unit_hero_tavern_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_HERO_TAVERN_TOKEN)
---unit_hero_death_token
+-- unit_hero_death_token
 hslk_global.unit_hero_death_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_HERO_DEATH_TOKEN)
 
---地图等级奖励
+-- 地图等级奖励
 local qty = cj.LoadInteger(cg.hash_hslk, HSK.PLAYER_MAP_LEVEL_AWARD, -1)
 for i = 1, qty do
     table.insert(hslk_global.dzapi_map_level_award, cj.LoadInteger(cg.hash_hslk, HSK.PLAYER_MAP_LEVEL_AWARD, i))
 end
 
---瞬逝物系统
+-- 瞬逝物系统
 qty = cj.LoadInteger(cg.hash_hslk, HSK.ITEM_MOMENT, -1)
 for i = 1, qty do
     table.insert(hslk_global.item_moment, cj.LoadInteger(cg.hash_hslk, HSK.ITEM_MOMENT, i))
 end
 
---环境系统
+-- 环境系统
 qty = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.ENV_MODEL)
 for i = 1, qty do
     local key = cj.LoadStr(cg.hash_hslk, HSK.ENV_MODEL_NAME, i)
@@ -167,7 +167,7 @@ for i = 1, qty do
     hslk_global.env_model[key] = val
 end
 
---属性系统
+-- 属性系统
 for i = 1, 9 do
     local val = math.floor(10 ^ (i - 1))
     hslk_global.attr.str_green.add[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_STR_GREEN_ADD, val)
@@ -191,10 +191,10 @@ for i = 1, 9 do
     hslk_global.attr.mana.add[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_MANA_ADD, val)
     hslk_global.attr.mana.sub[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_MANA_SUB, val)
 end
---属性系统 回避
+-- 属性系统 回避
 hslk_global.attr.avoid.add = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_ADD, 0)
 hslk_global.attr.avoid.sub = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_SUB, 0)
---属性系统 视野
+-- 属性系统 视野
 local sightBase = {1, 2, 3, 4, 5}
 local si = 1
 while (si <= 10000) do
@@ -212,7 +212,7 @@ table.sort(
         return a > b
     end
 )
---变身(仅作演示)
+-- 变身(仅作演示)
 local toUnitId = cj.LoadInteger(cg.hash_hslk, HSK.EX_SHAPESHIFT, 1)
 local toAbilityId = cj.LoadInteger(cg.hash_hslk, HSK.EX_SHAPESHIFT, 2)
 local backAbilityId = cj.LoadInteger(cg.hash_hslk, HSK.EX_SHAPESHIFT, 3)

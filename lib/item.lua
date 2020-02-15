@@ -191,7 +191,7 @@ hitem.getWeight = function(itOrId, charges)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         if (charges == nil and type(itOrId) == "userdata") then
-            --如果没有传次数，这里会直接获取物品的次数，请注意
+            -- 如果没有传次数，这里会直接获取物品的次数，请注意
             charges = hitem.getCharges(itOrId)
         end
         return (slk.WEIGHT or 0) * charges
@@ -251,7 +251,7 @@ end
 
 -- 使得单位拥有拆分物品的技能
 hitem.setAllowSeparate = function(whichUnit)
-    --物品拆分
+    -- 物品拆分
     cj.UnitAddAbility(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.UnitMakeAbilityPermanent(whichUnit, true, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.SetUnitAbilityLevel(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE, 1)
@@ -362,11 +362,11 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
         end
     end
 end
---附加单位获得物品后的属性
+-- 附加单位获得物品后的属性
 hitem.addAttribute = function(whichUnit, itId, charges)
     hitem.caleAttribute(true, whichUnit, itId, charges)
 end
---削减单位获得物品后的属性
+-- 削减单位获得物品后的属性
 hitem.subAttribute = function(whichUnit, itId, charges)
     hitem.caleAttribute(false, whichUnit, itId, charges)
 end
@@ -382,7 +382,6 @@ hitem.detector = function(whichUnit, it)
         print_err("detector params nil")
     end
     local newWeight = hattr.get(whichUnit, "weight_current") + hitem.getWeight(it)
-    --1
     if (newWeight > hattr.get(whichUnit, "weight")) then
         local exWeight = newWeight - hattr.get(whichUnit, "weight")
         htextTag.style(
@@ -391,7 +390,7 @@ hitem.detector = function(whichUnit, it)
             0,
             0.05
         )
-        --触发超重事件
+        -- 触发超重事件
         hevent.triggerEvent(
             whichUnit,
             CONST_EVENT.itemOverWeight,
@@ -408,27 +407,27 @@ hitem.detector = function(whichUnit, it)
     local isFullSlot = false
     if (overlie > 1) then
         local isOverlieOver = false
-        --可能可叠加的情况，先检查单位的各个物品是否还有叠加空位
+        -- 可能可叠加的情况，先检查单位的各个物品是否还有叠加空位
         local tempIt
         local currentItId = cj.GetItemTypeId(it)
         local currentCharges = hitem.getCharges(it)
         for si = 0, 5, 1 do
             tempIt = cj.UnitItemInSlot(whichUnit, si)
             if (tempIt ~= nil and currentItId == cj.GetItemTypeId(tempIt)) then
-                --如果第i格物品和获得的一致
-                --如果有极限值,并且原有的物品未达上限
+                -- 如果第i格物品和获得的一致
+                -- 如果有极限值,并且原有的物品未达上限
                 local tempCharges = hitem.getCharges(tempIt)
                 if (tempCharges < overlie) then
                     if ((currentCharges + tempCharges) <= overlie) then
-                        --条件：如果旧物品足以容纳所有的新物品个数
-                        --使旧物品使用次数增加，新物品删掉
+                        -- 条件：如果旧物品足以容纳所有的新物品个数
+                        -- 使旧物品使用次数增加，新物品删掉
                         cj.SetItemCharges(tempIt, currentCharges + tempCharges)
                         hitem.del(it, 0)
                         isOverlieOver = true
                         hitem.addAttribute(whichUnit, currentItId, currentCharges)
                         break
                     else
-                        --否则，如果使用次数大于极限值,旧物品次数满载，新物品数量减少
+                        -- 否则，如果使用次数大于极限值,旧物品次数满载，新物品数量减少
                         cj.SetItemCharges(tempIt, overlie)
                         cj.SetItemCharges(it, currentCharges - (overlie - tempCharges))
                         hitem.addAttribute(whichUnit, currentItId, overlie - tempCharges)
@@ -436,23 +435,23 @@ hitem.detector = function(whichUnit, it)
                 end
             end
         end
-        --如果叠加已经全部消化，这里就把物品it设置为null
+        -- 如果叠加已经全部消化，这里就把物品it设置为null
         if (isOverlieOver == true) then
             it = nil
         end
     end
-    --如果物品还在~~
+    -- 如果物品还在~~
     if (it ~= nil) then
-        --检查物品是否自动使用，不做处理（这种情况不应该存在，一般不会为自动物品构建shadow）
+        -- 检查物品是否自动使用，不做处理（这种情况不应该存在，一般不会为自动物品构建shadow）
         if (hitem.getIsPowerUp(it) == true) then
             return true
         end
-        --检查身上是否还有格子
+        -- 检查身上是否还有格子
         if (hitem.getEmptySlot(whichUnit) > 0) then
-            --都满足了，把物品给单位
+            -- 都满足了，把物品给单位
             hRuntime.item[it].type = hitem.TYPE.UNIT
             cj.UnitAddItem(whichUnit, it)
-            --触发获得物品
+            -- 触发获得物品
             hevent.triggerEvent(
                 whichUnit,
                 CONST_EVENT.itemGet,
@@ -470,15 +469,15 @@ hitem.detector = function(whichUnit, it)
         end
     end
     if (isFullSlot == true) then
-        --todo 满格了，检查是否可以合成（合成就相当于跳过了满格，所以之前的满格是个标志位，等待合成无效才会触发满格事件）
+        -- todo 满格了，检查是否可以合成（合成就相当于跳过了满格，所以之前的满格是个标志位，等待合成无效才会触发满格事件）
         if (false) then
-            --7物品合成检测，如果真的有合成，把满格的标志位设置为false
+            -- 7物品合成检测，如果真的有合成，把满格的标志位设置为false
             isFullSlot = false
         end
     else
-        --todo 没有满格，也检查身上的物品是否可以合成
+        -- todo 没有满格，也检查身上的物品是否可以合成
         if (false) then
-        --6物品合成检测
+        -- 6物品合成检测
         end
     end
     if (isFullSlot) then

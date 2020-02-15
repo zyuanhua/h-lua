@@ -130,7 +130,7 @@ CONST_ATTR = {
     reduce = "衰减",
     distance = "距离",
     high = "高度",
-    --本身是在player实现
+    -- 本身是在player实现
     gold_ratio = "黄金获得率",
     lumber_ratio = "木头获得率",
     exp_ratio = "经验获得率",

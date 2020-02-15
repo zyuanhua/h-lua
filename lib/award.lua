@@ -1,4 +1,4 @@
---奖励
+-- 奖励
 haward = {
     shareRange = 1000.00
 }
@@ -84,15 +84,13 @@ haward.forGroup = function(whichUnit, exp, gold, lumber)
     if (exp > 0 and cutExp < 1) then
         cutExp = 1
     end
-    cj.ForGroup(
+    hgroup.loop(
         g,
-        function()
-            local u = cj.GetEnumUnit()
+        function(u)
             haward.forUnit(u, cutExp, cutGold, cutLumber)
-        end
+        end,
+        true
     )
-    cj.GroupClear(g)
-    cj.DestroyGroup(g)
 end
 -- 平分奖励英雄组（经验）
 haward.forGroupExp = function(whichUnit, exp)
