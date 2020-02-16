@@ -1,5 +1,8 @@
 -- 漂浮字
-htextTag = {}
+htextTag = {
+    qty = 0,
+    limit = 90
+}
 
 -- 删除漂浮字
 htextTag.del = function(ttg, during)
@@ -26,6 +29,10 @@ htextTag.create = function(msg, size, color, opacity, during)
     if (string.len(msg) <= 0 or during < 0) then
         return nil
     end
+    if (htextTag.qty >= htextTag.limit) then
+        return
+    end
+    htextTag.qty = htextTag.qty + 1
     if (opacity >= 1) then
         opacity = 1
     elseif (opacity < 0) then
@@ -53,6 +60,7 @@ htextTag.create = function(msg, size, color, opacity, during)
     else
         cj.SetTextTagPermanent(ttg, false)
         htextTag.del(ttg, during)
+        htextTag.qty = htextTag.qty - 1
     end
     return ttg
 end

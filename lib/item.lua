@@ -601,6 +601,19 @@ hitem.pick = function(it, targetUnit)
     cj.UnitAddItem(targetUnit, it)
 end
 
+-- 一键拾取(x,y)长宽()
+hitem.pickRect = function(u, x, y, width, height)
+    local r = hrect.create(x, y, width, height, "")
+    cj.EnumItemsInRect(
+        r,
+        nil,
+        function()
+            hitem.pick(cj.GetEnumItem(), u)
+        end
+    )
+    hrect.del(r, 0)
+end
+
 -- 复制一个单位的所有物品给另一个单位
 hitem.copy = function(origin, target)
     if (origin == nil or target == nil) then
