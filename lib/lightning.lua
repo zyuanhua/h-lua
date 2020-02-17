@@ -1,4 +1,5 @@
 hlightning = {
+    enable = true,
     type = {
         shan_dian_lian_zhu = "CLPB", -- 闪电效果 - 闪电链主
         shan_dian_lian_ci = "CLSB", -- 闪电效果 - 闪电链次
@@ -23,6 +24,9 @@ end
 
 --xyz对xyz创建闪电
 hlightning.xyz2xyz = function(lightningType, x1, y1, z1, x2, y2, z2, during)
+    if (hlightning.enable ~= true) then
+        return
+    end
     local lightning = cj.AddLightningEx(lightningType, true, x1, y1, z1, x2, y2, z2)
     during = during or 0.25
     htime.setTimeout(

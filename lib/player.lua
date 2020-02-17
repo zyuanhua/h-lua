@@ -601,9 +601,11 @@ hplayer.init = function()
                 if (hplayer.qty_current == 1) then
                     if (heffect.enable == true) then
                         heffect.enable = false
+                        hlightning.enable = false
                         hmessage.echo00(p, "|cffffcc00已关闭|r大部分特效", 0)
                     else
                         heffect.enable = true
+                        hlightning.enable = true
                         hmessage.echo00(p, "|cffffcc00已开启|r大部分特效", 0)
                     end
                 else
