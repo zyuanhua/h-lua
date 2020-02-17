@@ -587,27 +587,41 @@ hplayer.init = function()
         function()
             local p = cj.GetTriggerPlayer()
             local str = cj.GetEventPlayerChatString()
-            print_mb(cj.GetEventPlayerChatString())
             if (str == "-apc") then
                 if (his.autoConvertGoldLumber(p) == true) then
                     his.set(p, "isAutoConvertGoldToLumber", false)
-                    hmessage.echo00(p, "|cffffcc00关闭|r自动换算", 0)
+                    hmessage.echo00(p, "|cffffcc00已关闭|r自动换算", 0)
                 else
                     his.set(p, "isAutoConvertGoldToLumber", true)
-                    hmessage.echo00(p, "|cffffcc00开启|r自动换算", 0)
+                    hmessage.echo00(p, "|cffffcc00已开启|r自动换算", 0)
                 end
-            elseif (str == "-apm") then
-                hmessage.echo00(p, "您的apm为:" .. hplayer.getApm(p), 0)
+            elseif (str == "-eff") then
+                if (hplayer.qty_current == 1) then
+                    if (heffect.enable == true) then
+                        heffect.enable = false
+                        hmessage.echo00(p, "|cffffcc00已关闭|r大部分特效", 0)
+                    else
+                        heffect.enable = true
+                        hmessage.echo00(p, "|cffffcc00已开启|r大部分特效", 0)
+                    end
+                else
+                    hmessage.echo00(p, "此命令仅在单人时有效", 0)
+                end
             else
                 local first = string.sub(str, 1, 1)
                 if (first == "+" or first == "-") then
                     --视距
                     local v = string.sub(str, 2, string.len(str))
-                    local val = math.abs(tonumber(v))
-                    if (first == "+") then
-                        hcamera.changeDistance(p, val)
-                    elseif (first == "-") then
-                        hcamera.changeDistance(p, -val)
+                    local v = tonumber(v)
+                    if (v == nil) then
+                        hmessage.echo00(p, "试试敲入+500，增加视距~", 0)
+                    else
+                        local val = math.abs(v)
+                        if (first == "+") then
+                            hcamera.changeDistance(p, val)
+                        elseif (first == "-") then
+                            hcamera.changeDistance(p, -val)
+                        end
                     end
                 end
             end

@@ -31,3 +31,29 @@ bj.CreateQuestBJ(
     txt,
     "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
 )
+txt = ""
+txt = txt .. "-apm 查看你的APM数值"
+bj.CreateQuestBJ(
+    bj_QUESTTYPE_OPT_DISCOVERED,
+    "查看你的APM数值",
+    txt,
+    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
+)
+txt = ""
+txt = txt .. "+[number] 增加视距|n-[number] 减少视距"
+txt = txt .. "|n * 视距自动设置上下限，请放心设置"
+bj.CreateQuestBJ(
+    bj_QUESTTYPE_OPT_DISCOVERED,
+    "调整你的视距",
+    txt,
+    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
+)
+txt = ""
+txt = txt .. "-eff 开关特效"
+txt = txt .. "|n这个命令只有在单人时有效，可关闭大部分的特效"
+bj.CreateQuestBJ(
+    bj_QUESTTYPE_OPT_DISCOVERED,
+    "开关特效[单人]",
+    txt,
+    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
+)

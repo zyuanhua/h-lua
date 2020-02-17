@@ -1,5 +1,7 @@
 -- 特效
-heffect = {}
+heffect = {
+    enable = true
+}
 
 -- 删除特效
 heffect.del = function(e)
@@ -10,6 +12,9 @@ end
 -- 特效 XY坐标
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toXY = function(effectModel, x, y, during)
+    if (heffect.enable ~= true) then
+        return
+    end
     during = during or 0
     if (effectModel == nil or during < 0) then
         return
@@ -34,6 +39,9 @@ end
 -- 特效 点
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toLoc = function(effectModel, loc, during)
+    if (heffect.enable ~= true) then
+        return
+    end
     during = during or 0
     if (effectModel == nil or loc == nil or during < 0) then
         return
@@ -58,6 +66,9 @@ end
 -- 特效 单位所处位置
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
 heffect.toUnit = function(effectModel, targetUnit, during)
+    if (heffect.enable ~= true) then
+        return
+    end
     during = during or 0
     if (effectModel == nil or targetUnit == nil or during < 0) then
         return
@@ -84,6 +95,9 @@ end
 -- 特效 绑定单位
 -- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）-1为无限
 heffect.bindUnit = function(effectModel, targetUnit, attach, during)
+    if (heffect.enable ~= true) then
+        return
+    end
     if (effectModel == nil or targetUnit == nil or attach == nil) then
         return
     end
