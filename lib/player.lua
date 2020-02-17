@@ -588,13 +588,15 @@ hplayer.init = function()
             local p = cj.GetTriggerPlayer()
             local str = cj.GetEventPlayerChatString()
             if (str == "-apc") then
-                if (his.autoConvertGoldLumber(p) == true) then
+                if (his.autoConvertGoldToLumber(p) == true) then
                     his.set(p, "isAutoConvertGoldToLumber", false)
                     hmessage.echo00(p, "|cffffcc00已关闭|r自动换算", 0)
                 else
                     his.set(p, "isAutoConvertGoldToLumber", true)
                     hmessage.echo00(p, "|cffffcc00已开启|r自动换算", 0)
                 end
+            elseif (str == "-apm") then
+                hmessage.echo00(p, "您的apm为:" .. hplayer.getApm(p), 0)
             elseif (str == "-eff") then
                 if (hplayer.qty_current == 1) then
                     if (heffect.enable == true) then
