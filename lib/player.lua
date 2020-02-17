@@ -127,6 +127,20 @@ end
 hplayer.getApm = function(whichPlayer)
     return hplayer.get(whichPlayer, "apm", 0)
 end
+-- 设置玩家是否允许调节镜头高度
+hplayer.setAllowCameraDistance = function(whichPlayer, flag)
+    if (whichPlayer == nil) then
+        return
+    end
+    if (type(flag) ~= "boolean") then
+        flag = false
+    end
+    hplayer.set(whichPlayer, "allowCameraDistance", flag)
+end
+-- 玩家是否允许调节镜头高度
+hplayer.getAllowCameraDistance = function(whichPlayer)
+    return hplayer.get(whichPlayer, "allowCameraDistance")
+end
 -- 在所有玩家里获取一个随机的英雄
 hplayer.getRandomHero = function()
     local pi = {}
@@ -526,7 +540,7 @@ hplayer.init = function()
     local triggerApmUnit = cj.CreateTrigger()
     local triggerLeave = cj.CreateTrigger()
     local triggerDeSelection = cj.CreateTrigger()
-    local triggerConvert = cj.CreateTrigger()
+    local triggerChat = cj.CreateTrigger()
     cj.TriggerAddAction(
         triggerApm,
         function()
@@ -569,15 +583,33 @@ hplayer.init = function()
         end
     )
     cj.TriggerAddAction(
-        triggerConvert,
+        triggerChat,
         function()
             local p = cj.GetTriggerPlayer()
-            if (his.autoConvertGoldLumber(p) == true) then
-                his.set(p, "isAutoConvertGoldToLumber", false)
-                hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00关闭|r自动换算", 0)
+            local str = cj.GetEventPlayerChatString()
+            print_mb(cj.GetEventPlayerChatString())
+            if (str == "-apc") then
+                if (his.autoConvertGoldLumber(p) == true) then
+                    his.set(p, "isAutoConvertGoldToLumber", false)
+                    hmessage.echo00(p, "|cffffcc00关闭|r自动换算", 0)
+                else
+                    his.set(p, "isAutoConvertGoldToLumber", true)
+                    hmessage.echo00(p, "|cffffcc00开启|r自动换算", 0)
+                end
+            elseif (str == "-apm") then
+                hmessage.echo00(p, "您的apm为:" .. hplayer.getApm(p), 0)
             else
-                his.set(p, "isAutoConvertGoldToLumber", true)
-                hmessage.echoXY0(cj.GetTriggerPlayer(), "|cffffcc00开启|r自动换算", 0)
+                local first = string.sub(str, 1, 1)
+                if (first == "+" or first == "-") then
+                    --视距
+                    local v = string.sub(str, 2, string.len(str))
+                    local val = math.abs(tonumber(v))
+                    if (first == "+") then
+                        hcamera.changeDistance(p, val)
+                    elseif (first == "-") then
+                        hcamera.changeDistance(p, -val)
+                    end
+                end
             end
         end
     )
@@ -637,7 +669,8 @@ hplayer.init = function()
                 bj_KEYEVENTKEY_UP
             )
             cj.TriggerRegisterPlayerUnitEvent(triggerDeSelection, hplayer.players[i], EVENT_PLAYER_UNIT_DESELECTED, nil)
-            cj.TriggerRegisterPlayerChatEvent(triggerConvert, hplayer.players[i], "-apc", true)
+            cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "+", false)
+            cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "-", false)
             hevent.onSelection(
                 hplayer.players[i],
                 2,

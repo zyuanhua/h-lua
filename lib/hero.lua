@@ -128,9 +128,9 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
                 }
             )
             if (hhero.player_current_qty[whichPlayer] >= hhero.player_allow_qty[whichPlayer]) then
-                hmessage.echoXY0(whichPlayer, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
+                hmessage.echo00(whichPlayer, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
             else
-                hmessage.echoXY0(
+                hmessage.echo00(
                     whichPlayer,
                     "您选择了 " ..
                         "|cffffff80" ..
@@ -145,7 +145,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
             end
         end
         if (u == nil) then
-            hmessage.echoXY0(whichPlayer, "hhero.addPlayerUnit类型错误", 0)
+            hmessage.echo00(whichPlayer, "hhero.addPlayerUnit类型错误", 0)
             return
         end
         table.insert(hhero.player_units[whichPlayer], u)
@@ -274,7 +274,7 @@ hhero.buildClick = function(during, clickQty)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
+                hmessage.echo00(p, "|cffffff80你已经选够了|r", 0)
                 return
             end
             local txt = ""
@@ -290,7 +290,7 @@ hhero.buildClick = function(during, clickQty)
                     break
                 end
             end
-            hmessage.echoXY0(
+            hmessage.echo00(
                 p,
                 "已为您 |cffffff80random|r 选择了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个单位：|cffffff80" .. txt .. "|r",
                 0
@@ -302,7 +302,7 @@ hhero.buildClick = function(during, clickQty)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] <= 0) then
-                hmessage.echoXY0(p, "|cffffff80你还没有选过任何单位|r", 0)
+                hmessage.echo00(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return
             end
             local qty = #hhero.player_units
@@ -313,7 +313,7 @@ hhero.buildClick = function(during, clickQty)
             hhero.player_units[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
-            hmessage.echoXY0(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)
+            hmessage.echo00(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)
         end
     )
     -- token
@@ -351,15 +351,15 @@ hhero.buildClick = function(during, clickQty)
                     return
                 end
                 if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
+                    hmessage.echo00(p, "|cffffff80你已经选够了|r", 0)
                     return
                 end
                 table.delete(u, randomChooseAbleList)
                 hhero.addPlayerUnit(p, u, "click")
                 if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    hmessage.echoXY0(p, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
+                    hmessage.echo00(p, "您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", 0)
                 else
-                    hmessage.echoXY0(
+                    hmessage.echo00(
                         p,
                         "您选择了 " ..
                             "|cffffff80" ..
@@ -434,7 +434,7 @@ hhero.buildTavern = function(during)
                 return
             end
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
+                hmessage.echo00(p, "|cffffff80你已经选够了|r", 0)
                 hitem.del(it, 0)
                 cj.AddItemToStock(tavern, itemId, 1, 1)
                 return
@@ -450,7 +450,7 @@ hhero.buildTavern = function(during)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echoXY0(p, "|cffffff80你已经选够了|r", 0)
+                hmessage.echo00(p, "|cffffff80你已经选够了|r", 0)
                 return
             end
             local txt = ""
@@ -472,7 +472,7 @@ hhero.buildTavern = function(during)
                     break
                 end
             end
-            hmessage.echoXY0(
+            hmessage.echo00(
                 p,
                 "已为您 |cffffff80random|r 选择了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个单位：|cffffff80" .. txt .. "|r",
                 0
@@ -484,7 +484,7 @@ hhero.buildTavern = function(during)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] <= 0) then
-                hmessage.echoXY0(p, "|cffffff80你还没有选过任何单位|r", 0)
+                hmessage.echo00(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return
             end
             local qty = #hhero.player_units
@@ -496,7 +496,7 @@ hhero.buildTavern = function(during)
             hhero.player_units[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
-            hmessage.echoXY0(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)
+            hmessage.echo00(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)
         end
     )
     -- build

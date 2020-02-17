@@ -9,6 +9,7 @@ htextTag.del = function(ttg, during)
     if (during == nil or during <= 0) then
         hRuntime.clear(ttg)
         cj.DestroyTextTag(ttg)
+        htextTag.qty = htextTag.qty - 1
     else
         htime.setTimeout(
             during,
@@ -17,6 +18,7 @@ htextTag.del = function(ttg, during)
                 htime.delDialog(td)
                 hRuntime.clear(ttg)
                 cj.DestroyTextTag(ttg)
+                htextTag.qty = htextTag.qty - 1
             end
         )
     end
@@ -32,7 +34,6 @@ htextTag.create = function(msg, size, color, opacity, during)
     if (htextTag.qty >= htextTag.limit) then
         return
     end
-    htextTag.qty = htextTag.qty + 1
     if (opacity >= 1) then
         opacity = 1
     elseif (opacity < 0) then
@@ -41,8 +42,10 @@ htextTag.create = function(msg, size, color, opacity, during)
     local ttg = cj.CreateTextTag()
     if (ttg == nil) then
         --由于漂浮字有上限，所以有可能为nil，此时返回不创建即可
+        print_mb("ttg == nil=" .. msg)
         return
     end
+    htextTag.qty = htextTag.qty + 1
     if (color ~= nil and string.len(color) == 6) then
         msg = "|cff" .. color .. msg .. "|r"
     end
@@ -57,10 +60,10 @@ htextTag.create = function(msg, size, color, opacity, during)
     cj.SetTextTagColor(ttg, 255, 255, 255, math.floor(255 * opacity))
     if (during == 0) then
         cj.SetTextTagPermanent(ttg, true)
+        print_mb("SetTextTagPermanent" .. msg)
     else
         cj.SetTextTagPermanent(ttg, false)
         htextTag.del(ttg, during)
-        htextTag.qty = htextTag.qty - 1
     end
     return ttg
 end

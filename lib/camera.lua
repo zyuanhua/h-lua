@@ -51,10 +51,25 @@ hcamera.lock = function(whichPlayer, whichUnit)
         end
     end
 end
--- 设定镜头距离
-hcamera.distance = function(whichPlayer, distance)
-    if (whichPlayer == nil or cj.GetLocalPlayer() == whichPlayer) then
-        cj.SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, distance, 0)
+-- 更改镜头距离
+hcamera.changeDistance = function(whichPlayer, diffDistance)
+    if (type(diffDistance) ~= "number") then
+        diffDistance = 0
+    end
+    if (diffDistance ~= 0 and whichPlayer ~= nil and cj.GetLocalPlayer() == whichPlayer) then
+        local oldDistance = cj.GetCameraField(CAMERA_FIELD_TARGET_DISTANCE)
+        local toDistance = math.floor(oldDistance + diffDistance)
+        if (toDistance < 500) then
+            toDistance = 500
+        elseif (toDistance > 5000) then
+            toDistance = 5000
+        end
+        hmsg.echo00(whichPlayer, "视距已设定为：" .. toDistance)
+        if (oldDistance == toDistance) then
+            return
+        else
+            cj.SetCameraField(CAMERA_FIELD_TARGET_DISTANCE, toDistance, 0)
+        end
     end
 end
 -- 玩家镜头震动，震动包括两种，一种摇晃shake，一种抖动quake
