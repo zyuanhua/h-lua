@@ -297,8 +297,8 @@ hattr.init = function(whichUnit)
                 {attr="silent",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
                 {attr="unarm",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
                 {attr="fetter",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
-                {attr="bomb",odds = 0.0, val = 0.0, during = 0.0, effect = nil},
-                {attr="lightning_chain",odds = 0.0, val = 0.0, during = 0.0, effect = nil, qty = 0, reduce = 0.0},
+                {attr="bomb",odds = 0.0, range = 0.0, val = 0.0, during = 0.0, effect = nil},
+                {attr="lightning_chain",odds = 0.0, val = 0.0, effect = nil, qty = 0, reduce = 0.0},
                 {attr="crack_fly",odds = 0.0, val = 0.0, during = 0.0, effect = nil, distance = 0, high = 0.0}
             * 至于是否同一种效果，是根据你设定的值自动计算出来的
         ]]
