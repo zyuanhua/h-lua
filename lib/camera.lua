@@ -97,8 +97,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         cj.CameraSetTargetNoiseForPlayer(whichPlayer, scale, 1.00)
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hRuntime.camera[index].isShocking = false
                 if (cj.GetLocalPlayer() == whichPlayer) then
@@ -110,8 +109,7 @@ hcamera.shock = function(whichPlayer, whichType, during, scale)
         cj.CameraSetEQNoiseForPlayer(whichPlayer, scale)
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hRuntime.camera[index].isShocking = false
                 if (cj.GetLocalPlayer() == whichPlayer) then

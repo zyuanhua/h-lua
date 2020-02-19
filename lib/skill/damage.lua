@@ -13,8 +13,7 @@ local _damageTtg = function(targetUnit, damage, fix, color)
     )
     htime.setTimeout(
         during,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             _damageTtgQty = _damageTtgQty - 1
         end
@@ -451,9 +450,8 @@ hskill.damage = function(options)
                 his.set(targetUnit, "isPunishing", true)
                 htime.setTimeout(
                     punish_during + 1.00,
-                    function(t, td)
-                        htime.delDialog(td)
-                        htime.delTimer(t)
+                    function(t)
+                            htime.delTimer(t)
                         his.set(targetUnit, "isPunishing", false)
                     end
                 )
@@ -828,10 +826,9 @@ hskill.damageRange = function(options)
         local ti = 0
         htime.setInterval(
             frequency,
-            function(t, td)
+            function(t)
                 ti = ti + 1
                 if (ti > times) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
@@ -922,10 +919,9 @@ hskill.damageGroup = function(options)
         local ti = 0
         htime.setInterval(
             frequency,
-            function(t, td)
+            function(t)
                 ti = ti + 1
                 if (ti > times) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end

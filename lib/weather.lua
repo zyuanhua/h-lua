@@ -23,8 +23,7 @@ hweather.del = function(w, during)
     else
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 cj.EnableWeatherEffect(w, false)
                 cj.RemoveWeatherEffect(w)
@@ -60,8 +59,7 @@ hweather.create = function(
     if (bean.during > 0) then
         htime.setTimeout(
             bean.during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hrect.del(r, 0)
                 cj.EnableWeatherEffect(w, false)

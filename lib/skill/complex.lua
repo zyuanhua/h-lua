@@ -434,8 +434,7 @@ hskill.swim = function(options)
             "swimTimer",
             htime.setTimeout(
                 during,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     cj.UnitRemoveAbility(u, hskill.BUFF_SWIM)
                     his.set(u, "isSwim", false)
@@ -600,8 +599,7 @@ hskill.silent = function(options)
     )
     htime.setTimeout(
         during,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             hskill.set(u, "silentLevel", hskill.get(u, "silentLevel", 0) - 1)
             if (hskill.get(u, "silentLevel") <= 0) then
@@ -731,8 +729,7 @@ hskill.unarm = function(options)
     )
     htime.setTimeout(
         during,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             hskill.set(u, "unarmLevel", hskill.get(u, "unarmLevel", 0) - 1)
             if (hskill.get(u, "unarmLevel") <= 0) then
@@ -1094,8 +1091,7 @@ hskill.lightningChain = function(options)
         if (options.damage > 0) then
             htime.setTimeout(
                 0.35,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     hskill.lightningChain(options)
                 end
@@ -1213,7 +1209,7 @@ hskill.crackFly = function(options)
     )
     htime.setInterval(
         0.05,
-        function(t, td)
+        function(t)
             local dist = 0
             local z = 0
             local timerSetTime = htime.getSetTime(t)
@@ -1240,7 +1236,6 @@ hskill.crackFly = function(options)
                     tempEff = "Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl"
                 end
                 heffect.toUnit(tempEff, options.targetUnit, 0)
-                htime.delDialog(td)
                 htime.delTimer(t)
                 return
             end
@@ -1420,10 +1415,9 @@ hskill.whirlwind = function(options)
     local time = 0
     htime.setInterval(
         frequency,
-        function(t, td)
+        function(t)
             time = time + frequency
             if (time > during) then
-                htime.delDialog(td)
                 htime.delTimer(t)
                 if (options.animation) then
                     cj.AddUnitAnimationProperties(options.sourceUnit, options.animation, false)
@@ -1587,11 +1581,10 @@ hskill.leap = function(options)
     --开始冲鸭
     htime.setInterval(
         frequency,
-        function(t, td)
+        function(t)
             local ax = cj.GetUnitX(arrowUnit)
             local ay = cj.GetUnitY(arrowUnit)
             if (his.death(sourceUnit)) then
-                htime.delDialog(td)
                 htime.delTimer(t)
                 if (tempEffectArrow ~= nil) then
                     heffect.del(tempEffectArrow)
@@ -1680,7 +1673,6 @@ hskill.leap = function(options)
             end
             local distance = math.getDistanceBetweenXY(cj.GetUnitX(arrowUnit), cj.GetUnitY(arrowUnit), tx, ty)
             if (distance <= speed or speed <= 0 or his.death(arrowUnit) == true) then
-                htime.delDialog(td)
                 htime.delTimer(t)
                 if (tempEffectArrow ~= nil) then
                     heffect.del(tempEffectArrow)
@@ -2020,11 +2012,10 @@ hskill.rectangleStrike = function(options)
         local i = 0
         htime.setInterval(
             frequency,
-            function(t, td)
+            function(t)
                 i = i + 1
                 local d = i * range * 0.5
                 if (d >= distance) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
@@ -2114,16 +2105,14 @@ hskill.shapeshift = function(options)
     hattr.reRegister(options.whichUnit)
     htime.setTimeout(
         deDur,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             if (table.len(options.attr) > 0) then
                 hattr.set(options.whichUnit, during, options.attr)
             end
             htime.setTimeout(
                 during + deDur,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     if (options.effectEnd ~= nil) then
                         heffect.bindUnit(options.effectEnd, options.whichUnit, "origin", 2.5)

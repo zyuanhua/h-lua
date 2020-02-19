@@ -43,7 +43,7 @@ hskill.add = function(whichUnit, ability_id, during)
         cj.UnitAddAbility(whichUnit, id)
         htime.setTimeout(
             during,
-            function(t, td)
+            function(t)
                 cj.UnitRemoveAbility(whichUnit, id)
             end
         )
@@ -62,7 +62,7 @@ hskill.del = function(whichUnit, ability_id, during)
         cj.UnitRemoveAbility(whichUnit, id)
         htime.setTimeout(
             during,
-            function(t, td)
+            function(t)
                 cj.UnitAddAbility(whichUnit, id)
             end
         )

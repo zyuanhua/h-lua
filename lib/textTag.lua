@@ -7,18 +7,17 @@ htextTag = {
 -- 删除漂浮字
 htextTag.del = function(ttg, during)
     if (during == nil or during <= 0) then
+        htextTag.qty = htextTag.qty - 1
         hRuntime.clear(ttg)
         cj.DestroyTextTag(ttg)
-        htextTag.qty = htextTag.qty - 1
     else
         htime.setTimeout(
             during,
-            function(t, td)
+            function(t)
                 htime.delTimer(t)
-                htime.delDialog(td)
+                htextTag.qty = htextTag.qty - 1
                 hRuntime.clear(ttg)
                 cj.DestroyTextTag(ttg)
-                htextTag.qty = htextTag.qty - 1
             end
         )
     end
@@ -29,7 +28,7 @@ end
 -- color为6位颜色代码 http://www.atool.org/colorpicker.php
 htextTag.create = function(msg, size, color, opacity, during)
     if (string.len(msg) <= 0 or during < 0) then
-        return nil
+        return
     end
     if (htextTag.qty >= htextTag.limit) then
         return
@@ -60,7 +59,6 @@ htextTag.create = function(msg, size, color, opacity, during)
     cj.SetTextTagColor(ttg, 255, 255, 255, math.floor(255 * opacity))
     if (during == 0) then
         cj.SetTextTagPermanent(ttg, true)
-        print_mb("SetTextTagPermanent" .. msg)
     else
         cj.SetTextTagPermanent(ttg, false)
         htextTag.del(ttg, during)
@@ -87,8 +85,7 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
     if (ttg == nil) then
         htime.setTimeout(
             0.1,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 htextTag.createFollowUnit(u, msg, size, color, opacity, during, zOffset)
             end
@@ -99,9 +96,8 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
     local scale = 0.5
     htime.setInterval(
         0.03,
-        function(t, td)
+        function(t)
             if (txt == nil) then
-                htime.delDialog(td)
                 htime.delTimer(t)
                 return
             end
@@ -171,11 +167,10 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local tnow = 0
         htime.setInterval(
             0.03,
-            function(t, td)
+            function(t)
                 tnow = tnow + cj.TimerGetTimeout(t)
                 local msg = htextTag.getMsg(ttg)
                 if (msg == nil or tnow >= tend) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
@@ -187,11 +182,10 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local tnow = 0
         htime.setInterval(
             0.03,
-            function(t, td)
+            function(t)
                 tnow = tnow + cj.TimerGetTimeout(t)
                 local msg = htextTag.getMsg(ttg)
                 if (msg == nil or tnow >= tend) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end
@@ -207,11 +201,10 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         local scale = tend * 0.0022
         htime.setInterval(
             0.03,
-            function(t, td)
+            function(t)
                 tnow = tnow + cj.TimerGetTimeout(t)
                 local msg = htextTag.getMsg(ttg)
                 if (msg == nil or tnow >= tend1 + tend2 + tend3) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end

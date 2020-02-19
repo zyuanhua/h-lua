@@ -6,7 +6,9 @@ htime = {
     -- 分
     min = 0,
     -- 秒
-    sec = 0
+    sec = 0,
+    -- 池
+    pool = {}
 }
 -- 时钟
 htime.clock = function()
@@ -43,6 +45,28 @@ htime.his = function()
     end
     return str
 end
+-- 从池中获取一个计时器
+htime.timerInPool = function()
+    local t
+    local td
+    for timer, v in pairs(htime.pool) do
+        if (v.free == true) then
+            v.free = false
+            t = timer
+            td = v.dialog
+            break
+        end
+    end
+    if (t == nil) then
+        t = cj.CreateTimer()
+        td = cj.CreateTimerDialog(t)
+        htime.pool[t] = {
+            free = false,
+            dialog = td
+        }
+    end
+    return {t, td}
+end
 -- 获取计时器设置时间
 htime.getSetTime = function(t)
     if (t == nil) then
@@ -68,12 +92,22 @@ htime.getElapsedTime = function(t)
         return cj.TimerGetElapsed(t)
     end
 end
+-- 删除计时器
+htime.delTimer = function(t)
+    if (t == nil) then
+        return
+    end
+    cj.PauseTimer(t)
+    cj.TimerDialogDisplay(htime.pool[t].dialog, false)
+    htime.pool[t].free = true
+    t = nil
+end
 -- 设置一次性计时器
 htime.setTimeout = function(time, yourFunc, title)
-    local t = cj.CreateTimer()
-    local td
+    local pool = htime.timerInPool()
+    local t = pool[1]
+    local td = pool[2]
     if (title ~= nil) then
-        td = cj.CreateTimerDialog(t)
         cj.TimerDialogSetTitle(td, title)
         cj.TimerDialogDisplay(td, true)
     end
@@ -82,17 +116,17 @@ htime.setTimeout = function(time, yourFunc, title)
         time,
         false,
         function()
-            yourFunc(t, td)
+            yourFunc(t)
         end
     )
     return t
 end
 -- 设置周期性计时器
 htime.setInterval = function(time, yourFunc, title)
-    local t = cj.CreateTimer()
-    local td
+    local pool = htime.timerInPool()
+    local t = pool[1]
+    local td = pool[2]
     if (title ~= nil) then
-        td = cj.CreateTimerDialog(t)
         cj.TimerDialogSetTitle(td, title)
         cj.TimerDialogDisplay(td, true)
     end
@@ -101,25 +135,8 @@ htime.setInterval = function(time, yourFunc, title)
         time,
         true,
         function()
-            yourFunc(t, td)
+            yourFunc(t)
         end
     )
     return t
-end
--- 删除计时器Q
-htime.delTimer = function(t)
-    if (t == nil) then
-        return
-    end
-    cj.PauseTimer(t)
-    cj.DestroyTimer(t)
-    t = nil
-end
--- 删除计时器窗口
-htime.delDialog = function(td)
-    if (td == nil) then
-        return
-    end
-    cj.DestroyTimerDialog(td)
-    td = nil
 end

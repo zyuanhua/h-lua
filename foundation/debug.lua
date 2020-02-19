@@ -14,6 +14,7 @@ if (HLUA_DEBUG == true) then
         print_stack()
         print("=========================")
     end
+    console = require "jass.console"
 end
 
 --[[

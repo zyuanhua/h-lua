@@ -288,8 +288,7 @@ hplayer.diffGoldRatio = function(whichPlayer, diff, during)
         if (during > 0) then
             htime.setTimeout(
                 during,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     hplayer.set(whichPlayer, "goldRatio", hplayer.get(whichPlayer, "goldRatio") - diff)
                 end
@@ -317,8 +316,7 @@ hplayer.diffLumberRatio = function(whichPlayer, diff, during)
         if (during > 0) then
             htime.setTimeout(
                 during,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     hplayer.set(whichPlayer, "lumberRatio", hplayer.get(whichPlayer, "lumberRatio") - diff)
                 end
@@ -347,8 +345,7 @@ hplayer.diffExpRatio = function(whichPlayer, diff, during)
         if (during > 0) then
             htime.setTimeout(
                 during,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     hplayer.set(whichPlayer, "expRatio", hplayer.get(whichPlayer, "expRatio") - diff)
                 end
@@ -377,8 +374,7 @@ hplayer.diffSellRatio = function(whichPlayer, diff, during)
         if (during > 0) then
             htime.setTimeout(
                 during,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     hplayer.set(whichPlayer, "sellRatio", hplayer.get(whichPlayer, "sellRatio") - diff)
                 end

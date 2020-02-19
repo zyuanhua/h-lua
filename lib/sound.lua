@@ -53,9 +53,8 @@ hsound.bgm = function(musicFileName, whichPlayer)
                     cj.StopMusic(true)
                     htime.setTimeout(
                         hRuntime.sound[i].bgmDelay,
-                        function(t, td)
-                            htime.delDialog(td)
-                            htime.delTimer(t)
+                        function(t)
+                                    htime.delTimer(t)
                             cj.PlayMusic(musicFileName)
                             hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay - 3.00
                         end

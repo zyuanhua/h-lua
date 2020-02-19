@@ -31,8 +31,7 @@ hlightning.xyz2xyz = function(lightningType, x1, y1, z1, x2, y2, z2, during)
     during = during or 0.25
     htime.setTimeout(
         during,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             hlightning.del(lightning)
         end

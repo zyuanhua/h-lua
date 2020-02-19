@@ -52,13 +52,11 @@ hattr.setAttackWhite = function(u, itemId, qty)
         local limit = 60.0 / per -- 一般不会超过1分钟复活
         htime.setInterval(
             per,
-            function(t, td)
+            function(t)
                 limit = limit - 1
                 if (limit < 0) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                 elseif (his.alive(u) == true) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     local i = 1
                     local it
@@ -369,8 +367,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
-                    function(t, td)
-                        htime.delDialog(td)
+                    function(t)
                         htime.delTimer(t)
                         hattr.setHandle(whichUnit, attr, "-", val, 0)
                     end
@@ -387,8 +384,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
-                    function(t, td)
-                        htime.delDialog(td)
+                    function(t)
                         htime.delTimer(t)
                         hattr.setHandle(whichUnit, attr, "+", val, 0)
                     end
@@ -401,8 +397,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
-                    function(t, td)
-                        htime.delDialog(td)
+                    function(t)
                         htime.delTimer(t)
                         hattr.setHandle(whichUnit, attr, "=", string.implode(",", old), 0)
                     end
@@ -418,8 +413,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
-                    function(t, td)
-                        htime.delDialog(td)
+                    function(t)
                         htime.delTimer(t)
                         hattr.setHandle(whichUnit, attr, "-", val, 0)
                     end
@@ -440,8 +434,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 if (dur > 0) then
                     htime.setTimeout(
                         dur,
-                        function(t, td)
-                            htime.delDialog(td)
+                        function(t)
                             htime.delTimer(t)
                             hattr.setHandle(whichUnit, attr, "+", val, 0)
                         end
@@ -520,8 +513,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
-                    function(t, td)
-                        htime.delDialog(td)
+                    function(t)
                         htime.delTimer(t)
                         hattr.setHandle(whichUnit, attr, "-", diff, 0)
                     end

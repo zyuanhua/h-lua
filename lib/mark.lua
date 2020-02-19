@@ -18,8 +18,7 @@ hmark.create = function(path, during, whichPlayer)
         )
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 bj.CinematicFilterGenericBJ(
                     0.50,
@@ -54,8 +53,7 @@ hmark.create = function(path, during, whichPlayer)
         end
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 if (whichPlayer == cj.GetLocalPlayer()) then
                     bj.CinematicFilterGenericBJ(

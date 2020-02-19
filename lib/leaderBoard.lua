@@ -24,7 +24,7 @@ hleaderBoard.create = function(key, refreshFrequency, yourData)
     cj.LeaderboardSetLabel(hRuntime.leaderBoard[key], "排行榜")
     htime.setInterval(
         refreshFrequency,
-        function(t, td)
+        function(t)
             local data = yourData(hRuntime.leaderBoard[key])
             for playerIndex, value in pairs(data) do
                 if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex]) then

@@ -1054,9 +1054,8 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
                 hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click + 1
                 htime.setTimeout(
                     0.3,
-                    function(t, td)
-                        htime.delDialog(td)
-                        htime.delTimer(t)
+                    function(t)
+                            htime.delTimer(t)
                         hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click - 1
                     end
                 )

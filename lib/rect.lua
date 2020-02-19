@@ -87,9 +87,8 @@ hrect.del = function(whichRect, during)
     else
         htime.setTimeout(
             during,
-            function(t, td)
+            function(t)
                 htime.delTimer(t)
-                htime.delDialog(td)
                 hRuntime.clear(whichRect)
                 cj.RemoveRect(whichRect)
             end
@@ -127,10 +126,9 @@ hrect.lock = function(bean)
     local inGroups = {}
     htime.setInterval(
         0.10,
-        function(t, td)
+        function(t)
             inc = inc + 1
             if (inc > (during / 0.10)) then
-                htime.delDialog(td)
                 htime.delTimer(t)
                 return
             end
@@ -146,7 +144,6 @@ hrect.lock = function(bean)
             --单位优先
             if (bean.whichUnit) then
                 if (his.death(bean.whichUnit)) then
-                    htime.delDialog(td)
                     htime.delTimer(t)
                     return
                 end

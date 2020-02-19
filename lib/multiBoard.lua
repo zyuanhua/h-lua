@@ -30,7 +30,7 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
             hRuntime.multiBoard[pi].timer =
                 htime.setInterval(
                 refreshFrequency,
-                function(t, td)
+                function(t)
                     --检查玩家是否隐藏了多面板 -mbv
                     if (hRuntime.multiBoard[pi].visible ~= true) then
                         if (cj.GetLocalPlayer() == p) then

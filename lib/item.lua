@@ -27,8 +27,7 @@ hitem.del = function(it, during)
     else
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hRuntime.clear(it)
                 cj.SetWidgetLife(it, 1.00)
@@ -562,8 +561,7 @@ hitem.create = function(bean)
         if (during > 0) then
             htime.setTimeout(
                 during,
-                function(t, td)
-                    htime.delDialog(td)
+                function(t)
                     htime.delTimer(t)
                     hitem.del(it, 0)
                 end
@@ -767,9 +765,8 @@ hitem.init = function()
                     if (faceId ~= nil) then
                         htime.setTimeout(
                             0,
-                            function(t, td)
-                                htime.delDialog(td)
-                                htime.delTimer(t)
+                            function(t)
+                                            htime.delTimer(t)
                                 local x = cj.GetItemX(it)
                                 local y = cj.GetItemX(it)
                                 hitem.del(it, 0)

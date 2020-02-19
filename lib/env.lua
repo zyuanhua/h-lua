@@ -86,7 +86,7 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
     end
     htime.setInterval(
         0.01,
-        function(t, td)
+        function(t)
             local x = rectStartX + indexX * 80
             local y = rectStartY + indexY * 80
             local buildType = cj.GetRandomInt(1, 4)

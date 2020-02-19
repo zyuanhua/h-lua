@@ -20,8 +20,7 @@ hunit.init = function()
                 hattr.set(targetUnit, 0, {life = "+" .. damage})
                 htime.setTimeout(
                     0,
-                    function(t, td)
-                        htime.delDialog(td)
+                    function(t)
                         htime.delTimer(t)
                         hattr.set(targetUnit, 0, {life = "-" .. damage})
                         hunit.setCurLife(targetUnit, oldLife)
@@ -72,7 +71,7 @@ hunit.init = function()
     local period = 0.50
     htime.setInterval(
         period,
-        function(t, td)
+        function(t)
             for k, u in ipairs(hRuntime.attributeGroup.life_back) do
                 if (his.deleted(u) == true) then
                     table.remove(hRuntime.attributeGroup.life_back, k)
@@ -96,7 +95,7 @@ hunit.init = function()
     -- 没收到伤害时,每1.5秒恢复1.5%硬直
     htime.setInterval(
         1.5,
-        function(t, td)
+        function(t)
             for k, u in ipairs(hRuntime.attributeGroup.punish) do
                 if (his.deleted(u) == true) then
                     table.remove(hRuntime.attributeGroup.punish, k)
@@ -231,8 +230,7 @@ hunit.setAnimateSpeed = function(u, speed, during)
         hRuntime.unit[u].animateSpeed = speed
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 cj.SetUnitTimeScale(u, prevSpeed)
             end
@@ -360,7 +358,7 @@ hunit.create = function(bean)
             hunit.setPeriod(u, bean.life)
         end
         -- 持续时间 delete
-        if (bean.during ~= nil and bean.during > 0) then
+        if (bean.during ~= nil and bean.during >= 0) then
             hunit.del(u, bean.during)
         end
         if (bean.attackX ~= nil and bean.attackY ~= nil) then
@@ -509,8 +507,7 @@ hunit.setUserData = function(u, val, during)
     if (during > 0) then
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 cj.SetUnitUserData(u, oldData)
             end
@@ -544,8 +541,7 @@ hunit.del = function(targetUnit, during)
     else
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hitem.clearUnitCache(targetUnit)
                 hRuntime.clear(targetUnit)
@@ -561,9 +557,8 @@ hunit.kill = function(targetUnit, during)
     else
         htime.setTimeout(
             during,
-            function(t, td)
+            function(t)
                 htime.delTimer(t)
-                htime.delDialog(td)
                 cj.KillUnit(targetUnit)
             end
         )
@@ -577,9 +572,8 @@ hunit.exploded = function(targetUnit, during)
     else
         htime.setTimeout(
             during,
-            function(t, td)
+            function(t)
                 htime.delTimer(t)
-                htime.delDialog(td)
                 cj.SetUnitExploded(targetUnit, true)
                 cj.KillUnit(targetUnit)
             end
@@ -618,9 +612,8 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
         else
             htime.setTimeout(
                 delay,
-                function(t, td)
+                function(t)
                     htime.delTimer(t)
-                    htime.delDialog(td)
                     cj.ReviveHero(u, x, y, true)
                     hattr.resetAttrGroups(u)
                     if (invulnerable > 0) then

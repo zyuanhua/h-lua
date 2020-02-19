@@ -5,8 +5,7 @@ hskill.avoid = function(whichUnit)
     cj.UnitRemoveAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
     htime.setTimeout(
         0.00,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_MIUNS)
             cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_MIUNS, 2)
@@ -29,8 +28,7 @@ hskill.invulnerable = function(whichUnit, during, effect)
     end
     htime.setTimeout(
         during,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             cj.UnitRemoveAbility(whichUnit, hskill.BUFF_INVULNERABLE)
         end
@@ -57,8 +55,7 @@ hskill.invulnerableRange = function(x, y, radius, filter, during, effect)
     )
     htime.setTimeout(
         during,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             hgroup.loop(
                 g,
@@ -108,8 +105,7 @@ hskill.pause = function(whichUnit, during, pauseColor)
         "pauseTimer",
         htime.setTimeout(
             during + prevTimeRemaining,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 cj.PauseUnit(whichUnit, false)
                 if (string.len(pauseColor) ~= nil) then
@@ -136,8 +132,7 @@ hskill.invisible = function(whichUnit, during, transition, effect)
     if (transition > 0) then
         htime.setTimeout(
             transition,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hskill.add(whichUnit, hskill.SKILL_INVISIBLE, during)
             end
@@ -162,8 +157,7 @@ hskill.visible = function(whichUnit, during, transition, effect)
     if (transition > 0) then
         htime.setTimeout(
             transition,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hskill.del(whichUnit, hskill.SKILL_INVISIBLE, during)
             end
@@ -183,8 +177,7 @@ hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
         end
         htime.setTimeout(
             during,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 cj.UnitRemoveAbility(whichUnit, whichAbility)
             end

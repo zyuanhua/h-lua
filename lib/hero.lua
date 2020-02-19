@@ -373,8 +373,7 @@ hhero.buildClick = function(during, clickQty)
         )
         htime.setTimeout(
             during - 0.5,
-            function(t, td)
-                htime.delDialog(td)
+            function(t)
                 htime.delTimer(t)
                 hevent.deleteEvent(p, CONST_EVENT.selection .. "#" .. clickQty, tgr_click)
             end
@@ -383,10 +382,9 @@ hhero.buildClick = function(during, clickQty)
     -- 还剩10秒给个选英雄提示
     htime.setTimeout(
         during - 10.0,
-        function(t, td)
+        function(t)
             local x1 = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance
             local y1 = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance
-            htime.delDialog(td)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_repick)
             cj.DestroyTrigger(tgr_repick)
@@ -397,8 +395,7 @@ hhero.buildClick = function(during, clickQty)
     -- 一定时间后clear
     htime.setTimeout(
         during - 0.5,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_random)
             cj.DestroyTrigger(tgr_random)
@@ -567,10 +564,9 @@ hhero.buildTavern = function(during)
     -- 还剩10秒给个选英雄提示
     htime.setTimeout(
         during - 10.0,
-        function(t, td)
+        function(t)
             local x1 = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance
             local y1 = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance
-            htime.delDialog(td)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_repick)
             cj.DestroyTrigger(tgr_repick)
@@ -581,8 +577,7 @@ hhero.buildTavern = function(during)
     -- 一定时间后clear
     htime.setTimeout(
         during - 0.5,
-        function(t, td)
-            htime.delDialog(td)
+        function(t)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_random)
             cj.DestroyTrigger(tgr_random)
