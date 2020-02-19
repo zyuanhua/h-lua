@@ -1,5 +1,20 @@
 -- debug标志位
-HLUA_DEBUG = true
+if (HLUA_DEBUG == nil) then
+    HLUA_DEBUG = true --这句会在打包是变为false，当然变量名要与HLUA_DEBUG一致
+end
+
+-- 自启动调试
+if (HLUA_DEBUG == true) then
+    ydruntime = require "jass.runtime"
+    ydruntime.console = true
+    ydruntime.debugger = 4279
+    ydruntime.error_handle = function(msg)
+        print("========lua-err========")
+        print(tostring(msg))
+        print_stack()
+        print("=========================")
+    end
+end
 
 --[[
     记录运行时间rem方法。只有key1时为记录，有key2时会打印对应记录间的差值，如：
