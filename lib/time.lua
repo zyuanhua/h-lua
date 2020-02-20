@@ -8,7 +8,9 @@ htime = {
     -- 秒
     sec = 0,
     -- 池
-    pool = {}
+    pool = {},
+    -- 内核
+    kernel = {}
 }
 -- 时钟
 htime.clock = function()
@@ -67,76 +69,180 @@ htime.timerInPool = function()
     end
     return {t, td}
 end
+-- 从内核中获取一个计时器（实际上这里获得的是timer key）
+htime.timerInKernel = function(time, yourFunc, isInterval)
+    local space = 0
+    if (time >= 500) then
+        space = 1
+    elseif (time >= 100) then
+        space = 0.5
+    elseif (time >= 10) then
+        space = 0.2
+    elseif (time >= 1) then
+        space = 0.1
+    elseif (time >= 0.1) then
+        space = 0.05
+    else
+        space = 0.01
+    end
+    if (type(isInterval) ~= "boolean") then
+        isInterval = false
+    end
+    if (htime.kernel[space] == nil) then
+        htime.kernel[space] = {}
+        local t = cj.CreateTimer()
+        cj.TimerStart(
+            t,
+            space,
+            true,
+            function()
+                for k, v in ipairs(htime.kernel[space]) do
+                    if (v.enable == true) then
+                        v.remain = v.remain - space
+                        if (v.remain <= 0) then
+                            v.yourFunc(string.implode("_", {space, k}))
+                            if (v.isInterval == true) then
+                                v.remain = v.set
+                            else
+                                --修改标志保留数据，可复用亦可复盘
+                                v.enable = false
+                            end
+                        end
+                    end
+                end
+            end
+        )
+    end
+    local kernelClock = -1
+    for k, v in ipairs(htime.kernel[space]) do
+        if (v.enable == false) then
+            kernelClock = k
+            break
+        end
+    end
+    if (kernelClock == -1) then
+        table.insert(
+            htime.kernel[space],
+            {
+                enable = true,
+                isInterval = isInterval,
+                set = time,
+                remain = time,
+                yourFunc = yourFunc
+            }
+        )
+        kernelClock = #htime.kernel
+    else
+        htime.kernel[space][kernelClock] = {
+            enable = true,
+            isInterval = isInterval,
+            set = time,
+            remain = time,
+            yourFunc = yourFunc
+        }
+    end
+    return string.implode("_", {space, kernelClock})
+end
+-- 内核数据
+htime.kernelInfo = function(t)
+    local index = string.explode("_", t)
+    local space = tonumber(index[1])
+    local k = tonumber(index[2])
+    return {space, k}
+end
 -- 获取计时器设置时间
 htime.getSetTime = function(t)
-    if (t == nil) then
-        return 0
-    else
+    if (type(t) == "userdata") then
         return cj.TimerGetTimeout(t)
+    elseif (type(t) == "string") then
+        local k = htime.kernelInfo(t)
+        return htime.kernel[k[1]][k[2]].set
     end
+    return 0
 end
 -- 获取计时器剩余时间
 htime.getRemainTime = function(t)
-    if (t == nil) then
-        return 0
-    else
+    if (type(t) == "userdata") then
         return cj.TimerGetRemaining(t)
+    elseif (type(t) == "string") then
+        local k = htime.kernelInfo(t)
+        return htime.kernel[k[1]][k[2]].remain
     end
+    return 0
 end
 
 -- 获取计时器已过去时间
 htime.getElapsedTime = function(t)
-    if (t == nil) then
-        return 0
-    else
+    if (type(t) == "userdata") then
         return cj.TimerGetElapsed(t)
+    elseif (type(t) == "string") then
+        local k = htime.kernelInfo(t)
+        local set = htime.kernel[k[1]][k[2]].set
+        local remain = htime.kernel[k[1]][k[2]].remain
+        return set - remain
     end
+    return 0
 end
 -- 删除计时器
 htime.delTimer = function(t)
     if (t == nil) then
         return
+    elseif (type(t) == "userdata") then
+        cj.PauseTimer(t)
+        cj.TimerDialogDisplay(htime.pool[t].dialog, false)
+        htime.pool[t].free = true
+    elseif (type(t) == "string") then
+        local k = htime.kernelInfo(t)
+        if (htime.kernel[k[1]] ~= nil and htime.kernel[k[1]][k[2]] ~= nil) then
+            htime.kernel[k[1]][k[2]].enable = false
+        end
     end
-    cj.PauseTimer(t)
-    cj.TimerDialogDisplay(htime.pool[t].dialog, false)
-    htime.pool[t].free = true
-    t = nil
 end
 -- 设置一次性计时器
 htime.setTimeout = function(time, yourFunc, title)
-    local pool = htime.timerInPool()
-    local t = pool[1]
-    local td = pool[2]
-    if (title ~= nil) then
-        cj.TimerDialogSetTitle(td, title)
-        cj.TimerDialogDisplay(td, true)
-    end
-    cj.TimerStart(
-        t,
-        time,
-        false,
-        function()
-            yourFunc(t)
+    local t
+    if (title == nil) then
+        t = htime.timerInKernel(time, yourFunc, false)
+    else
+        local pool = htime.timerInPool()
+        local t = pool[1]
+        local td = pool[2]
+        if (title ~= nil) then
+            cj.TimerDialogSetTitle(td, title)
+            cj.TimerDialogDisplay(td, true)
         end
-    )
+        cj.TimerStart(
+            t,
+            time,
+            false,
+            function()
+                yourFunc(t)
+            end
+        )
+    end
     return t
 end
 -- 设置周期性计时器
 htime.setInterval = function(time, yourFunc, title)
-    local pool = htime.timerInPool()
-    local t = pool[1]
-    local td = pool[2]
-    if (title ~= nil) then
-        cj.TimerDialogSetTitle(td, title)
-        cj.TimerDialogDisplay(td, true)
-    end
-    cj.TimerStart(
-        t,
-        time,
-        true,
-        function()
-            yourFunc(t)
+    local t
+    if (title == nil) then
+        t = htime.timerInKernel(time, yourFunc, true)
+    else
+        local pool = htime.timerInPool()
+        local t = pool[1]
+        local td = pool[2]
+        if (title ~= nil) then
+            cj.TimerDialogSetTitle(td, title)
+            cj.TimerDialogDisplay(td, true)
         end
-    )
+        cj.TimerStart(
+            t,
+            time,
+            true,
+            function()
+                yourFunc(t)
+            end
+        )
+    end
     return t
 end

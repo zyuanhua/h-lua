@@ -388,8 +388,8 @@ hskill.swim = function(options)
     local damageString = "眩晕"
     local damageStringColor = "4169E1"
     local swimTimer = hskill.get(u, "swimTimer")
-    if (swimTimer ~= nil and cj.TimerGetRemaining(t) > 0) then
-        if (during <= cj.TimerGetRemaining(swimTimer)) then
+    if (swimTimer ~= nil and htime.getRemainTime(t) > 0) then
+        if (during <= htime.getRemainTime(swimTimer)) then
             return
         else
             htime.delTimer(swimTimer)

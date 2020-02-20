@@ -168,7 +168,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         htime.setInterval(
             0.03,
             function(t)
-                tnow = tnow + cj.TimerGetTimeout(t)
+                tnow = tnow + htime.getSetTime(t)
                 local msg = htextTag.getMsg(ttg)
                 if (msg == nil or tnow >= tend) then
                     htime.delTimer(t)
@@ -183,7 +183,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         htime.setInterval(
             0.03,
             function(t)
-                tnow = tnow + cj.TimerGetTimeout(t)
+                tnow = tnow + htime.getSetTime(t)
                 local msg = htextTag.getMsg(ttg)
                 if (msg == nil or tnow >= tend) then
                     htime.delTimer(t)
@@ -202,7 +202,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
         htime.setInterval(
             0.03,
             function(t)
-                tnow = tnow + cj.TimerGetTimeout(t)
+                tnow = tnow + htime.getSetTime(t)
                 local msg = htextTag.getMsg(ttg)
                 if (msg == nil or tnow >= tend1 + tend2 + tend3) then
                     htime.delTimer(t)

@@ -81,7 +81,7 @@ hskill.pause = function(whichUnit, during, pauseColor)
     local prevTimer = hskill.get(whichUnit, "pauseTimer")
     local prevTimeRemaining = 0
     if (prevTimer ~= nil) then
-        prevTimeRemaining = cj.TimerGetRemaining(prevTimer)
+        prevTimeRemaining = htime.getRemainTime(prevTimer)
         if (prevTimeRemaining > 0) then
             htime.delTimer(prevTimer)
             hskill.set(whichUnit, "pauseTimer", nil)

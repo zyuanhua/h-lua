@@ -451,7 +451,7 @@ hskill.damage = function(options)
                 htime.setTimeout(
                     punish_during + 1.00,
                     function(t)
-                            htime.delTimer(t)
+                        htime.delTimer(t)
                         his.set(targetUnit, "isPunishing", false)
                     end
                 )
