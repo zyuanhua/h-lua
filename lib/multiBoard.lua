@@ -89,7 +89,7 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
                         for col = 1, totalCol, 1 do
                             cj.MultiboardSetItemWidth(
                                 cj.MultiboardGetItem(hRuntime.multiBoard[pi].borads[key], row - 1, col - 1),
-                                widthCol[col] / 130
+                                widthCol[col] / 140
                             )
                         end
                     end

@@ -22,7 +22,7 @@ func getCodes(flip string, allCodes string) string {
 	codes = re.ReplaceAllString(codes, "")
 	re, _ = regexp.Compile("--(.*)")
 	codes = re.ReplaceAllString(codes, "")
-	re, _ = regexp.Compile(`if \(HLUA_DEBUG\) then(.*)[\s\S]*?end`)
+	re, _ = regexp.Compile(`if \(HLUA_DEBUG == true\) then(.*)[\s\S]*?console"\send`)
 	codes = re.ReplaceAllString(codes, "")
 	re, _ = regexp.Compile("package.path(.*)")
 	codes = re.ReplaceAllString(codes, "")
