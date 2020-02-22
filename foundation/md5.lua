@@ -28,6 +28,7 @@ md5 = {
   ]]
 }
 
+-- hlua温馨提示，md5计算较慢，勿在密集情况使用引起卡顿
 -- bit lib implementions
 
 local char, byte, format, rep, sub = string.char, string.byte, string.format, string.rep, string.sub

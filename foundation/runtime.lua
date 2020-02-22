@@ -15,16 +15,8 @@ hRuntime = {
             hslk_global.abilitiesKV[json.ABILITY_ID] = json
         end
     },
-    system = {},
-    logic = {},
-    time = {},
     is = {},
-    message = {},
     sound = {},
-    mark = {},
-    effect = {},
-    lightning = {},
-    weather = {},
     env = {},
     camera = {},
     event = {
@@ -34,10 +26,7 @@ hRuntime = {
     textTag = {},
     rect = {},
     player = {},
-    award = {},
     unit = {},
-    enemy = {},
-    group = {},
     hero = {},
     heroBuildSelection = {},
     skill = {},
@@ -70,22 +59,69 @@ hRuntime = {
     leaderBoard = {},
     multiBoard = {}
 }
-
 hRuntime.clear = function(handle)
     if (handle == nil) then
         return
     end
-    for k, v in pairs(hRuntime) do
-        if (type(v) == "table") then
-            if (v[handle] ~= nil) then
-                v[handle] = nil
-            end
-            if (k == "event") then
-                if (v.register[handle] ~= nil) then
-                    v.register[handle] = nil
-                end
-            end
-        end
+    if (hRuntime.is[handle] ~= nil) then
+        hRuntime.is[handle] = nil
+    end
+    if (hRuntime.sound[handle] ~= nil) then
+        hRuntime.sound[handle] = nil
+    end
+    if (hRuntime.env[handle] ~= nil) then
+        hRuntime.env[handle] = nil
+    end
+    if (hRuntime.camera[handle] ~= nil) then
+        hRuntime.camera[handle] = nil
+    end
+    if (hRuntime.event[handle] ~= nil) then
+        hRuntime.event[handle] = nil
+    end
+    if (hRuntime.event.register[handle] ~= nil) then
+        hRuntime.event.register[handle] = nil
+    end
+    if (hRuntime.event.trigger[handle] ~= nil) then
+        hRuntime.event.trigger[handle] = nil
+    end
+    if (hRuntime.textTag[handle] ~= nil) then
+        hRuntime.textTag[handle] = nil
+    end
+    if (hRuntime.rect[handle] ~= nil) then
+        hRuntime.rect[handle] = nil
+    end
+    if (hRuntime.player[handle] ~= nil) then
+        hRuntime.player[handle] = nil
+    end
+    if (hRuntime.unit[handle] ~= nil) then
+        hRuntime.unit[handle] = nil
+    end
+    if (hRuntime.hero[handle] ~= nil) then
+        hRuntime.hero[handle] = nil
+    end
+    if (hRuntime.heroBuildSelection[handle] ~= nil) then
+        hRuntime.heroBuildSelection[handle] = nil
+    end
+    if (hRuntime.skill[handle] ~= nil) then
+        hRuntime.skill[handle] = nil
+    end
+    if (hRuntime.attribute[handle] ~= nil) then
+        hRuntime.attribute[handle] = nil
+    end
+    if (hRuntime.attributeDiff[handle] ~= nil) then
+        hRuntime.attributeDiff[handle] = nil
+    end
+    if (hRuntime.attributeDamaging[handle] ~= nil) then
+        hRuntime.attributeDamaging[handle] = nil
+    end
+    if (hRuntime.item[handle] ~= nil) then
+        hRuntime.item[handle] = nil
+    end
+    if (hRuntime.leaderBoard[handle] ~= nil) then
+        hRuntime.leaderBoard[handle] = nil
+    end
+    if (hRuntime.multiBoard[handle] ~= nil) then
+        hRuntime.multiBoard[handle] = nil
     end
 end
 

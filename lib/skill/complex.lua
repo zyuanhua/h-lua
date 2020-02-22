@@ -1788,11 +1788,36 @@ hskill.leapPow = function(options)
     for i = 1, qty, 1 do
         local angle = firstDeg - deg * (i - 1)
         local txy = math.polarProjection(sx, sy, distance, angle)
-        local tmp = table.clone(options)
-        tmp.targetUnit = nil
-        tmp.x = txy.x
-        tmp.y = txy.y
-        hskill.leap(tmp)
+        hskill.leap(
+            {
+                arrowUnit = options.arrowUnit,
+                sourceUnit = options.sourceUnit,
+                targetUnit = nil,
+                x = txy.x,
+                y = txy.y,
+                speed = options.speed,
+                acceleration = options.acceleration,
+                filter = options.filter,
+                tokenArrow = options.tokenArrow,
+                tokenArrowScale = options.tokenArrowScale,
+                tokenArrowOpacity = options.tokenArrowOpacity,
+                tokenArrowHeight = options.tokenArrowHeight,
+                effectMovement = options.effectMovement,
+                effectEnd = options.effectEnd,
+                damageMovement = options.damageMovement,
+                damageMovementRange = options.damageMovementRange,
+                damageMovementRepeat = options.damageMovementRepeat,
+                damageMovementDrag = options.damageMovementDrag,
+                damageEnd = options.damageEnd,
+                damageEndRange = options.damageEndRange,
+                damageKind = options.damageKind,
+                damageType = options.damageType,
+                damageEffect = options.damageEffect,
+                oneHitOnly = options.oneHitOnly,
+                onEnding = options.onEnding,
+                extraInfluence = options.extraInfluence
+            }
+        )
     end
 end
 
@@ -1837,7 +1862,31 @@ hskill.leapRange = function(options)
     hgroup.loop(
         g,
         function(eu)
-            local tmp = table.clone(options)
+            local tmp = {
+                arrowUnit = options.arrowUnit,
+                sourceUnit = options.sourceUnit,
+                speed = options.speed,
+                acceleration = options.acceleration,
+                filter = options.filter,
+                tokenArrow = options.tokenArrow,
+                tokenArrowScale = options.tokenArrowScale,
+                tokenArrowOpacity = options.tokenArrowOpacity,
+                tokenArrowHeight = options.tokenArrowHeight,
+                effectMovement = options.effectMovement,
+                effectEnd = options.effectEnd,
+                damageMovement = options.damageMovement,
+                damageMovementRange = options.damageMovementRange,
+                damageMovementRepeat = options.damageMovementRepeat,
+                damageMovementDrag = options.damageMovementDrag,
+                damageEnd = options.damageEnd,
+                damageEndRange = options.damageEndRange,
+                damageKind = options.damageKind,
+                damageType = options.damageType,
+                damageEffect = options.damageEffect,
+                oneHitOnly = options.oneHitOnly,
+                onEnding = options.onEnding,
+                extraInfluence = options.extraInfluence
+            }
             if (options.targetUnit ~= nil) then
                 tmp.targetUnit = eu
             else
@@ -2107,7 +2156,7 @@ hskill.shapeshift = function(options)
         deDur,
         function(t)
             htime.delTimer(t)
-            if (table.len(options.attr) > 0) then
+            if (options.attr ~= nil) then
                 hattr.set(options.whichUnit, during, options.attr)
             end
             htime.setTimeout(

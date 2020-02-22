@@ -1,32 +1,36 @@
--- 获取一个table的正确长度
+-- 大部分方法不再支持pairs，会引起异步
+
+-- 获取一个table的正确长度（不建议使用，会引起异步)
 table.len = function(table)
     local len = 0
     for _, _ in pairs(table) do
         len = len + 1
     end
+    print("[Deprecated]table.len !")
     return len
 end
 
 -- 随机在数组内取一个
 table.random = function(arr)
-    local keys = {}
-    for k, _ in pairs(arr) do
-        table.insert(keys, k)
+    local val
+    if (#arr > 0) then
+        val = arr[math.random(1, #arr)]
+    else
+        print_err()
     end
-    local val = arr[keys[math.random(1, #keys)]]
-    keys = nil
     return val
 end
 
 -- 克隆table
 table.clone = function(org)
     local function copy(org1, res)
-        for k, v in pairs(org1) do
+        for _, v in ipairs(org1) do
             if type(v) ~= "table" then
-                res[k] = v
+                table.insert(res, v)
             else
-                res[k] = {}
-                copy(v, res[k])
+                local rl = #res + 1
+                res[rl] = {}
+                copy(v, res[rl])
             end
         end
     end
@@ -44,14 +48,8 @@ table.merge = function(table1, table2)
     if (table2 == nil) then
         return tempTable
     end
-    if (table.len(table2) == #table2) then
-        for _, v in ipairs(table2) do
-            table.insert(tempTable, v)
-        end
-    else
-        for k, v in pairs(table2) do
-            tempTable[k] = v
-        end
+    for _, v in ipairs(table2) do
+        table.insert(tempTable, v)
     end
     return tempTable
 end
@@ -62,7 +60,7 @@ table.includes = function(val, arr)
     if (val == nil or #arr <= 0) then
         return isin
     end
-    for k, v in pairs(arr) do
+    for _, v in ipairs(arr) do
         if (v == val) then
             isin = true
             break
@@ -75,13 +73,18 @@ end
 table.delete = function(val, arr, qty)
     qty = qty or -1
     local q = 0
-    for k, v in pairs(arr) do
+    local dels = {}
+    for k, v in ipairs(arr) do
         if (v == val) then
             q = q + 1
-            table.remove(arr, k)
+            table.insert(dels, k)
             if (qty ~= -1 and q >= qty) then
                 break
             end
         end
     end
+    for _, k in ipairs(dels) do
+        table.remove(dels, k)
+    end
+    dels = nil
 end

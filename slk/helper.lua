@@ -187,7 +187,7 @@ slkHelper.itemDesc = function(v)
     if (v.PASSIVE ~= nil) then
         table.insert(d, v.PASSIVE)
     end
-    if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
+    if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
         table.insert(d, slkHelper.attrForItem(v.ATTR, ";") .. slkHelper.attrForItemTable(v.ATTR, ";"))
     end
@@ -201,7 +201,7 @@ end
 slkHelper.itemUbertip = function(v)
     local desc = ""
     local d = {}
-    if (v.ATTR ~= nil and table.len(v.ATTR) >= 1) then
+    if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
         table.insert(
             d,

@@ -329,7 +329,7 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
                 }
             ))
          then
-            diffPlayer[k] = tonumber(tempDiff)
+            table.insert(diffPlayer, {k, tonumber(tempDiff)})
         else
             diff[k] = tempDiff
         end
@@ -341,12 +341,12 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
         end
         diff.weight_current = opt .. weight
     end
-    if (table.len(diff) > 0) then
-        hattr.set(whichUnit, 0, diff)
-    end
-    if (table.len(diffPlayer) > 0) then
+    hattr.set(whichUnit, 0, diff)
+    if (#diffPlayer > 0) then
         local p = cj.GetOwningPlayer(whichUnit)
-        for pk, pv in pairs(diffPlayer) do
+        for _, dp in pairs(diffPlayer) do
+            local pk = dp[1]
+            local pv = dp[2]
             if (pv ~= 0) then
                 if (pk == "gold_ratio") then
                     hplayer.addGoldRatio(p, pv, 0)
@@ -766,7 +766,7 @@ hitem.init = function()
                         htime.setTimeout(
                             0,
                             function(t)
-                                            htime.delTimer(t)
+                                htime.delTimer(t)
                                 local x = cj.GetItemX(it)
                                 local y = cj.GetItemX(it)
                                 hitem.del(it, 0)

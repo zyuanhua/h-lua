@@ -610,7 +610,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 if (tempVal ~= 0) then
                     while (true) do
                         local isFound = false
-                        for _, v in pairs(sightTotal) do
+                        for _, v in ipairs(sightTotal) do
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
                                 table.delete(v, sightTotal)

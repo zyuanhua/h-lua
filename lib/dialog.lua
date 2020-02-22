@@ -18,21 +18,18 @@ end
 hdialog.create = function(whichPlayer, options, call)
     local d = cj.DialogCreate()
     local btnKv = {}
+    if (#options.buttons <= 0) then
+        print_err("Dialog buttons is empty")
+        return
+    end
     cj.DialogSetMessage(d, options.title)
-    if (#options.buttons == table.len(options.buttons)) then
-        for i = 1, #options.buttons, 1 do
-            if (type(options.buttons[i]) == "table") then
-                local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))
-                btnKv[b] = options.buttons[i].value
-            else
-                local b = cj.DialogAddButton(d, options.buttons[i], hdialog.hotkey(options.buttons[i]))
-                btnKv[b] = options.buttons[i]
-            end
-        end
-    else
-        for k, v in ipairs(options.buttons) do
-            local b = cj.DialogAddButton(d, v, hdialog.hotkey(v))
-            btnKv[b] = k
+    for i = 1, #options.buttons, 1 do
+        if (type(options.buttons[i]) == "table") then
+            local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))
+            btnKv[b] = options.buttons[i].value
+        else
+            local b = cj.DialogAddButton(d, options.buttons[i], hdialog.hotkey(options.buttons[i]))
+            btnKv[b] = options.buttons[i]
         end
     end
     local dtg = cj.CreateTrigger()

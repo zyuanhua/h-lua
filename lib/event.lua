@@ -59,25 +59,18 @@ hevent.triggerEvent = function(handle, key, triggerData)
         return
     end
     -- 处理数据
-    local newData = {}
-    if (table.len(triggerData) > 0) then
-        for k, v in pairs(triggerData) do
-            if (v ~= nil) then
-                if (k == "triggerSkill" and type(v) == "number") then
-                    newData[k] = string.id2char(v)
-                elseif (k == "targetLoc") then
-                    newData.targetX = cj.GetLocationX(v)
-                    newData.targetY = cj.GetLocationY(v)
-                    newData.targetZ = cj.GetLocationZ(v)
-                    cj.RemoveLocation(v)
-                else
-                    newData[k] = v
-                end
-            end
-        end
+    if (triggerData.triggerSkill ~= nil and type(triggerData.triggerSkill) == "number") then
+        triggerData.triggerSkill = string.id2char(triggerData.triggerSkill)
     end
-    for _, callFunc in pairs(hRuntime.event.register[handle][key]) do
-        callFunc(newData)
+    if (triggerData.targetLoc ~= nil) then
+        triggerData.targetX = cj.GetLocationX(triggerData.targetLoc)
+        triggerData.targetY = cj.GetLocationY(triggerData.targetLoc)
+        triggerData.targetZ = cj.GetLocationZ(triggerData.targetLoc)
+        cj.RemoveLocation(triggerData.targetLoc)
+        triggerData.targetLoc = nil
+    end
+    for _, callFunc in ipairs(hRuntime.event.register[handle][key]) do
+        callFunc(triggerData)
     end
 end
 
@@ -1055,7 +1048,7 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
                 htime.setTimeout(
                     0.3,
                     function(t)
-                            htime.delTimer(t)
+                        htime.delTimer(t)
                         hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click - 1
                     end
                 )
