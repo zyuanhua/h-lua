@@ -69,24 +69,18 @@ string.vkey = function(t)
         return t
     elseif (type(t) == "table") then
         local j = ""
-        local nt = {}
-        for _, v in pairs(t) do
-            if (type(v) == "table") then
-                v = "_T_"
-            else
-                v = tostring(v)
-            end
-            table.insert(nt, v)
-        end
-        if (#nt > 0) then
-            table.sort(nt)
-            for _, v in ipairs(nt) do
+        if (#t > 0) then
+            for _, v in ipairs(t) do
+                if (type(v) == "table") then
+                    v = "_T_"
+                else
+                    v = tostring(v)
+                end
                 j = j .. v
             end
         else
             j = "_"
         end
-        nt = nil
         return j
     end
 end

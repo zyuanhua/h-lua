@@ -116,7 +116,8 @@ hslk_global = {
             add = {},
             sub = {}
         },
-        sightTotal = {}
+        ablisGradient = {},
+        sightGradient = {}
     }
 }
 
@@ -170,6 +171,7 @@ end
 -- 属性系统
 for i = 1, 9 do
     local val = math.floor(10 ^ (i - 1))
+    table.insert(hslk_global.attr.ablisGradient, val)
     hslk_global.attr.str_green.add[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_STR_GREEN_ADD, val)
     hslk_global.attr.str_green.sub[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_STR_GREEN_SUB, val)
     hslk_global.attr.agi_green.add[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AGI_GREEN_ADD, val)
@@ -198,16 +200,16 @@ hslk_global.attr.avoid.sub = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_SUB, 0)
 local sightBase = {1, 2, 3, 4, 5}
 local si = 1
 while (si <= 10000) do
-    for k, v in ipairs(sightBase) do
+    for _, v in ipairs(sightBase) do
         v = math.floor(v * si)
-        table.insert(hslk_global.attr.sightTotal, v)
+        table.insert(hslk_global.attr.sightGradient, v)
         hslk_global.attr.sight.add[v] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_SIGHT_ADD, v)
         hslk_global.attr.sight.sub[v] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_SIGHT_SUB, v)
     end
     si = si * 10
 end
 table.sort(
-    hslk_global.attr.sightTotal,
+    hslk_global.attr.sightGradient,
     function(a, b)
         return a > b
     end

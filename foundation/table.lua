@@ -88,3 +88,23 @@ table.delete = function(val, arr, qty)
     end
     dels = nil
 end
+
+-- 将obj形式的attr数据转为有序数组{key=[key],value=[value]}
+hattr.obj2arr = function(obj, keyMap)
+    if (keyMap == nil or type(keyMap) ~= "table" or #keyMap <= 0) then
+        return {}
+    end
+    local arr = {}
+    for _, a in ipairs(keyMap) do
+        if (obj[a] ~= nil) then
+            table.insert(
+                arr,
+                {
+                    key = a,
+                    value = obj[a]
+                }
+            )
+        end
+    end
+    return arr
+end

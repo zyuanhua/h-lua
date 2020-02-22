@@ -187,7 +187,7 @@ hrect.lock = function(bean)
                 )
             end
             --锁
-            for k, u in pairs(inGroups) do
+            for _, u in ipairs(inGroups) do
                 local distance = 0.000
                 local deg = 0
                 local xx = cj.GetUnitX(u)

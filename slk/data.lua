@@ -452,17 +452,9 @@ local item_moments = {
     {Name = "Dota2幻象符", file = "war3mapImported\\Dota2.Runes.Illusion.mdl", modelScale = 0.80, moveHeight = -10},
     {Name = "Dota2隐身符", file = "war3mapImported\\Dota2.Runes.Invisibility.mdl", modelScale = 0.80, moveHeight = -10}
 }
-table.insert(
-    tempData,
-    {
-        HLUA_SLK_KEYS.ITEM_MOMENT,
-        -1,
-        #item_moments,
-        "int"
-    }
-)
-
+local itemMomentsLen = 0
 for k, v in ipairs(item_moments) do
+    itemMomentsLen = itemMomentsLen + 1
     local obj = slk.unit.ogru:new("item_moment_" .. v.Name)
     obj.EditorSuffix = "#h-lua"
     obj.Name = "瞬逝物系统 " .. v.Name
@@ -493,6 +485,15 @@ for k, v in ipairs(item_moments) do
         }
     )
 end
+table.insert(
+    tempData,
+    {
+        HLUA_SLK_KEYS.ITEM_MOMENT,
+        -1,
+        itemMomentsLen,
+        "int"
+    }
+)
 
 --属性系统
 for i = 1, 9 do
@@ -1123,16 +1124,9 @@ local envs = {
     {Name = "river_rushes2", file = "Doodads\\LordaeronSummer\\Plants\\RiverRushes\\RiverRushes2.mdl"},
     {Name = "river_rushes3", file = "Doodads\\LordaeronSummer\\Plants\\RiverRushes\\RiverRushes3.mdl"}
 }
-table.insert(
-    tempData,
-    {
-        HLUA_SLK_KEYS.COMMON,
-        HLUA_SLK_KEYS.ENV_MODEL,
-        #envs,
-        "int"
-    }
-)
+local envsLen = 0
 for k, v in ipairs(envs) do
+    envsLen = envsLen + 1
     local obj = slk.unit.nban:new("env_model_" .. v.Name)
     obj.EditorSuffix = "#h-lua"
     obj.Name = "环境系统 " .. v.Name
@@ -1183,6 +1177,15 @@ for k, v in ipairs(envs) do
         }
     )
 end
+table.insert(
+    tempData,
+    {
+        HLUA_SLK_KEYS.COMMON,
+        HLUA_SLK_KEYS.ENV_MODEL,
+        envsLen,
+        "int"
+    }
+)
 
 -- #变身演示
 local re =

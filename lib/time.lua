@@ -51,10 +51,10 @@ end
 htime.timerInPool = function()
     local t
     local td
-    for timer, v in pairs(htime.pool) do
+    for _, v in ipairs(htime.pool) do
         if (v.free == true) then
             v.free = false
-            t = timer
+            t = v.timer
             td = v.dialog
             break
         end
@@ -62,10 +62,14 @@ htime.timerInPool = function()
     if (t == nil) then
         t = cj.CreateTimer()
         td = cj.CreateTimerDialog(t)
-        htime.pool[t] = {
-            free = false,
-            dialog = td
-        }
+        table.insert(
+            htime.pool,
+            {
+                free = false,
+                timer = t,
+                dialog = td
+            }
+        )
     end
     return {t, td}
 end
@@ -189,8 +193,13 @@ htime.delTimer = function(t)
         return
     elseif (type(t) == "userdata") then
         cj.PauseTimer(t)
-        cj.TimerDialogDisplay(htime.pool[t].dialog, false)
-        htime.pool[t].free = true
+        for _, v in ipairs(htime.pool) do
+            if (t == v.timer) then
+                cj.TimerDialogDisplay(v.dialog, false)
+                v.free = true
+            end
+            break
+        end
     elseif (type(t) == "string") then
         local k = htime.kernelInfo(t)
         if (htime.kernel[k[1]] ~= nil and htime.kernel[k[1]][k[2]] ~= nil) then

@@ -266,7 +266,9 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
     local attr = hitem.getAttribute(itId)
     local diff = {}
     local diffPlayer = {}
-    for k, v in pairs(attr) do
+    for _, arr in ipairs(table.obj2arr(attr, CONST_ATTR_KEYS)) do
+        local k = arr.key
+        local v = arr.value
         local typev = type(v)
         local tempDiff
         if (k == "attack_damage_type") then
@@ -306,7 +308,7 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
         elseif (typev == "table") then
             local tempTable = {}
             for i = 1, charges do
-                for _, vv in pairs(v) do
+                for _, vv in ipairs(v) do
                     table.insert(tempTable, vv)
                 end
             end

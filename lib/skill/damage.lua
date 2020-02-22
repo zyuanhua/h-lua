@@ -221,7 +221,7 @@ hskill.damage = function(options)
     if (lastDamage > 0) then
         -- 自然属性
         local tempNatural = {}
-        for k, natural in pairs(CONST_DAMAGE_TYPE_NATURE) do
+        for _, natural in ipairs(CONST_DAMAGE_TYPE_NATURE) do
             tempNatural[natural] =
                 10 + sourceUnitAttr["natural_" .. natural] - targetUnitAttr["natural_" .. natural .. "_oppose"]
             if (tempNatural[natural] < -100) then
@@ -528,7 +528,7 @@ hskill.damage = function(options)
             debuff = sourceUnitAttr.skill_debuff
         end
         if (buff ~= nil) then
-            for _, etc in pairs(buff) do
+            for _, etc in ipairs(buff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
                     hattr.set(sourceUnit, b.during, {[b.attr] = "+" .. b.val})
@@ -539,7 +539,7 @@ hskill.damage = function(options)
             end
         end
         if (debuff ~= nil) then
-            for _, etc in pairs(debuff) do
+            for _, etc in ipairs(debuff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
                     hattr.set(targetUnit, b.during, {[b.attr] = "-" .. b.val})
@@ -557,7 +557,7 @@ hskill.damage = function(options)
             effect = sourceUnitAttr.skill_effect
         end
         if (effect ~= nil) then
-            for _, etc in pairs(effect) do
+            for _, etc in ipairs(effect) do
                 local b = etc.table
                 if ((b.odds or 0) > 0) then
                     if (b.attr == "knocking") then

@@ -90,74 +90,52 @@ end
 -- 为单位注册属性系统所需要的基础技能
 -- hslk_global.attr
 hattr.regAllAbility = function(whichUnit)
-    -- 生命魔法
-    for _, ability in pairs(hslk_global.attr.life.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
+    for _, v in ipairs(hslk_global.attr.ablisGradient) do
+        -- 生命
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.life.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.life.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.life.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.life.sub[v])
+        -- 魔法
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.mana.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.mana.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.mana.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.mana.sub[v])
+        -- 绿字攻击
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.attack_green.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.attack_green.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.attack_green.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.attack_green.sub[v])
+        -- 绿色属性
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.str_green.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.str_green.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.str_green.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.str_green.sub[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.agi_green.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.agi_green.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.agi_green.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.agi_green.sub[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.int_green.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.int_green.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.int_green.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.int_green.sub[v])
+        -- 攻击速度
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.attack_speed.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.attack_speed.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.attack_speed.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.attack_speed.sub[v])
+        -- 防御
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.defend.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.defend.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.defend.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.defend.sub[v])
     end
-    for _, ability in pairs(hslk_global.attr.life.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.mana.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.mana.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    -- 绿字攻击
-    for _, ability in pairs(hslk_global.attr.attack_green.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.attack_green.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    -- 绿色属性
-    for _, ability in pairs(hslk_global.attr.str_green.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.str_green.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.agi_green.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.agi_green.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.int_green.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.int_green.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    -- 攻击速度
-    for _, ability in pairs(hslk_global.attr.attack_speed.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.attack_speed.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    -- 防御
-    for _, ability in pairs(hslk_global.attr.defend.add) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
-    end
-    for _, ability in pairs(hslk_global.attr.defend.sub) do
-        cj.UnitAddAbility(whichUnit, ability)
-        cj.UnitRemoveAbility(whichUnit, ability)
+    for _, v in ipairs(hslk_global.attr.sightGradient) do
+        -- 视野
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.add[v])
+        cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.sub[v])
+        cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.sub[v])
     end
 end
 
@@ -421,9 +399,15 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
             end
         elseif (opr == "-") then
             -- 减少
-            local hkey = string.vkey(val)
+            local valx = table.obj2arr(val, CONST_ATTR_BUFF_KEYS)
+            local valxx = {}
+            for _, xv in ipairs(valx) do
+                table.insert(valxx, xv.value)
+            end
+            valx = nil
+            local hkey = string.vkey(valxx)
             local hasKey = false
-            for k, v in pairs(params[attr]) do
+            for k, v in ipairs(params[attr]) do
                 if (v.hash == hkey) then
                     table.remove(params[attr], k)
                     hasKey = true
@@ -599,21 +583,19 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (futureVal > hattr.max_sight) then
                     futureVal = hattr.max_sight
                 end
-                for _, ability in pairs(hslk_global.attr.sight.add) do
-                    cj.UnitRemoveAbility(whichUnit, ability)
-                end
-                for _, ability in pairs(hslk_global.attr.sight.sub) do
-                    cj.UnitRemoveAbility(whichUnit, ability)
+                for _, gradient in ipairs(hslk_global.attr.sightGradient) do
+                    cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.add[gradient])
+                    cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.sub[gradient])
                 end
                 tempVal = math.floor(math.abs(futureVal))
-                local sightTotal = table.clone(hslk_global.attr.sightTotal)
+                local sightGradient = table.clone(hslk_global.attr.sightGradient)
                 if (tempVal ~= 0) then
                     while (true) do
                         local isFound = false
-                        for _, v in ipairs(sightTotal) do
+                        for _, v in ipairs(sightGradient) do
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
-                                table.delete(v, sightTotal)
+                                table.delete(v, sightGradient)
                                 if (futureVal > 0) then
                                     cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
                                 else
@@ -635,14 +617,14 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (futureVal > 99999999) then
                     futureVal = 99999999
                 end
-                for _, ability in pairs(hslk_global.attr[attr].add) do
-                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
-                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                for _, grad in ipairs(hslk_global.attr.ablisGradient) do
+                    local ab = hslk_global.attr[attr].add[grad]
+                    if (cj.GetUnitAbilityLevel(whichUnit, ab) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ab, 1)
                     end
-                end
-                for _, ability in pairs(hslk_global.attr[attr].sub) do
-                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
-                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    ab = hslk_global.attr[attr].sub[grad]
+                    if (cj.GetUnitAbilityLevel(whichUnit, ab) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ab, 1)
                     end
                 end
                 tempVal = math.floor(math.abs(futureVal))
@@ -672,14 +654,14 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (futureVal > 99999999) then
                     futureVal = 99999999
                 end
-                for _, ability in pairs(hslk_global.attr[attr].add) do
-                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
-                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                for _, grad in ipairs(hslk_global.attr.ablisGradient) do
+                    local ab = hslk_global.attr[attr].add[grad]
+                    if (cj.GetUnitAbilityLevel(whichUnit, ab) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ab, 1)
                     end
-                end
-                for _, ability in pairs(hslk_global.attr[attr].sub) do
-                    if (cj.GetUnitAbilityLevel(whichUnit, ability) > 1) then
-                        cj.SetUnitAbilityLevel(whichUnit, ability, 1)
+                    ab = hslk_global.attr[attr].sub[grad]
+                    if (cj.GetUnitAbilityLevel(whichUnit, ab) > 1) then
+                        cj.SetUnitAbilityLevel(whichUnit, ab, 1)
                     end
                 end
                 tempVal = math.floor(math.abs(futureVal))
@@ -703,7 +685,11 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     end
                 end
                 local setting = {}
-                for k, v in pairs(hRuntime.attributeThreeBuff[string.gsub(attr, "_green", "")]) do
+                local three =
+                    table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_green", "")], CONST_ATTR_KEYS)
+                for _, d in ipairs(three) do
+                    local k = d.key
+                    local v = d.value
                     local tempV = diff * v
                     if (tempV < 0) then
                         setting[k] = "-" .. math.abs(tempV)
@@ -722,7 +708,11 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
                 end
                 local setting = {}
-                for k, v in pairs(hRuntime.attributeThreeBuff[string.gsub(attr, "_white", "")]) do
+                local three =
+                    table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_white", "")], CONST_ATTR_KEYS)
+                for _, d in ipairs(three) do
+                    local k = d.key
+                    local v = d.value
                     local tempV = diff * v
                     if (tempV < 0) then
                         setting[k] = "-" .. math.abs(tempV)
@@ -772,7 +762,9 @@ hattr.set = function(whichUnit, during, data)
         print_err("data must be table")
         return
     end
-    for attr, v in pairs(data) do
+    for _, arr in ipairs(table.obj2arr(data, CONST_ATTR_KEYS)) do
+        local attr = arr.key
+        local v = arr.value
         if (hRuntime.attribute[whichUnit] ~= nil and hRuntime.attribute[whichUnit][attr] ~= nil) then
             if (type(v) == "string") then
                 local opr = string.sub(v, 1, 1)
@@ -785,7 +777,7 @@ hattr.set = function(whichUnit, during, data)
             elseif (type(v) == "table") then
                 -- table型，如特效，buff等
                 if (v.add ~= nil and type(v.add) == "table") then
-                    for _, buff in pairs(v.add) do
+                    for _, buff in ipairs(v.add) do
                         if (buff == nil) then
                             print_err("table effect loss[buff]!")
                             print_stack()
@@ -799,7 +791,7 @@ hattr.set = function(whichUnit, during, data)
                         hattr.setHandle(whichUnit, attr, "+", buff, during)
                     end
                 elseif (v.sub ~= nil and type(v.sub) == "table") then
-                    for _, buff in pairs(v.sub) do
+                    for _, buff in ipairs(v.sub) do
                         if (buff == nil) then
                             print_err("table effect loss[buff]!")
                             print_stack()
