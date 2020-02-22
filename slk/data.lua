@@ -47,15 +47,6 @@ HLUA_SLK_KEYS = {
     EX_SHAPESHIFT = 200
 }
 
---获取一个table的正确长度
-local table_len = function(table)
-    local len = 0
-    for _, _ in pairs(table) do
-        len = len + 1
-    end
-    return len
-end
-
 --科技
 -- #地图等级奖励
 table.insert(
@@ -466,7 +457,7 @@ table.insert(
     {
         HLUA_SLK_KEYS.ITEM_MOMENT,
         -1,
-        table_len(item_moments),
+        #item_moments,
         "int"
     }
 )
@@ -1137,7 +1128,7 @@ table.insert(
     {
         HLUA_SLK_KEYS.COMMON,
         HLUA_SLK_KEYS.ENV_MODEL,
-        table_len(envs),
+        #envs,
         "int"
     }
 )

@@ -14,7 +14,10 @@ end
     key 排行榜唯一key
     refreshFrequency 刷新频率
     yourData 设置数据的回调,会返回当前的排行榜；
-             另外你需要设置数据传回到create中来，拼凑KV数据，playerIndex -> value
+            另外你需要设置数据传回到create中来，拼凑KV数据，{
+                playerIndex = ?,
+                value = ?
+            }
 ]]
 hleaderBoard.create = function(key, refreshFrequency, yourData)
     if (hRuntime.leaderBoard[key] == nil) then
@@ -26,7 +29,9 @@ hleaderBoard.create = function(key, refreshFrequency, yourData)
         refreshFrequency,
         function(t)
             local data = yourData(hRuntime.leaderBoard[key])
-            for playerIndex, value in pairs(data) do
+            for _, data in ipairs(data) do
+                local playerIndex = data.playerIndex
+                local value = data.value
                 if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex]) then
                     cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex])
                 end

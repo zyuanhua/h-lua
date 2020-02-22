@@ -58,7 +58,7 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         hRuntime.env[whichRect] = {}
     else
         -- 清理装饰单位
-        for k, v in pairs(hRuntime.env[whichRect]) do
+        for _, v in ipairs(hRuntime.env[whichRect]) do
             hunit.del(v)
         end
         hRuntime.env[whichRect] = {}
@@ -79,8 +79,8 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
     local midX = (rectEndX - rectStartX) * 0.5
     local midY = (rectEndY - rectStartY) * 0.5
     local doodads = {}
-    for _, v in pairs(doodad) do
-        for _, vv in pairs(v) do
+    for _, v in ipairs(doodad) do
+        for _, vv in ipairs(v) do
             table.insert(doodads, vv)
         end
     end

@@ -344,7 +344,7 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
     hattr.set(whichUnit, 0, diff)
     if (#diffPlayer > 0) then
         local p = cj.GetOwningPlayer(whichUnit)
-        for _, dp in pairs(diffPlayer) do
+        for _, dp in ipairs(diffPlayer) do
             local pk = dp[1]
             local pv = dp[2]
             if (pv ~= 0) then

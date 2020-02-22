@@ -234,7 +234,7 @@ hhero.buildClick = function(during, clickQty)
     local rowNowQty = 0
     local x = 0
     local y = 0
-    for _, v in pairs(hslk_global.heroes) do
+    for _, v in ipairs(hslk_global.heroes) do
         local heroId = v.heroID
         if (heroId > 0) then
             if (rowNowQty >= hhero.build_params.per_row) then
@@ -306,7 +306,7 @@ hhero.buildClick = function(during, clickQty)
                 return
             end
             local qty = #hhero.player_units
-            for k, v in pairs(hhero.player_units[p]) do
+            for _, v in ipairs(hhero.player_units[p]) do
                 hhero.removePlayerUnit(p, v, "click")
                 table.insert(randomChooseAbleList, v)
             end
@@ -485,7 +485,7 @@ hhero.buildTavern = function(during)
                 return
             end
             local qty = #hhero.player_units
-            for k, v in pairs(hhero.player_units[p]) do
+            for _, v in ipairs(hhero.player_units[p]) do
                 local heroId = cj.GetUnitTypeId(v)
                 hhero.removePlayerUnit(p, v, "tavern")
                 table.insert(randomChooseAbleList, hRuntime.heroBuildSelection[heroId].itemId)
@@ -503,7 +503,7 @@ hhero.buildTavern = function(during)
     local y = hhero.build_params.y
     local tavern
     local tavernNowQty = {}
-    for k, v in pairs(hslk_global.heroesItems) do
+    for k, v in ipairs(hslk_global.heroesItems) do
         local itemId = v.itemID
         local heroId = v.heroID
         if (itemID > 0 and heroId > 0) then

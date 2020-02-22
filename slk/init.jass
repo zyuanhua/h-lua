@@ -13,7 +13,7 @@ library zzzSlk initializer Init
         //slk注册
         set hash_hslk = InitHashtable()
         <?
-        for _,v in pairs(tempData)do
+        for _,v in ipairs(tempData)do
             local key1 = v[1]
             local key2 = v[2]
             local val = v[3]
