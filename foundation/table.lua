@@ -90,7 +90,7 @@ table.delete = function(val, arr, qty)
 end
 
 -- 将obj形式的attr数据转为有序数组{key=[key],value=[value]}
-hattr.obj2arr = function(obj, keyMap)
+table.obj2arr = function(obj, keyMap)
     if (keyMap == nil or type(keyMap) ~= "table" or #keyMap <= 0) then
         return {}
     end
