@@ -73,20 +73,16 @@ end
 table.delete = function(val, arr, qty)
     qty = qty or -1
     local q = 0
-    local dels = {}
     for k, v in ipairs(arr) do
         if (v == val) then
             q = q + 1
-            table.insert(dels, k)
+            table.remove(arr, k)
+            k = k - 1
             if (qty ~= -1 and q >= qty) then
                 break
             end
         end
     end
-    for _, k in ipairs(dels) do
-        table.remove(dels, k)
-    end
-    dels = nil
 end
 
 -- 将obj形式的attr数据转为有序数组{key=[key],value=[value]}
