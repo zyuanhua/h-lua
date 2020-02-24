@@ -722,7 +722,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 end
                 hattr.set(whichUnit, 0, setting)
             elseif (attr == "life_back" or attr == "mana_back") then
-                -- 生命恢复 魔法恢复
+                -- 生命,魔法恢复
                 if (math.abs(futureVal) > 0.02 and table.includes(whichUnit, hRuntime.attributeGroup[attr]) == false) then
                     table.insert(hRuntime.attributeGroup[attr], whichUnit)
                 elseif (math.abs(futureVal) < 0.02) then
