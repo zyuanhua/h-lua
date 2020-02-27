@@ -47,7 +47,7 @@ htime.his = function()
     end
     return str
 end
--- 从池中获取一个计时器
+-- 从池中获取一个带窗口计时器
 htime.timerInPool = function()
     local t
     local td
@@ -208,51 +208,28 @@ htime.delTimer = function(t)
     end
 end
 -- 设置一次性计时器
--- TODO 对话框与计时器分离解决泄漏问题
 htime.setTimeout = function(time, yourFunc, title)
-    local t
-    if (title == nil) then
-        t = htime.timerInKernel(time, yourFunc, false)
-    else
+    local t = htime.timerInKernel(time, yourFunc, false)
+    if (title ~= nil) then
         local pool = htime.timerInPool()
         local t = pool[1]
         local td = pool[2]
-        if (title ~= nil) then
-            cj.TimerDialogSetTitle(td, title)
-            cj.TimerDialogDisplay(td, true)
-        end
-        cj.TimerStart(
-            t,
-            time,
-            false,
-            function()
-                yourFunc(t)
-            end
-        )
+        cj.TimerDialogSetTitle(td, title)
+        cj.TimerDialogDisplay(td, true)
+        cj.TimerStart(t, time, false, nil)
     end
     return t
 end
 -- 设置周期性计时器
 htime.setInterval = function(time, yourFunc, title)
-    local t
-    if (title == nil) then
-        t = htime.timerInKernel(time, yourFunc, true)
-    else
+    local t = htime.timerInKernel(time, yourFunc, true)
+    if (title ~= nil) then
         local pool = htime.timerInPool()
         local t = pool[1]
         local td = pool[2]
-        if (title ~= nil) then
-            cj.TimerDialogSetTitle(td, title)
-            cj.TimerDialogDisplay(td, true)
-        end
-        cj.TimerStart(
-            t,
-            time,
-            true,
-            function()
-                yourFunc(t)
-            end
-        )
+        cj.TimerDialogSetTitle(td, title)
+        cj.TimerDialogDisplay(td, true)
+        cj.TimerStart(t, time, true, nil)
     end
     return t
 end
