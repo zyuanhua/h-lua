@@ -1,7 +1,6 @@
 -- 对话框
 hdialog = {
-    trigger = nil,
-    buttonKV = {}
+    trigger = nil
 }
 
 -- 自动根据key识别热键
@@ -28,10 +27,10 @@ hdialog.create = function(whichPlayer, options, call)
     for i = 1, #options.buttons, 1 do
         if (type(options.buttons[i]) == "table") then
             local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))
-            hdialog.buttonKV[b] = options.buttons[i].value
+            hRuntime.dialog[b] = options.buttons[i].value
         else
             local b = cj.DialogAddButton(d, options.buttons[i], hdialog.hotkey(options.buttons[i]))
-            hdialog.buttonKV[b] = options.buttons[i]
+            hRuntime.dialog[b] = options.buttons[i]
         end
     end
     if (hdialog.trigger == nil) then
@@ -41,15 +40,15 @@ hdialog.create = function(whichPlayer, options, call)
             function()
                 local tri_d = cj.GetClickedDialog()
                 local tri_b = cj.GetClickedButton()
-                call(hdialog.buttonKV[tri_b])
-                hdialog.buttonKV[tri_b] = nil
+                hRuntime.dialog[tri_d](hRuntime.dialog[tri_b])
+                hRuntime.dialog[tri_d] = nil
+                hRuntime.dialog[tri_b] = nil
                 cj.DialogClear(tri_d)
                 cj.DialogDestroy(tri_b)
-                cj.DisableTrigger(cj.GetTriggeringTrigger())
-                cj.DestroyTrigger(cj.GetTriggeringTrigger())
             end
         )
     end
+    hRuntime.dialog[d] = call
     cj.TriggerRegisterDialogEvent(hdialog.trigger, d)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYERS, 1 do

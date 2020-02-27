@@ -57,7 +57,8 @@ hRuntime = {
     },
     item = {},
     leaderBoard = {},
-    multiBoard = {}
+    multiBoard = {},
+    dialog = {}
 }
 hRuntime.clear = function(handle)
     if (handle == nil) then

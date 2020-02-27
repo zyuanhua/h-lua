@@ -29,9 +29,9 @@ hleaderBoard.create = function(key, refreshFrequency, yourData)
         refreshFrequency,
         function(t)
             local data = yourData(hRuntime.leaderBoard[key])
-            for _, data in ipairs(data) do
-                local playerIndex = data.playerIndex
-                local value = data.value
+            for _, d in ipairs(data) do
+                local playerIndex = d.playerIndex
+                local value = d.value
                 if cj.LeaderboardHasPlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex]) then
                     cj.LeaderboardRemovePlayerItem(hRuntime.leaderBoard[key], hplayer.players[playerIndex])
                 end
