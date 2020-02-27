@@ -57,18 +57,18 @@ haward.forGroup = function(whichUnit, exp, gold, lumber)
         hgroup.createByUnit(
         whichUnit,
         haward.shareRange,
-        function()
+        function(filterUnit)
             local flag = true
-            if (his.hero(cj.GetFilterUnit()) == false) then
+            if (his.hero(filterUnit) == false) then
                 flag = false
             end
-            if (his.ally(whichUnit, cj.GetFilterUnit()) == false) then
+            if (his.ally(whichUnit, filterUnit) == false) then
                 flag = false
             end
-            if (his.alive(cj.GetFilterUnit()) == false) then
+            if (his.alive(filterUnit) == false) then
                 flag = false
             end
-            if (his.building(cj.GetFilterUnit()) == true) then
+            if (his.building(filterUnit) == true) then
                 flag = false
             end
             return flag

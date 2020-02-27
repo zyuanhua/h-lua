@@ -188,15 +188,15 @@ hskill.split = function(options)
             hgroup.createByUnit(
             targetUnit,
             range,
-            function()
+            function(filterUnit)
                 local flag = true
-                if (his.death(cj.GetFilterUnit())) then
+                if (his.death(filterUnit)) then
                     flag = false
                 end
-                if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
+                if (his.ally(filterUnit, options.sourceUnit)) then
                     flag = false
                 end
-                if (his.building(cj.GetFilterUnit())) then
+                if (his.building(filterUnit)) then
                     flag = false
                 end
                 return flag
@@ -867,15 +867,15 @@ hskill.bomb = function(options)
             hgroup.createByUnit(
             options.whichUnit,
             range,
-            function()
+            function(filterUnit)
                 local flag = true
-                if (his.enemy(options.whichUnit, cj.GetFilterUnit())) then
+                if (his.enemy(options.whichUnit, filterUnit)) then
                     flag = false
                 end
-                if (his.death(cj.GetFilterUnit())) then
+                if (his.death(filterUnit)) then
                     flag = false
                 end
-                if (his.building(cj.GetFilterUnit())) then
+                if (his.building(filterUnit)) then
                     flag = false
                 end
                 return flag
@@ -1059,21 +1059,21 @@ hskill.lightningChain = function(options)
             hgroup.createByUnit(
             whichUnit,
             range,
-            function()
+            function(filterUnit)
                 local flag = true
-                if (his.death(cj.GetFilterUnit())) then
+                if (his.death(filterUnit)) then
                     flag = false
                 end
-                if (his.ally(cj.GetFilterUnit(), options.sourceUnit)) then
+                if (his.ally(filterUnit, options.sourceUnit)) then
                     flag = false
                 end
-                if (his.building(cj.GetFilterUnit())) then
+                if (his.building(filterUnit)) then
                     flag = false
                 end
-                if (his.unit(whichUnit, cj.GetFilterUnit())) then
+                if (his.unit(whichUnit, filterUnit)) then
                     flag = false
                 end
-                if (isRepeat ~= true and hgroup.isIn(options.repeatGroup, cj.GetFilterUnit())) then
+                if (isRepeat ~= true and hgroup.isIn(options.repeatGroup, filterUnit)) then
                     flag = false
                 end
                 return flag
@@ -1630,9 +1630,9 @@ hskill.leap = function(options)
                     hgroup.createByUnit(
                     arrowUnit,
                     damageMovementRange,
-                    function()
-                        local flag = filter()
-                        if (damageMovementRepeat ~= true and hgroup.isIn(repeatGroup, cj.GetFilterUnit())) then
+                    function(filterUnit)
+                        local flag = filter(filterUnit)
+                        if (damageMovementRepeat ~= true and hgroup.isIn(repeatGroup, filterUnit)) then
                             flag = false
                         end
                         return flag
