@@ -166,8 +166,8 @@ hplayer.hideUnit = function(whichPlayer)
     local g =
         hgroup.createByRect(
         cj.GetWorldBounds(),
-        function()
-            return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
+        function(filterUnit)
+            return cj.GetOwningPlayer(filterUnit) == whichPlayer
         end
     )
     while (hgroup.isEmpty(g) ~= true) do
@@ -186,8 +186,8 @@ hplayer.clearUnit = function(whichPlayer)
     local g =
         hgroup.createByRect(
         cj.GetWorldBounds(),
-        function()
-            return cj.GetOwningPlayer(cj.GetFilterUnit()) == whichPlayer
+        function(filterUnit)
+            return cj.GetOwningPlayer(filterUnit) == whichPlayer
         end
     )
     while (hgroup.isEmpty(g) ~= true) do
