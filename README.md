@@ -25,12 +25,11 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── hotKey - 热键
     │   ├── item - 物品
     │   ├── playerColor - 玩家颜色
-    │   ├── unit - 单位
-    │   └── start.lua - 开始准备
+    │   └── unit - 单位
     ├── foundation - 基础文件
     │   ├── foundation - 基础文件
-    │   ├── blizzard_b.lua - 暴雪BJ全局
-    │   ├── blizzard_c.lua - 暴雪C全局
+    │   ├── blizzard_b.lua - 暴雪B全局变量
+    │   ├── blizzard_c.lua - 暴雪C全局变量
     │   ├── blizzard_bj.lua - 暴雪部分BJ函数
     │   ├── blizzard_def.lua - 实际无用，参考用途
     │   ├── color.lua - 颜色
@@ -41,8 +40,7 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── md5.lua - MD5
     │   ├── runtime.lua - 运行时数据集
     │   ├── string.lua - 字符串库
-    │   ├── table.lua - 表库
-    │   └── start.lua - 开始准备
+    │   └── table.lua - 表库
     ├── lib
     │   ├── attrbute.lua - 基础/拓展/伤害特效/自然/单位关联，万能属性系统，自由、强大
     │   ├── award.lua - 奖励模块，用于控制玩家的黄金木头经验
