@@ -84,7 +84,7 @@ hgroup.createByXY = function(x, y, radius, filterFunc)
     if (hcamera.model == "zoomin") then
         radius = radius * 0.5
     end
-    local bx = cj.Condition(filterFunc)
+    local bx = cj.Condition(filterFunc)--泄漏
     local g = cj.CreateGroup()
     cj.GroupEnumUnitsInRange(g, x, y, radius, bx)
     cj.DestroyBoolExpr(bx)
@@ -103,7 +103,7 @@ end
 
 -- 创建单位组,以区域为范围选择
 hgroup.createByRect = function(r, filterFunc)
-    local bx = cj.Condition(filterFunc)
+    local bx = cj.Condition(filterFunc)--泄漏
     local g = cj.CreateGroup()
     cj.GroupEnumUnitsInRect(g, r, bx)
     cj.DestroyBoolExpr(bx)

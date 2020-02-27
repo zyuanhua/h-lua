@@ -208,6 +208,7 @@ htime.delTimer = function(t)
     end
 end
 -- 设置一次性计时器
+-- TODO 对话框与计时器分离解决泄漏问题
 htime.setTimeout = function(time, yourFunc, title)
     local t
     if (title == nil) then

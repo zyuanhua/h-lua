@@ -607,7 +607,7 @@ hitem.pickRect = function(u, x, y, width, height)
     cj.EnumItemsInRect(
         r,
         nil,
-        function()
+        function()--泄漏
             hitem.pick(cj.GetEnumItem(), u)
         end
     )
@@ -868,6 +868,7 @@ hitem.init = function()
             local u = cj.GetTriggerUnit()
             local it = cj.GetManipulatedItem()
             if (it ~= nil and cj.GetSpellAbilityId() == hitem.DEFAULT_SKILL_ITEM_SEPARATE) then
+                print_err("拆分物品尚未完成")
             end
         end
     )
