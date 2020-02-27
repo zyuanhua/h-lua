@@ -1,5 +1,7 @@
 -- 对话框
-hdialog = {}
+hdialog = {
+    trigger = nil
+}
 
 -- 自动根据key识别热键
 hdialog.hotkey = function(key)
@@ -32,21 +34,23 @@ hdialog.create = function(whichPlayer, options, call)
             btnKv[b] = options.buttons[i]
         end
     end
-    local dtg = cj.CreateTrigger()
-    cj.TriggerAddAction(
-        dtg,
-        function()
-            local tri_d = cj.GetClickedDialog()
-            local tri_b = cj.GetClickedButton()
-            local tri_bi = btnKv[tri_b]
-            call(tri_bi)
-            cj.DialogClear(tri_d)
-            cj.DialogDestroy(tri_b)
-            cj.DisableTrigger(cj.GetTriggeringTrigger())
-            cj.DestroyTrigger(cj.GetTriggeringTrigger())
-        end
-    )
-    cj.TriggerRegisterDialogEvent(dtg, d)
+    if (hdialog.trigger == nil) then
+        hdialog.trigger = cj.CreateTrigger()
+        cj.TriggerAddAction(
+            hdialog.trigger,
+            function()
+                local tri_d = cj.GetClickedDialog()
+                local tri_b = cj.GetClickedButton()
+                local tri_bi = btnKv[tri_b]
+                call(tri_bi)
+                cj.DialogClear(tri_d)
+                cj.DialogDestroy(tri_b)
+                cj.DisableTrigger(cj.GetTriggeringTrigger())
+                cj.DestroyTrigger(cj.GetTriggeringTrigger())
+            end
+        )
+    end
+    cj.TriggerRegisterDialogEvent(hdialog.trigger, d)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYERS, 1 do
             if

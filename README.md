@@ -42,11 +42,12 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── string.lua - 字符串库
     │   └── table.lua - 表库
     ├── lib
+    │   ├── skill - 技能包
     │   ├── attrbute.lua - 基础/拓展/伤害特效/自然/单位关联，万能属性系统，自由、强大
     │   ├── award.lua - 奖励模块，用于控制玩家的黄金木头经验
     │   ├── camera.lua - 镜头模块，用于控制玩家镜头
     │   ├── dialog.lua - 对话框模块，用于显示对话框
-    │   ├── dzapi.lua - Dzapi
+    │   ├── dzapi.lua - Dzapi(配合./plugins/dzapi.jass使用)
     │   ├── effect.lua - 特效模块
     │   ├── enemy.lua - 敌人模块，用于设定敌人玩家，自动分配单位
     │   ├── env.lua - 环境模块，可随机为区域生成装饰物及地表纹理
@@ -58,12 +59,11 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── leaderBoard.lua 排行榜模块，用于简易构建排行榜
     │   ├── lightning.lua - 闪电链
     │   ├── mark.lua - 遮罩模块
-    │   ├── message.lua - 消息模块(注意漂浮字模块与h-vjass不同，是一个独立的ttg模块)
+    │   ├── message.lua - 消息模块(注意漂浮字模块与h-vjass不同，是一个独立的textTag模块)
     │   ├── multiBoard.lua - 多面板
     │   ├── player.lua - 玩家
     │   ├── quest.lua - 任务
     │   ├── rect.lua - 区域
-    │   ├── skill.lua - 高级技能
     │   ├── sound.lua - 声音模块
     │   ├── textTag.lua - 漂浮字模块
     │   ├── time.lua - 时间/计时器 * 常用
