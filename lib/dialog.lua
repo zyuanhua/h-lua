@@ -1,6 +1,7 @@
 -- 对话框
 hdialog = {
-    trigger = nil
+    trigger = nil,
+    buttonKV = {}
 }
 
 -- 自动根据key识别热键
@@ -19,7 +20,6 @@ end
 -- 创建一个新的对话框
 hdialog.create = function(whichPlayer, options, call)
     local d = cj.DialogCreate()
-    local btnKv = {}
     if (#options.buttons <= 0) then
         print_err("Dialog buttons is empty")
         return
@@ -28,10 +28,10 @@ hdialog.create = function(whichPlayer, options, call)
     for i = 1, #options.buttons, 1 do
         if (type(options.buttons[i]) == "table") then
             local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))
-            btnKv[b] = options.buttons[i].value
+            hdialog.buttonKV[b] = options.buttons[i].value
         else
             local b = cj.DialogAddButton(d, options.buttons[i], hdialog.hotkey(options.buttons[i]))
-            btnKv[b] = options.buttons[i]
+            hdialog.buttonKV[b] = options.buttons[i]
         end
     end
     if (hdialog.trigger == nil) then
@@ -41,8 +41,8 @@ hdialog.create = function(whichPlayer, options, call)
             function()
                 local tri_d = cj.GetClickedDialog()
                 local tri_b = cj.GetClickedButton()
-                local tri_bi = btnKv[tri_b]
-                call(tri_bi)
+                call(hdialog.buttonKV[tri_b])
+                hdialog.buttonKV[tri_b] = nil
                 cj.DialogClear(tri_d)
                 cj.DialogDestroy(tri_b)
                 cj.DisableTrigger(cj.GetTriggeringTrigger())
