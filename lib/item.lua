@@ -7,11 +7,10 @@
 ]]
 hitem = {
     PRIVATE_TRIGGER = {},
-    TYPE = {
-        COORDINATE = "coordinate",
-        POSITION = "position",
-        UNIT = "unit",
-        LOCATION = "location"
+    POSITION_TYPE = {
+        --物品位置类型
+        COORDINATE = "coordinate", --坐标
+        UNIT = "unit" --单位
     },
     DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv"), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
     DEFAULT_SKILL_ITEM_SEPARATE = hslk_global.skill_item_separate -- 默认拆分物品技能
@@ -21,6 +20,7 @@ hitem = {
 hitem.del = function(it, during)
     during = during or 0
     if (during <= 0 and it ~= nil) then
+        hitem.setPositionType(it, nil)
         cj.SetWidgetLife(it, 1.00)
         cj.RemoveItem(it)
         hRuntime.clear(it)
@@ -29,6 +29,7 @@ hitem.del = function(it, during)
             during,
             function(t)
                 htime.delTimer(t)
+                hitem.setPositionType(it, nil)
                 hRuntime.clear(it)
                 cj.SetWidgetLife(it, 1.00)
                 cj.RemoveItem(it)
@@ -45,6 +46,29 @@ end
 -- 获取物品名称
 hitem.getName = function(it)
     return cj.GetItemName(it)
+end
+
+-- 获取物品位置类型
+hitem.getPositionType = function(it)
+    if (hRuntime.item[it] == nil) then
+        return
+    end
+    return hRuntime.item[it].positionType
+end
+-- 设置物品位置类型
+hitem.setPositionType = function(it, type)
+    if (type == nil) then
+        table.delete(it, hRuntime.itemPickPool)
+        return
+    end
+    if (hRuntime.item[it] == nil) then
+        hRuntime.item[it] = {}
+    end
+    hRuntime.item[it].positionType = type
+    --如果位置是在坐标轴上，将物品加入拾取池
+    if (type == hitem.POSITION_TYPE.COORDINATE) then
+        table.insert(hRuntime.itemPickPool, it)
+    end
 end
 
 -- 获取物品SLK数据集
@@ -401,7 +425,7 @@ hitem.detector = function(whichUnit, it)
                 value = exWeight
             }
         )
-        hRuntime.item[it].type = hitem.TYPE.COORDINATE
+        hitem.setPositionType(it, hitem.POSITION_TYPE.COORDINATE)
         return false
     end
     local overlie = hitem.getOverlie(it)
@@ -450,7 +474,7 @@ hitem.detector = function(whichUnit, it)
         -- 检查身上是否还有格子
         if (hitem.getEmptySlot(whichUnit) > 0) then
             -- 都满足了，把物品给单位
-            hRuntime.item[it].type = hitem.TYPE.UNIT
+            hitem.setPositionType(it, hitem.POSITION_TYPE.UNIT)
             cj.UnitAddItem(whichUnit, it)
             -- 触发获得物品
             hevent.triggerEvent(
@@ -491,7 +515,7 @@ hitem.detector = function(whichUnit, it)
                 triggerItem = it
             }
         )
-        hRuntime.item[it].type = hitem.TYPE.COORDINATE
+        hitem.setPositionType(it, hitem.POSITION_TYPE.COORDINATE)
         return false
     end
     return true
@@ -533,16 +557,16 @@ hitem.create = function(bean)
     local type
     if (bean.x ~= nil and bean.y ~= nil) then
         it = cj.CreateItem(bean.itemId, bean.x, bean.y)
-        type = hitem.TYPE.COORDINATE
+        type = hitem.POSITION_TYPE.COORDINATE
     elseif (bean.whichUnitPosition ~= nil) then
         it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
-        type = hitem.TYPE.POSITION
+        type = hitem.POSITION_TYPE.COORDINATE
     elseif (bean.whichUnit ~= nil) then
         it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
-        type = hitem.TYPE.UNIT
+        type = hitem.POSITION_TYPE.UNIT
     elseif (bean.whichLoc ~= nil) then
         it = cj.CreateItem(bean.itemId, cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
-        type = hitem.TYPE.LOCATION
+        type = hitem.POSITION_TYPE.COORDINATE
     else
         print_err("hitem create -site")
         return
@@ -551,10 +575,10 @@ hitem.create = function(bean)
     hRuntime.item[it] = {
         name = hitem.getName(it),
         itemId = bean.itemId,
-        during = bean.during,
-        type = type
+        during = bean.during
     }
-    if (type == "unit") then
+    hitem.setPositionType(it, type)
+    if (type == hitem.POSITION_TYPE.UNIT) then
         hitem.detector(bean.whichUnit, it)
         if (bean.slotIndex ~= nil and bean.slotIndex >= 0 and bean.slotIndex <= 5) then
             cj.UnitDropItemSlot(bean.whichUnit, it, bean.slotIndex)
@@ -601,17 +625,30 @@ hitem.pick = function(it, targetUnit)
     cj.UnitAddItem(targetUnit, it)
 end
 
--- 一键拾取(x,y)长宽()
+-- 一键拾取区域(x,y)长宽(w,h)
 hitem.pickRect = function(u, x, y, width, height)
     local r = hrect.create(x, y, width, height, "")
     cj.EnumItemsInRect(
         r,
         nil,
-        function()--泄漏
+        function()
+            --泄漏，不建议使用
             hitem.pick(cj.GetEnumItem(), u)
         end
     )
     hrect.del(r, 0)
+end
+
+-- 一键拾取圆(x,y)半径(r)
+hitem.pickRound = function(u, x, y, r)
+    for k = #hRuntime.itemPickPool, 1, -1 do
+        local xi = cj.GetItemX(hRuntime.itemPickPool[k])
+        local yi = cj.GetItemY(hRuntime.itemPickPool[k])
+        local d = math.getDistanceBetweenXY(x, y, xi, yi)
+        if (d <= r and hitem.getEmptySlot(u) > 0) then
+            hitem.pick(hRuntime.itemPickPool[k], u)
+        end
+    end
 end
 
 -- 复制一个单位的所有物品给另一个单位
@@ -657,11 +694,13 @@ end
 
 -- 注册初始化
 hitem.registerAll = function(whichUnit)
-    if (hRuntime.item[whichUnit] == nil) then
-        hRuntime.item[whichUnit] = {}
+    if (hRuntime.unit[whichUnit] == nil) then
+        hRuntime.unit[whichUnit] = {}
     end
-    if (hRuntime.item[whichUnit].init == nil) then
-        hRuntime.item[whichUnit].init = true
+    if (hRuntime.unit[whichUnit].itemInit == nil) then
+        hRuntime.unit[whichUnit].itemInit = true
+    else
+        return
     end
     cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.pickup, whichUnit, EVENT_UNIT_PICKUP_ITEM)
     cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.drop, whichUnit, EVENT_UNIT_DROP_ITEM)
@@ -672,7 +711,7 @@ end
 
 --令单位的物品在runtime内存中释放
 hitem.clearUnitCache = function(whichUnit)
-    if (hRuntime.item[whichUnit] ~= nil) then
+    if (hRuntime.unit[whichUnit] ~= nil) then
         for i = 0, 5, 1 do
             local it = cj.UnitItemInSlot(whichUnit, i)
             if (it ~= nil) then
@@ -701,7 +740,7 @@ hitem.init = function()
                 -- 排除掉没有注册的物品。例如框架内自带的一些物品
                 return
             end
-            if (hRuntime.item[it] ~= nil and hRuntime.item[it].type == hitem.TYPE.UNIT) then
+            if (hRuntime.item[it] ~= nil and hRuntime.item[it].positionType == hitem.POSITION_TYPE.UNIT) then
                 -- 排除掉runtime内已创建给unit的物品
                 return
             end
@@ -785,7 +824,7 @@ hitem.init = function()
                             end
                         )
                     else
-                        hRuntime.item[it].type = hitem.TYPE.COORDINATE
+                        hitem.setPositionType(it, hitem.POSITION_TYPE.COORDINATE)
                     end
                 end
                 hitem.subAttribute(u, itId, charges)

@@ -56,6 +56,7 @@ hRuntime = {
         }
     },
     item = {},
+    itemPickPool = {},
     leaderBoard = {},
     multiBoard = {},
     dialog = {}
