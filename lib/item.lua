@@ -626,17 +626,54 @@ hitem.pick = function(it, targetUnit)
 end
 
 -- 一键拾取区域(x,y)长宽(w,h)
-hitem.pickRect = function(u, x, y, width, height)
-    local r = hrect.create(x, y, width, height, "")
-    cj.EnumItemsInRect(
-        r,
-        nil,
-        function()
-            --泄漏，不建议使用
-            hitem.pick(cj.GetEnumItem(), u)
+hitem.pickRect = function(u, x, y, w, h)
+    local lockDegA = (180 * cj.Atan(h / w)) / bj_PI
+    local lockDegB = 90 - lockDegA
+    for k = #hRuntime.itemPickPool, 1, -1 do
+        local xi = cj.GetItemX(hRuntime.itemPickPool[k])
+        local yi = cj.GetItemY(hRuntime.itemPickPool[k])
+        if (hitem.getEmptySlot(u) > 0) then
+            local d = math.getDistanceBetweenXY(x, y, xi, yi)
+            local deg = math.getDegBetweenXY(x, y, xi, yi)
+            local distance = 0
+            if (deg == 0 or deg == 180 or deg == -180) then
+                -- 横
+                distance = w
+            elseif (deg == 90 or deg == -90) then
+                -- 竖
+                distance = h
+            elseif (deg > 0 and deg <= lockDegA) then
+                -- 第1三角区间
+                distance = w / 2 / math.cos(deg * bj_DEGTORAD)
+            elseif (deg > lockDegA and deg < 90) then
+                -- 第2三角区间
+                distance = h / 2 / math.cos(90 - deg * bj_DEGTORAD)
+            elseif (deg > 90 and deg <= 90 + lockDegB) then
+                -- 第3三角区间
+                distance = h / 2 / math.cos((deg - 90) * bj_DEGTORAD)
+            elseif (deg > 90 + lockDegB and deg < 180) then
+                -- 第4三角区间
+                distance = w / 2 / math.cos((180 - deg) * bj_DEGTORAD)
+            elseif (deg < 0 and deg >= -lockDegA) then
+                -- 第5三角区间
+                distance = w / 2 / math.cos(deg * bj_DEGTORAD)
+            elseif (deg < lockDegA and deg > -90) then
+                -- 第6三角区间
+                distance = h / 2 / math.cos((90 + deg) * bj_DEGTORAD)
+            elseif (deg < -90 and deg >= -90 - lockDegB) then
+                -- 第7三角区间
+                distance = h / 2 / math.cos((-deg - 90) * bj_DEGTORAD)
+            elseif (deg < -90 - lockDegB and deg > -180) then
+                -- 第8三角区间
+                distance = w / 2 / math.cos((180 + deg) * bj_DEGTORAD)
+            end
+            if (d <= distance) then
+                hitem.pick(hRuntime.itemPickPool[k], u)
+            end
+        else
+            break
         end
-    )
-    hrect.del(r, 0)
+    end
 end
 
 -- 一键拾取圆(x,y)半径(r)
@@ -647,6 +684,8 @@ hitem.pickRound = function(u, x, y, r)
         local d = math.getDistanceBetweenXY(x, y, xi, yi)
         if (d <= r and hitem.getEmptySlot(u) > 0) then
             hitem.pick(hRuntime.itemPickPool[k], u)
+        else
+            break
         end
     end
 end
