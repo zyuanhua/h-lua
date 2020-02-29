@@ -1,9 +1,8 @@
-
 -- 极坐标位移
 math.polarProjection = function(x, y, dist, angle)
     return {
         x = x + dist * math.cos(angle * bj_DEGTORAD),
-        y = y + dist * math.sin(angle * bj_DEGTORAD),
+        y = y + dist * math.sin(angle * bj_DEGTORAD)
     }
 end
 
@@ -16,17 +15,17 @@ end
 math.numberFormat = function(value)
     local txt = ""
     if (value > 10000 * 10000 * 10000 * 10000) then
-        txt = string.format('%.2f', value / 10000 * 10000 * 10000 * 10000) .. "亿亿"
+        txt = string.format("%.2f", value / 10000 * 10000 * 10000 * 10000) .. "亿亿"
     elseif (value > 10000 * 10000 * 10000) then
-        txt = string.format('%.2f', value / 10000 * 10000 * 10000) .. "万亿"
+        txt = string.format("%.2f", value / 10000 * 10000 * 10000) .. "万亿"
     elseif (value > 10000 * 10000) then
-        txt = string.format('%.2f', value / 10000 * 10000) .. "亿"
+        txt = string.format("%.2f", value / 10000 * 10000) .. "亿"
     elseif (value > 10000) then
-        txt = string.format('%.2f', value / 10000) .. "万"
+        txt = string.format("%.2f", value / 10000) .. "万"
     elseif (value > 1000) then
-        txt = string.format('%.2f', value / 1000) .. "千"
+        txt = string.format("%.2f", value / 1000) .. "千"
     else
-        txt = string.format('%.2f', value)
+        txt = string.format("%.2f", value)
     end
     return txt
 end
@@ -63,4 +62,53 @@ end
 -- 获取两个单位距离
 math.getDistanceBetweenUnit = function(u1, u2)
     return math.getDistanceBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
+end
+
+--[[
+    获取矩形区域内某角度距离边缘最大距离
+    w = 区域长
+    h = 区域宽
+    deg = 角度
+]]
+math.getMaxDistanceInRect = function(w, h, deg)
+    w = w or 0
+    h = h or 0
+    if (w <= 0 or h <= 0) then
+        return
+    end
+    local distance = 0
+    local lockDegA = (180 * cj.Atan(h / w)) / bj_PI
+    local lockDegB = 90 - lockDegA
+    if (deg == 0 or deg == 180 or deg == -180) then
+        -- 横
+        distance = w
+    elseif (deg == 90 or deg == -90) then
+        -- 竖
+        distance = h
+    elseif (deg > 0 and deg <= lockDegA) then
+        -- 第1三角区间
+        distance = w / 2 / math.cos(deg * bj_DEGTORAD)
+    elseif (deg > lockDegA and deg < 90) then
+        -- 第2三角区间
+        distance = h / 2 / math.cos(90 - deg * bj_DEGTORAD)
+    elseif (deg > 90 and deg <= 90 + lockDegB) then
+        -- 第3三角区间
+        distance = h / 2 / math.cos((deg - 90) * bj_DEGTORAD)
+    elseif (deg > 90 + lockDegB and deg < 180) then
+        -- 第4三角区间
+        distance = w / 2 / math.cos((180 - deg) * bj_DEGTORAD)
+    elseif (deg < 0 and deg >= -lockDegA) then
+        -- 第5三角区间
+        distance = w / 2 / math.cos(deg * bj_DEGTORAD)
+    elseif (deg < lockDegA and deg > -90) then
+        -- 第6三角区间
+        distance = h / 2 / math.cos((90 + deg) * bj_DEGTORAD)
+    elseif (deg < -90 and deg >= -90 - lockDegB) then
+        -- 第7三角区间
+        distance = h / 2 / math.cos((-deg - 90) * bj_DEGTORAD)
+    elseif (deg < -90 - lockDegB and deg > -180) then
+        -- 第8三角区间
+        distance = w / 2 / math.cos((180 + deg) * bj_DEGTORAD)
+    end
+    return distance
 end

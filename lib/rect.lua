@@ -161,8 +161,6 @@ hrect.lock = function(bean)
                     h = hrect.getHeight(bean.whichRect)
                 end
             end
-            local lockDegA = (180 * cj.Atan(h / w)) / bj_PI
-            local lockDegB = 90 - lockDegA
             local lockRect
             local lockGroup
             if (bean.type == "square") then
@@ -195,37 +193,7 @@ hrect.lock = function(bean)
                 if (bean.type == "square") then
                     if (his.borderRect(lockRect, xx, yy) == true) then
                         deg = math.getDegBetweenXY(x, y, xx, yy)
-                        if (deg == 0 or deg == 180 or deg == -180) then
-                            -- 横
-                            distance = w
-                        elseif (deg == 90 or deg == -90) then
-                            -- 竖
-                            distance = h
-                        elseif (deg > 0 and deg <= lockDegA) then
-                            -- 第1三角区间
-                            distance = w / 2 / math.cos(deg * bj_DEGTORAD)
-                        elseif (deg > lockDegA and deg < 90) then
-                            -- 第2三角区间
-                            distance = h / 2 / math.cos(90 - deg * bj_DEGTORAD)
-                        elseif (deg > 90 and deg <= 90 + lockDegB) then
-                            -- 第3三角区间
-                            distance = h / 2 / math.cos((deg - 90) * bj_DEGTORAD)
-                        elseif (deg > 90 + lockDegB and deg < 180) then
-                            -- 第4三角区间
-                            distance = w / 2 / math.cos((180 - deg) * bj_DEGTORAD)
-                        elseif (deg < 0 and deg >= -lockDegA) then
-                            -- 第5三角区间
-                            distance = w / 2 / math.cos(deg * bj_DEGTORAD)
-                        elseif (deg < lockDegA and deg > -90) then
-                            -- 第6三角区间
-                            distance = h / 2 / math.cos((90 + deg) * bj_DEGTORAD)
-                        elseif (deg < -90 and deg >= -90 - lockDegB) then
-                            -- 第7三角区间
-                            distance = h / 2 / math.cos((-deg - 90) * bj_DEGTORAD)
-                        elseif (deg < -90 - lockDegB and deg > -180) then
-                            -- 第8三角区间
-                            distance = w / 2 / math.cos((180 + deg) * bj_DEGTORAD)
-                        end
+                        distance = math.getMaxDistanceInRect(w, h, deg)
                     end
                 elseif (bean.type == "circle") then
                     if (math.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
