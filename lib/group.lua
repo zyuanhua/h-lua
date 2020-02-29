@@ -87,16 +87,21 @@ hgroup.createByXY = function(x, y, radius, filterFunc)
     local g = cj.CreateGroup()
     cj.GroupEnumUnitsInRange(g, x, y, radius, nil)
     if (filterFunc ~= nil) then
+        local fg = cj.CreateGroup()
         hgroup.loop(
             g,
             function(filterUnit)
-                if (filterFunc(filterUnit) ~= true) then
-                    cj.GroupRemoveUnit(g, filterUnit)
+                if (filterFunc(filterUnit) == true) then
+                    cj.GroupAddUnit(fg, filterUnit)
                 end
-            end
+            end,
+            true
         )
+        g = nil
+        return fg
+    else
+        return g
     end
-    return g
 end
 
 -- 创建单位组,以loc点为中心radius距离
@@ -114,16 +119,21 @@ hgroup.createByRect = function(r, filterFunc)
     local g = cj.CreateGroup()
     cj.GroupEnumUnitsInRect(g, r, nil)
     if (filterFunc ~= nil) then
+        local fg = cj.CreateGroup()
         hgroup.loop(
             g,
             function(filterUnit)
-                if (filterFunc(filterUnit) ~= true) then
-                    cj.GroupRemoveUnit(g, filterUnit)
+                if (filterFunc(filterUnit) == true) then
+                    cj.GroupAddUnit(fg, filterUnit)
                 end
-            end
+            end,
+            true
         )
+        g = nil
+        return fg
+    else
+        return g
     end
-    return g
 end
 
 -- 瞬间移动单位组
