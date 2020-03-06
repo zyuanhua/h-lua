@@ -223,6 +223,9 @@ end
 -- 是否身上有某种物品
 his.ownItem = function(u, itemId)
     local f = false
+    if (type(itemId) == "string") then
+        itemId = string.char2id(itemId)
+    end
     for i = 0, 5, 1 do
         local it = cj.UnitItemInSlot(u, i)
         if (it ~= nil and cj.GetItemTypeId(it) == itemId) then

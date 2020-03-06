@@ -211,6 +211,15 @@ string.implode = function(delimeter, table)
     return str
 end
 
+-- 统计某个子串出现的首位,不包含返回-1
+string.strpos = function(str, pattern)
+    if (str == nil or pattern == nil) then
+        return
+    end
+    local s = string.find(str, pattern, 0)
+    return s or -1
+end
+
 -- 统计某个子串出现的次数
 string.findCount = function(str, pattern)
     if (str == nil or pattern == nil) then
