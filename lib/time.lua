@@ -71,7 +71,7 @@ htime.timerInPool = function()
             }
         )
     end
-    return {t, td}
+    return { t, td }
 end
 -- 从内核中获取一个计时器（实际上这里获得的是timer key）
 htime.timerInKernel = function(time, yourFunc, isInterval)
@@ -104,7 +104,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
                     if (v.enable == true) then
                         v.remain = v.remain - space
                         if (v.remain <= 0) then
-                            v.yourFunc(string.implode("_", {space, k}))
+                            v.yourFunc(string.implode("_", { space, k }))
                             if (v.isInterval == true) then
                                 v.remain = v.set
                             else
@@ -145,14 +145,14 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
             yourFunc = yourFunc
         }
     end
-    return string.implode("_", {space, kernelClock})
+    return string.implode("_", { space, kernelClock })
 end
 -- 内核数据
 htime.kernelInfo = function(t)
     local index = string.explode("_", t)
     local space = tonumber(index[1])
     local k = tonumber(index[2])
-    return {space, k}
+    return { space, k }
 end
 -- 获取计时器设置时间
 htime.getSetTime = function(t)

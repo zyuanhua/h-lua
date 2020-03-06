@@ -6,7 +6,6 @@ table.len = function(table)
     for _, _ in pairs(table) do
         len = len + 1
     end
-    print("[Deprecated]table.len !")
     return len
 end
 
@@ -41,9 +40,11 @@ end
 
 -- 合并table
 table.merge = function(table1, table2)
-    local tempTable = {}
+    local tempTable
     if (table1 ~= nil) then
-        tempTable = table.clone(table1)
+        tempTable = table1
+    else
+        tempTable = {}
     end
     if (table2 == nil) then
         return tempTable

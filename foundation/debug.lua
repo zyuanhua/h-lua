@@ -51,7 +51,7 @@ print_stack = function(...)
     if (HLUA_DEBUG == false) then
         return
     end
-    local out = {"[TRACE]"}
+    local out = { "[TRACE]" }
     local n = select("#", ...)
     for i = 1, n, 1 do
         local v = select(i, ...)
