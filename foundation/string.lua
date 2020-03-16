@@ -87,8 +87,8 @@ end
 
 -- 转义
 string.addslashes = function(s)
-    local in_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
-    local out_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
+    local in_char = { "\\", '"', "/", "\b", "\f", "\n", "\r", "\t" }
+    local out_char = { "\\", '"', "/", "b", "f", "n", "r", "t" }
     for i, c in ipairs(in_char) do
         s = s:gsub(c, "\\" .. out_char[i])
     end
@@ -97,8 +97,8 @@ end
 
 -- 反转义
 string.stripslashes = function(s)
-    local in_char = {"\\", '"', "/", "b", "f", "n", "r", "t"}
-    local out_char = {"\\", '"', "/", "\b", "\f", "\n", "\r", "\t"}
+    local in_char = { "\\", '"', "/", "b", "f", "n", "r", "t" }
+    local out_char = { "\\", '"', "/", "\b", "\f", "\n", "\r", "\t" }
 
     for i, c in ipairs(in_char) do
         s = s:gsub("\\" .. c, out_char[i])
@@ -211,13 +211,17 @@ string.implode = function(delimeter, table)
     return str
 end
 
--- 统计某个子串出现的首位,不包含返回-1
+-- 统计某个子串出现的首位,不包含返回false
 string.strpos = function(str, pattern)
     if (str == nil or pattern == nil) then
-        return
+        return false
     end
     local s = string.find(str, pattern, 0)
-    return s or -1
+    if (type(s) == "number") then
+        return s
+    else
+        return false
+    end
 end
 
 -- 统计某个子串出现的次数
