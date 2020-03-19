@@ -13,25 +13,6 @@ bj.CreateQuestBJ(
     "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
 )
 txt = ""
-txt = txt .. "-random 随机选择"
-txt = txt .. "|n-repick 重新选择"
-bj.CreateQuestBJ(
-    bj_QUESTTYPE_OPT_DISCOVERED,
-    "选择英雄指令",
-    txt,
-    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
-)
-txt = ""
-txt = txt .. "-apc 设定是否自动转换黄金为木头"
-txt = txt .. "|n获得黄金超过100万时，自动按照比率转换多余的部分为木头"
-txt = txt .. "|n如果超过时没有开启，会寄存下来，待开启再转换(上限1000万)"
-bj.CreateQuestBJ(
-    bj_QUESTTYPE_OPT_DISCOVERED,
-    "设定自动转金为木",
-    txt,
-    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
-)
-txt = ""
 txt = txt .. "-apm 查看你的APM数值"
 bj.CreateQuestBJ(
     bj_QUESTTYPE_OPT_DISCOVERED,
@@ -54,6 +35,27 @@ txt = txt .. "|n这个命令只有在单人时有效，可关闭大部分的特�
 bj.CreateQuestBJ(
     bj_QUESTTYPE_OPT_DISCOVERED,
     "开关特效[单人]",
+    txt,
+    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
+)
+txt = ""
+txt = txt .. "当地图可以自主选择英雄时："
+txt = txt .. "-random 随机选择"
+txt = txt .. "|n-repick 重新选择"
+bj.CreateQuestBJ(
+    bj_QUESTTYPE_OPT_DISCOVERED,
+    "选择英雄指令",
+    txt,
+    "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
+)
+txt = ""
+txt = txt .. "-apc 设定是否自动转换黄金为木头"
+txt = txt .. "|n获得黄金超过100万时，自动按照比率转换多余的部分为木头"
+txt = txt .. "|n如果超过时没有开启，会寄存下来，待开启再转换(上限1000万)"
+txt = txt .. "|n转换需要额外超过限度才生效"
+bj.CreateQuestBJ(
+    bj_QUESTTYPE_OPT_DISCOVERED,
+    "设定自动转金为木",
     txt,
     "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
 )
