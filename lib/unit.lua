@@ -404,27 +404,25 @@ hunit.create = function(bean)
                 cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
             end
         end
-        --记入realtime
-        hRuntime.unit[u] = {
-            id = bean.unitId,
-            whichPlayer = bean.whichPlayer,
-            x = x,
-            y = y,
-            life = bean.life,
-            during = bean.during,
-            isOpenPunish = bean.isOpenPunish,
-            isShadow = bean.isShadow
-        }
         --注册系统(默认注册)
         if (type(bean.register) ~= "boolean") then
             bean.register = true
         end
         if (bean.register == true) then
+            --记入realtime
+            hRuntime.unit[u] = {
+                id = bean.unitId,
+                whichPlayer = bean.whichPlayer,
+                x = x,
+                y = y,
+                life = bean.life,
+                during = bean.during,
+                isOpenPunish = bean.isOpenPunish,
+                isShadow = bean.isShadow
+            }
             -- 受伤与死亡
             cj.TriggerRegisterUnitEvent(hunit.TRIGGER_DAMAGED, u, EVENT_UNIT_DAMAGED)
             cj.TriggerRegisterUnitEvent(hunit.TRIGGER_DEATH, u, EVENT_UNIT_DEATH)
-            -- 属性系统
-            hattr.init(u)
             -- 物品系统
             if (his.hasSlot(u)) then
                 hitem.registerAll(u)
