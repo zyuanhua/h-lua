@@ -40,6 +40,9 @@ end
 
 -- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
 henemy.setPlayer = function(whichPlayer)
+    if (table.includes(whichPlayer, henemy.players)) then
+        return
+    end
     table.insert(henemy.players, whichPlayer)
     if (henemy.numbers[whichPlayer] == nil) then
         henemy.numbers[whichPlayer] = 0
@@ -47,6 +50,17 @@ henemy.setPlayer = function(whichPlayer)
     cj.SetPlayerName(whichPlayer, henemy.name)
     cj.SetPlayerColor(whichPlayer, henemy.getColor())
 end
+
+-- 将一组玩家位置设定为敌人
+henemy.setPlayers = function(playerArray)
+    if (#playerArray < 1) then
+        return
+    end
+    for _, whichPlayer in ipairs(playerArray) do
+        henemy.setPlayer(whichPlayer)
+    end
+end
+
 -- 最优化自动获取一个敌人玩家
 -- createQty 可设定创建单位数，更精准调用，默认权重 1
 henemy.getPlayer = function(createQty)
