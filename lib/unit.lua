@@ -359,6 +359,7 @@ hunit.create = function(bean)
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then
             hunit.setPeriod(u, bean.life)
+            hunit.del(u, bean.life + 1)
         end
         -- 持续时间 delete
         if (bean.during ~= nil and bean.during >= 0) then
