@@ -17,12 +17,12 @@ hunit.init = function()
             local damage = cj.GetEventDamage()
             local oldLife = hunit.getCurLife(targetUnit)
             if (damage > 0.125) then
-                hattr.set(targetUnit, 0, {life = "+" .. damage})
+                hattr.set(targetUnit, 0, { life = "+" .. damage })
                 htime.setTimeout(
                     0,
                     function(t)
                         htime.delTimer(t)
-                        hattr.set(targetUnit, 0, {life = "-" .. damage})
+                        hattr.set(targetUnit, 0, { life = "-" .. damage })
                         hunit.setCurLife(targetUnit, oldLife)
                         hskill.damage(
                             {
@@ -100,7 +100,7 @@ hunit.init = function()
                 if (his.deleted(u) == true) then
                     table.remove(hRuntime.attributeGroup.punish, k)
                 elseif (his.alive(u) == true and his.damaging(u) == false) then
-                    hattr.set(u, 0, {punish_current = "+" .. (hattr.get(u, "punish") * 0.015)})
+                    hattr.set(u, 0, { punish_current = "+" .. (hattr.get(u, "punish") * 0.015) })
                 end
             end
         end
@@ -201,6 +201,9 @@ end
 --单位是否启用硬直（系统默认不启用）
 hunit.isOpenPunish = function(u)
     if (u == nil or hRuntime.unit[u]) then
+        return false
+    end
+    if (type(hRuntime.unit[u].isOpenPunish) ~= 'boolean') then
         return false
     end
     return hRuntime.unit[u].isOpenPunish
