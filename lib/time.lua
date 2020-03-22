@@ -101,7 +101,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
             true,
             function()
                 for k, v in ipairs(htime.kernel[space]) do
-                    if (v.enable == true) then
+                    if (v.running == true) then
                         v.remain = v.remain - space
                         if (v.remain <= 0) then
                             v.yourFunc(string.implode("_", { space, k }))
@@ -109,7 +109,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
                                 v.remain = v.set
                             else
                                 --修改标志保留数据，可复用亦可复盘
-                                v.enable = false
+                                v.running = false
                             end
                         end
                     end
@@ -119,7 +119,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
     end
     local kernelClock = -1
     for k, v in ipairs(htime.kernel[space]) do
-        if (v.enable == false) then
+        if (v.running == false) then
             kernelClock = k
             break
         end
@@ -128,7 +128,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
         table.insert(
             htime.kernel[space],
             {
-                enable = true,
+                running = true,
                 isInterval = isInterval,
                 set = time,
                 remain = time,
@@ -138,7 +138,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
         kernelClock = #htime.kernel
     else
         htime.kernel[space][kernelClock] = {
-            enable = true,
+            running = true,
             isInterval = isInterval,
             set = time,
             remain = time,
@@ -203,7 +203,7 @@ htime.delTimer = function(t)
     elseif (type(t) == "string") then
         local k = htime.kernelInfo(t)
         if (htime.kernel[k[1]] ~= nil and htime.kernel[k[1]][k[2]] ~= nil) then
-            htime.kernel[k[1]][k[2]].enable = false
+            htime.kernel[k[1]][k[2]].running = false
         end
     end
 end

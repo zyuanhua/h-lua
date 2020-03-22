@@ -97,8 +97,7 @@ hplayer.init()
 hitem.init()
 -- 单位
 hunit.init()
-
 -- DzApi
-if (cg.HLUA_DZAPI_FLAG == true) then
-    hdzapi.init()
-end
+hdzapi.init()
+--F9任务
+hf9({ 'apm', 'sight', 'eff' })
