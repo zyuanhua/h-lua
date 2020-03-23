@@ -356,15 +356,6 @@ hunit.create = function(bean)
             bean.opacity = math.round(bean.opacity)
             cj.SetUnitVertexColor(u, 255, 255, 255, 255 * bean.opacity)
         end
-        -- 生命周期 dead
-        if (bean.life ~= nil and bean.life > 0) then
-            hunit.setPeriod(u, bean.life)
-            hunit.del(u, bean.life + 1)
-        end
-        -- 持续时间 delete
-        if (bean.during ~= nil and bean.during >= 0) then
-            hunit.del(u, bean.during)
-        end
         if (bean.attackX ~= nil and bean.attackY ~= nil) then
             cj.IssuePointOrder(u, "attack", bean.attackX, bean.attackY)
         elseif (bean.attackLoc ~= nil) then
@@ -432,6 +423,15 @@ hunit.create = function(bean)
             end
             --标志位
             hRuntime.unit[u].init = 1
+        end
+        -- 生命周期 dead
+        if (bean.life ~= nil and bean.life > 0) then
+            hunit.setPeriod(u, bean.life)
+            hunit.del(u, bean.life + 1)
+        end
+        -- 持续时间 delete
+        if (bean.during ~= nil and bean.during >= 0) then
+            hunit.del(u, bean.during)
         end
     end
     if (g ~= nil) then
