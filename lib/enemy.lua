@@ -2,7 +2,7 @@
 henemy = {
     players = {}, -- 充当敌人的玩家
     numbers = {}, -- 充当敌人的玩家调用次数，默认 0
-    numberLimit = 100000, -- 充当敌人的玩家调用次数上限，达到就全体归0
+    numberLimit = 100, -- 充当敌人的玩家调用次数上限，达到就全体归0
     name = "敌军",
     color = cj.ConvertPlayerColor(12),
     shareSight = false,
@@ -44,8 +44,9 @@ henemy.setPlayer = function(whichPlayer)
         return
     end
     table.insert(henemy.players, whichPlayer)
-    if (henemy.numbers[whichPlayer] == nil) then
-        henemy.numbers[whichPlayer] = 0
+    local index = hplayer.index(whichPlayer)
+    if (henemy.numbers[#henemy.players] == nil) then
+        henemy.numbers[#henemy.players] = 0
     end
     cj.SetPlayerName(whichPlayer, henemy.name)
     cj.SetPlayerColor(whichPlayer, henemy.getColor())
@@ -64,27 +65,27 @@ end
 -- 最优化自动获取一个敌人玩家
 -- createQty 可设定创建单位数，更精准调用，默认权重 1
 henemy.getPlayer = function(createQty)
-    local len = #henemy.players
     local p
     if (createQty == nil) then
         createQty = 1
     else
         createQty = math.floor(createQty)
     end
-    for i = 1, len, 1 do
-        if (p == nil) then
-            p = henemy.players[i]
-        elseif (henemy.numbers[henemy.players[i]] < henemy.numbers[p]) then
-            p = henemy.players[i]
+    local tagI = 0
+    for i = 1, #henemy.players, 1 do
+        if (tagI == 0) then
+            tagI = i
+        elseif (henemy.numbers[i] < henemy.numbers[tagI]) then
+            tagI = i
         end
     end
-    henemy.numbers[p] = henemy.numbers[p] + createQty
-    if (henemy.numbers[p] > henemy.numberLimit) then
-        for i = 1, len, 1 do
-            henemy.numbers[henemy.players[i]] = 0
+    henemy.numbers[tagI] = henemy.numbers[tagI] + createQty
+    if (henemy.numbers[tagI] > henemy.numberLimit) then
+        for i = 1, #henemy.players, 1 do
+            henemy.numbers[i] = 0
         end
     end
-    return p
+    return henemy.players[tagI]
 end
 --[[
     创建敌人单位/单位组
