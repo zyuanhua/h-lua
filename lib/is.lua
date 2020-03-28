@@ -83,6 +83,8 @@ his.detected = function(whichUnit, whichPlayer)
     return flag
 end
 -- 是否拥有物品栏
+-- 经测试(1.27a)单位物品栏（各族）等价物英雄物品栏，等级为1，即使科技明明没有
+-- RPG应去除多余的物品栏，确保判定的准确性
 his.hasSlot = function(whichUnit, slotId)
     if (slotId == nil) then
         slotId = hitem.DEFAULT_SKILL_ITEM_SLOT

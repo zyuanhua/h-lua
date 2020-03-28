@@ -93,8 +93,6 @@ hunit.del(u)
 
 -- 玩家
 hplayer.init()
--- 物品
-hitem.init()
 -- 单位
 hunit.init()
 -- DzApi

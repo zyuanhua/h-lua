@@ -1,63 +1,4 @@
-hunit = {
-    trigger_red_line = 30000,
-    trigger = {
-        damaged = {},
-        death = {},
-    },
-    trigger_actions = {
-        damaged = cj.Condition(function()
-            local sourceUnit = cj.GetEventDamageSource()
-            local targetUnit = cj.GetTriggerUnit()
-            local damage = cj.GetEventDamage()
-            local oldLife = hunit.getCurLife(targetUnit)
-            if (damage > 0.125) then
-                hattr.set(targetUnit, 0, { life = "+" .. damage })
-                htime.setTimeout(
-                    0,
-                    function(t)
-                        htime.delTimer(t)
-                        hattr.set(targetUnit, 0, { life = "-" .. damage })
-                        hunit.setCurLife(targetUnit, oldLife)
-                        hskill.damage(
-                            {
-                                sourceUnit = sourceUnit,
-                                targetUnit = targetUnit,
-                                damage = damage,
-                                damageKind = "attack"
-                            }
-                        )
-                    end
-                )
-            end
-        end),
-        death = cj.Condition(function()
-            local u = cj.GetTriggerUnit()
-            local killer = hevent.getLastDamageUnit(u)
-            if (killer ~= nil) then
-                hplayer.addKill(cj.GetOwningPlayer(killer), 1)
-            end
-            -- @触发死亡事件
-            hevent.triggerEvent(
-                u,
-                CONST_EVENT.dead,
-                {
-                    triggerUnit = u,
-                    killer = killer
-                }
-            )
-            -- @触发击杀事件
-            hevent.triggerEvent(
-                killer,
-                CONST_EVENT.kill,
-                {
-                    triggerUnit = killer,
-                    killer = killer,
-                    targetUnit = u
-                }
-            )
-        end),
-    },
-}
+hunit = {}
 
 -- 初始化(in index)
 hunit.init = function()
@@ -405,40 +346,16 @@ hunit.create = function(bean)
                 isOpenPunish = bean.isOpenPunish,
                 isShadow = bean.isShadow
             }
-            -- 受伤与死亡
-            local cutTgrIndex = #hunit.trigger.damaged
-            if (cutTgrIndex <= 0 or hunit.trigger.damaged[cutTgrIndex].count >= hunit.trigger_red_line) then
-                local tgrDmg = cj.CreateTrigger()
-                -- 单位受伤
-                table.insert(hunit.trigger.damaged, {
-                    stock = 0,
-                    count = 0,
-                    trigger = tgrDmg
-                })
-                cj.TriggerAddCondition(tgrDmg, hunit.trigger_actions.damaged)
-                -- 单位死亡
-                local tgrDead = cj.CreateTrigger()
-                table.insert(hunit.trigger.death, {
-                    stock = 0,
-                    count = 0,
-                    trigger = tgrDead
-                })
-                cj.TriggerAddCondition(tgrDead, hunit.trigger_actions.death)
-                cutTgrIndex = #hunit.trigger.damaged
-            end
-            hRuntime.unit[u].trigger = cutTgrIndex
-            hunit.trigger.damaged[cutTgrIndex].count = hunit.trigger.damaged[cutTgrIndex].count + 1
-            hunit.trigger.damaged[cutTgrIndex].stock = hunit.trigger.damaged[cutTgrIndex].stock + 1
-            cj.TriggerRegisterUnitEvent(hunit.trigger.damaged[cutTgrIndex].trigger, u, EVENT_UNIT_DAMAGED)
-            hunit.trigger.death[cutTgrIndex].count = hunit.trigger.death[cutTgrIndex].count + 1
-            hunit.trigger.death[cutTgrIndex].stock = hunit.trigger.death[cutTgrIndex].stock + 1
-            cj.TriggerRegisterUnitEvent(hunit.trigger.death[cutTgrIndex].trigger, u, EVENT_UNIT_DEATH)
+            -- 单位受伤
+            hevent.pool(u, 'damaged', hevent.POOL_ACTIONS.damaged, EVENT_UNIT_DAMAGED)
+            -- 单位死亡
+            hevent.pool(u, 'death', hevent.POOL_ACTIONS.death, EVENT_UNIT_DEATH)
             -- 物品系统
             if (his.hasSlot(u)) then
-                hitem.registerAll(u)
+                hitem.register(u)
             elseif (bean.isOpenSlot == true) then
                 hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
-                hitem.registerAll(u)
+                hitem.register(u)
             end
         end
         -- 生命周期 dead

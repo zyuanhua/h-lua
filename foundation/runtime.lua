@@ -21,7 +21,8 @@ hRuntime = {
     camera = {},
     event = {
         register = {},
-        trigger = {}
+        trigger = {},
+        pool = {},
     },
     textTag = {},
     rect = {},
@@ -86,6 +87,30 @@ hRuntime.clear = function(handle)
     if (hRuntime.event.trigger[handle] ~= nil) then
         hRuntime.event.trigger[handle] = nil
     end
+    if (hRuntime.event.pool[handle] ~= nil) then
+        for _, p in ipairs(hRuntime.event.pool[handle]) do
+            local key = p.key
+            local poolIndex = p.poolIndex
+            hevent.POOL[key][poolIndex].stock = hevent.POOL[key][poolIndex].stock - 1
+            -- 起码利用红线一半允许归零
+            if (hevent.POOL[key][poolIndex].stock == 0
+                and hevent.POOL[key][poolIndex].count > 0.5 * hevent.POOL_RED_LINE) then
+                cj.DisableTrigger(hevent.POOL[key][poolIndex].trigger)
+                cj.DestroyTrigger(hevent.POOL[key][poolIndex].trigger)
+                hevent.POOL[key][poolIndex] = -1
+            end
+            local e = 0
+            for _, v in ipairs(hevent.POOL[key]) do
+                if (v == -1) then
+                    e = e + 1
+                end
+            end
+            if (e == #hevent.POOL[key]) then
+                hevent.POOL[key] = {}
+            end
+        end
+        hRuntime.event.pool[handle] = nil
+    end
     if (hRuntime.textTag[handle] ~= nil) then
         hRuntime.textTag[handle] = nil
     end
@@ -96,24 +121,6 @@ hRuntime.clear = function(handle)
         hRuntime.player[handle] = nil
     end
     if (hRuntime.unit[handle] ~= nil) then
-        local cutTgrIndex = hRuntime.unit[handle].trigger
-        for _, t in ipairs({ 'damaged', 'death' }) do
-            hunit.trigger[t][cutTgrIndex].stock = hunit.trigger[t][cutTgrIndex].stock - 1
-            if (hunit.trigger[t][cutTgrIndex].stock == 0 and hunit.trigger[t][cutTgrIndex].count >= hunit.trigger_red_line) then
-                cj.DisableTrigger(hunit.trigger[t][cutTgrIndex].trigger)
-                cj.DestroyTrigger(hunit.trigger[t][cutTgrIndex].trigger)
-                hunit.trigger[t][cutTgrIndex] = -1
-            end
-            local e = 0
-            for _, v in ipairs(hunit.trigger[t]) do
-                if (v == -1) then
-                    e = e + 1
-                end
-            end
-            if (e == #hunit.trigger[t]) then
-                hunit.trigger[t] = {}
-            end
-        end
         hRuntime.unit[handle] = nil
     end
     if (hRuntime.hero[handle] ~= nil) then

@@ -6,14 +6,13 @@
     物品存在重量，背包有负重，超过负重即使存在合成关系，也会被暂时禁止合成
 ]]
 hitem = {
-    PRIVATE_TRIGGER = {},
+    DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv"), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
+    DEFAULT_SKILL_ITEM_SEPARATE = hslk_global.skill_item_separate, -- 默认拆分物品技能
     POSITION_TYPE = {
         --物品位置类型
         COORDINATE = "coordinate", --坐标
         UNIT = "unit" --单位
     },
-    DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv"), -- 默认物品栏技能（英雄6格那个）默认全部认定这个技能为物品栏，如有需要自行更改
-    DEFAULT_SKILL_ITEM_SEPARATE = hslk_global.skill_item_separate -- 默认拆分物品技能
 }
 
 -- 删除物品，可延时
@@ -278,6 +277,8 @@ hitem.setAllowSeparate = function(whichUnit)
     cj.UnitAddAbility(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.UnitMakeAbilityPermanent(whichUnit, true, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.SetUnitAbilityLevel(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE, 1)
+    -- 事件池注册
+    hevent.pool(whichUnit, 'separate', hevent.POOL_ACTIONS.separate, EVENT_UNIT_SPELL_EFFECT)
 end
 
 -- 计算单位获得物品后的属性
@@ -345,17 +346,17 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
             }
         end
         if
-            (table.includes(
-                k,
-                {
-                    "gold_ratio",
-                    "lumber_ratio",
-                    "exp_ratio",
-                    "sell_ratio"
-                }
-            ))
-         then
-            table.insert(diffPlayer, {k, tonumber(tempDiff)})
+        (table.includes(
+            k,
+            {
+                "gold_ratio",
+                "lumber_ratio",
+                "exp_ratio",
+                "sell_ratio"
+            }
+        ))
+        then
+            table.insert(diffPlayer, { k, tonumber(tempDiff) })
         else
             diff[k] = tempDiff
         end
@@ -502,7 +503,7 @@ hitem.detector = function(whichUnit, it)
     else
         -- todo 没有满格，也检查身上的物品是否可以合成
         if (false) then
-        -- 6物品合成检测
+            -- 6物品合成检测
         end
     end
     if (isFullSlot) then
@@ -698,21 +699,20 @@ hitem.drop = function(origin)
     end
 end
 
--- 注册初始化
-hitem.registerAll = function(whichUnit)
-    if (hRuntime.unit[whichUnit] == nil) then
-        hRuntime.unit[whichUnit] = {}
-    end
-    if (hRuntime.unit[whichUnit].itemInit == nil) then
-        hRuntime.unit[whichUnit].itemInit = true
-    else
+-- 单位注册物品
+hitem.register = function(u)
+    if (hRuntime.unit[u] == nil) then
+        -- 未注册unit直接跳过
         return
     end
-    cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.pickup, whichUnit, EVENT_UNIT_PICKUP_ITEM)
-    cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.drop, whichUnit, EVENT_UNIT_DROP_ITEM)
-    cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.pawn, whichUnit, EVENT_UNIT_PAWN_ITEM)
-    cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.separate, whichUnit, EVENT_UNIT_SPELL_EFFECT)
-    cj.TriggerRegisterUnitEvent(hitem.PRIVATE_TRIGGER.use, whichUnit, EVENT_UNIT_USE_ITEM)
+    -- 拾取
+    hevent.pool(u, 'pickup', hevent.POOL_ACTIONS.pickup, EVENT_UNIT_PICKUP_ITEM)
+    -- 丢弃
+    hevent.pool(u, 'drop', hevent.POOL_ACTIONS.drop, EVENT_UNIT_DROP_ITEM)
+    -- 抵押
+    hevent.pool(u, 'pawn', hevent.POOL_ACTIONS.pawn, EVENT_UNIT_PAWN_ITEM)
+    -- 使用
+    hevent.pool(u, 'use', hevent.POOL_ACTIONS.use, EVENT_UNIT_USE_ITEM)
 end
 
 --令单位的物品在runtime内存中释放
@@ -725,196 +725,4 @@ hitem.clearUnitCache = function(whichUnit)
             end
         end
     end
-end
-
--- 初始化(已内部调用)
-hitem.init = function()
-    hitem.PRIVATE_TRIGGER = {
-        pickup = cj.CreateTrigger(),
-        drop = cj.CreateTrigger(),
-        pawn = cj.CreateTrigger(),
-        separate = cj.CreateTrigger(),
-        use = cj.CreateTrigger()
-    }
-    --获取物品
-    cj.TriggerAddAction(
-        hitem.PRIVATE_TRIGGER.pickup,
-        function()
-            local it = cj.GetManipulatedItem()
-            local itId = string.id2char(cj.GetItemTypeId(it))
-            if (hslk_global.itemsKV[itId] == nil) then
-                -- 排除掉没有注册的物品。例如框架内自带的一些物品
-                return
-            end
-            if (hRuntime.item[it] ~= nil and hRuntime.item[it].positionType == hitem.POSITION_TYPE.UNIT) then
-                -- 排除掉runtime内已创建给unit的物品
-                return
-            end
-            local u = cj.GetTriggerUnit()
-            local charges = cj.GetItemCharges(it)
-            local shadowItId = hitem.getShadowId(itId)
-            if (shadowItId == nil) then
-                if (hitem.getIsPowerUp(itId) == true) then
-                    --检测是否有回调动作
-                    local call = hitem.getTriggerCall(itId)
-                    if (call ~= nil and type(call) == "function") then
-                        call(u, it, itId, charges)
-                    end
-                    --触发使用物品事件
-                    hevent.triggerEvent(
-                        u,
-                        CONST_EVENT.itemUsed,
-                        {
-                            triggerUnit = u,
-                            triggerItem = it
-                        }
-                    )
-                else
-                    --这里删除重建是为了实现地上物品的过期重置
-                    hitem.del(it, 0)
-                    hitem.create(
-                        {
-                            itemId = itId,
-                            whichUnit = u,
-                            charges = charges,
-                            during = 0
-                        }
-                    )
-                end
-            else
-                --注意，系统内此处先获得了face物品，此物品100%是PowerUp的
-                --这里删除重建是为了实现地上物品的过期重置
-                hitem.del(it, 0)
-                --这里是实现神符满格的关键
-                hitem.create(
-                    {
-                        itemId = shadowItId,
-                        whichUnit = u,
-                        charges = charges,
-                        during = 0
-                    }
-                )
-            end
-        end
-    )
-    --丢弃物品
-    cj.TriggerAddAction(
-        hitem.PRIVATE_TRIGGER.drop,
-        function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
-            local itId = string.id2char(cj.GetItemTypeId(it))
-            local faceId = hitem.getFaceId(itId)
-            local orderId = cj.OrderId("dropitem")
-            local charges = cj.GetItemCharges(it)
-            if (cj.GetUnitCurrentOrder(u) == orderId) then
-                if (hRuntime.item[it] ~= nil) then
-                    if (faceId ~= nil) then
-                        htime.setTimeout(
-                            0,
-                            function(t)
-                                htime.delTimer(t)
-                                local x = cj.GetItemX(it)
-                                local y = cj.GetItemX(it)
-                                hitem.del(it, 0)
-                                --这里是实现表面物品的关键
-                                hitem.create(
-                                    {
-                                        itemId = faceId,
-                                        x = x,
-                                        y = y,
-                                        charges = charges,
-                                        during = 0
-                                    }
-                                )
-                            end
-                        )
-                    else
-                        hitem.setPositionType(it, hitem.POSITION_TYPE.COORDINATE)
-                    end
-                end
-                hitem.subAttribute(u, itId, charges)
-            end
-        end
-    )
-    --抵押物品
-    --[[
-        抵押物品的原理，首先默认是设定：物品售卖为50%，也就是地图的默认设置
-        根据玩家的sellRatio，额外的减少或增加玩家的收入
-        从而实现玩家的售卖率提升，至于物品的价格是根据slk获取
-        所以如果无法获取slk的属性时，此方法自动无效
-    ]]
-    cj.TriggerAddAction(
-        hitem.PRIVATE_TRIGGER.pawn,
-        function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetSoldItem()
-            local goldcost = hitem.getGoldCost(it)
-            local lumbercost = hitem.getLumberCost(it)
-            hRuntime.clear(it)
-            if (goldcost ~= 0 or lumbercost ~= 0) then
-                local p = cj.GetOwningPlayer(u)
-                local sellRatio = hplayer.getSellRatio(u)
-                if (sellRatio ~= 50) then
-                    if (sellRatio < 0) then
-                        sellRatio = 0
-                    elseif (sellRatio > 1000) then
-                        sellRatio = 1000
-                    end
-                    local tempRatio = sellRatio - 50.0
-                    local tempGold = math.floor(goldcost * tempRatio * 0.01)
-                    local tempLumber = math.floor(lumbercost * tempRatio * 0.01)
-                    if (goldcost ~= 0 and tempGold ~= 0) then
-                        hplayer.addGold(p, tempGold)
-                    end
-                    if (lumbercost ~= 0 and tempLumber ~= 0) then
-                        hplayer.addLumber(p, tempLumber)
-                    end
-                end
-            end
-        end
-    )
-    --使用物品
-    cj.TriggerAddAction(
-        hitem.PRIVATE_TRIGGER.use,
-        function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
-            local itId = cj.GetItemTypeId(it)
-            local perishable = hitem.getIsPerishable(itId)
-            --检测是否使用后自动消失，如果不是，次数补回1
-            if (perishable == false) then
-                hitem.setCharges(it, hitem.getCharges(it) + 1)
-            end
-            --检测是否有回调动作
-            local call = hitem.getTriggerCall(itId)
-            if (call ~= nil and type(call) == "function") then
-                call(u, it, itId, charges)
-            end
-            --触发使用物品事件
-            hevent.triggerEvent(
-                u,
-                CONST_EVENT.itemUsed,
-                {
-                    triggerUnit = u,
-                    triggerItem = it
-                }
-            )
-            --消失的清理cache
-            if (perishable == true and hitem.getCharges(it) <= 0) then
-                hitem.del(it)
-            end
-        end
-    )
-    --拆分物品
-    cj.TriggerAddAction(
-        hitem.PRIVATE_TRIGGER.separate,
-        function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
-            if (it ~= nil and cj.GetSpellAbilityId() == hitem.DEFAULT_SKILL_ITEM_SEPARATE) then
-                print_err("拆分物品尚未完成")
-            end
-        end
-    )
 end
