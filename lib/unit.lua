@@ -1,17 +1,11 @@
 hunit = {
-    TRIGGER_DAMAGED = nil,
-    TRIGGER_DEATH = nil
-}
-
--- 初始化(in index)
-hunit.init = function()
-    -- trigger
-    hunit.TRIGGER_DAMAGED = cj.CreateTrigger()
-    hunit.TRIGGER_DEATH = cj.CreateTrigger()
-    -- 单位受伤
-    cj.TriggerAddAction(
-        hunit.TRIGGER_DAMAGED,
-        function()
+    trigger_red_line = 30000,
+    trigger = {
+        damaged = {},
+        death = {},
+    },
+    trigger_actions = {
+        damaged = cj.Condition(function()
             local sourceUnit = cj.GetEventDamageSource()
             local targetUnit = cj.GetTriggerUnit()
             local damage = cj.GetEventDamage()
@@ -35,12 +29,8 @@ hunit.init = function()
                     end
                 )
             end
-        end
-    )
-    -- 单位死亡
-    cj.TriggerAddAction(
-        hunit.TRIGGER_DEATH,
-        function()
+        end),
+        death = cj.Condition(function()
             local u = cj.GetTriggerUnit()
             local killer = hevent.getLastDamageUnit(u)
             if (killer ~= nil) then
@@ -65,13 +55,17 @@ hunit.init = function()
                     targetUnit = u
                 }
             )
-        end
-    )
+        end),
+    },
+}
+
+-- 初始化(in index)
+hunit.init = function()
     -- 生命魔法恢复
     local period = 0.50
     htime.setInterval(
         period,
-        function(t)
+        function()
             for k, u in ipairs(hRuntime.attributeGroup.life_back) do
                 if (his.deleted(u) == true) then
                     table.remove(hRuntime.attributeGroup.life_back, k)
@@ -95,7 +89,7 @@ hunit.init = function()
     -- 没收到伤害时,每1.5秒恢复1.5%硬直
     htime.setInterval(
         1.5,
-        function(t)
+        function()
             for k, u in ipairs(hRuntime.attributeGroup.punish) do
                 if (his.deleted(u) == true) then
                     table.remove(hRuntime.attributeGroup.punish, k)
@@ -329,7 +323,7 @@ hunit.create = function(bean)
     if (bean.qty > 1) then
         g = cj.CreateGroup()
     end
-    for i = 1, bean.qty, 1 do
+    for _ = 1, bean.qty, 1 do
         if (bean.x ~= nil and bean.y ~= nil) then
             u = cj.CreateUnit(bean.whichPlayer, bean.unitId, bean.x, bean.y, facing)
         elseif (bean.loc ~= nil) then
@@ -412,8 +406,33 @@ hunit.create = function(bean)
                 isShadow = bean.isShadow
             }
             -- 受伤与死亡
-            cj.TriggerRegisterUnitEvent(hunit.TRIGGER_DAMAGED, u, EVENT_UNIT_DAMAGED)
-            cj.TriggerRegisterUnitEvent(hunit.TRIGGER_DEATH, u, EVENT_UNIT_DEATH)
+            local cutTgrIndex = #hunit.trigger.damaged
+            if (cutTgrIndex <= 0 or hunit.trigger.damaged[cutTgrIndex].count >= hunit.trigger_red_line) then
+                local tgrDmg = cj.CreateTrigger()
+                -- 单位受伤
+                table.insert(hunit.trigger.damaged, {
+                    stock = 0,
+                    count = 0,
+                    trigger = tgrDmg
+                })
+                cj.TriggerAddCondition(tgrDmg, hunit.trigger_actions.damaged)
+                -- 单位死亡
+                local tgrDead = cj.CreateTrigger()
+                table.insert(hunit.trigger.death, {
+                    stock = 0,
+                    count = 0,
+                    trigger = tgrDead
+                })
+                cj.TriggerAddCondition(tgrDead, hunit.trigger_actions.death)
+                cutTgrIndex = #hunit.trigger.damaged
+            end
+            hRuntime.unit[u].trigger = cutTgrIndex
+            hunit.trigger.damaged[cutTgrIndex].count = hunit.trigger.damaged[cutTgrIndex].count + 1
+            hunit.trigger.damaged[cutTgrIndex].stock = hunit.trigger.damaged[cutTgrIndex].stock + 1
+            cj.TriggerRegisterUnitEvent(hunit.trigger.damaged[cutTgrIndex].trigger, u, EVENT_UNIT_DAMAGED)
+            hunit.trigger.death[cutTgrIndex].count = hunit.trigger.death[cutTgrIndex].count + 1
+            hunit.trigger.death[cutTgrIndex].stock = hunit.trigger.death[cutTgrIndex].stock + 1
+            cj.TriggerRegisterUnitEvent(hunit.trigger.death[cutTgrIndex].trigger, u, EVENT_UNIT_DEATH)
             -- 物品系统
             if (his.hasSlot(u)) then
                 hitem.registerAll(u)
@@ -421,8 +440,6 @@ hunit.create = function(bean)
                 hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
                 hitem.registerAll(u)
             end
-            --标志位
-            hRuntime.unit[u].init = 1
         end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then

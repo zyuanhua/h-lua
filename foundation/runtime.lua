@@ -96,6 +96,24 @@ hRuntime.clear = function(handle)
         hRuntime.player[handle] = nil
     end
     if (hRuntime.unit[handle] ~= nil) then
+        local cutTgrIndex = hRuntime.unit[handle].trigger
+        for _, t in ipairs({ 'damaged', 'death' }) do
+            hunit.trigger[t][cutTgrIndex].stock = hunit.trigger[t][cutTgrIndex].stock - 1
+            if (hunit.trigger[t][cutTgrIndex].stock == 0 and hunit.trigger[t][cutTgrIndex].count >= hunit.trigger_red_line) then
+                cj.DisableTrigger(hunit.trigger[t][cutTgrIndex].trigger)
+                cj.DestroyTrigger(hunit.trigger[t][cutTgrIndex].trigger)
+                hunit.trigger[t][cutTgrIndex] = -1
+            end
+            local e = 0
+            for _, v in ipairs(hunit.trigger[t]) do
+                if (v == -1) then
+                    e = e + 1
+                end
+            end
+            if (e == #hunit.trigger[t]) then
+                hunit.trigger[t] = {}
+            end
+        end
         hRuntime.unit[handle] = nil
     end
     if (hRuntime.hero[handle] ~= nil) then
@@ -128,7 +146,6 @@ hRuntime.clear = function(handle)
 end
 
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-    local p = cj.Player(i - 1)
     -- is
     hRuntime.is[i] = {}
     hRuntime.is[i].isComputer = true
