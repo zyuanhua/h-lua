@@ -27,12 +27,12 @@ require "foundation.json"
 require "foundation.md5"
 -- 加载runtime
 require "foundation.runtime"
--- 加载table
-require "foundation.table"
--- 加载string
-require "foundation.string"
 -- 加载math
 require "foundation.math"
+-- 加载string
+require "foundation.string"
+-- 加载table
+require "foundation.table"
 -- 加载color
 require "foundation.color"
 -- 加载h-lua的F9

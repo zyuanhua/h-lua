@@ -152,10 +152,10 @@ hplayer.getRandomHero = function()
     if (#pi <= 0) then
         return nil
     end
-    local ri = cj.GetRandomInt(1, #pi)
+    local ri = math.random(1, #pi)
     return hhero.getPlayerUnit(
         hplayer.players[pi[ri]],
-        cj.GetRandomInt(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
+        math.random(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
     )
 end
 -- 令玩家单位全部隐藏
@@ -163,8 +163,7 @@ hplayer.hideUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
     end
-    local g =
-        hgroup.createByRect(
+    local g = hgroup.createByRect(
         cj.GetWorldBounds(),
         function(filterUnit)
             return cj.GetOwningPlayer(filterUnit) == whichPlayer
@@ -183,8 +182,7 @@ hplayer.clearUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
     end
-    local g =
-        hgroup.createByRect(
+    local g = hgroup.createByRect(
         cj.GetWorldBounds(),
         function(filterUnit)
             return cj.GetOwningPlayer(filterUnit) == whichPlayer
@@ -648,9 +646,9 @@ hplayer.init = function()
         hplayer.set(hplayer.players[i], "beDamage", 0)
         hplayer.set(hplayer.players[i], "kill", 0)
         if
-            ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and
-                (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING))
-         then
+        ((cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER) and
+            (cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING))
+        then
             -- his
             his.set(hplayer.players[i], "isComputer", false)
             --

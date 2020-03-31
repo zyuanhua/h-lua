@@ -7,41 +7,41 @@
 ]]
 henvData = {
     doodad = {
-        block = {"LTba"},
-        cage = {"LOcg"},
-        bucket = {"LTbr", "LTbx", "LTbs"},
-        bucketBrust = {"LTex"},
-        box = {"LTcr"},
-        supportColumn = {"BTsc"},
-        stone = {"LTrc"},
-        stoneRed = {"DTrc"},
-        stoneIce = {"ITcr"},
-        ice = {"ITf1", "ITf2", "ITf3", "ITf4"},
-        spiderEggs = {"DTes"},
-        volcano = {"Volc"}, -- 火山
-        treeSummer = {"LTlt"},
-        treeAutumn = {"FTtw"},
-        treeWinter = {"WTtw"},
-        treeWinterShow = {"WTst"},
-        treeDark = {"NTtw"}, -- 枯枝
-        treeDarkUmbrella = {"NTtc"}, -- 伞
-        treePoor = {"BTtw"}, -- 贫瘠
-        treePoorUmbrella = {"BTtc"}, -- 伞
-        treeRuins = {"ZTtw"}, -- 遗迹
-        treeRuinsUmbrella = {"ZTtc"}, -- 伞
-        treeFire = {"ZTtw"}, -- 炼狱
-        treeUnderground = {"DTsh", "GTsh"} -- 地下城
+        block = { "LTba" },
+        cage = { "LOcg" },
+        bucket = { "LTbr", "LTbx", "LTbs" },
+        bucketBrust = { "LTex" },
+        box = { "LTcr" },
+        supportColumn = { "BTsc" },
+        stone = { "LTrc" },
+        stoneRed = { "DTrc" },
+        stoneIce = { "ITcr" },
+        ice = { "ITf1", "ITf2", "ITf3", "ITf4" },
+        spiderEggs = { "DTes" },
+        volcano = { "Volc" }, -- 火山
+        treeSummer = { "LTlt" },
+        treeAutumn = { "FTtw" },
+        treeWinter = { "WTtw" },
+        treeWinterShow = { "WTst" },
+        treeDark = { "NTtw" }, -- 枯枝
+        treeDarkUmbrella = { "NTtc" }, -- 伞
+        treePoor = { "BTtw" }, -- 贫瘠
+        treePoorUmbrella = { "BTtc" }, -- 伞
+        treeRuins = { "ZTtw" }, -- 遗迹
+        treeRuinsUmbrella = { "ZTtc" }, -- 伞
+        treeFire = { "ZTtw" }, -- 炼狱
+        treeUnderground = { "DTsh", "GTsh" } -- 地下城
     },
     ground = {
-        summer = {"Adrg"},
-        autumn = {"Ydtr"},
-        winter = {"Agrs"},
-        winterDeep = {"Agrs"},
-        dark = {"Xblm"},
-        poor = {"Adrd"},
-        ruins = {"Xhdg"},
-        fire = {"Yblm"},
-        underground = {"Yrtl"}
+        summer = { "Adrg" },
+        autumn = { "Ydtr" },
+        winter = { "Agrs" },
+        winterDeep = { "Agrs" },
+        dark = { "Xblm" },
+        poor = { "Adrd" },
+        ruins = { "Xhdg" },
+        fire = { "Yblm" },
+        underground = { "Yrtl" }
     }
 }
 henv = {}
@@ -89,7 +89,7 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         function(t)
             local x = rectStartX + indexX * 80
             local y = rectStartY + indexY * 80
-            local buildType = cj.GetRandomInt(1, 4)
+            local buildType = math.random(1, 4)
             if (x >= rectEndX and y >= rectEndY) then
                 htime.delTimer(t)
                 if (isDestroyRect) then
@@ -118,8 +118,7 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
                 return
             end
             if (buildType == 1) then
-                local tempUnit =
-                    cj.CreateUnit(
+                local tempUnit = cj.CreateUnit(
                     cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     units[math.random(1, #units)],
                     x,
@@ -133,8 +132,8 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
                         doodads[math.random(1, #doodads)],
                         x,
                         y,
-                        cj.GetRandomDirectionDeg(),
-                        cj.GetRandomReal(0.5, 1.1),
+                        math.random(0, 360),
+                        math.random(0.5, 1.1),
                         0
                     ),
                     true

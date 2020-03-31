@@ -1,3 +1,26 @@
+-- 随机整数
+math.random = function(n, m)
+    local func = cj.GetRandomReal
+    if (n == nil or m == nil) then
+        -- 0.00 ~ 1.00
+        return math.floor((func(0.000, 1.000) * 100) + 0.5) * 0.01
+    end
+    if (n == m) then
+        return n
+    end
+    local fn = string.find(tostring(n), "[.]", 0)
+    local fm = string.find(tostring(m), "[.]", 0)
+    if (type(fn) ~= "number" and type(fm) ~= "number") then
+        func = cj.GetRandomInt
+        n = math.floor(n)
+        m = math.floor(m)
+    end
+    if (m < n) then
+        return func(m, n)
+    end
+    return func(n, m)
+end
+
 -- 极坐标位移
 math.polarProjection = function(x, y, dist, angle)
     return {
