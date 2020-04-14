@@ -347,9 +347,13 @@ hunit.create = function(bean)
                 isShadow = bean.isShadow
             }
             -- 单位受伤
-            hevent.pool(u, 'damaged', hevent.POOL_ACTIONS.damaged, EVENT_UNIT_DAMAGED)
+            hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
+                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)
+            end)
             -- 单位死亡
-            hevent.pool(u, 'death', hevent.POOL_ACTIONS.death, EVENT_UNIT_DEATH)
+            hevent.pool(u, hevent_default_actions.unit.death, function(tgr)
+                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DEATH)
+            end)
             -- 物品系统
             if (his.hasSlot(u)) then
                 hitem.register(u)
