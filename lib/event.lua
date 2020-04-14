@@ -1165,10 +1165,10 @@ hevent.onEnterRect = function(whichRect, callFunc)
     if (hRuntime.event.trigger[key][whichRect] == nil) then
         hRuntime.event.trigger[key][whichRect] = cj.CreateTrigger()
         local rectRegion = cj.CreateRegion()
-        cj.RegionAddRect(rectRegion, r)
+        cj.RegionAddRect(rectRegion, whichRect)
         cj.TriggerRegisterEnterRegion(hRuntime.event.trigger[key][whichRect], rectRegion, nil)
         cj.TriggerAddAction(
-            tg,
+            hRuntime.event.trigger[key][whichRect],
             function()
                 hevent.triggerEvent(
                     whichRect,
@@ -1195,10 +1195,10 @@ hevent.onLeaveRect = function(whichRect, callFunc)
     if (hRuntime.event.trigger[key][whichRect] == nil) then
         hRuntime.event.trigger[key][whichRect] = cj.CreateTrigger()
         local rectRegion = cj.CreateRegion()
-        cj.RegionAddRect(rectRegion, r)
+        cj.RegionAddRect(rectRegion, whichRect)
         cj.TriggerRegisterLeaveRegion(hRuntime.event.trigger[key][whichRect], rectRegion, nil)
         cj.TriggerAddAction(
-            tg,
+            hRuntime.event.trigger[key][whichRect],
             function()
                 hevent.triggerEvent(
                     whichRect,
@@ -1223,7 +1223,7 @@ hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
     if (whichPlayer == nil or chatStr == nil) then
         return
     end
-    local key = CONST_EVENT.chat
+    --local key = CONST_EVENT.chat
     local tg = cj.CreateTrigger()
     cj.TriggerRegisterPlayerChatEvent(tg, whichPlayer, chatStr, matchAll)
     cj.TriggerAddAction(
