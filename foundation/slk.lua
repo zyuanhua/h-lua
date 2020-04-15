@@ -197,7 +197,7 @@ end
 hslk_global.attr.avoid.add = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_ADD, 0)
 hslk_global.attr.avoid.sub = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_SUB, 0)
 -- 属性系统 视野
-local sightBase = {1, 2, 3, 4, 5}
+local sightBase = { 1, 2, 3, 4, 5 }
 local si = 1
 while (si <= 10000) do
     for _, v in ipairs(sightBase) do
