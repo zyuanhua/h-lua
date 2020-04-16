@@ -914,7 +914,7 @@ hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
     end
     if (hRuntime.event.trigger[key][whichUnit] == nil) then
         hRuntime.event.trigger[key][whichUnit] = cj.CreateTrigger()
-        cj.TriggerRegisterUnitInRangeSimple(hRuntime.event.trigger[key][whichUnit], range, whichUnit)
+        cj.TriggerRegisterUnitInRange(hRuntime.event.trigger[key][whichUnit], whichUnit, range, nil)
         cj.TriggerAddAction(
             hRuntime.event.trigger[key][whichUnit],
             function()
