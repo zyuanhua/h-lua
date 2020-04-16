@@ -379,3 +379,58 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
     end
     henv.build(whichRect, typeStr, excludeX, excludeY, isDestroyRect, ground, doodad, unit)
 end
+
+-- 获取升降机高度
+henv.getElevatorHeight = function(elevator)
+    local height
+    height = 1 + math.floor(cj.GetDestructableOccluderHeight(elevator) / bj_CLIFFHEIGHT)
+    if height < 1 or height > 3 then
+        height = 1
+    end
+    return height
+end
+
+-- 设置升降机高度，三级 1、2、3
+henv.setElevatorHeight = function(elevator, newHeight)
+    local oldHeight
+    newHeight = math.max(1, newHeight)
+    newHeight = math.min(3, newHeight)
+    oldHeight = henv.getElevatorHeight(elevator)
+    cj.SetDestructableOccluderHeight(elevator, bj_CLIFFHEIGHT * (newHeight - 1))
+    if (newHeight == 1) then
+        if (oldHeight == 2) then
+            cj.SetDestructableAnimation(d, "birth")
+            cj.QueueDestructableAnimation(d, "stand")
+        elseif (oldHeight == 3) then
+            cj.SetDestructableAnimation(d, "birth third")
+            cj.QueueDestructableAnimation(d, "stand")
+        else
+            -- Unrecognized old height - snap to new height.
+            cj.SetDestructableAnimation(d, "stand")
+        end
+    elseif (newHeight == 2) then
+        if (oldHeight == 1) then
+            cj.SetDestructableAnimation(d, "death")
+            cj.QueueDestructableAnimation(d, "stand second")
+        elseif (oldHeight == 3) then
+            cj.SetDestructableAnimation(d, "birth second")
+            cj.QueueDestructableAnimation(d, "stand second")
+        else
+            -- Unrecognized old height - snap to new height.
+            cj.SetDestructableAnimation(d, "stand second")
+        end
+    elseif (newHeight == 3) then
+        if (oldHeight == 1) then
+            cj.SetDestructableAnimation(d, "death third")
+            cj.QueueDestructableAnimation(d, "stand third")
+        elseif (oldHeight == 2) then
+            cj.SetDestructableAnimation(d, "death second")
+            cj.QueueDestructableAnimation(d, "stand third")
+        else
+            -- Unrecognized old height - snap to new height.
+            cj.SetDestructableAnimation(d, "stand third")
+        end
+    else
+        -- Unrecognized new height - ignore the request.
+    end
+end
