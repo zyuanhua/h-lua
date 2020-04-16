@@ -135,7 +135,7 @@ end
 
 --单位是否启用硬直（系统默认不启用）
 hunit.isOpenPunish = function(u)
-    if (u == nil or hRuntime.unit[u]) then
+    if (u == nil or hRuntime.unit[u] == nil) then
         return false
     end
     if (type(hRuntime.unit[u].isOpenPunish) ~= 'boolean') then

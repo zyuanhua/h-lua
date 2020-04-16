@@ -20,9 +20,12 @@ hRuntime = {
     env = {},
     camera = {},
     event = {
+        -- 核心注册
         register = {},
-        trigger = {},
+        -- 池
         pool = {},
+        -- 额外的触发管理
+        trigger = {},
     },
     textTag = {},
     rect = {},
@@ -85,6 +88,15 @@ hRuntime.clear = function(handle)
         hRuntime.event.register[handle] = nil
     end
     if (hRuntime.event.trigger[handle] ~= nil) then
+        local keys = {
+            CONST_EVENT.enterUnitRange,
+        }
+        for _, s in ipairs(keys) do
+            if (hRuntime.event.trigger[handle][s] ~= nil) then
+                cj.DisableTrigger(hRuntime.event.trigger[handle][s])
+                cj.DestroyTrigger(hRuntime.event.trigger[handle][s])
+            end
+        end
         hRuntime.event.trigger[handle] = nil
     end
     if (hRuntime.event.pool[handle] ~= nil) then

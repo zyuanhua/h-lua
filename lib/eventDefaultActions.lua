@@ -62,6 +62,11 @@ hevent_default_actions = {
             )
         end),
     },
+    rect = {
+        enterUnitRange = cj.Condition(function()
+
+        end)
+    },
     item = {
         pickup = cj.Condition(function()
             local it = cj.GetManipulatedItem()

@@ -29,15 +29,14 @@ end
 
 --[[
     触发池
-    使用一个handle，以不同的action累计计数
+    使用一个handle，以不同的conditionAction累计计数
     分配触发到回调注册
 ]]
-hevent.pool = function(handle, action, regEvent)
+hevent.pool = function(handle, conditionAction, regEvent)
     if (type(regEvent) ~= 'function') then
         return
     end
-    local key = string.dump(action)
-    print("dumpkey", key)
+    local key = cj.GetHandleId(conditionAction)
     if (hevent.POOL[key] == nil) then
         hevent.POOL[key] = {}
     end
@@ -49,7 +48,7 @@ hevent.pool = function(handle, action, regEvent)
             count = 0,
             trigger = tgr
         })
-        cj.TriggerAddCondition(tgr, action)
+        cj.TriggerAddCondition(tgr, conditionAction)
         poolIndex = #hevent.POOL[key]
     end
     if (hRuntime.event.pool[handle] == nil) then
@@ -908,15 +907,18 @@ end
 -- enterUnit 进入范围的单位
 -- range 设定范围
 hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
-    local key = CONST_EVENT.enterUnitRange .. "#range"
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    local key = CONST_EVENT.enterUnitRange
+    if (hRuntime.event.trigger[whichUnit] == nil) then
+        hRuntime.event.trigger[whichUnit] = {}
     end
-    if (hRuntime.event.trigger[key][whichUnit] == nil) then
-        hRuntime.event.trigger[key][whichUnit] = cj.CreateTrigger()
-        cj.TriggerRegisterUnitInRange(hRuntime.event.trigger[key][whichUnit], whichUnit, range, nil)
+    if (hRuntime.event.trigger[whichUnit][key] == nil) then
+        hRuntime.event.trigger[whichUnit][key] = cj.CreateTrigger()
+        cj.TriggerRegisterUnitInRange(
+            hRuntime.event.trigger[whichUnit][key],
+            whichUnit, range, nil
+        )
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichUnit],
+            hRuntime.event.trigger[whichUnit][key],
             function()
                 hevent.triggerEvent(
                     whichUnit,
