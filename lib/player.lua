@@ -612,7 +612,7 @@ hplayer.init = function()
                     local v = string.sub(str, 2, string.len(str))
                     local v = tonumber(v)
                     if (v == nil) then
-                        hmessage.echo00(p, "试试敲入+500，增加视距~", 0)
+                        return
                     else
                         local val = math.abs(v)
                         if (first == "+") then
@@ -654,32 +654,7 @@ hplayer.init = function()
             --
             hplayer.qty_current = hplayer.qty_current + 1
             hplayer.set(hplayer.players[i], "status", hplayer.player_status.gaming)
-            bj.TriggerRegisterPlayerSelectionEventBJ(triggerApm, hplayer.players[i], true)
             cj.TriggerRegisterPlayerEvent(triggerLeave, hplayer.players[i], EVENT_PLAYER_LEAVE)
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_LEFT
-            )
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_RIGHT
-            )
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_DOWN
-            )
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_UP
-            )
             cj.TriggerRegisterPlayerUnitEvent(triggerDeSelection, hplayer.players[i], EVENT_PLAYER_UNIT_DESELECTED, nil)
             cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "+", false)
             cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "-", false)
