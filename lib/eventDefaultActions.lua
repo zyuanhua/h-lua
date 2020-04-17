@@ -1,4 +1,15 @@
 hevent_default_actions = {
+    player = {
+        esc = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerPlayer(),
+                CONST_EVENT.esc,
+                {
+                    triggerPlayer = cj.GetTriggerPlayer()
+                }
+            )
+        end),
+    },
     unit = {
         attackDetect = cj.Condition(function()
             hevent.triggerEvent(
@@ -62,6 +73,47 @@ hevent_default_actions = {
                     triggerSkill = cj.GetSpellAbilityId(),
                     targetUnit = cj.GetSpellTargetUnit(),
                     targetLoc = cj.GetSpellTargetLoc()
+                }
+            )
+        end),
+        skillStop = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.skillStop,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    triggerSkill = cj.GetSpellAbilityId()
+                }
+            )
+        end),
+        skillEffect = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.skillEffect,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    triggerSkill = cj.GetSpellAbilityId(),
+                    targetUnit = cj.GetSpellTargetUnit(),
+                    targetLoc = cj.GetSpellTargetLoc()
+                }
+            )
+        end),
+        skillFinish = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.skillFinish,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    triggerSkill = cj.GetSpellAbilityId()
+                }
+            )
+        end),
+        summon = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.summon,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
                 }
             )
         end),
@@ -276,6 +328,16 @@ hevent_default_actions = {
             if (perishable == true and hitem.getCharges(it) <= 0) then
                 hitem.del(it)
             end
+        end),
+        destroy = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetManipulatedItem(),
+                CONST_EVENT.itemDestroy,
+                {
+                    triggerItem = cj.GetManipulatedItem(),
+                    triggerUnit = cj.GetKillingUnit()
+                }
+            )
         end),
         separate = cj.Condition(function()
             local u = cj.GetTriggerUnit()

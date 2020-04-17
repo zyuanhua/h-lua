@@ -219,25 +219,10 @@ end
 -- triggerUnit 获取施放单位
 -- triggerSkill 获取施放技能ID
 hevent.onSkillStop = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillStop
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_ENDCAST)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillStop, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_ENDCAST)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillStop, callFunc)
 end
 
 -- 发动技能效果
@@ -247,53 +232,21 @@ end
 -- targetX 获取施放目标点X
 -- targetY 获取施放目标点Y
 -- targetZ 获取施放目标点Z
-hevent.onSkillHappen = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillHappen
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId(),
-                        targetUnit = cj.GetSpellTargetUnit(),
-                        targetLoc = cj.GetSpellTargetLoc()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+hevent.onSkillEffect = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillEffect, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_EFFECT)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillEffect, callFunc)
 end
 
 -- 施放技能结束
 -- triggerUnit 获取施放单位
 -- triggerSkill 获取施放技能ID
-hevent.onSkillOver = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillOver
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_FINISH)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+hevent.onSkillFinish = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillFinish, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_FINISH)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillFinish, callFunc)
 end
 
 -- 单位使用物品
@@ -336,25 +289,10 @@ end
 -- triggerUnit 获取触发单位
 -- triggerItem 获取触发物品
 hevent.onItemDestroy = function(whichItem, callFunc)
-    local key = CONST_EVENT.itemDestroy
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetManipulatedItem(),
-                    key,
-                    {
-                        triggerItem = cj.GetManipulatedItem(),
-                        triggerUnit = cj.GetKillingUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterDeathEvent(hRuntime.event.trigger[key], whichItem)
-    return hevent.registerEvent(whichItem, key, callFunc)
+    hevent.pool(whichItem, hevent_default_actions.item.destroy, function(tgr)
+        cj.TriggerRegisterDeathEvent(tgr, whichItem)
+    end)
+    return hevent.registerEvent(whichItem, CONST_EVENT.itemDestroy, callFunc)
 end
 
 -- 合成物品
@@ -774,24 +712,10 @@ end
 -- 被召唤时
 -- triggerUnit 获取被召唤单位
 hevent.onSummon = function(whichUnit, callFunc)
-    local key = CONST_EVENT.summon
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SUMMON)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.summon, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SUMMON)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.summon, callFunc)
 end
 
 -- 进入某单位（whichUnit）范围内
@@ -834,16 +758,16 @@ end
 -- triggerUnit 获取进入矩形区域的单位
 hevent.onEnterRect = function(whichRect, callFunc)
     local key = CONST_EVENT.enterRect
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichRect] == nil) then
+        hRuntime.event.trigger[whichRect] = {}
     end
-    if (hRuntime.event.trigger[key][whichRect] == nil) then
-        hRuntime.event.trigger[key][whichRect] = cj.CreateTrigger()
+    if (hRuntime.event.trigger[whichRect][key] == nil) then
+        hRuntime.event.trigger[whichRect][key] = cj.CreateTrigger()
         local rectRegion = cj.CreateRegion()
         cj.RegionAddRect(rectRegion, whichRect)
-        cj.TriggerRegisterEnterRegion(hRuntime.event.trigger[key][whichRect], rectRegion, nil)
+        cj.TriggerRegisterEnterRegion(hRuntime.event.trigger[whichRect][key], rectRegion, nil)
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichRect],
+            hRuntime.event.trigger[whichRect][key],
             function()
                 hevent.triggerEvent(
                     whichRect,
@@ -864,16 +788,16 @@ end
 -- triggerUnit 获取离开矩形区域的单位
 hevent.onLeaveRect = function(whichRect, callFunc)
     local key = CONST_EVENT.leaveRect
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichRect] == nil) then
+        hRuntime.event.trigger[whichRect] = {}
     end
-    if (hRuntime.event.trigger[key][whichRect] == nil) then
-        hRuntime.event.trigger[key][whichRect] = cj.CreateTrigger()
+    if (hRuntime.event.trigger[whichRect][key] == nil) then
+        hRuntime.event.trigger[whichRect][key] = cj.CreateTrigger()
         local rectRegion = cj.CreateRegion()
         cj.RegionAddRect(rectRegion, whichRect)
-        cj.TriggerRegisterLeaveRegion(hRuntime.event.trigger[key][whichRect], rectRegion, nil)
+        cj.TriggerRegisterLeaveRegion(hRuntime.event.trigger[whichRect][key], rectRegion, nil)
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichRect],
+            hRuntime.event.trigger[whichRect][key],
             function()
                 hevent.triggerEvent(
                     whichRect,
@@ -898,50 +822,44 @@ hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
     if (whichPlayer == nil or chatStr == nil) then
         return
     end
-    --local key = CONST_EVENT.chat
-    local tg = cj.CreateTrigger()
-    cj.TriggerRegisterPlayerChatEvent(tg, whichPlayer, chatStr, matchAll)
-    cj.TriggerAddAction(
-        tg,
-        function()
-            callFunc(
-                {
-                    triggerPlayer = cj.GetTriggerPlayer(),
-                    chatString = cj.GetEventPlayerChatString(),
-                    matchedString = cj.GetEventPlayerChatStringMatched()
-                }
-            )
-        end
-    )
-end
-
--- 按ESC
--- triggerPlayer 获取触发玩家
-hevent.onEsc = function(whichPlayer, callFunc)
-    local key = CONST_EVENT.esc
-    if (whichPlayer == nil) then
-        return
+    local key = CONST_EVENT.chat .. charStr .. '|F'
+    if (matchAll) then
+        key = CONST_EVENT.chat .. charStr .. '|T'
     end
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichPlayer] == nil) then
+        hRuntime.event.trigger[whichPlayer] = {}
     end
-    if (hRuntime.event.trigger[key][whichPlayer] == nil) then
-        hRuntime.event.trigger[key][whichPlayer] = cj.CreateTrigger()
-        cj.TriggerRegisterPlayerEventEndCinematic(hRuntime.event.trigger[key][whichPlayer], whichPlayer)
+    if (hRuntime.event.trigger[whichPlayer][key] == nil) then
+        hRuntime.event.trigger[whichPlayer][key] = cj.CreateTrigger()
+        cj.TriggerRegisterPlayerChatEvent(hRuntime.event.trigger[whichPlayer][key], whichPlayer, chatStr, matchAll)
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichPlayer],
+            hRuntime.event.trigger[whichPlayer][key],
             function()
                 hevent.triggerEvent(
                     whichPlayer,
                     key,
                     {
-                        triggerPlayer = cj.GetTriggerPlayer()
+                        triggerPlayer = cj.GetTriggerPlayer(),
+                        chatString = cj.GetEventPlayerChatString(),
+                        matchedString = cj.GetEventPlayerChatStringMatched()
                     }
                 )
             end
         )
     end
     return hevent.registerEvent(whichPlayer, key, callFunc)
+end
+
+-- 按ESC
+-- triggerPlayer 获取触发玩家
+hevent.onEsc = function(whichPlayer, callFunc)
+    if (whichPlayer == nil) then
+        return
+    end
+    hevent.pool(whichPlayer, hevent_default_actions.player.esc, function(tgr)
+        cj.TriggerRegisterPlayerEventEndCinematic(tgr, whichPlayer)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.esc, callFunc)
 end
 
 -- 玩家选择单位(点击了qty次)
