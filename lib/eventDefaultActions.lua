@@ -37,6 +37,15 @@ hevent_default_actions = {
                 }
             )
         end),
+        constructFinish = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetOwningPlayer(cj.GetTriggerUnit()),
+                CONST_EVENT.constructFinish,
+                {
+                    triggerUnit = cj.GetConstructedStructure()
+                }
+            )
+        end),
     },
     unit = {
         attackDetect = cj.Condition(function()

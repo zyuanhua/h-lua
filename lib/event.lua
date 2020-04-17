@@ -911,12 +911,6 @@ hevent.onUnSelection = function(whichPlayer, callFunc)
     return hevent.registerEvent(whichPlayer, CONST_EVENT.unSelection, callFunc)
 end
 
--- 玩家离开游戏事件(注意这是全局事件)
--- triggerPlayer 获取触发玩家
-hevent.onPlayerLeave = function(callFunc)
-    return hevent.registerEvent("global", CONST_EVENT.playerLeave, callFunc)
-end
-
 -- 建筑升级开始时
 -- triggerUnit 获取触发单位
 hevent.onUpgradeStart = function(whichUnit, callFunc)
@@ -965,27 +959,16 @@ end
 -- 任意建筑建造完成时
 -- triggerUnit 获取触发单位
 hevent.onConstructFinish = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.constructFinish
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    whichPlayer,
-                    key,
-                    {
-                        triggerUnit = cj.GetConstructedStructure()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterPlayerUnitEvent(hRuntime.event.trigger[key], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-    return hevent.registerEvent(whichPlayer, key, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructFinish, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_FINISH, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructFinish, callFunc)
+end
+
+-- 玩家离开游戏事件(注意这是全局事件)
+-- triggerPlayer 获取触发玩家
+hevent.onPlayerLeave = function(callFunc)
+    return hevent.registerEvent("global", CONST_EVENT.playerLeave, callFunc)
 end
 
 -- 任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
