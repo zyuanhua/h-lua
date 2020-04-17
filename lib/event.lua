@@ -139,52 +139,10 @@ end
 -- triggerUnit 获取触发单位
 -- targetUnit 获取被获取/目标单位
 hevent.onAttackGetTarget = function(whichUnit, callFunc)
-    local key = CONST_EVENT.attackGetTarget
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        targetUnit = cj.GetEventTargetUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
-    return hevent.registerEvent(whichUnit, key, callFunc)
-end
-
--- 准备攻击
--- triggerUnit 获取攻击单位
--- targetUnit 获取被攻击单位
--- attacker 获取攻击单位
-hevent.onAttackReadyAction = function(whichUnit, callFunc)
-    local key = CONST_EVENT.attackReady
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetAttacker(),
-                    key,
-                    {
-                        triggerUnit = cj.GetAttacker(),
-                        targetUnit = cj.GetTriggerUnit(),
-                        attacker = cj.GetAttacker()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.attackGetTarget, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.attackGetTarget, callFunc)
 end
 
 -- 准备被攻击
@@ -192,26 +150,10 @@ end
 -- targetUnit 获取攻击单位
 -- attacker 获取攻击单位
 hevent.onBeAttackReady = function(whichUnit, callFunc)
-    local key = CONST_EVENT.beAttackReady
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        targetUnit = cj.GetAttacker(),
-                        attacker = cj.GetAttacker()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.beAttackReady, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_ATTACKED)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.beAttackReady, callFunc)
 end
 
 -- 造成攻击

@@ -10,6 +10,27 @@ hevent_default_actions = {
                 }
             )
         end),
+        attackGetTarget = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.attackGetTarget,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    targetUnit = cj.GetEventTargetUnit()
+                }
+            )
+        end),
+        beAttackReady = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.beAttackReady,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    targetUnit = cj.GetAttacker(),
+                    attacker = cj.GetAttacker()
+                }
+            )
+        end),
         damaged = cj.Condition(function()
             local sourceUnit = cj.GetEventDamageSource()
             local targetUnit = cj.GetTriggerUnit()
