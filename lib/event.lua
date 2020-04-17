@@ -181,25 +181,10 @@ end
 -- triggerUnit 获取学习单位
 -- triggerSkill 获取学习技能ID
 hevent.onSkillStudy = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillStudy
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_HERO_SKILL)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetLearnedSkill()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillStudy, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_HERO_SKILL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillStudy, callFunc)
 end
 
 -- 准备施放技能
@@ -210,27 +195,10 @@ end
 -- targetY 获取施放目标点Y
 -- targetZ 获取施放目标点Z
 hevent.onSkillReady = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillReady
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId(),
-                        targetUnit = cj.GetSpellTargetUnit(),
-                        targetLoc = cj.GetSpellTargetLoc()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillReady, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_CHANNEL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillReady, callFunc)
 end
 
 -- 开始施放技能
@@ -240,28 +208,11 @@ end
 -- targetX 获取施放目标点X
 -- targetY 获取施放目标点Y
 -- targetZ 获取施放目标点Z
-hevent.onSkillStart = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillStart
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_CAST)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId(),
-                        targetUnit = cj.GetSpellTargetUnit(),
-                        targetLoc = cj.GetSpellTargetLoc()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+hevent.onSkillCast = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillCast, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_CAST)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillCast, callFunc)
 end
 
 -- 停止施放技能

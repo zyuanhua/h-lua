@@ -31,6 +31,40 @@ hevent_default_actions = {
                 }
             )
         end),
+        skillStudy = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.skillStudy,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    triggerSkill = cj.GetLearnedSkill()
+                }
+            )
+        end),
+        skillReady = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.skillReady,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    triggerSkill = cj.GetSpellAbilityId(),
+                    targetUnit = cj.GetSpellTargetUnit(),
+                    targetLoc = cj.GetSpellTargetLoc()
+                }
+            )
+        end),
+        skillCast = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.skillCast,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                    triggerSkill = cj.GetSpellAbilityId(),
+                    targetUnit = cj.GetSpellTargetUnit(),
+                    targetLoc = cj.GetSpellTargetLoc()
+                }
+            )
+        end),
         damaged = cj.Condition(function()
             local sourceUnit = cj.GetEventDamageSource()
             local targetUnit = cj.GetTriggerUnit()
