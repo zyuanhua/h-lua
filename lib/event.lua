@@ -819,9 +819,6 @@ end
 -- chatString 获取聊天的内容
 -- matchedString 获取匹配命中的内容
 hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
-    if (whichPlayer == nil or chatStr == nil) then
-        return
-    end
     local key = CONST_EVENT.chat .. charStr .. '|F'
     if (matchAll) then
         key = CONST_EVENT.chat .. charStr .. '|T'
@@ -853,9 +850,6 @@ end
 -- 按ESC
 -- triggerPlayer 获取触发玩家
 hevent.onEsc = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
     hevent.pool(whichPlayer, hevent_default_actions.player.esc, function(tgr)
         cj.TriggerRegisterPlayerEventEndCinematic(tgr, whichPlayer)
     end)
@@ -866,31 +860,31 @@ end
 -- triggerPlayer 获取触发玩家
 -- triggerUnit 获取触发单位
 hevent.onSelection = function(whichPlayer, qty, callFunc)
-    if (whichPlayer == nil or qty == nil or qty <= 0) then
-        return
-    end
     local key = CONST_EVENT.selection .. "#" .. qty
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichPlayer] == nil) then
+        hRuntime.event.trigger[whichPlayer] = {}
     end
-    if (hRuntime.event.trigger[key][whichPlayer] == nil) then
-        hRuntime.event.trigger[key].click = 0
-        hRuntime.event.trigger[key][whichPlayer] = cj.CreateTrigger()
-        bj.TriggerRegisterPlayerSelectionEventBJ(hRuntime.event.trigger[key][whichPlayer], whichPlayer, true)
+    if (hRuntime.event.trigger[whichPlayer][key] == nil) then
+        hRuntime.event.trigger[whichPlayer][key].click = 0
+        hRuntime.event.trigger[whichPlayer][key] = cj.CreateTrigger()
+        cj.TriggerRegisterPlayerUnitEvent(
+            hRuntime.event.trigger[whichPlayer][key],
+            whichPlayer, EVENT_PLAYER_UNIT_SELECTED, nil
+        )
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichPlayer],
+            hRuntime.event.trigger[whichPlayer][key],
             function()
                 local triggerPlayer = cj.GetTriggerPlayer()
                 local triggerUnit = cj.GetTriggerUnit()
-                hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click + 1
+                hRuntime.event.trigger[triggerPlayer][key].click = hRuntime.event.trigger[triggerPlayer][key].click + 1
                 htime.setTimeout(
                     0.3,
                     function(t)
                         htime.delTimer(t)
-                        hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click - 1
+                        hRuntime.event.trigger[triggerPlayer][key].click = hRuntime.event.trigger[triggerPlayer][key].click - 1
                     end
                 )
-                if (hRuntime.event.trigger[key].click >= qty) then
+                if (hRuntime.event.trigger[triggerPlayer][key].click >= qty) then
                     hevent.triggerEvent(
                         triggerPlayer,
                         key,
@@ -911,31 +905,10 @@ end
 -- triggerPlayer 获取触发玩家
 -- triggerUnit 获取触发单位
 hevent.onUnSelection = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.unSelection
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
-    end
-    if (hRuntime.event.trigger[key][whichPlayer] == nil) then
-        hRuntime.event.trigger[key][whichPlayer] = cj.CreateTrigger()
-        bj.TriggerRegisterPlayerSelectionEventBJ(hRuntime.event.trigger[key][whichPlayer], whichPlayer, false)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichPlayer],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerPlayer(),
-                    key,
-                    {
-                        triggerPlayer = cj.GetTriggerPlayer(),
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichPlayer, key, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.unSelection, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.unSelection, callFunc)
 end
 
 -- 玩家离开游戏事件(注意这是全局事件)
@@ -947,123 +920,46 @@ end
 -- 建筑升级开始时
 -- triggerUnit 获取触发单位
 hevent.onUpgradeStart = function(whichUnit, callFunc)
-    local key = CONST_EVENT.upgradeStart
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_UPGRADE_START)
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeStart, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_START)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeStart, callFunc)
 end
 
 -- 建筑升级取消时
 -- triggerUnit 获取触发单位
 hevent.onUpgradeCancel = function(whichUnit, callFunc)
-    local key = CONST_EVENT.upgradeCancel
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeCancel, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeCancel, callFunc)
 end
 
 -- 建筑升级完成时
 -- triggerUnit 获取触发单位
 hevent.onUpgradeFinish = function(whichUnit, callFunc)
-    local key = CONST_EVENT.upgradeFinish
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_UPGRADE_FINISH)
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeFinish, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_FINISH)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeFinish, callFunc)
 end
 
 -- 任意建筑建造开始时
 -- triggerUnit 获取触发单位
 hevent.onConstructStart = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.constructStart
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    whichPlayer,
-                    key,
-                    {
-                        triggerKey = key,
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterPlayerUnitEvent(hRuntime.event.trigger[key], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
-    return hevent.registerEvent(whichPlayer, key, whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructStart, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructStart, callFunc)
 end
 
 -- 任意建筑建造取消时
 -- triggerUnit 获取触发单位
 hevent.onConstructCancel = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.constructCancel
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    whichPlayer,
-                    key,
-                    {
-                        triggerUnit = cj.GetCancelledStructure()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterPlayerUnitEvent(hRuntime.event.trigger[key], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-    return hevent.registerEvent(whichPlayer, key, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructCancel, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructCancel, callFunc)
 end
 
 -- 任意建筑建造完成时

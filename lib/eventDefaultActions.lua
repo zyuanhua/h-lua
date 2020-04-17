@@ -9,6 +9,34 @@ hevent_default_actions = {
                 }
             )
         end),
+        unSelection = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerPlayer(),
+                CONST_EVENT.unSelection,
+                {
+                    triggerPlayer = cj.GetTriggerPlayer(),
+                    triggerUnit = cj.GetTriggerUnit()
+                }
+            )
+        end),
+        constructStart = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetOwningPlayer(cj.GetTriggerUnit()),
+                CONST_EVENT.constructStart,
+                {
+                    triggerUnit = cj.GetTriggerUnit()
+                }
+            )
+        end),
+        constructCancel = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetOwningPlayer(cj.GetTriggerUnit()),
+                CONST_EVENT.constructCancel,
+                {
+                    triggerUnit = cj.GetCancelledStructure()
+                }
+            )
+        end),
     },
     unit = {
         attackDetect = cj.Condition(function()
@@ -112,6 +140,33 @@ hevent_default_actions = {
             hevent.triggerEvent(
                 cj.GetTriggerUnit(),
                 CONST_EVENT.summon,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                }
+            )
+        end),
+        upgradeStart = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.upgradeStart,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                }
+            )
+        end),
+        upgradeCancel = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.upgradeCancel,
+                {
+                    triggerUnit = cj.GetTriggerUnit(),
+                }
+            )
+        end),
+        upgradeFinish = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerUnit(),
+                CONST_EVENT.upgradeFinish,
                 {
                     triggerUnit = cj.GetTriggerUnit(),
                 }
