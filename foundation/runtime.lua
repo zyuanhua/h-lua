@@ -162,6 +162,9 @@ hRuntime.clear = function(handle)
     if (hRuntime.multiBoard[handle] ~= nil) then
         hRuntime.multiBoard[handle] = nil
     end
+    if (hRuntime.dialog[handle] ~= nil) then
+        hRuntime.dialog[handle] = nil
+    end
 end
 
 for i = 1, bj_MAX_PLAYER_SLOTS, 1 do

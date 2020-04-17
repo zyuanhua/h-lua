@@ -1,6 +1,6 @@
 hevent = {
     POOL = {},
-    POOL_RED_LINE = 30000,
+    POOL_RED_LINE = 3000,
 }
 
 -- set
@@ -819,9 +819,9 @@ end
 -- chatString 获取聊天的内容
 -- matchedString 获取匹配命中的内容
 hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
-    local key = CONST_EVENT.chat .. charStr .. '|F'
+    local key = CONST_EVENT.chat .. chatStr .. '|F'
     if (matchAll) then
-        key = CONST_EVENT.chat .. charStr .. '|T'
+        key = CONST_EVENT.chat .. chatStr .. '|T'
     end
     if (hRuntime.event.trigger[whichPlayer] == nil) then
         hRuntime.event.trigger[whichPlayer] = {}
@@ -865,14 +865,16 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
         hRuntime.event.trigger[whichPlayer] = {}
     end
     if (hRuntime.event.trigger[whichPlayer][key] == nil) then
-        hRuntime.event.trigger[whichPlayer][key].click = 0
-        hRuntime.event.trigger[whichPlayer][key] = cj.CreateTrigger()
+        hRuntime.event.trigger[whichPlayer][key] = {
+            click = 0,
+            trigger = cj.CreateTrigger(),
+        }
         cj.TriggerRegisterPlayerUnitEvent(
-            hRuntime.event.trigger[whichPlayer][key],
+            hRuntime.event.trigger[whichPlayer][key].trigger,
             whichPlayer, EVENT_PLAYER_UNIT_SELECTED, nil
         )
         cj.TriggerAddAction(
-            hRuntime.event.trigger[whichPlayer][key],
+            hRuntime.event.trigger[whichPlayer][key].trigger,
             function()
                 local triggerPlayer = cj.GetTriggerPlayer()
                 local triggerUnit = cj.GetTriggerUnit()

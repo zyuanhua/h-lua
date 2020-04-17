@@ -233,9 +233,18 @@ hevent_default_actions = {
             )
         end),
     },
-    rect = {
-        enterUnitRange = cj.Condition(function()
-
+    dialog = {
+        click = cj.Condition(function()
+            local clickedDialog = cj.GetClickedDialog()
+            local clickedButton = cj.GetClickedButton()
+            local val
+            for _, b in ipairs(hRuntime.dialog[clickedDialog].buttons) do
+                if (b.button == clickedButton) then
+                    val = b.value
+                end
+            end
+            hRuntime.dialog[clickedDialog].action(val)
+            hdialog.del(clickedDialog)
         end)
     },
     item = {
