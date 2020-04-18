@@ -824,7 +824,7 @@ hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
             hRuntime.event.trigger[whichPlayer][key],
             function()
                 hevent.triggerEvent(
-                    whichPlayer,
+                    cj.GetTriggerPlayer(),
                     key,
                     {
                         triggerPlayer = cj.GetTriggerPlayer(),

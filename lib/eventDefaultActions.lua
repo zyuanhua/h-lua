@@ -52,7 +52,7 @@ hevent_default_actions = {
                 hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
             end
         end),
-        command = cj.Condition(function()
+        command = function()
             local p = cj.GetTriggerPlayer()
             local str = cj.GetEventPlayerChatString()
             if (str == "-apc") then
@@ -97,7 +97,7 @@ hevent_default_actions = {
                     end
                 end
             end
-        end),
+        end,
         leave = cj.Condition(function()
             local p = cj.GetTriggerPlayer()
             hplayer.set(p, "status", hplayer.player_status.leave)
