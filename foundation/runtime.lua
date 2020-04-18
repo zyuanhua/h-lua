@@ -33,7 +33,10 @@ hRuntime = {
     unit = {},
     hero = {},
     heroBuildSelection = {},
-    skill = {},
+    skill = {
+        silentUnits = {},
+        unarmUnits = {},
+    },
     attribute = {},
     attributeDiff = {},
     attributeDamaging = {},
@@ -143,6 +146,12 @@ hRuntime.clear = function(handle)
     end
     if (hRuntime.skill[handle] ~= nil) then
         hRuntime.skill[handle] = nil
+        if (table.includes(handle, hRuntime.skill.silentUnits)) then
+            table.delete(handle, hRuntime.skill.silentUnits)
+        end
+        if (table.includes(handle, hRuntime.skill.unarmUnits)) then
+            table.delete(handle, hRuntime.skill.unarmUnits)
+        end
     end
     if (hRuntime.attribute[handle] ~= nil) then
         hRuntime.attribute[handle] = nil

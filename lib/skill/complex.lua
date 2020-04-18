@@ -31,7 +31,7 @@ hskill.knocking = function(options)
     end
     if (math.random(1, 100) <= odds) then
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-        local damageType = options.damageType or {CONST_DAMAGE_TYPE.physical}
+        local damageType = options.damageType or { CONST_DAMAGE_TYPE.physical }
         local effect = options.effect or "war3mapImported\\eff_crit.mdl"
         heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
@@ -107,7 +107,7 @@ hskill.violence = function(options)
     end
     if (math.random(1, 100) <= odds) then
         local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-        local damageType = options.damageType or {CONST_DAMAGE_TYPE.magic}
+        local damageType = options.damageType or { CONST_DAMAGE_TYPE.magic }
         local effect = options.effect or "war3mapImported\\eff_demon_explosion.mdl"
         heffect.toUnit(effect, targetUnit, 0.5)
         --暴！
@@ -184,8 +184,7 @@ hskill.split = function(options)
         return
     end
     if (math.random(1, 100) <= odds) then
-        local g =
-            hgroup.createByUnit(
+        local g = hgroup.createByUnit(
             targetUnit,
             range,
             function(filterUnit)
@@ -290,8 +289,7 @@ hskill.broken = function(options)
         end
         damage = damage * (1 - oppose * 0.01)
     end
-    local cu =
-        hunit.create(
+    local cu = hunit.create(
         {
             register = false,
             unitId = hskill.SKILL_TOKEN,
@@ -399,8 +397,7 @@ hskill.swim = function(options)
             damageStringColor = "64e3f2"
         end
     end
-    local cu =
-        hunit.create(
+    local cu = hunit.create(
         {
             register = false,
             unitId = hskill.SKILL_TOKEN,
@@ -521,9 +518,6 @@ hskill.silent = function(options)
         end
         during = during * (1 - oppose * 0.01)
         damage = damage * (1 - oppose * 0.01)
-    end
-    if (hRuntime.skill.silentUnits == nil) then
-        hRuntime.skill.silentUnits = {}
     end
     if (hRuntime.skill.silentTrigger == nil) then
         hRuntime.skill.silentTrigger = cj.CreateTrigger()
@@ -651,9 +645,6 @@ hskill.unarm = function(options)
         end
         during = during * (1 - oppose * 0.01)
         damage = damage * (1 - oppose * 0.01)
-    end
-    if (hRuntime.skill.unarmUnits == nil) then
-        hRuntime.skill.unarmUnits = {}
     end
     if (hRuntime.skill.unarmTrigger == nil) then
         hRuntime.skill.unarmTrigger = cj.CreateTrigger()
@@ -863,8 +854,7 @@ hskill.bomb = function(options)
     if (options.whichGroup ~= nil) then
         whichGroup = options.whichGroup
     elseif (options.whichUnit ~= nil) then
-        whichGroup =
-            hgroup.createByUnit(
+        whichGroup = hgroup.createByUnit(
             options.whichUnit,
             range,
             function(filterUnit)
@@ -996,7 +986,7 @@ hskill.lightningChain = function(options)
     local range = options.range or 500
     local isRepeat = options.isRepeat or false
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.damageType or {"thunder"}
+    local damageType = options.damageType or { "thunder" }
     options.qty = options.qty or 1
     options.qty = options.qty - 1
     if (options.qty < 0) then
@@ -1055,8 +1045,7 @@ hskill.lightningChain = function(options)
             end
             cj.GroupAddUnit(options.repeatGroup, whichUnit)
         end
-        local g =
-            hgroup.createByUnit(
+        local g = hgroup.createByUnit(
             whichUnit,
             range,
             function(filterUnit)
@@ -1244,8 +1233,7 @@ hskill.crackFly = function(options)
                 dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.35 / timerSetTime)
                 if (dist > 0) then
-                    local pxy =
-                        math.polarProjection(
+                    local pxy = math.polarProjection(
                         cj.GetUnitX(options.whichUnit),
                         cj.GetUnitY(options.whichUnit),
                         dist,
@@ -1261,8 +1249,7 @@ hskill.crackFly = function(options)
                 dist = distance / (during * 0.5 / timerSetTime)
                 z = high / (during * 0.65 / timerSetTime)
                 if (dist > 0) then
-                    local pxy =
-                        math.polarProjection(
+                    local pxy = math.polarProjection(
                         cj.GetUnitX(options.whichUnit),
                         cj.GetUnitY(options.whichUnit),
                         dist,
@@ -1548,8 +1535,7 @@ hskill.leap = function(options)
     end
     if (arrowUnit == nil) then
         local cxy = math.polarProjection(cj.GetUnitX(prevUnit), cj.GetUnitY(prevUnit), 100, initFacing)
-        arrowUnit =
-            hunit.create(
+        arrowUnit = hunit.create(
             {
                 register = false,
                 whichPlayer = cj.GetOwningPlayer(sourceUnit),
@@ -1626,8 +1612,7 @@ hskill.leap = function(options)
                 speed = speed + acceleration
             end
             if (damageMovementRange > 0) then
-                local g =
-                    hgroup.createByUnit(
+                local g = hgroup.createByUnit(
                     arrowUnit,
                     damageMovementRange,
                     function(filterUnit)
@@ -1994,7 +1979,7 @@ hskill.rectangleStrike = function(options)
     end
     local frequency = options.frequency or 0
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.damageType or {CONST_DAMAGE_TYPE.common}
+    local damageType = options.damageType or { CONST_DAMAGE_TYPE.common }
     local oneHitOnly = options.oneHitOnly
     local effectScale = options.effectScale or 1.30
     local effectOffset = options.effectOffset or 0
@@ -2013,8 +1998,7 @@ hskill.rectangleStrike = function(options)
             local txy = math.polarProjection(options.x, options.y, d, options.deg)
             if (options.effect ~= nil and d - effectOffset < distance) then
                 local effUnitDur = 0.6
-                local effUnit =
-                    hunit.create(
+                local effUnit = hunit.create(
                     {
                         register = false,
                         whichPlayer = hplayer.player_passive,
@@ -2071,8 +2055,7 @@ hskill.rectangleStrike = function(options)
                 local txy = math.polarProjection(options.x, options.y, d, options.deg)
                 if (options.effect ~= nil and d - effectOffset < distance) then
                     local effUnitDur = 0.6
-                    local effUnit =
-                        hunit.create(
+                    local effUnit = hunit.create(
                         {
                             register = false,
                             whichPlayer = hplayer.player_passive,
