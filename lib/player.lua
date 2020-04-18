@@ -530,104 +530,12 @@ end
 
 -- 初始化(已内部调用)
 hplayer.init = function()
-    local triggerApm = cj.CreateTrigger()
-    local triggerApmUnit = cj.CreateTrigger()
-    local triggerLeave = cj.CreateTrigger()
-    local triggerDeSelection = cj.CreateTrigger()
-    local triggerChat = cj.CreateTrigger()
-    cj.TriggerAddAction(
-        triggerApm,
-        function()
-            local p = cj.GetTriggerPlayer()
-            hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
-        end
-    )
-    cj.TriggerAddAction(
-        triggerApmUnit,
-        function()
-            local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
-            if (his.playing(p) == true and his.playerSite(p) == true and his.computer(p) == false) then
-                hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
-            end
-        end
-    )
-    cj.TriggerAddAction(
-        triggerLeave,
-        function()
-            local p = cj.GetTriggerPlayer()
-            local g
-            hplayer.set(p, "status", hplayer.player_status.leave)
-            hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
-            hplayer.clearUnit(p)
-            hplayer.qty_current = hplayer.qty_current - 1
-            -- 触发玩家离开事件(全局)
-            hevent.triggerEvent(
-                "global",
-                CONST_EVENT.playerLeave,
-                {
-                    triggerPlayer = p
-                }
-            )
-        end
-    )
-    cj.TriggerAddAction(
-        triggerDeSelection,
-        function()
-            hplayer.set(cj.GetTriggerPlayer(), "selection", nil)
-        end
-    )
-    cj.TriggerAddAction(
-        triggerChat,
-        function()
-            local p = cj.GetTriggerPlayer()
-            local str = cj.GetEventPlayerChatString()
-            if (str == "-apc") then
-                if (his.autoConvertGoldToLumber(p) == true) then
-                    his.set(p, "isAutoConvertGoldToLumber", false)
-                    hmessage.echo00(p, "|cffffcc00已关闭|r自动换算", 0)
-                else
-                    his.set(p, "isAutoConvertGoldToLumber", true)
-                    hmessage.echo00(p, "|cffffcc00已开启|r自动换算", 0)
-                end
-            elseif (str == "-apm") then
-                hmessage.echo00(p, "您的apm为:" .. hplayer.getApm(p), 0)
-            elseif (str == "-eff") then
-                if (hplayer.qty_current == 1) then
-                    if (heffect.enable == true) then
-                        heffect.enable = false
-                        hlightning.enable = false
-                        hmessage.echo00(p, "|cffffcc00已关闭|r大部分特效", 0)
-                    else
-                        heffect.enable = true
-                        hlightning.enable = true
-                        hmessage.echo00(p, "|cffffcc00已开启|r大部分特效", 0)
-                    end
-                else
-                    hmessage.echo00(p, "此命令仅在单人时有效", 0)
-                end
-            else
-                local first = string.sub(str, 1, 1)
-                if (first == "+" or first == "-") then
-                    --视距
-                    local v = string.sub(str, 2, string.len(str))
-                    local v = tonumber(v)
-                    if (v == nil) then
-                        return
-                    else
-                        local val = math.abs(v)
-                        if (first == "+") then
-                            hcamera.changeDistance(p, val)
-                        elseif (first == "-") then
-                            hcamera.changeDistance(p, -val)
-                        end
-                    end
-                end
-            end
-        end
-    )
-    bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
-    bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
-    bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_ORDER)
+    -- register APM
+    hevent.pool('global', hevent_default_actions.player.apm, function(trg)
+        bj.TriggerRegisterAnyUnitEventBJ(trg, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
+        bj.TriggerRegisterAnyUnitEventBJ(trg, EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
+        bj.TriggerRegisterAnyUnitEventBJ(trg, EVENT_PLAYER_UNIT_ISSUED_ORDER)
+    end)
     for i = 1, bj_MAX_PLAYERS, 1 do
         hplayer.players[i] = cj.Player(i - 1)
         cj.SetPlayerHandicapXP(hplayer.players[i], 0)
@@ -654,21 +562,33 @@ hplayer.init = function()
             --
             hplayer.qty_current = hplayer.qty_current + 1
             hplayer.set(hplayer.players[i], "status", hplayer.player_status.gaming)
-            cj.TriggerRegisterPlayerEvent(triggerLeave, hplayer.players[i], EVENT_PLAYER_LEAVE)
-            cj.TriggerRegisterPlayerUnitEvent(triggerDeSelection, hplayer.players[i], EVENT_PLAYER_UNIT_DESELECTED, nil)
-            cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "+", false)
-            cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "-", false)
+
+            hevent.onChat(
+                hplayer.players[i], '+', false,
+                hevent_default_actions.player.command
+            )
+            hevent.onChat(
+                hplayer.players[i], '-', false,
+                hevent_default_actions.player.command
+            )
+            -- 玩家离开游戏
+            hevent.pool(hplayer.players[i], hevent_default_actions.player.leave, function(tgr)
+                cj.TriggerRegisterPlayerEvent(tgr, hplayer.players[i], EVENT_PLAYER_LEAVE)
+            end)
+            -- 玩家取消选择单位
+            hevent.onDeSelection(hplayer.players[i], function(evtData)
+                hplayer.set(evtData.triggerPlayer, "selection", nil)
+            end)
+            -- 玩家选中单位
             hevent.onSelection(
                 hplayer.players[i],
-                2,
+                1,
                 function(evtData)
                     hplayer.set(evtData.triggerPlayer, "selection", evtData.triggerUnit)
                 end
             )
         else
-            -- his
             his.set(hplayer.players[i], "isComputer", true)
-            --
             hplayer.set(hplayer.players[i], "status", hplayer.player_status.none)
         end
     end

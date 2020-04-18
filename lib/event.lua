@@ -897,11 +897,11 @@ end
 -- 玩家取消选择单位
 -- triggerPlayer 获取触发玩家
 -- triggerUnit 获取触发单位
-hevent.onUnSelection = function(whichPlayer, callFunc)
-    hevent.pool(whichPlayer, hevent_default_actions.player.unSelection, function(tgr)
+hevent.onDeSelection = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.deSelection, function(tgr)
         cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
     end)
-    return hevent.registerEvent(whichPlayer, CONST_EVENT.unSelection, callFunc)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.deSelection, callFunc)
 end
 
 -- 建筑升级开始时

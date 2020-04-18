@@ -9,10 +9,10 @@ hevent_default_actions = {
                 }
             )
         end),
-        unSelection = cj.Condition(function()
+        deSelection = cj.Condition(function()
             hevent.triggerEvent(
                 cj.GetTriggerPlayer(),
-                CONST_EVENT.unSelection,
+                CONST_EVENT.deSelection,
                 {
                     triggerPlayer = cj.GetTriggerPlayer(),
                     triggerUnit = cj.GetTriggerUnit()
@@ -43,6 +43,73 @@ hevent_default_actions = {
                 CONST_EVENT.constructFinish,
                 {
                     triggerUnit = cj.GetConstructedStructure()
+                }
+            )
+        end),
+        apm = cj.Condition(function()
+            local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
+            if (his.playing(p) == true and his.playerSite(p) == true and his.computer(p) == false) then
+                hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
+            end
+        end),
+        command = cj.Condition(function()
+            local p = cj.GetTriggerPlayer()
+            local str = cj.GetEventPlayerChatString()
+            if (str == "-apc") then
+                if (his.autoConvertGoldToLumber(p) == true) then
+                    his.set(p, "isAutoConvertGoldToLumber", false)
+                    hmessage.echo00(p, "|cffffcc00已关闭|r自动换算", 0)
+                else
+                    his.set(p, "isAutoConvertGoldToLumber", true)
+                    hmessage.echo00(p, "|cffffcc00已开启|r自动换算", 0)
+                end
+            elseif (str == "-apm") then
+                hmessage.echo00(p, "您的apm为:" .. hplayer.getApm(p), 0)
+            elseif (str == "-eff") then
+                if (hplayer.qty_current == 1) then
+                    if (heffect.enable == true) then
+                        heffect.enable = false
+                        hlightning.enable = false
+                        hmessage.echo00(p, "|cffffcc00已关闭|r大部分特效", 0)
+                    else
+                        heffect.enable = true
+                        hlightning.enable = true
+                        hmessage.echo00(p, "|cffffcc00已开启|r大部分特效", 0)
+                    end
+                else
+                    hmessage.echo00(p, "此命令仅在单人时有效", 0)
+                end
+            else
+                local first = string.sub(str, 1, 1)
+                if (first == "+" or first == "-") then
+                    --视距
+                    local v = string.sub(str, 2, string.len(str))
+                    local v = tonumber(v)
+                    if (v == nil) then
+                        return
+                    else
+                        local val = math.abs(v)
+                        if (first == "+") then
+                            hcamera.changeDistance(p, val)
+                        elseif (first == "-") then
+                            hcamera.changeDistance(p, -val)
+                        end
+                    end
+                end
+            end
+        end),
+        leave = cj.Condition(function()
+            local p = cj.GetTriggerPlayer()
+            hplayer.set(p, "status", hplayer.player_status.leave)
+            hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
+            hplayer.clearUnit(p)
+            hplayer.qty_current = hplayer.qty_current - 1
+            -- 触发玩家离开事件(全局)
+            hevent.triggerEvent(
+                "global",
+                CONST_EVENT.playerLeave,
+                {
+                    triggerPlayer = p
                 }
             )
         end),
