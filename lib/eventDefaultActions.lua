@@ -84,7 +84,7 @@ hevent_default_actions = {
                 if (first == "+" or first == "-") then
                     --视距
                     local v = string.sub(str, 2, string.len(str))
-                    local v = tonumber(v)
+                    v = tonumber(v)
                     if (v == nil) then
                         return
                     else
