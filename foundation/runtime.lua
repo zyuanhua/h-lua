@@ -35,7 +35,9 @@ hRuntime = {
     heroBuildSelection = {},
     skill = {
         silentUnits = {},
+        silentTrigger = nil,
         unarmUnits = {},
+        unarmTrigger = nil,
     },
     attribute = {},
     attributeDiff = {},
@@ -68,6 +70,7 @@ hRuntime = {
     multiBoard = {},
     dialog = {}
 }
+
 hRuntime.clear = function(handle)
     if (handle == nil) then
         return

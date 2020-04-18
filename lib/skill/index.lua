@@ -86,3 +86,31 @@ hskill.has = function(whichUnit, ability_id)
     end
     return false
 end
+
+-- 初始化一些方法
+
+-- 沉默
+hRuntime.skill.silentTrigger = cj.CreateTrigger()
+bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
+cj.TriggerAddAction(
+    hRuntime.skill.silentTrigger,
+    function()
+        local u1 = cj.GetTriggerUnit()
+        if (table.includes(u1, hRuntime.skill.silentUnits)) then
+            cj.IssueImmediateOrder(u1, "stop")
+        end
+    end
+)
+
+-- 缴械
+hRuntime.skill.unarmTrigger = cj.CreateTrigger()
+bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
+cj.TriggerAddAction(
+    hRuntime.skill.unarmTrigger,
+    function()
+        local u1 = cj.GetAttacker()
+        if (table.includes(u1, hRuntime.skill.unarmUnits) == true) then
+            cj.IssueImmediateOrder(u1, "stop")
+        end
+    end
+)

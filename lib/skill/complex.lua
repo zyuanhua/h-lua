@@ -519,19 +519,6 @@ hskill.silent = function(options)
         during = during * (1 - oppose * 0.01)
         damage = damage * (1 - oppose * 0.01)
     end
-    if (hRuntime.skill.silentTrigger == nil) then
-        hRuntime.skill.silentTrigger = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        cj.TriggerAddAction(
-            hRuntime.skill.silentTrigger,
-            function()
-                local u1 = cj.GetTriggerUnit()
-                if (table.includes(u1, hRuntime.skill.silentUnits)) then
-                    cj.IssueImmediateOrder(u1, "stop")
-                end
-            end
-        )
-    end
     local level = hskill.get(u, "silentLevel", 0) + 1
     if (level <= 1) then
         htextTag.style(htextTag.create2Unit(u, "沉默", 6.00, "ee82ee", 10, 1.00, 10.00), "scale", 0, 0.2)
@@ -645,19 +632,6 @@ hskill.unarm = function(options)
         end
         during = during * (1 - oppose * 0.01)
         damage = damage * (1 - oppose * 0.01)
-    end
-    if (hRuntime.skill.unarmTrigger == nil) then
-        hRuntime.skill.unarmTrigger = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(
-            hRuntime.skill.unarmTrigger,
-            function()
-                local u1 = cj.GetAttacker()
-                if (table.includes(u1, hRuntime.skill.unarmUnits) == true) then
-                    cj.IssueImmediateOrder(u1, "stop")
-                end
-            end
-        )
     end
     local level = hskill.get(u, "unarmLevel", 0) + 1
     if (level <= 1) then
