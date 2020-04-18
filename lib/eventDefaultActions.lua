@@ -145,15 +145,6 @@ hevent_default_actions = {
                 }
             )
         end),
-        summon = cj.Condition(function()
-            hevent.triggerEvent(
-                cj.GetTriggerUnit(),
-                CONST_EVENT.summon,
-                {
-                    triggerUnit = cj.GetTriggerUnit(),
-                }
-            )
-        end),
         upgradeStart = cj.Condition(function()
             hevent.triggerEvent(
                 cj.GetTriggerUnit(),

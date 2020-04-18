@@ -63,7 +63,6 @@ CONST_EVENT = {
     kill = "kill",
     reborn = "reborn",
     levelUp = "levelUp",
-    summon = "summon",
     enterUnitRange = "enterUnitRange",
     enterRect = "enterRect",
     leaveRect = "leaveRect",

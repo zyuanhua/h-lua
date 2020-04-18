@@ -709,15 +709,6 @@ hevent.onLevelUp = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.levelUp, callFunc)
 end
 
--- 被召唤时
--- triggerUnit 获取被召唤单位
-hevent.onSummon = function(whichUnit, callFunc)
-    hevent.pool(whichUnit, hevent_default_actions.unit.summon, function(tgr)
-        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SUMMON)
-    end)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.summon, callFunc)
-end
-
 -- 进入某单位（whichUnit）范围内
 -- centerUnit 被进入范围的中心单位
 -- triggerUnit 进入范围的单位
