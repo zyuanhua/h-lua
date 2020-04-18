@@ -73,7 +73,7 @@ hskill.damage = function(options)
     end
     --常规伤害判定
     if (damageType == nil or #damageType <= 0) then
-        damageType = {CONST_DAMAGE_TYPE.common}
+        damageType = { CONST_DAMAGE_TYPE.common }
     end
     -- 最终伤害
     local lastDamage = 0
@@ -191,9 +191,9 @@ hskill.damage = function(options)
     end
     -- 计算回避 X 命中
     if
-        (damageKind == CONST_DAMAGE_KIND.attack and targetUnitAttr.avoid - sourceUnitAttr.aim > 0 and
-            math.random(1, 100) <= targetUnitAttr.avoid - sourceUnitAttr.aim)
-     then
+    (damageKind == CONST_DAMAGE_KIND.attack and targetUnitAttr.avoid - sourceUnitAttr.aim > 0 and
+        math.random(1, 100) <= targetUnitAttr.avoid - sourceUnitAttr.aim)
+    then
         isAvoid = true
         lastDamage = 0
         htextTag.style(htextTag.create2Unit(targetUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
@@ -222,8 +222,7 @@ hskill.damage = function(options)
         -- 自然属性
         local tempNatural = {}
         for _, natural in ipairs(CONST_DAMAGE_TYPE_NATURE) do
-            tempNatural[natural] =
-                10 + sourceUnitAttr["natural_" .. natural] - targetUnitAttr["natural_" .. natural .. "_oppose"]
+            tempNatural[natural] = 10 + sourceUnitAttr["natural_" .. natural] - targetUnitAttr["natural_" .. natural .. "_oppose"]
             if (tempNatural[natural] < -100) then
                 tempNatural[natural] = -100
             end
@@ -291,8 +290,7 @@ hskill.damage = function(options)
             hRuntime.attributeDamaging[targetUnit] = nil
         end
         his.set(targetUnit, "isDamaging", true)
-        hRuntime.attributeDamaging[targetUnit] =
-            htime.setTimeout(
+        hRuntime.attributeDamaging[targetUnit] = htime.setTimeout(
             2.5,
             function(t)
                 htime.delTimer(t)
@@ -436,9 +434,9 @@ hskill.damage = function(options)
         -- 硬直
         local punish_during = 5.00
         if
-            (lastDamage > 1 and his.alive(targetUnit) and his.punish(targetUnit) == false and
-                hunit.isOpenPunish(targetUnit))
-         then
+        (lastDamage > 1 and his.alive(targetUnit) and his.punish(targetUnit) == false and
+            hunit.isOpenPunish(targetUnit))
+        then
             hattr.set(
                 targetUnit,
                 0,
@@ -531,7 +529,7 @@ hskill.damage = function(options)
             for _, etc in ipairs(buff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(sourceUnit, b.during, {[b.attr] = "+" .. b.val})
+                    hattr.set(sourceUnit, b.during, { [b.attr] = "+" .. b.val })
                     if (type(b.effect) == "string" and string.len(b.effect) > 0) then
                         heffect.bindUnit(b.effect, sourceUnit, "origin", b.during)
                     end
@@ -542,7 +540,7 @@ hskill.damage = function(options)
             for _, etc in ipairs(debuff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then
-                    hattr.set(targetUnit, b.during, {[b.attr] = "-" .. b.val})
+                    hattr.set(targetUnit, b.during, { [b.attr] = "-" .. b.val })
                     if (type(b.effect) == "string" and string.len(b.effect) > 0) then
                         heffect.bindUnit(b.effect, targetUnit, "origin", b.during)
                     end
@@ -572,7 +570,7 @@ hskill.damage = function(options)
                                     sourceUnit = sourceUnit,
                                     effect = b.effect,
                                     damageKind = CONST_DAMAGE_KIND.special,
-                                    damageType = {CONST_DAMAGE_TYPE.physical}
+                                    damageType = { CONST_DAMAGE_TYPE.physical }
                                 }
                             )
                         end
@@ -588,7 +586,7 @@ hskill.damage = function(options)
                                     sourceUnit = sourceUnit,
                                     effect = b.effect,
                                     damageKind = CONST_DAMAGE_KIND.special,
-                                    damageType = {CONST_DAMAGE_TYPE.magic}
+                                    damageType = { CONST_DAMAGE_TYPE.magic }
                                 }
                             )
                         end
@@ -605,7 +603,7 @@ hskill.damage = function(options)
                                     sourceUnit = sourceUnit,
                                     effect = b.effect,
                                     damageKind = CONST_DAMAGE_KIND.special,
-                                    damageType = {CONST_DAMAGE_TYPE.common}
+                                    damageType = { CONST_DAMAGE_TYPE.common }
                                 }
                             )
                         end
@@ -619,7 +617,7 @@ hskill.damage = function(options)
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     elseif (b.attr == "swim") then
@@ -633,7 +631,7 @@ hskill.damage = function(options)
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     elseif (b.attr == "silent") then
@@ -647,7 +645,7 @@ hskill.damage = function(options)
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     elseif (b.attr == "unarm") then
@@ -661,7 +659,7 @@ hskill.damage = function(options)
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     elseif (b.attr == "fetter") then
@@ -675,7 +673,7 @@ hskill.damage = function(options)
                                 sourceUnit = sourceUnit,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     elseif (b.attr == "bomb") then
@@ -690,7 +688,7 @@ hskill.damage = function(options)
                                 effect = b.effect,
                                 effectSingle = b.effectSingle,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     elseif (b.attr == "lightning_chain") then
@@ -709,7 +707,7 @@ hskill.damage = function(options)
                                 prevUnit = sourceUnit,
                                 sourceUnit = sourceUnit,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common, CONST_DAMAGE_TYPE.thunder}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common, CONST_DAMAGE_TYPE.thunder }
                             }
                         )
                     elseif (b.attr == "crack_fly") then
@@ -725,7 +723,7 @@ hskill.damage = function(options)
                                 during = b.during,
                                 effect = b.effect,
                                 damageKind = CONST_DAMAGE_KIND.special,
-                                damageType = b.damageType or {CONST_DAMAGE_TYPE.common}
+                                damageType = b.damageType or { CONST_DAMAGE_TYPE.common }
                             }
                         )
                     end
