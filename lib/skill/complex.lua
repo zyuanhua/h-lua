@@ -1093,7 +1093,7 @@ hskill.crackFly = function(options)
     local odds = options.odds or 100
     local damage = options.damage
     --计算抵抗
-    local oppose = hattr.get(u, "crack_fly_oppose")
+    local oppose = hattr.get(options.whichUnit, "crack_fly_oppose")
     odds = odds - oppose --(%)
     if (odds <= 0) then
         return
@@ -1112,12 +1112,12 @@ hskill.crackFly = function(options)
         during = 0.5
     end
     --不二次击飞
-    if (his.get(options.targetUnit, "isCrackFly") == true) then
+    if (his.get(options.whichUnit, "isCrackFly") == true) then
         return
     end
-    his.set(options.targetUnit, "isCrackFly", true)
+    his.set(options.whichUnit, "isCrackFly", true)
     --镜头放大模式下，距离缩小一半
-    if (hcamera.getModel(cj.GetOwningPlayer(options.targetUnit)) == "zoomin") then
+    if (hcamera.getModel(cj.GetOwningPlayer(options.whichUnit)) == "zoomin") then
         distance = distance * 0.5
         high = high * 0.5
     end
@@ -1129,7 +1129,7 @@ hskill.crackFly = function(options)
     hskill.unarm(tempObj)
     hskill.silent(tempObj)
     hattr.set(
-        options.targetUnit,
+        options.whichUnit,
         during,
         {
             move = "-9999"
@@ -1180,7 +1180,7 @@ hskill.crackFly = function(options)
                 hskill.damage(
                     {
                         sourceUnit = options.sourceUnit,
-                        targetUnit = options.targetUnit,
+                        targetUnit = options.whichUnit,
                         effect = options.effect,
                         damage = options.damage,
                         damageKind = options.damageKind,
@@ -1189,16 +1189,16 @@ hskill.crackFly = function(options)
                         damageStringColor = "808000"
                     }
                 )
-                cj.SetUnitFlyHeight(options.targetUnit, originHigh, 10000)
-                cj.SetUnitPathing(options.targetUnit, true)
-                his.set(options.targetUnit, "isCrackFly", false)
+                cj.SetUnitFlyHeight(options.whichUnit, originHigh, 10000)
+                cj.SetUnitPathing(options.whichUnit, true)
+                his.set(options.whichUnit, "isCrackFly", false)
                 -- 默认是地面，创建沙尘
                 local tempEff = "Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl"
-                if (his.water(options.targetUnit) == true) then
+                if (his.water(options.whichUnit) == true) then
                     -- 如果是水面，创建水花
                     tempEff = "Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveDamage.mdl"
                 end
-                heffect.toUnit(tempEff, options.targetUnit, 0)
+                heffect.toUnit(tempEff, options.whichUnit, 0)
                 htime.delTimer(t)
                 return
             end

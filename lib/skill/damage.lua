@@ -557,15 +557,15 @@ hskill.damage = function(options)
                 end
             end
         end
-        -- effect
-        local effect
+        -- specialEffect
+        local specialEffect
         if (damageKind == CONST_DAMAGE_KIND.attack) then
-            effect = sourceUnitAttr.attack_effect
+            specialEffect = sourceUnitAttr.attack_effect
         elseif (damageKind == CONST_DAMAGE_KIND.skill) then
-            effect = sourceUnitAttr.skill_effect
+            specialEffect = sourceUnitAttr.skill_effect
         end
-        if (effect ~= nil) then
-            for _, etc in ipairs(effect) do
+        if (specialEffect ~= nil) then
+            for _, etc in ipairs(specialEffect) do
                 local b = etc.table
                 if ((b.odds or 0) > 0) then
                     if (b.attr == "knocking") then
