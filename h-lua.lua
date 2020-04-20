@@ -5,7 +5,6 @@ cg = require "jass.globals"
 -- 加载blizzard
 require "foundation.blizzard_c"
 require "foundation.blizzard_b"
-require "foundation.blizzard_bj"
 
 -- 加载const
 require "const.attribute"

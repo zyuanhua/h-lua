@@ -1,8 +1,58 @@
 bj = {}
-
+bj.StartSoundForPlayerBJ = function(whichPlayer, soundHandle)
+    if whichPlayer == cj.GetLocalPlayer() then
+        cj.StartSound(soundHandle)
+    end
+end
 bj.VolumeGroupSetVolumeForPlayerBJ = function(whichPlayer, vgroup, scale)
     if cj.GetLocalPlayer() == whichPlayer then
         cj.VolumeGroupSetVolume(vgroup, scale)
+    end
+end
+bj.TriggerRegisterAnyUnitEventBJ = function(trig, whichEvent)
+    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+        cj.TriggerRegisterPlayerUnitEvent(trig, cj.Player(i - 1), whichEvent, nil)
+    end
+end
+bj.TriggerRegisterPlayerSelectionEventBJ = function(trig, whichPlayer, selected)
+    if (selected) then
+        return cj.TriggerRegisterPlayerUnitEvent(trig, whichPlayer, EVENT_PLAYER_UNIT_SELECTED, nil)
+    else
+        return cj.TriggerRegisterPlayerUnitEvent(trig, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
+    end
+end
+bj.TriggerRegisterPlayerKeyEventBJ = function(trig, whichPlayer, keType, keKey)
+    if keType == bj_KEYEVENTTYPE_DEPRESS then
+        -- Depress event - find out what key
+        if keKey == bj_KEYEVENTKEY_LEFT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_LEFT_DOWN)
+        elseif keKey == bj_KEYEVENTKEY_RIGHT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_RIGHT_DOWN)
+        elseif keKey == bj_KEYEVENTKEY_DOWN then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_DOWN_DOWN)
+        elseif keKey == bj_KEYEVENTKEY_UP then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_UP_DOWN)
+        else
+            -- Unrecognized key - ignore the request and return failure.
+            return nil
+        end
+    elseif keType == bj_KEYEVENTTYPE_RELEASE then
+        -- Release event - find out what key
+        if keKey == bj_KEYEVENTKEY_LEFT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_LEFT_UP)
+        elseif keKey == bj_KEYEVENTKEY_RIGHT then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_RIGHT_UP)
+        elseif keKey == bj_KEYEVENTKEY_DOWN then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_DOWN_UP)
+        elseif keKey == bj_KEYEVENTKEY_UP then
+            return cj.TriggerRegisterPlayerEvent(trig, whichPlayer, EVENT_PLAYER_ARROW_UP_UP)
+        else
+            -- Unrecognized key - ignore the request and return failure.
+            return nil
+        end
+    else
+        -- Unrecognized type - ignore the request and return failure.
+        return nil
     end
 end
 bj.AllowVictoryDefeatBJ = function(gameResult)
@@ -45,9 +95,7 @@ bj.CustomDefeatDialogBJ = function(whichPlayer, message)
     end
     cj.DialogDisplay(whichPlayer, d, true)
     bj.VolumeGroupSetVolumeForPlayerBJ(whichPlayer, SOUND_VOLUMEGROUP_UI, 1.0)
-    if whichPlayer == cj.GetLocalPlayer() then
-        cj.StartSound(cg.bj_defeatDialogSound)
-    end
+    bj.StartSoundForPlayerBJ(whichPlayer, cg.bj_defeatDialogSound)
 end
 bj.CustomDefeatQuitBJ = function()
     if cg.bj_isSinglePlayer then
@@ -105,9 +153,7 @@ bj.CustomVictoryDialogBJ = function(whichPlayer)
 
     cj.DialogDisplay(whichPlayer, d, true)
     bj.VolumeGroupSetVolumeForPlayerBJ(whichPlayer, SOUND_VOLUMEGROUP_UI, 1.0)
-    if whichPlayer == cj.GetLocalPlayer() then
-        cj.StartSound(cg.bj_victoryDialogSound)
-    end
+    bj.StartSoundForPlayerBJ(whichPlayer, cg.bj_victoryDialogSound)
 end
 bj.CustomDefeatBJ = function(whichPlayer, message)
     if bj.AllowVictoryDefeatBJ(PLAYER_GAME_RESULT_DEFEAT) then
@@ -163,18 +209,7 @@ bj.AbortCinematicFadeBJ = function()
         cj.DestroyTimer(cg.bj_cineFadeFinishTimer)
     end
 end
-bj.PercentToInt = function(percentage, max)
-    local result = cj.R2I(percentage * cj.I2R(max) * 0.01)
-    if result < 0 then
-        result = 0
-    elseif result > max then
-        result = max
-    end
-    return result
-end
-bj.PercentTo255 = function(percentage)
-    return bj.PercentToInt(percentage, 255)
-end
+
 bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
     bj.AbortCinematicFadeBJ()
     cj.SetCineFilterTexture(tex)
@@ -197,3 +232,54 @@ bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0
     cj.SetCineFilterDuration(duration)
     cj.DisplayCineFilter(true)
 end
+bj.SetUnitVertexColorBJ = function(whichUnit, red, green, blue, transparency)
+    cj.SetUnitVertexColor(
+        whichUnit,
+        bj.PercentTo255(red),
+        bj.PercentTo255(green),
+        bj.PercentTo255(blue),
+        bj.PercentTo255(100.0 - transparency)
+    )
+end
+bj.CreateQuestBJ = function(questType, title, description, iconPath)
+    local required = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_REQ_UNDISCOVERED
+    local discovered = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_OPT_DISCOVERED
+    local cq = cj.CreateQuest()
+    cj.QuestSetTitle(cq, title)
+    cj.QuestSetDescription(cq, description)
+    cj.QuestSetIconPath(cq, iconPath)
+    cj.QuestSetRequired(cq, required)
+    cj.QuestSetDiscovered(cq, discovered)
+    cj.QuestSetCompleted(cq, false)
+    return cq
+end
+
+bj.TriggerRegisterEnterRectSimple = function(trig, r)
+    local rectRegion = cj.CreateRegion()
+    cj.RegionAddRect(rectRegion, r)
+    return cj.TriggerRegisterEnterRegion(trig, rectRegion, nil)
+end
+
+bj.TriggerRegisterLeaveRectSimple = function(trig, r)
+    local rectRegion = cj.CreateRegion()
+    cj.RegionAddRect(rectRegion, r)
+    return cj.TriggerRegisterLeaveRegion(trig, rectRegion, nil)
+end
+
+bj.GetCameraBoundsMapRect = function()
+    return bj_mapInitialCameraBounds
+end
+bj.GetPlayableMapRect = function()
+    return bj_mapInitialPlayableArea
+end
+bj.GetCurrentCameraBoundsMapRectBJ = function()
+    return cj.Rect(cj.GetCameraBoundMinX(), cj.GetCameraBoundMinY(), cj.GetCameraBoundMaxX(), cj.GetCameraBoundMaxY())
+end
+
+bj_mapInitialPlayableArea = cj.Rect(
+    cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
+    cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+    cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
+    cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+)
+bj_mapInitialCameraBounds = bj.GetCurrentCameraBoundsMapRectBJ()
