@@ -90,13 +90,13 @@ hskill.pause = function(whichUnit, during, pauseColor)
         end
     end
     if (pauseColor == "black") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 30, 0)
+        hunit.setRGB(whichUnit, 30, 30, 30, 0)
     elseif (pauseColor == "blue") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 30, 200, 0)
+        hunit.setRGB(whichUnit, 30, 30, 200, 0)
     elseif (pauseColor == "red") then
-        bj.SetUnitVertexColorBJ(whichUnit, 200, 30, 30, 0)
+        hunit.setRGB(whichUnit, 200, 30, 30, 0)
     elseif (pauseColor == "green") then
-        bj.SetUnitVertexColorBJ(whichUnit, 30, 200, 30, 0)
+        hunit.setRGB(whichUnit, 30, 200, 30, 0)
     end
     cj.SetUnitTimeScalePercent(whichUnit, 0.00)
     cj.PauseUnit(whichUnit, true)

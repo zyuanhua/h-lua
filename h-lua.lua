@@ -35,10 +35,10 @@ require "foundation.string"
 require "foundation.table"
 -- 加载color
 require "foundation.color"
--- 加载h-lua的F9
-require "foundation.f9"
 -- 加载runtime
 require "foundation.slk"
+-- 加载h-lua的F9
+require "foundation.f9"
 
 -- 加载Dzapi库
 -- 需要编辑器支持网易平台的DZAPI

@@ -176,6 +176,17 @@ hunit.setAnimateSpeed = function(u, speed, during)
     end
 end
 
+-- 设置单位的三原色
+hunit.setRGB = function(whichUnit, red, green, blue, transparency)
+    cj.SetUnitVertexColor(
+        whichUnit,
+        bj.PercentTo255(red),
+        bj.PercentTo255(green),
+        bj.PercentTo255(blue),
+        bj.PercentTo255(100.0 - transparency)
+    )
+end
+
 --[[
     创建单位/单位组
     @return 最后创建单位/单位组

@@ -45,9 +45,18 @@ hquest.create = function(options)
         questtype = bj_QUESTTYPE_OPT_DISCOVERED
     end
     local icon = options.icon or "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp"
-    local q = bj.CreateQuestBJ(questtype, title, content, icon)
+    local required = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_REQ_UNDISCOVERED
+    local discovered = questType == bj_QUESTTYPE_REQ_DISCOVERED or questType == bj_QUESTTYPE_OPT_DISCOVERED
+    local q = cj.CreateQuest()
+    cj.QuestSetTitle(q, title)
+    cj.QuestSetDescription(q, content)
+    cj.QuestSetIconPath(q, icon)
+    cj.QuestSetRequired(q, required)
+    cj.QuestSetDiscovered(q, discovered)
     if (isFinish == true) then
         cj.QuestSetCompleted(q, true)
+    else
+        cj.QuestSetCompleted(q, false)
     end
     if (options.during ~= nil and options.during > 0) then
         hquest.del(q, options.during)

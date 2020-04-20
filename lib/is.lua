@@ -1,4 +1,11 @@
-his = {}
+his = {
+    mapInitialPlayableArea = cj.Rect(
+        cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
+        cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+        cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
+        cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+    )
+}
 
 his.set = function(handle, key, val)
     if (handle == nil or key == nil or val == nil) then
@@ -220,7 +227,7 @@ his.borderRect = function(r, x, y)
 end
 -- 是否超出地图边界
 his.borderMap = function(x, y)
-    return cj.borderRect(cj.GetPlayableMapRect(), x, y)
+    return cj.borderRect(his.mapInitialPlayableArea, x, y)
 end
 -- 是否身上有某种物品
 his.ownItem = function(u, itemId)
