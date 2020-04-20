@@ -553,6 +553,14 @@ hevent.onRebound = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.rebound, callFunc)
 end
 
+-- 被反伤时
+-- triggerUnit 获取触发单位
+-- sourceUnit 获取来源单位
+-- damage 获取反伤伤害
+hevent.onBeRebound = function(whichUnit, callFunc)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.beRebound, callFunc)
+end
+
 -- 造成无法回避的伤害时
 -- triggerUnit 获取触发单位
 -- targetUnit 获取目标单位

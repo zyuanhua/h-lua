@@ -508,7 +508,17 @@ hskill.damage = function(options)
                         {
                             triggerUnit = targetUnit,
                             sourceUnit = sourceUnit,
-                            damage = lastDamage * targetUnitDamageRebound * 0.01
+                            damage = ldr
+                        }
+                    )
+                    -- @触发被反伤事件
+                    hevent.triggerEvent(
+                        sourceUnit,
+                        CONST_EVENT.beRebound,
+                        {
+                            triggerUnit = sourceUnit,
+                            sourceUnit = targetUnit,
+                            damage = ldr
                         }
                     )
                 end

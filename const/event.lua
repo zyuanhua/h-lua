@@ -45,6 +45,7 @@ CONST_EVENT = {
     crackFly = "crackFly",
     beCrackFly = "beCrackFly",
     rebound = "rebound",
+    beRebound = "beRebound",
     noAvoid = "noAvoid",
     beNoAvoid = "beNoAvoid",
     knocking = "knocking",
