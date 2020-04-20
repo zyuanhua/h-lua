@@ -91,7 +91,6 @@ end
 
 -- 沉默
 hRuntime.skill.silentTrigger = cj.CreateTrigger()
-bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.silentTrigger, EVENT_PLAYER_UNIT_SPELL_CHANNEL)
 cj.TriggerAddAction(
     hRuntime.skill.silentTrigger,
     function()
@@ -101,10 +100,8 @@ cj.TriggerAddAction(
         end
     end
 )
-
 -- 缴械
 hRuntime.skill.unarmTrigger = cj.CreateTrigger()
-bj.TriggerRegisterAnyUnitEventBJ(hRuntime.skill.unarmTrigger, EVENT_PLAYER_UNIT_ATTACKED)
 cj.TriggerAddAction(
     hRuntime.skill.unarmTrigger,
     function()
@@ -114,3 +111,7 @@ cj.TriggerAddAction(
         end
     end
 )
+for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+    cj.TriggerRegisterPlayerUnitEvent(hRuntime.skill.silentTrigger, cj.Player(i - 1), EVENT_PLAYER_UNIT_SPELL_CHANNEL, nil)
+    cj.TriggerRegisterPlayerUnitEvent(hRuntime.skill.unarmTrigger, cj.Player(i - 1), EVENT_PLAYER_UNIT_ATTACKED, nil)
+end

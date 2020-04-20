@@ -5,11 +5,6 @@ bj.VolumeGroupSetVolumeForPlayerBJ = function(whichPlayer, vgroup, scale)
         cj.VolumeGroupSetVolume(vgroup, scale)
     end
 end
-bj.TriggerRegisterAnyUnitEventBJ = function(trig, whichEvent)
-    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-        cj.TriggerRegisterPlayerUnitEvent(trig, cj.Player(i - 1), whichEvent, nil)
-    end
-end
 bj.AllowVictoryDefeatBJ = function(gameResult)
     if (gameResult == PLAYER_GAME_RESULT_VICTORY) then
         return not cj.IsNoVictoryCheat()

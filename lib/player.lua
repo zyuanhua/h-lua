@@ -531,10 +531,12 @@ end
 -- 初始化(已内部调用)
 hplayer.init = function()
     -- register APM
-    hevent.pool('global', hevent_default_actions.player.apm, function(trg)
-        bj.TriggerRegisterAnyUnitEventBJ(trg, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
-        bj.TriggerRegisterAnyUnitEventBJ(trg, EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
-        bj.TriggerRegisterAnyUnitEventBJ(trg, EVENT_PLAYER_UNIT_ISSUED_ORDER)
+    hevent.pool('global', hevent_default_actions.player.apm, function(tgr)
+        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+            cj.TriggerRegisterPlayerUnitEvent(tgr, cj.Player(i - 1), EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, nil)
+            cj.TriggerRegisterPlayerUnitEvent(tgr, cj.Player(i - 1), EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, nil)
+            cj.TriggerRegisterPlayerUnitEvent(tgr, cj.Player(i - 1), EVENT_PLAYER_UNIT_ISSUED_ORDER, nil)
+        end
     end)
     for i = 1, bj_MAX_PLAYERS, 1 do
         hplayer.players[i] = cj.Player(i - 1)
