@@ -201,18 +201,42 @@ hplayer.defeat = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
     end
-    hplayer.clearUnit(whichPlayer)
     if (tips == "" or tips == nil) then
         tips = "失败"
     end
-    bj.CustomDefeatBJ(whichPlayer, tips)
+    hplayer.clearUnit(whichPlayer)
+    cj.RemovePlayer(whichPlayer, PLAYER_GAME_RESULT_DEFEAT)
+    if hplayer.qty_current > 1 then
+        cj.DisplayTimedTextFromPlayer(whichPlayer, 0, 0, 60, cj.GetLocalizedString("PLAYER_DEFEATED"))
+    end
+    if (cj.GetPlayerController(whichPlayer) == MAP_CONTROL_USER) then
+        hdialog.create(whichPlayer, {
+            title = tips,
+            buttons = { cj.GetLocalizedString("GAMEOVER_QUIT_MISSION") }
+        }, function()
+        end)
+    end
 end
 -- 令玩家胜利
-hplayer.victory = function(whichPlayer)
+hplayer.victory = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
     end
-    bj.CustomVictoryBJ(whichPlayer, true, true)
+    if (tips == "" or tips == nil) then
+        tips = "胜利"
+    end
+    cj.RemovePlayer(whichPlayer, PLAYER_GAME_RESULT_VICTORY)
+    if hplayer.qty_current > 1 then
+        cj.DisplayTimedTextFromPlayer(whichPlayer, 0, 0, 60, cj.GetLocalizedString("PLAYER_VICTORIOUS"))
+    end
+    if (cj.GetPlayerController(whichPlayer) == MAP_CONTROL_USER) then
+        cg.bj_changeLevelShowScores = true
+        hdialog.create(whichPlayer, {
+            title = tips,
+            buttons = { cj.GetLocalizedString("GAMEOVER_QUIT_MISSION") }
+        }, function()
+        end)
+    end
 end
 -- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
 hplayer.setIsAutoConvert = function(whichPlayer, b)

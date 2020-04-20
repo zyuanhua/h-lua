@@ -301,7 +301,9 @@ hevent_default_actions = {
                     val = b.value
                 end
             end
-            hRuntime.dialog[clickedDialog].action(val)
+            if (type(hRuntime.dialog[clickedDialog].action) == 'function') then
+                hRuntime.dialog[clickedDialog].action(val)
+            end
             hdialog.del(clickedDialog)
         end)
     },
