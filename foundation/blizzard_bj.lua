@@ -209,7 +209,18 @@ bj.AbortCinematicFadeBJ = function()
         cj.DestroyTimer(cg.bj_cineFadeFinishTimer)
     end
 end
-
+bj.PercentToInt = function(percentage, max)
+    local result = cj.R2I(percentage * cj.I2R(max) * 0.01)
+    if result < 0 then
+        result = 0
+    elseif result > max then
+        result = max
+    end
+    return result
+end
+bj.PercentTo255 = function(percentage)
+    return bj.PercentToInt(percentage, 255)
+end
 bj.CinematicFilterGenericBJ = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
     bj.AbortCinematicFadeBJ()
     cj.SetCineFilterTexture(tex)
@@ -276,7 +287,8 @@ bj.GetCurrentCameraBoundsMapRectBJ = function()
     return cj.Rect(cj.GetCameraBoundMinX(), cj.GetCameraBoundMinY(), cj.GetCameraBoundMaxX(), cj.GetCameraBoundMaxY())
 end
 
-bj_mapInitialPlayableArea = cj.Rect(
+bj_mapInitialPlayableArea =
+    cj.Rect(
     cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
     cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
     cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
