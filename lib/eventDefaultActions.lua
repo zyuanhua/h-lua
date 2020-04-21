@@ -1,3 +1,5 @@
+--- 框架默认事件动作
+--- default event actions
 hevent_default_actions = {
     player = {
         esc = cj.Condition(function()

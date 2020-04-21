@@ -1,29 +1,30 @@
+---@class hplayer
 hplayer = {
-    --用户玩家
+    --- 用户玩家
     players = {},
-    --中立敌对
+    --- 中立敌对
     player_aggressive = cj.Player(PLAYER_NEUTRAL_AGGRESSIVE),
-    --中立受害
+    --- 中立受害
     player_victim = cj.Player(bj_PLAYER_NEUTRAL_VICTIM),
-    --中立特殊
+    --- 中立特殊
     player_extra = cj.Player(bj_PLAYER_NEUTRAL_EXTRA),
-    --中立被动
+    --- 中立被动
     player_passive = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-    --玩家状态
+    --- 玩家状态
     player_status = {
         none = "无参与",
         gaming = "游戏中",
         leave = "已离开"
     },
-    --用户玩家最大数量
+    --- 用户玩家最大数量
     qty_max = 12,
-    --当前玩家数量
+    --- 当前玩家数量
     qty_current = 0,
-    --换算比率，默认：1000000金 -> 1木
+    --- 换算比率，默认：1000000金 -> 1木
     convert_ratio = 1000000
 }
 
---set
+---@private
 hplayer.set = function(whichPlayer, key, value)
     if (whichPlayer == nil) then
         print_stack()
@@ -36,7 +37,7 @@ hplayer.set = function(whichPlayer, key, value)
     hRuntime.player[index][key] = value
 end
 
---get
+---@private
 hplayer.get = function(whichPlayer, key, default)
     if (whichPlayer == nil) then
         print_stack()
@@ -49,16 +50,7 @@ hplayer.get = function(whichPlayer, key, default)
     return hRuntime.player[index][key] or default
 end
 
--- 循环玩家
-hplayer.loop = function(call)
-    if (call == nil) then
-        return
-    end
-    for i = 1, hplayer.qty_max, 1 do
-        call(hplayer.players[i], i)
-    end
-end
-
+---@private
 hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     if delta > 0 then
         if whichPlayerState == PLAYER_STATE_RESOURCE_GOLD then
@@ -78,31 +70,58 @@ hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, whichPlayerState) + delta)
 end
 
+---@private
 hplayer.setPlayerState = function(whichPlayer, whichPlayerState, value)
     local oldValue = cj.GetPlayerState(whichPlayer, whichPlayerState)
     hplayer.adjustPlayerState(value - oldValue, whichPlayer, whichPlayerState)
 end
 
--- 设置换算比率
+--- 循环玩家
+---@alias Handler fun(whichPlayer: userdata, playerIndex: number):void
+---@param call Handler | "function(whichPlayer, playerIndex) end"
+hplayer.loop = function(call)
+    if (call == nil) then
+        return
+    end
+    for i = 1, hplayer.qty_max, 1 do
+        call(hplayer.players[i], i)
+    end
+end
+
+--- 设置换算比率
+---@param ratio number (%)
 hplayer.setConvertRatio = function(ratio)
     hplayer.convert_ratio = ratio
 end
--- 获取换算比率
+
+--- 获取换算比率
+---@return number (%)
 hplayer.getConvertRatio = function()
     return hplayer.convert_ratio
 end
--- 获取玩家ID，例如：玩家一等于1，玩家三等于3
+
+--- 获取玩家ID
+--- 例如：玩家一等于1，玩家三等于3
+---@param whichPlayer userdata
+---@return number
 hplayer.index = function(whichPlayer)
     return cj.GetPlayerId(whichPlayer) + 1
 end
--- 获取玩家名称
+
+--- 获取玩家名称
+---@param whichPlayer userdata
+---@return string
 hplayer.getName = function(whichPlayer)
     return cj.GetPlayerName(whichPlayer)
 end
--- 设置玩家名称
+
+--- 设置玩家名称
+---@param whichPlayer userdata
+---@param name string
 hplayer.setName = function(whichPlayer, name)
     cj.SetPlayerName(whichPlayer, name)
 end
+
 -- 获取玩家当前选中的单位
 hplayer.getSelection = function(whichPlayer)
     return hplayer.get(whichPlayer, "selection", nil)

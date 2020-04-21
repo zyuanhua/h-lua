@@ -1,6 +1,7 @@
--- 遮罩
+---@class hmark 遮罩/迷雾
 hmark = {}
 
+---@private
 hmark.cinematicFilterGeneric = function(duration, bmode, tex, red0, green0, blue0, trans0, red1, green1, blue1, trans1)
     if cg.bj_cineFadeContinueTimer ~= nil then
         cj.DestroyTimer(cg.bj_cineFadeContinueTimer)
@@ -29,6 +30,19 @@ hmark.cinematicFilterGeneric = function(duration, bmode, tex, red0, green0, blue
     cj.DisplayCineFilter(true)
 end
 
+--- 设置迷雾状态
+---@param enable boolean 战争迷雾
+---@param enableMark boolean 黑色阴影
+hmark.setFogStatus = function(enable, enableMark)
+    cj.FogEnable(enable)
+    cj.FogMaskEnable(enableMark)
+end
+
+--- 创建一个遮罩
+---@public
+---@param path string 贴图路径 512x256 png->blp
+---@param during number 持续时间
+---@param whichPlayer userdata|nil 玩家
 hmark.create = function(path, during, whichPlayer)
     if (whichPlayer == nil) then
         hmark.cinematicFilterGeneric(

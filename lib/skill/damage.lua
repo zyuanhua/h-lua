@@ -20,7 +20,7 @@ local _damageTtg = function(targetUnit, damage, fix, color)
     )
 end
 
--- 造成伤害
+--- 造成伤害
 --[[
     options = {
         sourceUnit = nil, --伤害来源

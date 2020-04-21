@@ -1,6 +1,13 @@
+---@class hrect
 hrect = {}
 
---创建一个设定中心（x,y）创建一个长w宽h的矩形区域
+--- 创建一个设定中心（x,y）创建一个长w宽h的矩形区域
+---@param x number
+---@param y number
+---@param w number
+---@param h number
+---@param name string
+---@return userdata
 hrect.create = function(x, y, w, h, name)
     local startX = x - (w * 0.5)
     local startY = y - (h * 0.5)
@@ -20,66 +27,100 @@ hrect.create = function(x, y, w, h, name)
     }
     return r
 end
---创建一个设定点（loc）创建一个长w宽h的矩形区域
-hrect.createAtLoc = function(loc, w, h, name)
-    return hrect.create(cj.GetLocationX(loc), cj.GetLocationY(loc), w, h, name)
-end
---获取数据
+
+--- 获取区域名称
+---@param whichRect userdata
+---@return string
 hrect.getName = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].name
     end
-    return nil
+    return ""
 end
+
+--- 获取区域中心坐标x
+---@param whichRect userdata
+---@return number
 hrect.getX = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].x
     end
-    return nil
+    return 0
 end
+
+--- 获取区域中心坐标y
+---@param whichRect userdata
+---@return number
 hrect.getY = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].y
     end
-    return nil
+    return 0
 end
+
+--- 获取区域的长
+---@param whichRect userdata
+---@return number
 hrect.getWidth = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].width
     end
-    return nil
+    return 0
 end
+
+--- 获取区域的宽
+---@param whichRect userdata
+---@return number
 hrect.getHeight = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].height
     end
-    return nil
+    return 0
 end
+
+--- 获取区域的起点坐标x(左下角)
+---@param whichRect userdata
+---@return number
 hrect.getStartX = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].startX
     end
-    return nil
+    return 0
 end
+
+--- 获取区域的起点坐标y(左下角)
+---@param whichRect userdata
+---@return number
 hrect.getStartY = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].startY
     end
-    return nil
+    return 0
 end
+
+--- 获取区域的结束坐标x(右上角)
+---@param whichRect userdata
+---@return number
 hrect.getEndX = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].endX
     end
-    return nil
+    return 0
 end
+
+--- 获取区域的结束坐标y(右上角)
+---@param whichRect userdata
+---@return number
 hrect.getEndY = function(whichRect)
     if (hRuntime.rect[whichRect]) then
         return hRuntime.rect[whichRect].endY
     end
-    return nil
+    return 0
 end
---删除区域
+
+--- 删除区域
+---@param whichRect userdata
+---@param during number|nil 延时
 hrect.del = function(whichRect, during)
     if (during == nil or during <= 0) then
         hRuntime.clear(whichRect)
@@ -95,25 +136,29 @@ hrect.del = function(whichRect, during)
         )
     end
 end
---区域单位锁定
---[[
-    {
-        type 类型有：square|circle // 矩形(默)|圆形
-        during 持续时间 必须大于0
-        width 锁定活动范围长，大于0
-        height 锁定活动范围宽，大于0
-        whichRect 锁定区域时设置，可选
-        whichUnit 锁定某个单位时设置，可选
-        whichLoc 锁定某个点时设置，可选
-        whichX 锁定某个坐标X时设置，可选
-        whichY 锁定某个坐标Y时设置，可选
-    }
-]]
+
+--- 区域单位锁定
+---@param bean table
 hrect.lock = function(bean)
+    --[[
+        bean = {
+            type 类型有：square|circle // 矩形(默)|圆形
+            during 持续时间 必须大于0
+            width 锁定活动范围长，大于0
+            height 锁定活动范围宽，大于0
+            whichRect 锁定区域时设置，可选
+            whichUnit 锁定某个单位时设置，可选
+            whichLoc 锁定某个点时设置，可选
+            whichX 锁定某个坐标X时设置，可选
+            whichY 锁定某个坐标Y时设置，可选
+        }
+    ]]
+    bean.during = bean.during or 0
     if (bean.during <= 0 or (bean.whichRect == nil and (bean.width <= 0 or bean.height <= 0))) then
         return
     end
-    if (bean.whichRect == nil and whichUnit == nil and whichLoc == nil and (whichX == nil or whichY == nil)) then
+    if (bean.whichRect == nil and bean.whichUnit == nil and bean.whichLoc == nil
+        and (bean.whichX == nil or bean.whichY == nil)) then
         return
     end
     if (bean.type == nil) then
@@ -123,13 +168,14 @@ hrect.lock = function(bean)
         return
     end
     local inc = 0
-    local inGroups = {}
+    local lockGroup = cj.CreateGroup()
     htime.setInterval(
-        0.10,
+        0.1,
         function(t)
             inc = inc + 1
-            if (inc > (during / 0.10)) then
+            if (inc > (bean.during / 0.10)) then
                 htime.delTimer(t)
+                hgroup.clear(lockGroup, true, false)
                 return
             end
             local x = bean.whichX
@@ -152,64 +198,57 @@ hrect.lock = function(bean)
             end
             --区域优先
             if (bean.whichRect) then
-                x = cj.GetRectCenter(bean.whichRect)
-                y = cj.GetRectCenter(bean.whichRect)
-                if (hrect.getWidth(bean.whichRect) < w) then
+                x = cj.GetRectCenterX(bean.whichRect)
+                y = cj.GetRectCenterY(bean.whichRect)
+                if (w == nil) then
                     w = hrect.getWidth(bean.whichRect)
                 end
-                if (hrect.getHeight(bean.whichRect) < h) then
+                if (h == nil) then
                     h = hrect.getHeight(bean.whichRect)
                 end
             end
             local lockRect
-            local lockGroup
+            local tempGroup = cj.CreateGroup()
             if (bean.type == "square") then
                 lockRect = cj.Rect(x - (w * 0.5), y - (h * 0.5), x + (w * 0.5), y + (h * 0.5))
-                lockGroup = cj.CreateGroup()
-                cj.GroupEnumUnitsInRect(lockGroup.lockRect, nil)
+                cj.GroupEnumUnitsInRect(tempGroup, lockRect, nil)
             elseif (bean.type == "circle") then
-                local rectCenter = cj.Location(x, y)
-                lockGroup = cj.CreateGroup()
-                cj.GroupEnumUnitsInRangeOfLoc(lockGroup, rectCenter, math.min(w / 2, h / 2), nil)
-                cj.removeLocation(rectCenter)
+                cj.GroupEnumUnitsInRange(tempGroup, x, y, math.min(w / 2, h / 2), nil)
             end
-            if (lockGroup ~= nil) then
-                hgroup.loop(
-                    lockGroup,
-                    function(eu)
-                        if (table.includes(eu, inGroups) == false) then
-                            table.insert(inGroups, eu)
+            hgroup.loop(
+                tempGroup,
+                function(u)
+                    hgroup.addUnit(lockGroup, u)
+                end,
+                true
+            )
+            hgroup.loop(
+                lockGroup,
+                function(u)
+                    print_mb(hunit.getName(u))
+                    local distance = 0.000
+                    local deg = 0
+                    local xx = cj.GetUnitX(u)
+                    local yy = cj.GetUnitY(u)
+                    if (bean.type == "square") then
+                        if (his.borderRect(lockRect, xx, yy) == true) then
+                            deg = math.getDegBetweenXY(x, y, xx, yy)
+                            distance = math.getMaxDistanceInRect(w, h, deg)
                         end
-                    end,
-                    true
-                )
-            end
-            --锁
-            for _, u in ipairs(inGroups) do
-                local distance = 0.000
-                local deg = 0
-                local xx = cj.GetUnitX(u)
-                local yy = cj.GetUnitY(u)
-                if (bean.type == "square") then
-                    if (his.borderRect(lockRect, xx, yy) == true) then
-                        deg = math.getDegBetweenXY(x, y, xx, yy)
-                        distance = math.getMaxDistanceInRect(w, h, deg)
+                    elseif (bean.type == "circle") then
+                        if (math.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
+                            deg = math.getDegBetweenXY(x, y, xx, yy)
+                            distance = math.min(w / 2, h / 2)
+                        end
                     end
-                elseif (bean.type == "circle") then
-                    if (math.getDistanceBetweenXY(x, y, xx, yy) > math.min(w / 2, h / 2)) then
-                        deg = math.getDegBetweenXY(x, y, xx, yy)
-                        distance = math.min(w / 2, h / 2)
+                    if (distance > 0.0) then
+                        local polar = math.polarProjection(x, y, distance, deg)
+                        cj.SetUnitPosition(u, polar.x, polar.y)
+                        heffect.bindUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
                     end
-                end
-                if (distance > 0.0) then
-                    local polar = math.polarProjection(x, y, distance, deg)
-                    local loc = cj.Location(polar.x, polar.y)
-                    cj.SetUnitPositionLoc(u, loc)
-                    cj.RemoveLocation(loc)
-                    heffect.bindUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
-                    hmsg.style(hmsg.ttg2Unit(u, "被困", 10, "dde6f3", 30, 1, 20), "shrink", 0, 0.2)
-                end
-            end
+                end,
+                false
+            )
             if (lockRect ~= nil) then
                 hrect.del(lockRect)
             end

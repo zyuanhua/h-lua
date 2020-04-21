@@ -72,8 +72,12 @@ hcamera.changeDistance = function(whichPlayer, diffDistance)
         end
     end
 end
--- 玩家镜头震动，震动包括两种，一种摇晃shake，一种抖动quake
--- scale 振幅 - 摇晃
+
+--- 玩家镜头震动，震动包括两种
+---@param whichPlayer userdata 玩家
+---@param whichType string | "'shake'" | "'quake'"
+---@param during number 持续时间
+---@param scale number 振幅
 hcamera.shock = function(whichPlayer, whichType, during, scale)
     if (whichPlayer == nil) then
         return

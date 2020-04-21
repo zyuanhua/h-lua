@@ -1,10 +1,16 @@
--- 敌人模块
+---@class henemy 敌人模块
 henemy = {
-    players = {}, -- 充当敌人的玩家
-    numbers = {}, -- 充当敌人的玩家调用次数，默认 0
-    numberLimit = 100, -- 充当敌人的玩家调用次数上限，达到就全体归0
+    -- 充当敌人的玩家
+    players = {},
+    --- 充当敌人的玩家调用次数，初始 0
+    numbers = {},
+    --- 充当敌人的玩家调用次数上限，达到就全体归0
+    numberLimit = 100,
+    --- 敌军名称
     name = "敌军",
+    --- 敌人颜色
     color = cj.ConvertPlayerColor(12),
+    --- 是否与玩家共享视野
     shareSight = false,
 }
 
