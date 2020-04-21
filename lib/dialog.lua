@@ -1,9 +1,10 @@
--- 对话框
+---@class hdialog 对话框
 hdialog = {
     trigger = nil
 }
 
--- 自动根据key识别热键
+--- 自动根据key识别热键
+---@param key string
 hdialog.hotkey = function(key)
     if (key == nil) then
         return 0
@@ -16,25 +17,30 @@ hdialog.hotkey = function(key)
     end
 end
 
--- 删除一个对话框
+--- 删除一个对话框
+---@param whichDialog userdata
 hdialog.del = function(whichDialog)
     hRuntime.clear(whichDialog)
     cj.DialogClear(whichDialog)
     cj.DialogDestroy(whichDialog)
 end
 
--- 创建一个新的对话框
---[[
-    options = {
-        title = "h-lua对话框一个",
-        buttons = {
-            { value = "Q", label = "第1个" },
-            { value = "W", label = "第2个" },
-            { value = "D", label = "第3个" },
-        }
-    }
-]]
+--- 创建一个新的对话框
+---@param whichPlayer userdata
+---@param options table
+---@param action function
+---@return userdata
 hdialog.create = function(whichPlayer, options, action)
+    --[[
+        options = {
+            title = "h-lua对话框一个",
+            buttons = {
+                { value = "Q", label = "第1个" },
+                { value = "W", label = "第2个" },
+                { value = "D", label = "第3个" },
+            }
+        }
+    ]]
     local d = cj.DialogCreate()
     if (#options.buttons <= 0) then
         print_err("Dialog buttons is empty")
