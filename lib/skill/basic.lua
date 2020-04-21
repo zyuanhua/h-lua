@@ -1,4 +1,5 @@
---回避
+--- 回避
+---@param whichUnit userdata
 hskill.avoid = function(whichUnit)
     cj.UnitAddAbility(whichUnit, hskill.SKILL_AVOID_PLUS)
     cj.SetUnitAbilityLevel(whichUnit, hskill.SKILL_AVOID_PLUS, 2)
@@ -14,7 +15,10 @@ hskill.avoid = function(whichUnit)
     )
 end
 
---无敌
+--- 无敌
+---@param whichUnit userdata
+---@param during number
+---@param effect string
 hskill.invulnerable = function(whichUnit, during, effect)
     if (whichUnit == nil) then
         return
@@ -35,7 +39,13 @@ hskill.invulnerable = function(whichUnit, during, effect)
     )
 end
 
---范围群体无敌
+--- 范围群体无敌
+---@param x number
+---@param y number
+---@param radius number
+---@param filter function
+---@param during number
+---@param effect string
 hskill.invulnerableRange = function(x, y, radius, filter, during, effect)
     if (x == nil or y == nil or filter == nil) then
         return
@@ -70,7 +80,10 @@ hskill.invulnerableRange = function(x, y, radius, filter, during, effect)
     )
 end
 
---暂停效果
+--- 暂停效果
+---@param whichUnit userdata
+---@param during number
+---@param pauseColor string | "'black'" | "'blue'" | "'red'" | "'green'"
 hskill.pause = function(whichUnit, during, pauseColor)
     if (whichUnit == nil) then
         return
@@ -117,7 +130,11 @@ hskill.pause = function(whichUnit, during, pauseColor)
     )
 end
 
---隐身
+--- 隐身
+---@param whichUnit userdata
+---@param during number
+---@param transition number
+---@param effect string
 hskill.invisible = function(whichUnit, during, transition, effect)
     if (whichUnit == nil or during == nil or during <= 0) then
         return
@@ -142,7 +159,11 @@ hskill.invisible = function(whichUnit, during, transition, effect)
     end
 end
 
---现形
+--- 现形
+---@param whichUnit userdata
+---@param during number
+---@param transition number
+---@param effect string
 hskill.visible = function(whichUnit, during, transition, effect)
     if (whichUnit == nil or during == nil or during <= 0) then
         return
@@ -167,7 +188,11 @@ hskill.visible = function(whichUnit, during, transition, effect)
     end
 end
 
---为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
+--- 为单位添加效果只限技能类(一般使用物品技能<攻击之爪>模拟)一段时间
+---@param whichUnit userdata
+---@param whichAbility number
+---@param abilityLevel number
+---@param during number
 hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
     if (whichUnit ~= nil and whichAbility ~= nil and during > 0.03) then
         cj.UnitAddAbility(whichUnit, whichAbility)
@@ -185,20 +210,22 @@ hskill.modelEffect = function(whichUnit, whichAbility, abilityLevel, during)
     end
 end
 
---[[
-    自定义技能 - 对单位/对XY/对点
-    options = {
-        whichPlayer,
-        skillId,
-        orderString,
-        x,y 创建位置
-        targetX,targetY 对XY时可选
-        targetLoc, 对点时可选
-        targetUnit, 对单位时可选
-        life, 马甲生命周期
-    }
-]]
+--- 自定义技能 - 对单位/对XY/对点
+---@param options table
 hskill.diy = function(options)
+    --[[
+        自定义技能 - 对单位/对XY/对点
+        options = {
+            whichPlayer,
+            skillId,
+            orderString,
+            x,y 创建位置
+            targetX,targetY 对XY时可选
+            targetLoc, 对点时可选
+            targetUnit, 对单位时可选
+            life, 马甲生命周期
+        }
+    ]]
     if (options.whichPlayer == nil or options.skillId == nil or options.orderString == nil) then
         return
     end

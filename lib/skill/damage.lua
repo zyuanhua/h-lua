@@ -1,4 +1,4 @@
---伤害漂浮字
+-- 伤害漂浮字
 local _damageTtgQty = 0
 local _damageTtg = function(targetUnit, damage, fix, color)
     _damageTtgQty = _damageTtgQty + 1

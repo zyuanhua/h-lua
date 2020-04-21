@@ -10,6 +10,7 @@ hskill = {
     BUFF_INVULNERABLE = string.char2id("Avul")
 }
 
+---@private
 hskill.set = function(handle, key, val)
     if (handle == nil or key == nil) then
         return
@@ -20,6 +21,7 @@ hskill.set = function(handle, key, val)
     hRuntime.skill[handle][key] = val
 end
 
+---@private
 hskill.get = function(handle, key, defaultVal)
     if (handle == nil or key == nil) then
         return defaultVal
@@ -30,10 +32,13 @@ hskill.get = function(handle, key, defaultVal)
     return hRuntime.skill[handle][key]
 end
 
--- 添加技能
-hskill.add = function(whichUnit, ability_id, during)
-    local id = ability_id
-    if (type(ability_id) == "string") then
+--- 添加技能
+---@param whichUnit userdata
+---@param abilityId string|number
+---@param during number
+hskill.add = function(whichUnit, abilityId, during)
+    local id = abilityId
+    if (type(abilityId) == "string") then
         id = string.char2id(id)
     end
     if (during == nil or during <= 0) then
@@ -50,10 +55,13 @@ hskill.add = function(whichUnit, ability_id, during)
     end
 end
 
--- 删除技能
-hskill.del = function(whichUnit, ability_id, during)
-    local id = ability_id
-    if (type(ability_id) == "string") then
+--- 删除技能
+---@param whichUnit userdata
+---@param abilityId string|number
+---@param during number
+hskill.del = function(whichUnit, abilityId, during)
+    local id = abilityId
+    if (type(abilityId) == "string") then
         id = string.char2id(id)
     end
     if (during == nil or during <= 0) then
@@ -69,23 +77,34 @@ hskill.del = function(whichUnit, ability_id, during)
     end
 end
 
--- 设置技能的永久使用性
-hskill.forever = function(whichUnit, ability_id)
-    local id = string.char2id(ability_id)
+--- 设置技能的永久使用性
+---@param whichUnit userdata
+---@param abilityId string|number
+hskill.forever = function(whichUnit, abilityId)
+    local id = abilityId
+    if (type(abilityId) == "string") then
+        id = string.char2id(id)
+    end
     cj.UnitMakeAbilityPermanent(whichUnit, true, id)
 end
 
--- 是否拥有技能
-hskill.has = function(whichUnit, ability_id)
-    if (whichUnit == nil or ability_id == nil) then
+--- 是否拥有技能
+---@param whichUnit userdata
+---@param abilityId string|number
+hskill.has = function(whichUnit, abilityId)
+    if (whichUnit == nil or abilityId == nil) then
         return false
     end
-    local id = string.char2id(ability_id)
+    local id = abilityId
+    if (type(abilityId) == "string") then
+        id = string.char2id(id)
+    end
     if (cj.GetUnitAbilityLevel(whichUnit, id) >= 1) then
         return true
     end
     return false
 end
+
 
 -- 初始化一些方法
 
