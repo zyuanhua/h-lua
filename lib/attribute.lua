@@ -1,4 +1,4 @@
--- 属性系统
+---@class hattr 属性系统
 hattr = {
     max_move_speed = 522,
     max_life = 999999999,
@@ -11,7 +11,8 @@ hattr = {
     DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
 }
 
--- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（百度谷歌[卡血牌bug]，了解原理）
+--- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（搜[卡血牌bug]，了解原理）
+---@private
 hattr.setLM = function(u, abilityId, qty)
     if (qty <= 0) then
         return
@@ -25,7 +26,8 @@ hattr.setLM = function(u, abilityId, qty)
     end
 end
 
--- 为单位添加N个同样的攻击之书
+--- 为单位添加N个同样的攻击之书
+---@private
 hattr.setAttackWhite = function(u, itemId, qty)
     if (u == nil or itemId == nil or qty <= 0) then
         return
@@ -80,15 +82,17 @@ hattr.setAttackWhite = function(u, itemId, qty)
     end
 end
 
--- 设置三围的影响
+--- 设置三围的影响
+---@param buff table
 hattr.setThreeBuff = function(buff)
     if (type(buff) == "table") then
         hRuntime.attributeThreeBuff = buff
     end
 end
 
--- 为单位注册属性系统所需要的基础技能
--- hslk_global.attr
+--- 为单位注册属性系统所需要的基础技能
+--- hslk_global.attr
+--- @private
 hattr.regAllAbility = function(whichUnit)
     for _, v in ipairs(hslk_global.attr.ablisGradient) do
         -- 生命
@@ -139,7 +143,8 @@ hattr.regAllAbility = function(whichUnit)
     end
 end
 
--- 为单位初始化属性系统的对象数据
+--- 为单位初始化属性系统的对象数据
+--- @private
 hattr.init = function(whichUnit)
     if (whichUnit == nil) then
         return false
@@ -281,14 +286,14 @@ hattr.init = function(whichUnit)
     }
     -- 智力英雄的攻击默认为魔法，力量敏捷为物理
     if (hRuntime.attribute[whichUnit].primary == "INT") then
-        hRuntime.attribute[whichUnit].attack_damage_type = {CONST_DAMAGE_TYPE.magic}
+        hRuntime.attribute[whichUnit].attack_damage_type = { CONST_DAMAGE_TYPE.magic }
     else
-        hRuntime.attribute[whichUnit].attack_damage_type = {CONST_DAMAGE_TYPE.physical}
+        hRuntime.attribute[whichUnit].attack_damage_type = { CONST_DAMAGE_TYPE.physical }
     end
     return true
 end
 
--- 积累性diff
+--- @private
 hattr.getAccumuDiff = function(whichUnit, attr)
     if (hRuntime.attributeDiff[whichUnit] == nil) then
         hRuntime.attributeDiff[whichUnit] = {}
@@ -296,6 +301,7 @@ hattr.getAccumuDiff = function(whichUnit, attr)
     return hRuntime.attributeDiff[whichUnit][attr] or 0
 end
 
+--- @private
 hattr.setAccumuDiff = function(whichUnit, attr, value)
     if (hRuntime.attributeDiff[whichUnit] == nil) then
         hRuntime.attributeDiff[whichUnit] = {}
@@ -303,10 +309,12 @@ hattr.setAccumuDiff = function(whichUnit, attr, value)
     hRuntime.attributeDiff[whichUnit][attr] = math.round(value)
 end
 
+--- @private
 hattr.addAccumuDiff = function(whichUnit, attr, value)
     hattr.setAccumuDiff(whichUnit, attr, hattr.getAccumuDiff(whichUnit, attr) + value)
 end
 
+--- @private
 hattr.subAccumuDiff = function(whichUnit, attr, value)
     hattr.setAccumuDiff(whichUnit, attr, hattr.getAccumuDiff(whichUnit, attr) - value)
 end
@@ -330,6 +338,7 @@ end
     }
     during = 0.0 大于0生效；小于等于0时无限持续时间
 ]]
+--- @private
 hattr.setHandle = function(whichUnit, attr, opr, val, dur)
     local valType = type(val)
     local params = hRuntime.attribute[whichUnit]
@@ -387,7 +396,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
         if (opr == "+") then
             -- 添加
             local hkey = string.vkey(val)
-            table.insert(params[attr], {hash = hkey, table = val})
+            table.insert(params[attr], { hash = hkey, table = val })
             if (dur > 0) then
                 htime.setTimeout(
                     dur,
@@ -610,7 +619,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                         end
                     end
                 end
-            elseif (table.includes(attr, {"attack_green", "attack_speed", "defend"})) then
+            elseif (table.includes(attr, { "attack_green", "attack_speed", "defend" })) then
                 -- 绿字攻击 攻击速度 护甲
                 if (futureVal < -99999999) then
                     futureVal = -99999999
@@ -647,7 +656,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                         max = math.floor(max / 10)
                     end
                 end
-            elseif (his.hero(whichUnit) and table.includes(attr, {"str_green", "agi_green", "int_green"})) then
+            elseif (his.hero(whichUnit) and table.includes(attr, { "str_green", "agi_green", "int_green" })) then
                 -- 绿字力量 绿字敏捷 绿字智力
                 if (futureVal < -99999999) then
                     futureVal = -99999999
@@ -685,8 +694,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     end
                 end
                 local setting = {}
-                local three =
-                    table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_green", "")], CONST_ATTR_KEYS)
+                local three = table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_green", "")], CONST_ATTR_KEYS)
                 for _, d in ipairs(three) do
                     local k = d.key
                     local v = d.value
@@ -698,7 +706,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     end
                 end
                 hattr.set(whichUnit, 0, setting)
-            elseif (his.hero(whichUnit) and table.includes(attr, {"str_white", "agi_white", "int_white"})) then
+            elseif (his.hero(whichUnit) and table.includes(attr, { "str_white", "agi_white", "int_white" })) then
                 -- 白字力量 敏捷 智力
                 if (attr == "str_white") then
                     cj.SetHeroStr(whichUnit, math.floor(futureVal), true)
@@ -708,8 +716,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                     cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
                 end
                 local setting = {}
-                local three =
-                    table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_white", "")], CONST_ATTR_KEYS)
+                local three = table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_white", "")], CONST_ATTR_KEYS)
                 for _, d in ipairs(three) do
                     local k = d.key
                     local v = d.value
@@ -732,8 +739,7 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 -- 硬直
                 if (currentVal > 0) then
                     local tempPercent = futureVal / currentVal
-                    hRuntime.attribute[whichUnit].punish_current =
-                        tempPercent * hRuntime.attribute[whichUnit].punish_current
+                    hRuntime.attribute[whichUnit].punish_current = tempPercent * hRuntime.attribute[whichUnit].punish_current
                 else
                     hRuntime.attribute[whichUnit].punish_current = futureVal
                 end
@@ -747,6 +753,10 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
     end
 end
 
+--- 设置单位属性
+---@param whichUnit userdata
+---@param during number 0表示无限
+---@param data any
 hattr.set = function(whichUnit, during, data)
     if (whichUnit == nil) then
         print_stack("whichUnit is nil")
@@ -810,7 +820,10 @@ hattr.set = function(whichUnit, during, data)
     end
 end
 
--- 通用get
+--- 通用get
+---@param whichUnit userdata
+---@param attr string
+---@return any
 hattr.get = function(whichUnit, attr)
     if (whichUnit == nil) then
         return nil
@@ -826,7 +839,8 @@ hattr.get = function(whichUnit, attr)
     return hRuntime.attribute[whichUnit][attr]
 end
 
--- 重置注册
+--- 重置注册
+---@private
 hattr.reRegister = function(whichUnit)
     local life = hRuntime.attribute[whichUnit].life
     local mana = hRuntime.attribute[whichUnit].mana
