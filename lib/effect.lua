@@ -3,14 +3,20 @@ heffect = {
     enable = true
 }
 
--- 删除特效
+--- 删除特效
+---@param e userdata
 heffect.del = function(e)
     if (e ~= nil) then
         cj.DestroyEffect(e)
     end
 end
--- 特效 XY坐标
--- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+
+--- 在XY坐标创建特效
+---@param effectModel string
+---@param x number
+---@param y number
+---@param during number 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+---@return userdata
 heffect.toXY = function(effectModel, x, y, during)
     if (heffect.enable ~= true) then
         return
@@ -35,8 +41,12 @@ heffect.toXY = function(effectModel, x, y, during)
     end
     return eff
 end
--- 特效 点
--- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+
+--- 在点创建特效
+---@param effectModel string
+---@param loc userdata
+---@param during number 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+---@return userdata
 heffect.toLoc = function(effectModel, loc, during)
     if (heffect.enable ~= true) then
         return
@@ -61,8 +71,12 @@ heffect.toLoc = function(effectModel, loc, during)
     end
     return eff
 end
--- 特效 单位所处位置
--- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+
+--- 在单位所处位置创建特效
+---@param effectModel string
+---@param targetUnit userdata
+---@param during number 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）
+---@return userdata
 heffect.toUnit = function(effectModel, targetUnit, during)
     if (heffect.enable ~= true) then
         return
@@ -89,8 +103,13 @@ heffect.toUnit = function(effectModel, targetUnit, during)
     end
     return eff
 end
--- 特效 绑定单位
--- during 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）-1为无限
+
+--- 创建特效绑定单位模型
+---@param effectModel string
+---@param targetUnit userdata
+---@param attach string | "'origin'" | "'head'" | "'chest'"
+---@param during number 0为删除型创建（但是有的模型用此方法不会播放，此时需要during>0）-1为无限
+---@return userdata
 heffect.bindUnit = function(effectModel, targetUnit, attach, during)
     if (heffect.enable ~= true) then
         return
