@@ -1,12 +1,19 @@
--- 奖励
+---@class haward 奖励
 haward = {
     shareRange = 1000.00
 }
--- 设置共享范围
+
+--- 设置共享范围
+---@param range number
 haward.setShareRange = function(range)
     haward.shareRange = math.round(range)
 end
--- 奖励单位（经验黄金木头）
+
+--- 奖励单位（经验黄金木头）
+---@param whichUnit userdata
+---@param exp number
+---@param gold number
+---@param lumber number
 haward.forUnit = function(whichUnit, exp, gold, lumber)
     if (whichUnit == nil) then
         return
@@ -38,23 +45,32 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
         htextTag.style(ttg, "toggle", 0, 0.25)
     end
 end
--- 奖励单位经验
+--- 奖励单位经验
+---@param whichUnit userdata
+---@param exp number
 haward.forUnitExp = function(whichUnit, exp)
     return haward.forUnit(whichUnit, exp, 0, 0)
 end
--- 奖励单位黄金
+--- 奖励单位黄金
+---@param whichUnit userdata
+---@param gold number
 haward.forUnitGold = function(whichUnit, gold)
     return haward.forUnit(whichUnit, 0, gold, 0)
 end
--- 奖励单位木头
+--- 奖励单位木头
+---@param whichUnit userdata
+---@param lumber number
 haward.forUnitLumber = function(whichUnit, lumber)
     return haward.forUnit(whichUnit, 0, 0, lumber)
 end
 
--- 平分奖励英雄组（经验黄金木头）
+--- 平分奖励英雄组（经验黄金木头）
+---@param whichUnit userdata
+---@param exp number
+---@param gold number
+---@param lumber number
 haward.forGroup = function(whichUnit, exp, gold, lumber)
-    local g =
-        hgroup.createByUnit(
+    local g = hgroup.createByUnit(
         whichUnit,
         haward.shareRange,
         function(filterUnit)
@@ -92,20 +108,28 @@ haward.forGroup = function(whichUnit, exp, gold, lumber)
         true
     )
 end
--- 平分奖励英雄组（经验）
+--- 平分奖励英雄组（经验）
+---@param whichUnit userdata
+---@param exp number
 haward.forGroupExp = function(whichUnit, exp)
     haward.forGroup(whichUnit, exp, 0, 0)
 end
--- 平分奖励英雄组（黄金）
+--- 平分奖励英雄组（黄金）
+---@param whichUnit userdata
+---@param gold number
 haward.forGroupGold = function(whichUnit, gold)
     haward.forGroup(whichUnit, 0, gold, 0)
 end
--- 平分奖励英雄组（木头）
+--- 平分奖励英雄组（木头）
+---@param whichUnit userdata
+---@param lumber number
 haward.forGroupLumber = function(whichUnit, lumber)
     haward.forGroup(whichUnit, 0, 0, lumber)
 end
 
--- 平分奖励玩家组（黄金木头）
+--- 平分奖励玩家组（黄金木头）
+---@param gold number
+---@param lumber number
 haward.forPlayer = function(gold, lumber)
     if (hplayer.qty_current <= 0) then
         return
@@ -123,11 +147,13 @@ haward.forPlayer = function(gold, lumber)
         end
     end
 end
--- 平分奖励玩家组（黄金）
+--- 平分奖励玩家组（黄金）
+---@param gold number
 haward.forPlayerGold = function(gold)
     haward.forPlayer(gold, 0)
 end
--- 平分奖励玩家组（木头）
+--- 平分奖励玩家组（木头）
+---@param lumber number
 haward.forPlayerLumber = function(lumber)
     haward.forPlayer(0, lumber)
 end
