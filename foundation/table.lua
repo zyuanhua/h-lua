@@ -1,6 +1,9 @@
 -- 大部分方法不再支持pairs，会引起异步
 
--- 获取一个table的正确长度（不建议使用，会引起异步)
+--- 获取一个table的正确长度
+--- 不建议使用，在不同的lua引擎可能会引起异步，但却没法保证平台提供的引擎是否可靠
+---@param table table
+---@return number
 table.len = function(table)
     local len = 0
     for _, _ in pairs(table) do
@@ -9,7 +12,9 @@ table.len = function(table)
     return len
 end
 
--- 随机在数组内取一个
+--- 随机在数组内取一个
+---@param arr table
+---@return any
 table.random = function(arr)
     local val
     if (#arr > 0) then
@@ -20,7 +25,9 @@ table.random = function(arr)
     return val
 end
 
--- 克隆table
+--- 克隆table
+---@param org table
+---@return table
 table.clone = function(org)
     local function copy(org1, res)
         for _, v in ipairs(org1) do
@@ -38,7 +45,10 @@ table.clone = function(org)
     return res
 end
 
--- 合并table
+--- 合并table
+---@param table1 table
+---@param table2 table
+---@return table
 table.merge = function(table1, table2)
     local tempTable
     if (table1 ~= nil) then
@@ -55,7 +65,10 @@ table.merge = function(table1, table2)
     return tempTable
 end
 
--- 在数组内
+--- 在数组内
+---@param val any
+---@param arr table
+---@return boolean
 table.includes = function(val, arr)
     local isin = false
     if (val == nil or #arr <= 0) then
@@ -70,7 +83,10 @@ table.includes = function(val, arr)
     return isin
 end
 
--- 删除数组一次某个值(qty次,默认删除全部)
+--- 删除数组一次某个值(qty次,默认删除全部)
+---@param val any
+---@param arr table
+---@param qty number
 table.delete = function(val, arr, qty)
     qty = qty or -1
     local q = 0
@@ -86,7 +102,10 @@ table.delete = function(val, arr, qty)
     end
 end
 
--- 将obj形式的attr数据转为有序数组{key=[key],value=[value]}
+--- 将obj形式的attr数据转为有序数组{key=[key],value=[value]}
+---@param obj table
+---@param keyMap table
+---@return table
 table.obj2arr = function(obj, keyMap)
     if (keyMap == nil or type(keyMap) ~= "table" or #keyMap <= 0) then
         return {}
