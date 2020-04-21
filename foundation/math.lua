@@ -1,4 +1,7 @@
--- 随机整数
+--- 随机数
+---@param n number
+---@param m number
+---@return number
 math.random = function(n, m)
     local func = cj.GetRandomReal
     if (n == nil or m == nil) then
@@ -21,7 +24,12 @@ math.random = function(n, m)
     return func(n, m)
 end
 
--- 极坐标位移
+--- 极坐标位移
+---@param x number
+---@param y number
+---@param dist number
+---@param angle number
+---@return table
 math.polarProjection = function(x, y, dist, angle)
     return {
         x = x + dist * math.cos(angle * bj_DEGTORAD),
@@ -29,12 +37,16 @@ math.polarProjection = function(x, y, dist, angle)
     }
 end
 
--- 四舍五入
+--- 四舍五入
+---@param decimal number
+---@return number
 math.round = function(decimal)
     return math.floor((decimal * 100) + 0.5) * 0.01
 end
 
--- 数字格式化
+--- 数字格式化
+---@param value number
+---@return number
 math.numberFormat = function(value)
     local txt = ""
     if (value > 10000 * 10000 * 10000 * 10000) then
@@ -53,18 +65,31 @@ math.numberFormat = function(value)
     return txt
 end
 
--- 获取两个坐标间角度，如果其中一个单位为空 返回0
+--- 获取两个坐标间角度，如果其中一个单位为空 返回0
+---@param x1 number
+---@param y1 number
+---@param x2 number
+---@param y2 number
+---@return number
 math.getDegBetweenXY = function(x1, y1, x2, y2)
     return bj_RADTODEG * cj.Atan2(y2 - y1, x2 - x1)
 end
--- 获取两个点间角度，如果其中一个单位为空 返回0
+
+--- 获取两个点间角度，如果其中一个单位为空 返回0
+---@param l1 number
+---@param l2 number
+---@return number
 math.getDegBetweenLoc = function(l1, l2)
     if (l1 == nil or l2 == nil) then
         return 0
     end
     return math.getDegBetweenXY(cj.GetLocationX(l1), cj.GetLocationY(l1), cj.GetLocationX(l2), cj.GetLocationY(l2))
 end
--- 获取两个单位间角度，如果其中一个单位为空 返回0
+
+--- 获取两个单位间角度，如果其中一个单位为空 返回0
+---@param u1 userdata
+---@param u2 userdata
+---@return number
 math.getDegBetweenUnit = function(u1, u2)
     if (u1 == nil or u2 == nil) then
         return 0
@@ -72,27 +97,39 @@ math.getDegBetweenUnit = function(u1, u2)
     return math.getDegBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
 end
 
--- 获取两个坐标距离
+--- 获取两个坐标距离
+---@param x1 number
+---@param y1 number
+---@param x2 number
+---@param y2 number
+---@return number
 math.getDistanceBetweenXY = function(x1, y1, x2, y2)
     local dx = x2 - x1
     local dy = y2 - y1
     return cj.SquareRoot(dx * dx + dy * dy)
 end
--- 获取两个点距离
+
+--- 获取两个点距离
+---@param l1 number
+---@param l2 number
+---@return number
 math.getDistanceBetweenLoc = function(l1, l2)
     return math.getDistanceBetweenXY(cj.GetLocationX(l1), cj.GetLocationY(l1), cj.GetLocationX(l2), cj.GetLocationY(l2))
 end
--- 获取两个单位距离
+
+--- 获取两个单位距离
+---@param u1 userdata
+---@param u2 userdata
+---@return number
 math.getDistanceBetweenUnit = function(u1, u2)
     return math.getDistanceBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
 end
 
---[[
-    获取矩形区域内某角度距离边缘最大距离
-    w = 区域长
-    h = 区域宽
-    deg = 角度
-]]
+--- 获取矩形区域内某角度距离边缘最大距离
+---@param w number 区域长
+---@param h number 区域宽
+---@param deg number 角度
+---@return number
 math.getMaxDistanceInRect = function(w, h, deg)
     w = w or 0
     h = h or 0
