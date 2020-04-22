@@ -370,160 +370,144 @@ hevent.onBeDamage = function(whichUnit, callFunc)
 end
 
 --- 回避攻击成功
----@alias EvtData {triggerUnit:"触发单位",attacker:"攻击单位"}
----@alias Func fun(evtData: EvtData):void
+---@alias onAvoid fun(evtData: {triggerUnit:"触发单位",attacker:"攻击单位"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onAvoid | "function(evtData) end"
 ---@return any
 hevent.onAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.avoid, callFunc)
 end
 
 --- 攻击被回避
----@alias EvtData {triggerUnit:"攻击单位",attacker:"攻击单位",targetUnit:"回避的单位"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeAvoid fun(evtData: {triggerUnit:"攻击单位",attacker:"攻击单位",targetUnit:"回避的单位"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeAvoid | "function(evtData) end"
 ---@return any
 hevent.onBeAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beAvoid, callFunc)
 end
 
 --- 破防（护甲/魔抗）成功
----@alias EvtData {breakType:"无视类型",triggerUnit:"触发无视单位",targetUnit:"目标单位",value:"破防的数值"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBreakArmor fun(evtData: {breakType:"无视类型",triggerUnit:"触发无视单位",targetUnit:"目标单位",value:"破防的数值"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBreakArmor | "function(evtData) end"
 ---@return any
 hevent.onBreakArmor = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.breakArmor, callFunc)
 end
 
 --- 被破防（护甲/魔抗）成功
----@alias EvtData {breakType:"无视类型",triggerUnit:"被破甲单位",sourceUnit:"来源单位",value:"破防的数值"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeBreakArmor fun(evtData: {breakType:"无视类型",triggerUnit:"被破甲单位",sourceUnit:"来源单位",value:"破防的数值"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeBreakArmor | "function(evtData) end"
 ---@return any
 hevent.onBeBreakArmor = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBreakArmor, callFunc)
 end
 
 --- 眩晕成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被眩晕单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSwim fun(evtData: {triggerUnit:"触发单位",targetUnit:"被眩晕单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSwim | "function(evtData) end"
 ---@return any
 hevent.onSwim = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.swim, callFunc)
 end
 
 --- 被眩晕
----@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeSwim fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeSwim | "function(evtData) end"
 ---@return any
 hevent.onBeSwim = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSwim, callFunc)
 end
 
 --- 打断成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被打断单位",odds:"几率百分比",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBroken fun(evtData: {triggerUnit:"触发单位",targetUnit:"被打断单位",odds:"几率百分比",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBroken | "function(evtData) end"
 ---@return any
 hevent.onBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.broken, callFunc)
 end
 
 --- 被打断
----@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeBroken fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeBroken | "function(evtData) end"
 ---@return any
 hevent.onBeBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBroken, callFunc)
 end
 
 --- 沉默成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被沉默单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSilent fun(evtData: {triggerUnit:"触发单位",targetUnit:"被沉默单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSilent | "function(evtData) end"
 ---@return any
 hevent.onSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.silent, callFunc)
 end
 
 --- 被沉默
----@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeSilent fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeSilent | "function(evtData) end"
 ---@return any
 hevent.onBeSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSilent, callFunc)
 end
 
 --- 缴械成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被缴械单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onUnarm fun(evtData: {triggerUnit:"触发单位",targetUnit:"被缴械单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onUnarm | "function(evtData) end"
 ---@return any
 hevent.onUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.unarm, callFunc)
 end
 
 --- 被缴械
----@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeUnarm fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeUnarm | "function(evtData) end"
 ---@return any
 hevent.onBeUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beUnarm, callFunc)
 end
 
 --- 缚足成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被缚足单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onFetter fun(evtData: {triggerUnit:"触发单位",targetUnit:"被缚足单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onFetter | "function(evtData) end"
 ---@return any
 hevent.onFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.fetter, callFunc)
 end
 
 --- 被缚足
----@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeFetter fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeFetter | "function(evtData) end"
 ---@return any
 hevent.onBeFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beFetter, callFunc)
 end
 
 --- 爆破成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被爆破单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBomb fun(evtData: {triggerUnit:"触发单位",targetUnit:"被爆破单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBomb | "function(evtData) end"
 ---@return any
 hevent.onBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.bomb, callFunc)
 end
 
 --- 被爆破
----@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeBomb fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeBomb | "function(evtData) end"
 ---@return any
 hevent.onBeBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBomb, callFunc)
@@ -557,147 +541,145 @@ hevent.onCrackFly = function(whichUnit, callFunc)
 end
 
 --- 被击飞
---- triggerUnit 获取被击飞单位
---- sourceUnit 获取来源单位
---- odds 获取几率百分比
---- damage 获取击飞伤害
---- high 获取击飞高度
---- distance 获取击飞距离
+---@alias onBeCrackFly fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害",high:"击飞高度",distance:"击飞距离"}):void
+---@param whichUnit userdata
+---@param callFunc onBeCrackFly | "function(evtData) end"
+---@return any
 hevent.onBeCrackFly = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beCrackFly, callFunc)
 end
 
 --- 反伤时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取反伤伤害
+---@alias onRebound fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"反伤伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onRebound | "function(evtData) end"
+---@return any
 hevent.onRebound = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.rebound, callFunc)
 end
 
 --- 被反伤时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取反伤伤害
+---@alias onBeRebound fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"反伤伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeRebound | "function(evtData) end"
+---@return any
 hevent.onBeRebound = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beRebound, callFunc)
 end
 
 --- 造成无法回避的伤害时
---- triggerUnit 获取触发单位
---- targetUnit 获取目标单位
---- damage 获取伤害值
+---@alias onNoAvoid fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onNoAvoid | "function(evtData) end"
+---@return any
 hevent.onNoAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.noAvoid, callFunc)
 end
 
 --- 被造成无法回避的伤害时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取伤害值
+---@alias onBeNoAvoid fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeNoAvoid | "function(evtData) end"
+---@return any
 hevent.onBeNoAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beNoAvoid, callFunc)
 end
 
 --- 物理暴击时
---- triggerUnit 获取触发单位
---- targetUnit 获取目标单位
---- damage 获取暴击伤害值
---- odds 获取暴击几率百分比
---- percent 获取暴击增幅百分比
+---@alias onKnocking fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onKnocking | "function(evtData) end"
+---@return any
 hevent.onKnocking = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.knocking, callFunc)
 end
 
 --- 承受物理暴击时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取暴击伤害值
---- odds 获取暴击几率百分比
---- percent 获取暴击增幅百分比
+---@alias onBeKnocking fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeKnocking | "function(evtData) end"
+---@return any
 hevent.onBeKnocking = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beKnocking, callFunc)
 end
 
 --- 魔法暴击时
---- triggerUnit 获取触发单位
---- targetUnit 获取目标单位
---- damage 获取暴击伤害值
---- odds 获取暴击几率百分比
---- percent 获取暴击增幅百分比
+---@alias onViolence fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onViolence | "function(evtData) end"
+---@return any
 hevent.onViolence = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.violence, callFunc)
 end
 
 --- 承受魔法暴击时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取暴击伤害值
---- odds 获取暴击几率百分比
---- percent 获取暴击增幅百分比
+---@alias onBeViolence fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeViolence | "function(evtData) end"
+---@return any
 hevent.onBeViolence = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beViolence, callFunc)
 end
 
 --- 分裂时
---- triggerUnit 获取触发单位
---- targetUnit 获取目标单位
---- damage 获取分裂伤害值
---- range 获取分裂范围(px)
---- percent 获取分裂百分比
+---@alias onSpilt fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害",range:"分裂范围",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onSpilt | "function(evtData) end"
+---@return any
 hevent.onSpilt = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.spilt, callFunc)
 end
 
 --- 承受分裂时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取分裂伤害值
---- range 获取分裂范围(px)
---- percent 获取分裂百分比
+---@alias onBeSpilt fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害",range:"分裂范围",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeSpilt | "function(evtData) end"
+---@return any
 hevent.onBeSpilt = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSpilt, callFunc)
 end
 
 --- 极限减伤抵抗（减伤不足以抵扣）
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
+---@alias onLimitToughness fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位"}):void
+---@param whichUnit userdata
+---@param callFunc onLimitToughness | "function(evtData) end"
+---@return any
 hevent.onLimitToughness = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.limitToughness, callFunc)
 end
 
 --- 吸血时
---- triggerUnit 获取触发单位
---- targetUnit 获取目标单位
---- damage 获取吸血值
---- percent 获取吸血百分比
+---@alias onHemophagia fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onHemophagia | "function(evtData) end"
+---@return any
 hevent.onHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.hemophagia, callFunc)
 end
 
 --- 被吸血时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取吸血值
---- percent 获取吸血百分比
+---@alias onBeHemophagia fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeHemophagia | "function(evtData) end"
+---@return any
 hevent.onBeHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beHemophagia, callFunc)
 end
 
 --- 技能吸血时
---- triggerUnit 获取触发单位
---- targetUnit 获取目标单位
---- damage 获取吸血值
---- percent 获取吸血百分比
+---@alias onSkillHemophagia fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillHemophagia | "function(evtData) end"
+---@return any
 hevent.onSkillHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.skillHemophagia, callFunc)
 end
 
 --- 被技能吸血时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- damage 获取吸血值
---- percent 获取吸血百分比
+---@alias onBeHemophagia fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeHemophagia | "function(evtData) end"
+---@return any
 hevent.onBeSkillHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSkillHemophagia, callFunc)
 end

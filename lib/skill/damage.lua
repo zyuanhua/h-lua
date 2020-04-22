@@ -379,8 +379,8 @@ hskill.damage = function(options)
                     {
                         triggerUnit = sourceUnit,
                         targetUnit = targetUnit,
-                        damage = lastDamage * hemophagia * 0.01,
-                        percent = hemophagia
+                        value = lastDamage * hemophagia * 0.01,
+                        percent = hemophagia,
                     }
                 )
                 -- @触发被吸血事件
@@ -390,8 +390,8 @@ hskill.damage = function(options)
                     {
                         triggerUnit = targetUnit,
                         sourceUnit = sourceUnit,
-                        damage = lastDamage * hemophagia * 0.01,
-                        percent = hemophagia
+                        value = lastDamage * hemophagia * 0.01,
+                        percent = hemophagia,
                     }
                 )
             end
@@ -414,7 +414,7 @@ hskill.damage = function(options)
                     {
                         triggerUnit = sourceUnit,
                         targetUnit = targetUnit,
-                        damage = lastDamage * hemophagiaSkill * 0.01,
+                        value = lastDamage * hemophagiaSkill * 0.01,
                         percent = hemophagiaSkill
                     }
                 )
@@ -425,7 +425,7 @@ hskill.damage = function(options)
                     {
                         triggerUnit = targetUnit,
                         sourceUnit = sourceUnit,
-                        damage = lastDamage * hemophagiaSkill * 0.01,
+                        value = lastDamage * hemophagiaSkill * 0.01,
                         percent = hemophagiaSkill
                     }
                 )
