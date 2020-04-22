@@ -494,83 +494,81 @@ hevent.onBeSilent = function(whichUnit, callFunc)
 end
 
 --- 缴械成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被缴械单位
---- during 获取缴械时间（秒）
---- odds 获取几率百分比
---- damage 获取缴械伤害
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被缴械单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.unarm, callFunc)
 end
 
 --- 被缴械
---- triggerUnit 获取被缴械单位
---- sourceUnit 获取来源单位
---- during 获取缴械时间（秒）
---- odds 获取几率百分比
---- damage 获取缴械伤害
+---@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beUnarm, callFunc)
 end
 
 --- 缚足成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被缚足单位
---- during 获取缚足时间（秒）
---- odds 获取几率百分比
---- damage 获取缚足伤害
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被缚足单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.fetter, callFunc)
 end
 
 --- 被缚足
---- triggerUnit 获取被缚足单位
---- sourceUnit 获取来源单位
---- during 获取缚足时间（秒）
---- odds 获取几率百分比
---- damage 获取缚足伤害
+---@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beFetter, callFunc)
 end
 
 --- 爆破成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被爆破单位
---- damage 获取爆破伤害
---- odds 获取几率百分比
---- range 获取爆破范围
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被爆破单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.bomb, callFunc)
 end
 
 --- 被爆破
---- triggerUnit 获取被爆破单位
---- sourceUnit 获取来源单位
---- damage 获取爆破伤害
---- odds 获取几率百分比
---- range 获取爆破范围
+---@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBomb, callFunc)
 end
 
 --- 闪电链成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被闪电链单位
---- odds 获取几率百分比
---- damage 获取闪电链伤害
---- range 获取闪电链范围
---- index 获取单位是第几个被电到的
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被闪电链单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onLightningChain = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.lightningChain, callFunc)
 end
 
 --- 被闪电链
---- triggerUnit 获取被闪电链单位
---- sourceUnit 获取来源单位
---- odds 获取几率百分比
---- damage 获取闪电链伤害
---- range 获取闪电链范围
---- index 获取单位是第几个被电到的
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"来源单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeLightningChain = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beLightningChain, callFunc)
 end
@@ -769,6 +767,33 @@ hevent.onLevelUp = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.levelUp, callFunc)
 end
 
+--- 建筑升级开始时
+--- triggerUnit 获取触发单位
+hevent.onUpgradeStart = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeStart, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_START)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeStart, callFunc)
+end
+
+--- 建筑升级取消时
+--- triggerUnit 获取触发单位
+hevent.onUpgradeCancel = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeCancel, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeCancel, callFunc)
+end
+
+--- 建筑升级完成时
+--- triggerUnit 获取触发单位
+hevent.onUpgradeFinish = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeFinish, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_FINISH)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeFinish, callFunc)
+end
+
 --- 进入某单位（whichUnit）范围内
 --- centerUnit 被进入范围的中心单位
 --- triggerUnit 进入范围的单位
@@ -962,33 +987,6 @@ hevent.onDeSelection = function(whichPlayer, callFunc)
         cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
     end)
     return hevent.registerEvent(whichPlayer, CONST_EVENT.deSelection, callFunc)
-end
-
---- 建筑升级开始时
---- triggerUnit 获取触发单位
-hevent.onUpgradeStart = function(whichUnit, callFunc)
-    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeStart, function(tgr)
-        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_START)
-    end)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeStart, callFunc)
-end
-
---- 建筑升级取消时
---- triggerUnit 获取触发单位
-hevent.onUpgradeCancel = function(whichUnit, callFunc)
-    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeCancel, function(tgr)
-        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
-    end)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeCancel, callFunc)
-end
-
---- 建筑升级完成时
---- triggerUnit 获取触发单位
-hevent.onUpgradeFinish = function(whichUnit, callFunc)
-    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeFinish, function(tgr)
-        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_FINISH)
-    end)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeFinish, callFunc)
 end
 
 --- 任意建筑建造开始时
