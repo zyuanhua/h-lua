@@ -1,6 +1,7 @@
--- 排行榜
+---@class hleaderBoard 排行榜
 hleaderBoard = {}
 
+---@private
 hleaderBoard.LeaderboardResize = function(lb)
     local size = cj.LeaderboardGetItemCount(lb)
     if cj.LeaderboardGetLabelText(lb) == "" then
@@ -9,17 +10,19 @@ hleaderBoard.LeaderboardResize = function(lb)
     cj.LeaderboardSetSizeByItemCount(lb, size)
 end
 
---[[
-    根据玩家创建排行榜
-    key 排行榜唯一key
-    refreshFrequency 刷新频率
-    yourData 设置数据的回调,会返回当前的排行榜；
-            另外你需要设置数据传回到create中来，拼凑KV数据，{
-                playerIndex = ?,
-                value = ?
-            }
-]]
+--- 根据玩家创建排行榜
+---@alias hleaderBoard fun(whichLeaderBoard: userdata):void
+---@param key string 排行榜唯一key
+---@param refreshFrequency number 刷新频率
+---@param yourData hleaderBoard | "function(whichLeaderBoard)  return {{playerIndex = 1,value = nil}} end"
 hleaderBoard.create = function(key, refreshFrequency, yourData)
+    --[[
+        yourData 设置数据的回调,会返回当前的排行榜；
+        另外你需要设置数据传回到create中来，拼凑KV数据，{
+            playerIndex = ?,
+            value = ?
+        }
+    ]]
     if (hRuntime.leaderBoard[key] == nil) then
         cj.DestroyLeaderboard(hRuntime.leaderBoard[key])
         hRuntime.leaderBoard[key] = cj.CreateLeaderboard()
@@ -51,12 +54,17 @@ hleaderBoard.create = function(key, refreshFrequency, yourData)
     return hRuntime.leaderBoard[key]
 end
 
---设置排行榜的标题
+--- 设置排行榜的标题
+---@param whichBoard userdata
+---@param title string
 hleaderBoard.setTitle = function(whichBoard, title)
     cj.LeaderboardSetLabel(whichBoard, title)
 end
 
---获取排行第N的玩家
+--- 获取排行第N的玩家
+---@param whichBoard userdata
+---@param n number
+---@return userdata 玩家
 hleaderBoard.pos = function(whichBoard, n)
     if (n < 1 or n > hplayer.qty_max) then
         return
@@ -72,12 +80,16 @@ hleaderBoard.pos = function(whichBoard, n)
     return pos
 end
 
---获取排行第一的玩家
+--- 获取排行第一的玩家
+---@param whichBoard userdata
+---@return userdata 玩家
 hleaderBoard.top = function(whichBoard)
     return hleaderBoard.pos(whichBoard, 1)
 end
 
---获取排行最后的玩家
+--- 获取排行最后的玩家
+---@param whichBoard userdata
+---@return userdata 玩家
 hleaderBoard.bottom = function(whichBoard)
     return hleaderBoard.pos(whichBoard, hplayer.qty_max)
 end
