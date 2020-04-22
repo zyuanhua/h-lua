@@ -685,44 +685,55 @@ hevent.onBeSkillHemophagia = function(whichUnit, callFunc)
 end
 
 --- 硬直时
---- triggerUnit 获取触发单位
---- sourceUnit 获取来源单位
---- percent 获取硬直程度百分比
---- during 获取持续时间
+---@alias onPunish fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",during:"持续时间",percent:"硬直程度百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onPunish | "function(evtData) end"
+---@return any
 hevent.onPunish = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, ONST_EVENT.punish, callFunc)
 end
 
 --- 死亡时
---- triggerUnit 获取触发单位
---- killer 获取凶手单位
+---@alias onDead fun(evtData: {triggerUnit:"触发单位",killer:"凶手单位"}):void
+---@param whichUnit userdata
+---@param callFunc onDead | "function(evtData) end"
+---@return any
 hevent.onDead = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.dead, callFunc)
 end
 
 --- 击杀时
---- triggerUnit 获取触发单位
---- killer 获取凶手单位
---- targetUnit 获取死亡单位
+---@alias onKill fun(evtData: {triggerUnit:"触发单位",killer:"凶手单位",targetUnit:"获取死亡单位"}):void
+---@param whichUnit userdata
+---@param callFunc onKill | "function(evtData) end"
+---@return any
 hevent.onKill = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.kill, callFunc)
 end
 
---- triggerUnit 获取触发单位
 --- 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
+---@alias onReborn fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onReborn | "function(evtData) end"
+---@return any
 hevent.onReborn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.reborn, callFunc)
 end
 
 --- 提升升等级时
---- triggerUnit 获取触发单位
---- value 获取提升了多少级
+---@alias onLevelUp fun(evtData: {triggerUnit:"触发单位",value:"获取提升了多少级"}):void
+---@param whichUnit userdata
+---@param callFunc onLevelUp | "function(evtData) end"
+---@return any
 hevent.onLevelUp = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.levelUp, callFunc)
 end
 
 --- 建筑升级开始时
---- triggerUnit 获取触发单位
+---@alias onUpgradeStart fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUpgradeStart | "function(evtData) end"
+---@return any
 hevent.onUpgradeStart = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.upgradeStart, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_START)
@@ -731,7 +742,10 @@ hevent.onUpgradeStart = function(whichUnit, callFunc)
 end
 
 --- 建筑升级取消时
---- triggerUnit 获取触发单位
+---@alias onUpgradeCancel fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUpgradeCancel | "function(evtData) end"
+---@return any
 hevent.onUpgradeCancel = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.upgradeCancel, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
@@ -740,7 +754,10 @@ hevent.onUpgradeCancel = function(whichUnit, callFunc)
 end
 
 --- 建筑升级完成时
---- triggerUnit 获取触发单位
+---@alias onUpgradeFinish fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUpgradeFinish | "function(evtData) end"
+---@return any
 hevent.onUpgradeFinish = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.upgradeFinish, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_FINISH)
@@ -749,10 +766,11 @@ hevent.onUpgradeFinish = function(whichUnit, callFunc)
 end
 
 --- 进入某单位（whichUnit）范围内
---- centerUnit 被进入范围的中心单位
---- triggerUnit 进入范围的单位
---- enterUnit 进入范围的单位
---- range 设定范围
+---@alias onEnterUnitRange fun(evtData: {centerUnit:"被进入范围的中心单位",enterUnit:"进入范围的单位",range:"设定范围"}):void
+---@param whichUnit userdata
+---@param range number
+---@param callFunc onEnterUnitRange | "function(evtData) end"
+---@return any
 hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
     local key = CONST_EVENT.enterUnitRange
     if (hRuntime.event.trigger[whichUnit] == nil) then
@@ -772,7 +790,6 @@ hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
                     key,
                     {
                         centerUnit = whichUnit,
-                        triggerUnit = cj.GetTriggerUnit(),
                         enterUnit = cj.GetTriggerUnit(),
                         range = range
                     }
@@ -784,8 +801,10 @@ hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
 end
 
 --- 进入某区域
---- triggerRect 获取被进入的矩形区域
---- triggerUnit 获取进入矩形区域的单位
+---@alias onEnterRect fun(evtData: {triggerRect:"被进入的矩形区域",triggerUnit:"进入矩形区域的单位"}):void
+---@param whichRect userdata
+---@param callFunc onEnterRect | "function(evtData) end"
+---@return any
 hevent.onEnterRect = function(whichRect, callFunc)
     local key = CONST_EVENT.enterRect
     if (hRuntime.event.trigger[whichRect] == nil) then
@@ -814,8 +833,10 @@ hevent.onEnterRect = function(whichRect, callFunc)
 end
 
 --- 离开某区域
---- triggerRect 获取被离开的矩形区域
---- triggerUnit 获取离开矩形区域的单位
+---@alias onLeaveRect fun(evtData: {triggerRect:"被离开的矩形区域",triggerUnit:"离开矩形区域的单位"}):void
+---@param whichRect userdata
+---@param callFunc onLeaveRect | "function(evtData) end"
+---@return any
 hevent.onLeaveRect = function(whichRect, callFunc)
     local key = CONST_EVENT.leaveRect
     if (hRuntime.event.trigger[whichRect] == nil) then
@@ -843,11 +864,49 @@ hevent.onLeaveRect = function(whichRect, callFunc)
     return hevent.registerEvent(whichRect, key, callFunc)
 end
 
+--- 任意建筑建造开始时
+---@alias onConstructStart fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onConstructStart | "function(evtData) end"
+---@return any
+hevent.onConstructStart = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructStart, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructStart, callFunc)
+end
+
+--- 任意建筑建造取消时
+---@alias onConstructCancel fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onConstructCancel | "function(evtData) end"
+---@return any
+hevent.onConstructCancel = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructCancel, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructCancel, callFunc)
+end
+
+--- 任意建筑建造完成时
+---@alias onConstructFinish fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onConstructFinish | "function(evtData) end"
+---@return any
+hevent.onConstructFinish = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructFinish, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_FINISH, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructFinish, callFunc)
+end
+
 --- 当聊天时
---- params matchAll 是否全匹配，false为like
---- triggerPlayer 获取聊天的玩家
---- chatString 获取聊天的内容
---- matchedString 获取匹配命中的内容
+---@alias onChat fun(evtData: {triggerPlayer:"聊天的玩家",chatString:"聊天的内容",matchedString:"匹配命中的内容"}):void
+---@param whichPlayer userdata
+---@param chatStr string
+---@param matchAll boolean
+---@param callFunc onChat | "function(evtData) end"
+---@return any
 hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
     local key = CONST_EVENT.chat .. chatStr .. '|F'
     if (matchAll) then
@@ -878,7 +937,10 @@ hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
 end
 
 --- 按ESC
---- triggerPlayer 获取触发玩家
+---@alias onEsc fun(evtData: {triggerPlayer:"触发玩家"}):void
+---@param whichPlayer userdata
+---@param callFunc onEsc | "function(evtData) end"
+---@return any
 hevent.onEsc = function(whichPlayer, callFunc)
     hevent.pool(whichPlayer, hevent_default_actions.player.esc, function(tgr)
         cj.TriggerRegisterPlayerEventEndCinematic(tgr, whichPlayer)
@@ -887,8 +949,11 @@ hevent.onEsc = function(whichPlayer, callFunc)
 end
 
 --- 玩家选择单位(点击了qty次)
---- triggerPlayer 获取触发玩家
---- triggerUnit 获取触发单位
+---@alias onSelection fun(evtData: {triggerPlayer:"触发玩家",triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param qty number
+---@param callFunc onSelection | "function(evtData) end"
+---@return any
 hevent.onSelection = function(whichPlayer, qty, callFunc)
     local key = CONST_EVENT.selection .. "#" .. qty
     if (hRuntime.event.trigger[whichPlayer] == nil) then
@@ -934,8 +999,10 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
 end
 
 --- 玩家取消选择单位
---- triggerPlayer 获取触发玩家
---- triggerUnit 获取触发单位
+---@alias onDeSelection fun(evtData: {triggerPlayer:"触发玩家",triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onDeSelection | "function(evtData) end"
+---@return any
 hevent.onDeSelection = function(whichPlayer, callFunc)
     hevent.pool(whichPlayer, hevent_default_actions.player.deSelection, function(tgr)
         cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
@@ -943,42 +1010,18 @@ hevent.onDeSelection = function(whichPlayer, callFunc)
     return hevent.registerEvent(whichPlayer, CONST_EVENT.deSelection, callFunc)
 end
 
---- 任意建筑建造开始时
---- triggerUnit 获取触发单位
-hevent.onConstructStart = function(whichPlayer, callFunc)
-    hevent.pool(whichPlayer, hevent_default_actions.player.constructStart, function(tgr)
-        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
-    end)
-    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructStart, callFunc)
-end
-
---- 任意建筑建造取消时
---- triggerUnit 获取触发单位
-hevent.onConstructCancel = function(whichPlayer, callFunc)
-    hevent.pool(whichPlayer, hevent_default_actions.player.constructCancel, function(tgr)
-        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-    end)
-    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructCancel, callFunc)
-end
-
---- 任意建筑建造完成时
---- triggerUnit 获取触发单位
-hevent.onConstructFinish = function(whichPlayer, callFunc)
-    hevent.pool(whichPlayer, hevent_default_actions.player.constructFinish, function(tgr)
-        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_FINISH, nil)
-    end)
-    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructFinish, callFunc)
-end
-
 --- 玩家离开游戏事件(注意这是全局事件)
---- triggerPlayer 获取触发玩家
+---@alias onPlayerLeave fun(evtData: {triggerPlayer:"触发玩家"}):void
+---@param callFunc onPlayerLeave | "function(evtData) end"
+---@return any
 hevent.onPlayerLeave = function(callFunc)
     return hevent.registerEvent("global", CONST_EVENT.playerLeave, callFunc)
 end
 
 --- 任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
---- triggerPlayer 获取触发玩家
---- triggerUnit 获取触发单位
+---@alias onPickHero fun(evtData: {triggerPlayer:"触发玩家",triggerUnit:"触发单位"}):void
+---@param callFunc onPickHero | "function(evtData) end"
+---@return any
 hevent.onPickHero = function(callFunc)
     return hevent.onEventByHandle("global", CONST_EVENT.pickHero, callFunc)
 end
