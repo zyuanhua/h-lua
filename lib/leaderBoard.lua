@@ -14,7 +14,7 @@ end
 ---@alias hleaderBoard fun(whichLeaderBoard: userdata):void
 ---@param key string 排行榜唯一key
 ---@param refreshFrequency number 刷新频率
----@param yourData hleaderBoard | "function(whichLeaderBoard)  return {{playerIndex = 1,value = nil}} end"
+---@param yourData hleaderBoard | "function(whichLeaderBoard) return {{playerIndex = 1,value = nil}} end"
 hleaderBoard.create = function(key, refreshFrequency, yourData)
     --[[
         yourData 设置数据的回调,会返回当前的排行榜；

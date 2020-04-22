@@ -1,13 +1,14 @@
---多面板/多列榜
+---@class hmultiBoard 多面板/多列榜
 hmultiBoard = {}
 
---[[
-    根据玩家创建多面板,多面板是可以每个玩家看到的都不一样的
-    key 多面板唯一key
-    refreshFrequency 刷新频率
-    yourData 设置数据的回调,会返回当前的多面板和玩家索引；
-             另外你需要设置数据传回到create中来，拼凑多面板数据，二维数组，行列模式
-]]
+--- 根据玩家创建多面板
+--- 多面板是可以每个玩家看到的都不一样的
+--- yourData会返回当前的多面板和玩家索引
+--- 你需要设置数据传回到create中来，拼凑多面板数据，二维数组，行列模式
+---@alias hmultiBoard fun(whichBoard: userdata,playerIndex:number):void
+---@param key string 多面板唯一key
+---@param refreshFrequency number 刷新频率
+---@param yourData hmultiBoard | "function(whichBoard,playerIndex) return {{value = '标题',icon = '图标'}} end"
 hmultiBoard.create = function(key, refreshFrequency, yourData)
     --判断玩家各自的多面板属性
     for pi = 1, hplayer.qty_max, 1 do
@@ -102,7 +103,9 @@ hmultiBoard.create = function(key, refreshFrequency, yourData)
     end
 end
 
---设置标题
+--- 设置标题
+---@param whichBoard userdata
+---@param title string
 hmultiBoard.setTitle = function(whichBoard, title)
     cj.MultiboardSetTitleText(whichBoard, title)
 end
