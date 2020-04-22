@@ -134,9 +134,9 @@ hevent.deleteEvent = function(handle, key, eventId)
 end
 
 --- 注意到攻击目标
----@param whichUnit userdata
----@alias EvtData {triggerUnit: userdata, targetUnit:userdata}
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"目标单位"}
 ---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
 ---@param callFunc Func | "function(evtData) end"
 ---@return any
 hevent.onAttackDetect = function(whichUnit, callFunc)
@@ -147,8 +147,11 @@ hevent.onAttackDetect = function(whichUnit, callFunc)
 end
 
 --- 获取攻击目标
---- triggerUnit 获取触发单位
---- targetUnit 获取被获取/目标单位
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"目标单位"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onAttackGetTarget = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.attackGetTarget, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
@@ -157,9 +160,11 @@ hevent.onAttackGetTarget = function(whichUnit, callFunc)
 end
 
 --- 准备被攻击
---- triggerUnit 获取被攻击单位
---- targetUnit 获取攻击单位
---- attacker 获取攻击单位
+---@alias EvtData {triggerUnit:"被攻击单位",targetUnit:"攻击单位",attacker:"攻击单位"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeAttackReady = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.beAttackReady, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_ATTACKED)
@@ -168,29 +173,31 @@ hevent.onBeAttackReady = function(whichUnit, callFunc)
 end
 
 --- 造成攻击
---- triggerUnit 获取攻击来源
---- targetUnit 获取被攻击单位
---- attacker 获取攻击来源
---- damage 获取伤害
---- damageKind 获取伤害方式
---- damageType 获取伤害类型
+---@alias EvtData {triggerUnit:"攻击单位",targetUnit:"被攻击单位",attacker:"攻击单位",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onAttack = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.attack, callFunc)
 end
 
 --- 承受攻击
---- triggerUnit 获取被攻击单位
---- attacker 获取攻击来源
---- damage 获取伤害
---- damageKind 获取伤害方式
---- damageType 获取伤害类型
+---@alias EvtData {triggerUnit:"被攻击单位",attacker:"攻击来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeAttack = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beAttack, callFunc)
 end
 
 --- 学习技能
---- triggerUnit 获取学习单位
---- triggerSkill 获取学习技能ID
+---@alias EvtData {triggerUnit:"学习单位",triggerSkill:"学习技能ID字符串"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSkillStudy = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillStudy, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_HERO_SKILL)
@@ -199,12 +206,11 @@ hevent.onSkillStudy = function(whichUnit, callFunc)
 end
 
 --- 准备施放技能
---- triggerUnit 获取施放单位
---- triggerSkill 获取施放技能ID
---- targetUnit 获取目标单位(只对对目标施放有效)
---- targetX 获取施放目标点X
---- targetY 获取施放目标点Y
---- targetZ 获取施放目标点Z
+---@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSkillReady = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillReady, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_CHANNEL)
@@ -213,12 +219,11 @@ hevent.onSkillReady = function(whichUnit, callFunc)
 end
 
 --- 开始施放技能
---- triggerUnit 获取施放单位
---- triggerSkill 获取施放技能ID
---- targetUnit 获取目标单位(只对对目标施放有效)
---- targetX 获取施放目标点X
---- targetY 获取施放目标点Y
---- targetZ 获取施放目标点Z
+---@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSkillCast = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillCast, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_CAST)
@@ -227,8 +232,11 @@ hevent.onSkillCast = function(whichUnit, callFunc)
 end
 
 --- 停止施放技能
---- triggerUnit 获取施放单位
---- triggerSkill 获取施放技能ID
+---@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSkillStop = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillStop, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_ENDCAST)
@@ -237,12 +245,11 @@ hevent.onSkillStop = function(whichUnit, callFunc)
 end
 
 --- 发动技能效果
---- triggerUnit 获取施放单位
---- triggerSkill 获取施放技能ID
---- targetUnit 获取目标单位(只对对目标施放有效)
---- targetX 获取施放目标点X
---- targetY 获取施放目标点Y
---- targetZ 获取施放目标点Z
+---@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSkillEffect = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillEffect, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_EFFECT)
@@ -251,8 +258,11 @@ hevent.onSkillEffect = function(whichUnit, callFunc)
 end
 
 --- 施放技能结束
---- triggerUnit 获取施放单位
---- triggerSkill 获取施放技能ID
+---@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSkillFinish = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillFinish, function(tgr)
         cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_FINISH)
@@ -261,44 +271,61 @@ hevent.onSkillFinish = function(whichUnit, callFunc)
 end
 
 --- 单位使用物品
---- triggerUnit 获取触发单位
---- triggerItem 获取触发物品
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemUsed = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemUsed, callFunc)
 end
 
 --- 出售物品(商店卖给玩家)
---- triggerUnit 获取触发单位
---- triggerItem 获取触发物品
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemSell = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemSell, callFunc)
 end
 
---- 丢弃物品
---- triggerUnit 获取触发/出售单位
---- targetUnit 获取购买单位
---- triggerItem 获取触发/出售物品
+--- 丢弃(传递)物品
+---@alias EvtData {triggerUnit:"丢弃单位",targetUnit:"获得单位（如果有）",triggerItem:"触发物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemDrop = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemDrop, callFunc)
 end
 
 --- 获得物品
---- triggerUnit 获取触发单位
---- triggerItem 获取触发物品
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemGet = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemGet, callFunc)
 end
 
 --- 抵押物品（玩家把物品扔给商店）
---- triggerUnit 获取触发单位
---- triggerItem 获取触发物品
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemPawn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemPawn, callFunc)
 end
 
 --- 物品被破坏
---- triggerUnit 获取触发单位
---- triggerItem 获取触发物品
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemDestroy = function(whichItem, callFunc)
     hevent.pool(whichItem, hevent_default_actions.item.destroy, function(tgr)
         cj.TriggerRegisterDeathEvent(tgr, whichItem)
@@ -307,127 +334,141 @@ hevent.onItemDestroy = function(whichItem, callFunc)
 end
 
 --- 合成物品
---- triggerUnit 获取触发单位
---- triggerItem 获取合成的物品
-hevent.onItemMix = function(whichUnit, callFunc)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.itemMix, callFunc)
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"合成物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
+hevent.onItemMixed = function(whichUnit, callFunc)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.itemMixed, callFunc)
 end
 
 --- 拆分物品
---- triggerUnit 获取触发单位
---- id 获取拆分的物品ID
---[[
-    type 获取拆分的类型
-        simple 单件拆分(同一种物品拆成很多件)
-        mixed 合成品拆分(一种物品拆成零件的种类)
-]]
+---@alias EvtData {triggerUnit:"触发单位",triggerItemId:"被拆分物品ID字符串",type:"拆分的类型:simple(多次数)|mixed(合成物)"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemSeparate = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemSeparate, callFunc)
 end
 
 --- 物品超重
---- triggerUnit 获取触发单位
---- triggerItem 获取得到的物品
---- value 获取超出的重量
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"得到的物品",value:"超出的重量(kg)"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemOverWeight = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemOverWeight, callFunc)
 end
 
 --- 单位满格
---- triggerUnit 获取触发单位
---- triggerItem 获取触发的物品
+---@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发的物品"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onItemOverSlot = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemOverSlot, callFunc)
 end
 
 --- 造成伤害
---- triggerUnit 获取伤害来源
---- targetUnit 获取被伤害单位
---- sourceUnit 获取伤害来源
---- damage 获取伤害
---- damageKind 获取伤害方式
---- damageType 获取伤害类型
+---@alias EvtData {triggerUnit:"伤害来源",targetUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onDamage = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.damage, callFunc)
 end
 
 --- 承受伤害
---- triggerUnit 获取被伤害单位
---- sourceUnit 获取伤害来源
---- damage 获取伤害
---- damageKind 获取伤害方式
---- damageType 获取伤害类型
+---@alias EvtData {triggerUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeDamage = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beDamage, callFunc)
 end
 
 --- 回避攻击成功
---- triggerUnit 获取触发单位
---- attacker 获取攻击单位
+---@alias EvtData {triggerUnit:"触发单位",attacker:"攻击单位"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.avoid, callFunc)
 end
 
 --- 攻击被回避
---- triggerUnit 获取攻击单位
---- attacker 获取攻击单位
---- targetUnit 获取回避的单位
+---@alias EvtData {triggerUnit:"攻击单位",attacker:"攻击单位",targetUnit:"回避的单位"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beAvoid, callFunc)
 end
 
 --- 破防（护甲/魔抗）成功
---- breakType 获取无视类型
---- triggerUnit 获取触发无视单位
---- targetUnit 获取目标单位
---- value 获取破护甲的数值
+---@alias EvtData {breakType:"无视类型",triggerUnit:"触发无视单位",targetUnit:"目标单位",value:"破防的数值"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBreakArmor = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.breakArmor, callFunc)
 end
 
 --- 被破防（护甲/魔抗）成功
---- breakType 获取无视类型
---- triggerUnit 获取被破甲单位
---- sourceUnit 获取来源单位
---- value 获取破护甲的数值
+---@alias EvtData {breakType:"无视类型",triggerUnit:"被破甲单位",sourceUnit:"来源单位",value:"破防的数值"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeBreakArmor = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBreakArmor, callFunc)
 end
 
 --- 眩晕成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被眩晕单位
---- odds 获取眩晕几率百分比
---- during 获取眩晕时间（秒）
---- damage 获取眩晕伤害
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被眩晕单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSwim = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.swim, callFunc)
 end
 
 --- 被眩晕
---- triggerUnit 获取被眩晕单位
---- sourceUnit 获取来源单位
---- odds 获取眩晕几率百分比
---- during 获取眩晕时间（秒）
---- damage 获取眩晕伤害
+---@alias EvtData {triggerUnit:"被眩晕单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeSwim = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSwim, callFunc)
 end
 
 --- 打断成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被打断单位
---- odds 获取几率百分比
---- damage 获取打断伤害
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被打断单位",odds:"几率百分比",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.broken, callFunc)
 end
 
 --- 被打断
---- triggerUnit 获取被打断单位
---- sourceUnit 获取来源单位
---- odds 获取几率百分比
---- damage 获取打断伤害
+---@alias EvtData {triggerUnit:"被打断单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBroken, callFunc)
 end
