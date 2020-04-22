@@ -134,10 +134,9 @@ hevent.deleteEvent = function(handle, key, eventId)
 end
 
 --- 注意到攻击目标
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"目标单位"}
----@alias Func fun(evtData: EvtData):void
+---@alias onAttackDetect fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onAttackDetect | "function(evtData) end"
 ---@return any
 hevent.onAttackDetect = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.attackDetect, function(tgr)
@@ -147,10 +146,9 @@ hevent.onAttackDetect = function(whichUnit, callFunc)
 end
 
 --- 获取攻击目标
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"目标单位"}
----@alias Func fun(evtData: EvtData):void
+---@alias onAttackGetTarget fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onAttackGetTarget | "function(evtData) end"
 ---@return any
 hevent.onAttackGetTarget = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.attackGetTarget, function(tgr)
@@ -160,10 +158,9 @@ hevent.onAttackGetTarget = function(whichUnit, callFunc)
 end
 
 --- 准备被攻击
----@alias EvtData {triggerUnit:"被攻击单位",targetUnit:"攻击单位",attacker:"攻击单位"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeAttackReady fun(evtData: {triggerUnit:"被攻击单位",targetUnit:"攻击单位",attacker:"攻击单位"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeAttackReady | "function(evtData) end"
 ---@return any
 hevent.onBeAttackReady = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.beAttackReady, function(tgr)
@@ -173,30 +170,27 @@ hevent.onBeAttackReady = function(whichUnit, callFunc)
 end
 
 --- 造成攻击
----@alias EvtData {triggerUnit:"攻击单位",targetUnit:"被攻击单位",attacker:"攻击单位",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
----@alias Func fun(evtData: EvtData):void
+---@alias onAttack fun(evtData: {triggerUnit:"攻击单位",targetUnit:"被攻击单位",attacker:"攻击单位",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onAttack | "function(evtData) end"
 ---@return any
 hevent.onAttack = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.attack, callFunc)
 end
 
 --- 承受攻击
----@alias EvtData {triggerUnit:"被攻击单位",attacker:"攻击来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeAttack fun(evtData: {triggerUnit:"被攻击单位",attacker:"攻击来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeAttack | "function(evtData) end"
 ---@return any
 hevent.onBeAttack = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beAttack, callFunc)
 end
 
 --- 学习技能
----@alias EvtData {triggerUnit:"学习单位",triggerSkill:"学习技能ID字符串"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSkillStudy fun(evtData: {triggerUnit:"学习单位",triggerSkill:"学习技能ID字符串"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSkillStudy | "function(evtData) end"
 ---@return any
 hevent.onSkillStudy = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillStudy, function(tgr)
@@ -206,10 +200,9 @@ hevent.onSkillStudy = function(whichUnit, callFunc)
 end
 
 --- 准备施放技能
----@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSkillReady fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSkillReady | "function(evtData) end"
 ---@return any
 hevent.onSkillReady = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillReady, function(tgr)
@@ -219,10 +212,9 @@ hevent.onSkillReady = function(whichUnit, callFunc)
 end
 
 --- 开始施放技能
----@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSkillCast fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSkillCast | "function(evtData) end"
 ---@return any
 hevent.onSkillCast = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillCast, function(tgr)
@@ -232,10 +224,9 @@ hevent.onSkillCast = function(whichUnit, callFunc)
 end
 
 --- 停止施放技能
----@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSkillStop fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSkillStop | "function(evtData) end"
 ---@return any
 hevent.onSkillStop = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillStop, function(tgr)
@@ -245,10 +236,9 @@ hevent.onSkillStop = function(whichUnit, callFunc)
 end
 
 --- 发动技能效果
----@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSkillEffect fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSkillEffect | "function(evtData) end"
 ---@return any
 hevent.onSkillEffect = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillEffect, function(tgr)
@@ -258,10 +248,9 @@ hevent.onSkillEffect = function(whichUnit, callFunc)
 end
 
 --- 施放技能结束
----@alias EvtData {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}
----@alias Func fun(evtData: EvtData):void
+---@alias onSkillFinish fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onSkillFinish | "function(evtData) end"
 ---@return any
 hevent.onSkillFinish = function(whichUnit, callFunc)
     hevent.pool(whichUnit, hevent_default_actions.unit.skillFinish, function(tgr)
@@ -271,60 +260,53 @@ hevent.onSkillFinish = function(whichUnit, callFunc)
 end
 
 --- 单位使用物品
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemUsed fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemUsed | "function(evtData) end"
 ---@return any
 hevent.onItemUsed = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemUsed, callFunc)
 end
 
 --- 出售物品(商店卖给玩家)
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemSell fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemSell | "function(evtData) end"
 ---@return any
 hevent.onItemSell = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemSell, callFunc)
 end
 
 --- 丢弃(传递)物品
----@alias EvtData {triggerUnit:"丢弃单位",targetUnit:"获得单位（如果有）",triggerItem:"触发物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemDrop fun(evtData: {triggerUnit:"丢弃单位",targetUnit:"获得单位（如果有）",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
 ---@return any
 hevent.onItemDrop = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemDrop, callFunc)
 end
 
 --- 获得物品
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemGet fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemGet | "function(evtData) end"
 ---@return any
 hevent.onItemGet = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemGet, callFunc)
 end
 
 --- 抵押物品（玩家把物品扔给商店）
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemPawn fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemPawn | "function(evtData) end"
 ---@return any
 hevent.onItemPawn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemPawn, callFunc)
 end
 
 --- 物品被破坏
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemDestroy fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemDestroy | "function(evtData) end"
 ---@return any
 hevent.onItemDestroy = function(whichItem, callFunc)
     hevent.pool(whichItem, hevent_default_actions.item.destroy, function(tgr)
@@ -334,60 +316,54 @@ hevent.onItemDestroy = function(whichItem, callFunc)
 end
 
 --- 合成物品
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"合成物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemMixed fun(evtData: {triggerUnit:"触发单位",triggerItem:"合成物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemMixed | "function(evtData) end"
 ---@return any
 hevent.onItemMixed = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemMixed, callFunc)
 end
 
 --- 拆分物品
----@alias EvtData {triggerUnit:"触发单位",triggerItemId:"被拆分物品ID字符串",type:"拆分的类型:simple(多次数)|mixed(合成物)"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemSeparate fun(evtData: {triggerUnit:"触发单位",triggerItemId:"被拆分物品ID字符串",type:"拆分的类型:simple(多次数)|mixed(合成物)"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemSeparate | "function(evtData) end"
 ---@return any
 hevent.onItemSeparate = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemSeparate, callFunc)
 end
 
 --- 物品超重
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"得到的物品",value:"超出的重量(kg)"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemOverWeight fun(evtData: {triggerUnit:"触发单位",triggerItem:"得到的物品",value:"超出的重量(kg)"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemOverWeight | "function(evtData) end"
 ---@return any
 hevent.onItemOverWeight = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemOverWeight, callFunc)
 end
 
 --- 单位满格
----@alias EvtData {triggerUnit:"触发单位",triggerItem:"触发的物品"}
----@alias Func fun(evtData: EvtData):void
+---@alias onItemOverSlot fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发的物品"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onItemOverSlot | "function(evtData) end"
 ---@return any
 hevent.onItemOverSlot = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemOverSlot, callFunc)
 end
 
 --- 造成伤害
----@alias EvtData {triggerUnit:"伤害来源",targetUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
----@alias Func fun(evtData: EvtData):void
+---@alias onDamage fun(evtData: {triggerUnit:"伤害来源",targetUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onDamage | "function(evtData) end"
 ---@return any
 hevent.onDamage = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.damage, callFunc)
 end
 
 --- 承受伤害
----@alias EvtData {triggerUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeDamage fun(evtData: {triggerUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeDamage | "function(evtData) end"
 ---@return any
 hevent.onBeDamage = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beDamage, callFunc)
@@ -554,32 +530,28 @@ hevent.onBeBomb = function(whichUnit, callFunc)
 end
 
 --- 闪电链成功
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"被闪电链单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}
----@alias Func fun(evtData: EvtData):void
+---@alias onLightningChain fun(evtData: {triggerUnit:"触发单位",targetUnit:"被闪电链单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onLightningChain | "function(evtData) end"
 ---@return any
 hevent.onLightningChain = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.lightningChain, callFunc)
 end
 
 --- 被闪电链
----@alias EvtData {triggerUnit:"触发单位",targetUnit:"来源单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}
----@alias Func fun(evtData: EvtData):void
+---@alias onBeLightningChain fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}):void
 ---@param whichUnit userdata
----@param callFunc Func | "function(evtData) end"
+---@param callFunc onBeLightningChain | "function(evtData) end"
 ---@return any
 hevent.onBeLightningChain = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beLightningChain, callFunc)
 end
 
 --- 击飞成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被击飞单位
---- odds 获取几率百分比
---- damage 获取击飞伤害
---- high 获取击飞高度
---- distance 获取击飞距离
+---@alias onCrackFly fun(evtData: {triggerUnit:"触发单位",targetUnit:"被击飞单位",odds:"几率百分比",damage:"伤害",high:"击飞高度",distance:"击飞距离"}):void
+---@param whichUnit userdata
+---@param callFunc onCrackFly | "function(evtData) end"
+---@return any
 hevent.onCrackFly = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.crackFly, callFunc)
 end
