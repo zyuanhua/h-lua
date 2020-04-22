@@ -444,7 +444,7 @@ hevent.onSwim = function(whichUnit, callFunc)
 end
 
 --- 被眩晕
----@alias EvtData {triggerUnit:"被眩晕单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
 ---@alias Func fun(evtData: EvtData):void
 ---@param whichUnit userdata
 ---@param callFunc Func | "function(evtData) end"
@@ -464,7 +464,7 @@ hevent.onBroken = function(whichUnit, callFunc)
 end
 
 --- 被打断
----@alias EvtData {triggerUnit:"被打断单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害"}
+---@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害"}
 ---@alias Func fun(evtData: EvtData):void
 ---@param whichUnit userdata
 ---@param callFunc Func | "function(evtData) end"
@@ -474,21 +474,21 @@ hevent.onBeBroken = function(whichUnit, callFunc)
 end
 
 --- 沉默成功
---- triggerUnit 获取触发单位
---- targetUnit 获取被沉默单位
---- during 获取沉默时间（秒）
---- odds 获取几率百分比
---- damage 获取沉默伤害
+---@alias EvtData {triggerUnit:"触发单位",targetUnit:"被沉默单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.silent, callFunc)
 end
 
 --- 被沉默
---- triggerUnit 获取被沉默单位
---- sourceUnit 获取来源单位
---- during 获取沉默时间（秒）
---- odds 获取几率百分比
---- damage 获取沉默伤害
+---@alias EvtData {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}
+---@alias Func fun(evtData: EvtData):void
+---@param whichUnit userdata
+---@param callFunc Func | "function(evtData) end"
+---@return any
 hevent.onBeSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSilent, callFunc)
 end
