@@ -293,6 +293,30 @@ hevent_default_actions = {
             )
         end),
     },
+    hero = {
+        levelUp = cj.Condition(function()
+            local u = cj.GetTriggerUnit()
+            hhero.setPrevLevel(u, cj.GetHeroLevel(u))
+            local diffLv = cj.GetHeroLevel(u) - hhero.getPrevLevel(u)
+            if (diffLv < 1) then
+                return
+            end
+            hattr.set(u, 0, {
+                str_white = "=" .. cj.GetHeroStr(u, false),
+                agi_white = "=" .. cj.GetHeroAgi(u, false),
+                int_white = "=" .. cj.GetHeroInt(u, false)
+            })
+            -- @触发升级事件
+            hevent.triggerEvent(
+                u,
+                CONST_EVENT.levelUp,
+                {
+                    triggerUnit = u,
+                    value = diffLv
+                }
+            )
+        end)
+    },
     dialog = {
         click = cj.Condition(function()
             local clickedDialog = cj.GetClickedDialog()

@@ -95,6 +95,8 @@ hunit.del(u)
 hplayer.init()
 -- 单位
 hunit.init()
+-- 英雄
+hhero.init()
 -- DzApi
 hdzapi.init()
 --F9任务

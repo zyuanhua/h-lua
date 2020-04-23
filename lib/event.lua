@@ -720,7 +720,7 @@ hevent.onReborn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.reborn, callFunc)
 end
 
---- 提升升等级时
+--- 提升等级时
 ---@alias onLevelUp fun(evtData: {triggerUnit:"触发单位",value:"获取提升了多少级"}):void
 ---@param whichUnit userdata
 ---@param callFunc onLevelUp | "function(evtData) end"

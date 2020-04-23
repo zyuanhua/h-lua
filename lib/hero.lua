@@ -1,68 +1,63 @@
+---@class hhero
 hhero = {
-    trigger_hero_lvup = nil,
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
     player_current_qty = {}, -- 玩家当前单位数量,默认0
     player_units = {}, -- 玩家当前单位
     build_token = hslk_global.unit_hero_tavern_token,
-    build_params = {id = hslk_global.unit_hero_tavern, x = 0, y = 0, distance = 128.0, per_row = 2, allow_qty = 11},
-    hero_born_params = {x = 250, y = 250}
+    build_params = {
+        id = hslk_global.unit_hero_tavern,
+        x = 0, y = 0,
+        distance = 128.0,
+        per_row = 2,
+        allow_qty = 11,
+    },
+    hero_born_params = {
+        x = 250, y = 250,
+        effect = nil,
+    }
 }
-for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-    local p = cj.Player(i - 1)
-    hhero.player_allow_qty[p] = 1
-    hhero.player_current_qty[p] = 0
-    hhero.player_units[p] = {}
-end
--- 初始化英雄升级触发器
-hhero.trigger_hero_lvup = cj.CreateTrigger()
-cj.TriggerAddAction(
-    hhero.trigger_hero_lvup,
-    function()
-        local u = cj.GetTriggerUnit()
-        local diffLv = cj.GetHeroLevel(u) - hhero.getPrevLevel(u)
-        if (diffLv < 1) then
-            return
-        end
-        hattr.set(
-            u,
-            0,
-            {
-                str_white = "=" .. cj.GetHeroStr(u, false),
-                agi_white = "=" .. cj.GetHeroAgi(u, false),
-                int_white = "=" .. cj.GetHeroInt(u, false)
-            }
-        )
-        -- @触发升级事件
-        hevent.triggerEvent(
-            u,
-            CONST_EVENT.levelUp,
-            {
-                triggerUnit = u,
-                value = diffLv
-            }
-        )
-        hhero.setPrevLevel(u, cj.GetHeroLevel(u))
+
+---@private
+hhero.init = function()
+    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+        local p = cj.Player(i - 1)
+        hhero.player_allow_qty[p] = 1
+        hhero.player_current_qty[p] = 0
+        hhero.player_units[p] = {}
     end
-)
--- 设置英雄之前的等级
+end
+
+--- 设置英雄之前的等级
+---@protected
+---@param u userdata
+---@param lv number
 hhero.setPrevLevel = function(u, lv)
     if (hRuntime.hero[u] == nil) then
         hRuntime.hero[u] = {}
     end
     hRuntime.hero[u].prevLevel = lv
 end
--- 获取英雄之前的等级
+--- 获取英雄之前的等级
+---@protected
+---@param u userdata
+---@return number
 hhero.getPrevLevel = function(u)
     if (hRuntime.hero[u] == nil) then
         hRuntime.hero[u] = {}
     end
     return hRuntime.hero[u].prevLevel or 0
 end
---获取英雄当前等级
+
+--- 获取英雄当前等级
+---@param u userdata
+---@return number
 hhero.getCurLevel = function(u)
     return cj.GetHeroLevel(u) or 1
 end
--- 设置英雄当前的等级
+--- 设置英雄当前的等级
+---@paramu userdata
+---@param newLevel number
+---@param showEffect boolean
 hhero.setCurLevel = function(u, newLevel, showEffect)
     if (type(showEffect) ~= "boolean") then
         showEffect = false
@@ -77,7 +72,22 @@ hhero.setCurLevel = function(u, newLevel, showEffect)
     end
     hhero.setPrevLevel(u, newLevel)
 end
--- 设定酒馆参数
+
+--- 获取英雄的类型（STR AGI INT）需要注册
+---@param u userdata
+---@return string STR|AGI|INT
+hhero.getHeroType = function(u)
+    return hslk_global.heroesKV[cj.GetUnitTypeId(u)].Primary
+end
+
+--- 获取英雄的类型文本
+---@param u userdata
+---@return string 力量|敏捷|智力
+hhero.getHeroTypeLabel = function(u)
+    return CONST_HERO_PRIMARY[hhero.getHeroType(u)]
+end
+
+--- 设定酒馆参数
 hhero.setBuildParams = function(x, y, distance, per_row, allow_qty)
     hhero.build_params.x = x
     hhero.build_params.y = y
@@ -90,19 +100,32 @@ hhero.setHeroBornParams = function(x, y)
     hhero.hero_born_params.x = x
     hhero.hero_born_params.y = y
 end
--- 设置玩家最大英雄数量,支持1 - 7
+
+--- 设置玩家最大英雄数量,支持1 - 7
+--- 超过7会有很多魔兽原生问题，例如英雄不会复活，左侧图标无法查看等
+---@param whichPlayer userdata
+---@param max number
 hhero.setPlayerAllowQty = function(whichPlayer, max)
-    if (max > 0 and max <= 7) then
-        heros.player_allow_qty[whichPlayer] = max
-    else
-        print_err("hhero.setPlayerMaxQty error")
+    if (max < 1) then
+        max = 1
     end
+    if (max > 7) then
+        max = 7
+    end
+    heros.player_allow_qty[whichPlayer] = max
 end
--- 获取玩家最大英雄数量
+--- 获取玩家最大英雄数量
+---@param whichPlayer userdata
+---@return number
 hhero.getPlayerAllowQty = function(whichPlayer)
     return heros.player_allow_qty[whichPlayer]
 end
--- 添加一个英雄给玩家
+
+--- 添加一个英雄给玩家
+---@private
+---@param whichPlayer userdata
+---@param sItem userdata
+---@param type string
 hhero.addPlayerUnit = function(whichPlayer, sItem, type)
     if (sItem ~= nil) then
         hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] + 1
@@ -118,8 +141,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
             cj.PauseUnit(u, false)
         elseif (type == "tavern") then
             -- 酒馆方式(单位ID)
-            u =
-                hunit.create(
+            u = hunit.create(
                 {
                     whichPlayer = whichPlayer,
                     unitId = sItem,
@@ -134,12 +156,12 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
                     whichPlayer,
                     "您选择了 " ..
                         "|cffffff80" ..
-                            cj.GetUnitName(u) ..
-                                "|r,还要选 " ..
-                                    math.floor(
-                                        hhero.player_allow_qty[whichPlayer] - hhero.player_current_qty[whichPlayer]
-                                    ) ..
-                                        " 个",
+                        cj.GetUnitName(u) ..
+                        "|r,还要选 " ..
+                        math.floor(
+                            hhero.player_allow_qty[whichPlayer] - hhero.player_current_qty[whichPlayer]
+                        ) ..
+                        " 个",
                     0
                 )
             end
@@ -162,7 +184,11 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
         )
     end
 end
--- 删除一个英雄单位对玩家
+--- 删除一个英雄单位对玩家
+---@private
+---@param whichPlayer userdata
+---@param u userdata
+---@param type string
 hhero.removePlayerUnit = function(whichPlayer, u, type)
     table.delete(u, hhero.player_units[whichPlayer])
     hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
@@ -173,8 +199,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         local y = hRuntime.heroBuildSelection[u].y
         hRuntime.heroBuildSelection[u] = nil
         hunit.del(u)
-        local u_new =
-            hunit.create(
+        local u_new = hunit.create(
             {
                 whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                 unitId = heroId,
@@ -197,25 +222,22 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
         cj.AddItemToStock(tavern, itemId, 1, 1)
     end
 end
--- 设置一个单位是否使用英雄判定(请勿重复设置)
--- 请不要乱设置[一般单位]为[英雄]，以致于力量敏捷智力等不属于一般单位的属性引起崩溃报错
--- 设定后 his.hero 方法会认为单位为英雄，同时属性系统才会认定它为英雄，从而生效
+
+--- 设置一个单位是否拥有英雄判定(请勿重复设置)
+--- 当设置[一般单位]为[英雄]时，框架自动屏幕，[力量|敏捷|智力]等不属于一般单位的属性，以避免引起崩溃报错
+--- 设定后 his.hero 方法会认为单位为英雄，同时属性系统也会认定它为英雄
+---@param u userdata
+---@param flag boolean
 hhero.setIsHero = function(u, flag)
     flag = flag or false
     his.set(u, "isHero", flag)
     if (flag == true and his.get(u, "isHeroInit") == false) then
         his.set(u, "isHeroInit", true)
         hhero.setPrevLevel(u, 1)
-        cj.TriggerRegisterUnitEvent(hhero.trigger_hero_lvup, u, EVENT_UNIT_HERO_LEVEL)
+        hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
+            cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
+        end)
     end
-end
--- 获取英雄的类型（STR AGI INT）
-hhero.getHeroType = function(u)
-    return hslk_global.heroesKV[cj.GetUnitTypeId(u)].Primary
-end
--- 获取英雄的类型文本（力量 敏捷 智力）
-hhero.getHeroTypeLabel = function(u)
-    return CONST_HERO_PRIMARY[hhero.getHeroType(u)]
 end
 
 -- 构建选择单位给玩家（clickQty 击）
@@ -245,8 +267,7 @@ hhero.buildClick = function(during, clickQty)
             else
                 x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
             end
-            local u =
-                hunit.create(
+            local u = hunit.create(
                 {
                     whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     unitId = heroId,
@@ -319,8 +340,7 @@ hhero.buildClick = function(during, clickQty)
     -- token
     for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
         local p = cj.Player(i - 1)
-        local u =
-            hunit.create(
+        local u = hunit.create(
             {
                 whichPlayer = p,
                 unitId = hhero.build_token,
@@ -334,8 +354,7 @@ hhero.buildClick = function(during, clickQty)
         hunit.del(u, during)
         cj.TriggerRegisterPlayerChatEvent(tgr_random, p, "-random", true)
         cj.TriggerRegisterPlayerChatEvent(tgr_repick, p, "-repick", true)
-        local tgr_click =
-            hevent.onSelection(
+        local tgr_click = hevent.onSelection(
             p,
             clickQty,
             function(data)
@@ -363,9 +382,9 @@ hhero.buildClick = function(during, clickQty)
                         p,
                         "您选择了 " ..
                             "|cffffff80" ..
-                                cj.GetUnitName(u) ..
-                                    "|r,还要选 " ..
-                                        math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个",
+                            cj.GetUnitName(u) ..
+                            "|r,还要选 " ..
+                            math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个",
                         0
                     )
                 end
@@ -517,8 +536,7 @@ hhero.buildTavern = function(during)
                 else
                     x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
                 end
-                tavern =
-                    hunit.create(
+                tavern = hunit.create(
                     {
                         whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                         unitId = hhero.build_params.id,
@@ -547,8 +565,7 @@ hhero.buildTavern = function(during)
     -- token
     for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
         local p = cj.Player(i - 1)
-        local u =
-            hunit.create(
+        local u = hunit.create(
             {
                 whichPlayer = p,
                 unitId = hhero.build_token,
