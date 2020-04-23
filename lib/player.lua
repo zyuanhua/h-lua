@@ -378,20 +378,32 @@ hplayer.diffGoldRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, val - hplayer.get(whichPlayer, "goldRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getGoldRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "goldRatio") or 100
 end
 
--- 木头比率
+--- 木头比率
+---@private
 hplayer.diffLumberRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "lumberRatio", hplayer.get(whichPlayer, "lumberRatio") + diff)
@@ -406,21 +418,33 @@ hplayer.diffLumberRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setLumberRatio = function(whichPlayer, val, during)
     local index = hplayer.index(whichPlayer)
     hplayer.diffLumberRatio(whichPlayer, val - hplayer.get(whichPlayer, "lumberRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addLumberRatio = function(whichPlayer, val, during)
     hplayer.diffLumberRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subLumberRatio = function(whichPlayer, val, during)
     hplayer.diffLumberRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getLumberRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "lumberRatio")
 end
 
--- 经验比率
+--- 经验比率
+---@private
 hplayer.diffExpRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "expRatio", hplayer.get(whichPlayer, "expRatio") + diff)
@@ -435,21 +459,33 @@ hplayer.diffExpRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setExpRatio = function(whichPlayer, val, during)
     local index = hplayer.index(whichPlayer)
     hplayer.diffExpRatio(whichPlayer, val - hplayer.get(whichPlayer, "expRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addExpRatio = function(whichPlayer, val, during)
     hplayer.diffExpRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subExpRatio = function(whichPlayer, val, during)
     hplayer.diffExpRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getExpRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "expRatio")
 end
 
--- 售卖比率
+--- 售卖比率
+---@private
 hplayer.diffSellRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "sellRatio", hplayer.get(whichPlayer, "sellRatio") + diff)
@@ -464,51 +500,79 @@ hplayer.diffSellRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setSellRatio = function(whichPlayer, val, during)
     local index = hplayer.index(whichPlayer)
     hplayer.diffSellRatio(whichPlayer, val - hplayer.get(whichPlayer, "sellRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getSellRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "sellRatio", 50)
 end
 
--- 玩家总获金量
+--- 玩家总获金量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalGold = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalGold")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalGold = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalGold", hplayer.getTotalGold(whichPlayer) + val)
 end
--- 玩家总耗金量
+--- 玩家总耗金量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalGoldCost = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalGoldCost")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalGoldCost = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalGoldCost", hplayer.getTotalGoldCost(whichPlayer) + val)
 end
 
--- 玩家总获木量
+--- 玩家总获木量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalLumber = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalLumber")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalLumber = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalLumber", hplayer.getTotalLumber(whichPlayer) + val)
 end
--- 玩家总耗木量
+--- 玩家总耗木量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalLumberCost = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalLumberCost")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalLumberCost = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalLumberCost", hplayer.getTotalLumberCost(whichPlayer) + val)
 end
 
--- 核算玩家金钱
+--- 核算玩家金钱
+---@private
 hplayer.adjustGold = function(whichPlayer)
     local prvSys = hplayer.get(whichPlayer, "prevGold")
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
@@ -519,7 +583,8 @@ hplayer.adjustGold = function(whichPlayer)
     end
     hplayer.set(whichPlayer, "prevGold", relSys)
 end
--- 核算玩家木头
+--- 核算玩家木头
+---@private
 hplayer.adjustLumber = function(whichPlayer)
     local prvSys = hplayer.get(whichPlayer, "prevLumber")
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
@@ -531,11 +596,15 @@ hplayer.adjustLumber = function(whichPlayer)
     hplayer.set(whichPlayer, "prevLumber", relSys)
 end
 
--- 获取玩家实时金钱
+--- 获取玩家实时金钱
+---@param whichPlayer userdata
+---@return number
 hplayer.getGold = function(whichPlayer)
     return cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
 end
--- 设置玩家实时金钱
+--- 设置玩家实时金钱
+---@param whichPlayer userdata
+---@param gold number
 hplayer.setGold = function(whichPlayer, gold)
     if (whichPlayer == nil) then
         return
@@ -555,7 +624,10 @@ hplayer.setGold = function(whichPlayer, gold)
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD, gold)
     hplayer.adjustGold(whichPlayer)
 end
--- 增加玩家金钱
+--- 增加玩家金钱
+---@param whichPlayer userdata
+---@param gold number
+---@param u userdata If u then show textTag
 hplayer.addGold = function(whichPlayer, gold, u)
     if (whichPlayer == nil) then
         return
@@ -567,7 +639,9 @@ hplayer.addGold = function(whichPlayer, gold, u)
         hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, u)
     end
 end
--- 减少玩家金钱
+--- 减少玩家金钱
+---@param whichPlayer userdata
+---@param gold number
 hplayer.subGold = function(whichPlayer, gold)
     if (whichPlayer == nil) then
         return
@@ -575,11 +649,15 @@ hplayer.subGold = function(whichPlayer, gold)
     hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) - gold)
 end
 
--- 获取玩家实时木头
+--- 获取玩家实时木头
+---@param whichPlayer userdata
+---@return number
 hplayer.getLumber = function(whichPlayer)
     return cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
 end
--- 设置玩家实时木头
+--- 设置玩家实时木头
+---@param whichPlayer userdata
+---@param lumber number
 hplayer.setLumber = function(whichPlayer, lumber)
     if (whichPlayer == nil) then
         return
@@ -587,7 +665,10 @@ hplayer.setLumber = function(whichPlayer, lumber)
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER, lumber)
     hplayer.adjustLumber(whichPlayer)
 end
--- 增加玩家木头
+--- 增加玩家木头
+---@param whichPlayer userdata
+---@param gold number
+---@param u userdata If u then show textTag
 hplayer.addLumber = function(whichPlayer, lumber, u)
     if (whichPlayer == nil) then
         return
@@ -604,7 +685,9 @@ hplayer.addLumber = function(whichPlayer, lumber, u)
         hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, u)
     end
 end
--- 减少玩家木头
+--- 减少玩家木头
+---@param whichPlayer userdata
+---@param lumber number
 hplayer.subLumber = function(whichPlayer, lumber)
     if (whichPlayer == nil) then
         return
@@ -612,7 +695,8 @@ hplayer.subLumber = function(whichPlayer, lumber)
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) - lumber)
 end
 
--- 初始化(已内部调用)
+--- 初始化(已内部调用)
+---@private
 hplayer.init = function()
     -- register APM
     hevent.pool('global', hevent_default_actions.player.apm, function(tgr)
