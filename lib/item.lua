@@ -47,17 +47,17 @@ end
 
 --- 删除物品，可延时
 ---@param it userdata
----@param during number
-hitem.del = function(it, during)
-    during = during or 0
-    if (during <= 0 and it ~= nil) then
+---@param delay number
+hitem.del = function(it, delay)
+    delay = delay or 0
+    if (delay <= 0 and it ~= nil) then
         hitem.setPositionType(it, nil)
         cj.SetWidgetLife(it, 1.00)
         cj.RemoveItem(it)
         hRuntime.clear(it)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 hitem.setPositionType(it, nil)

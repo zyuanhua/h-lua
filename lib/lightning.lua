@@ -19,12 +19,12 @@ hlightning = {
 }
 --- 删除闪电
 ---@param lightning userdata
----@param during number
-hlightning.del = function(lightning, during)
-    during = during or 0
-    if (during > 0) then
+---@param delay number
+hlightning.del = function(lightning, delay)
+    delay = delay or 0
+    if (delay > 0) then
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 hlightning.del(lightning)

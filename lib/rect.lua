@@ -120,14 +120,14 @@ end
 
 --- 删除区域
 ---@param whichRect userdata
----@param during number|nil 延时
-hrect.del = function(whichRect, during)
-    if (during == nil or during <= 0) then
+---@param delay number|nil 延时
+hrect.del = function(whichRect, delay)
+    if (delay == nil or delay <= 0) then
         hRuntime.clear(whichRect)
         cj.RemoveRect(whichRect)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 hRuntime.clear(whichRect)

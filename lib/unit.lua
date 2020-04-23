@@ -483,15 +483,15 @@ hunit.getFacing = function(u)
     return cj.GetUnitFacing(u)
 end
 
--- 删除单位，延时during秒
-hunit.del = function(targetUnit, during)
-    if (during == nil or during <= 0) then
+-- 删除单位，延时<delay>秒
+hunit.del = function(targetUnit, delay)
+    if (delay == nil or delay <= 0) then
         hitem.clearUnitCache(targetUnit)
         hRuntime.clear(targetUnit)
         cj.RemoveUnit(targetUnit)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 hitem.clearUnitCache(targetUnit)
@@ -501,13 +501,13 @@ hunit.del = function(targetUnit, during)
         )
     end
 end
--- 杀死单位，延时during秒
-hunit.kill = function(targetUnit, during)
-    if (during == nil or during <= 0) then
+-- 杀死单位，延时<delay>秒
+hunit.kill = function(targetUnit, delay)
+    if (delay == nil or delay <= 0) then
         cj.KillUnit(targetUnit)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 cj.KillUnit(targetUnit)
@@ -515,14 +515,14 @@ hunit.kill = function(targetUnit, during)
         )
     end
 end
--- 爆毁单位，延时during秒
-hunit.exploded = function(targetUnit, during)
-    if (during == nil or during <= 0) then
+-- 爆毁单位，延时<delay>秒
+hunit.exploded = function(targetUnit, delay)
+    if (delay == nil or delay <= 0) then
         cj.SetUnitExploded(targetUnit, true)
         cj.KillUnit(targetUnit)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 cj.SetUnitExploded(targetUnit, true)

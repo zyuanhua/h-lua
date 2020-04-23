@@ -1,18 +1,20 @@
--- 漂浮字
+---@class htextTag 漂浮字
 htextTag = {
     qty = 0,
     limit = 90
 }
 
--- 删除漂浮字
-htextTag.del = function(ttg, during)
-    if (during == nil or during <= 0) then
+--- 删除漂浮字
+---@param ttg userdata
+---@param delay number
+htextTag.del = function(ttg, delay)
+    if (delay == nil or delay <= 0) then
         htextTag.qty = htextTag.qty - 1
         hRuntime.clear(ttg)
         cj.DestroyTextTag(ttg)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 htextTag.qty = htextTag.qty - 1

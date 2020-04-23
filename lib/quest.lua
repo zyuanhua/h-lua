@@ -1,13 +1,15 @@
---任务探索
+---@class hquest 任务探索
 hquest = {}
 
---删除任务
-hquest.del = function(q, during)
-    if (during == nil or during <= 0) then
+--- 删除任务
+---@param q userdata
+---@param delay number
+hquest.del = function(q, delay)
+    if (delay == nil or delay <= 0) then
         cj.DestroyQuest(q)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 cj.DestroyQuest(q)

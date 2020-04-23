@@ -16,13 +16,13 @@ hweather = {
 }
 
 --删除天气
-hweather.del = function(w, during)
-    if (during <= 0) then
+hweather.del = function(w, delay)
+    if (delay <= 0) then
         cj.EnableWeatherEffect(w, false)
         cj.RemoveWeatherEffect(w)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 cj.EnableWeatherEffect(w, false)

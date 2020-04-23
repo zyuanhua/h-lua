@@ -58,18 +58,18 @@ end
 --- 删除技能
 ---@param whichUnit userdata
 ---@param abilityId string|number
----@param during number
-hskill.del = function(whichUnit, abilityId, during)
+---@param delay number
+hskill.del = function(whichUnit, abilityId, delay)
     local id = abilityId
     if (type(abilityId) == "string") then
         id = string.char2id(id)
     end
-    if (during == nil or during <= 0) then
+    if (delay == nil or delay <= 0) then
         cj.UnitRemoveAbility(whichUnit, id)
     else
         cj.UnitRemoveAbility(whichUnit, id)
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 cj.UnitAddAbility(whichUnit, id)
             end
