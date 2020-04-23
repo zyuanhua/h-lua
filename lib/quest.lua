@@ -18,17 +18,18 @@ hquest.del = function(q, delay)
     end
 end
 
---[[
-    创建一个任务
-    options = {
-        side = "left", --位置，默认left
-        title = "", --标题
-        content = "", --内容，你可以设置一个string或一个table，table会自动便利附加|n（换行）
-        icon = "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp", --图标
-        during = nil, --持续时间，默认为nil，不计时
-    }
-]]
+--- 创建一个任务
+---@param options table
 hquest.create = function(options)
+    --[[
+        options = {
+            side = "left", --位置，默认left
+            title = "", --标题
+            content = "", --内容，你可以设置一个string或一个table，table会自动便利附加|n（换行）
+            icon = "ReplaceableTextures\\CommandButtons\\BTNTomeOfRetraining.blp", --图标
+            during = nil, --持续时间，默认为nil，不计时
+        }
+    ]]
     local side = options.side or "left"
     local title = options.title
     local content = options.content
@@ -66,22 +67,25 @@ hquest.create = function(options)
     return q
 end
 
---令F9按钮闪烁
+--- 令F9按钮闪烁
 hquest.flash = function()
     cj.FlashQuestDialogButton()
 end
 
---设置任务为完成
+--- 设置任务为完成
+---@param q userdata
 hquest.setCompleted = function(q)
     cj.QuestSetCompleted(q, true)
 end
 
---设置任务为失败
+--- 设置任务为失败
+---@param q userdata
 hquest.setFailed = function(q)
     cj.QuestSetFailed(q, true)
 end
 
---设置任务为被发现
+--- 设置任务为被发现
+---@param q userdata
 hquest.setDiscovered = function(q)
     cj.QuestSetDiscovered(q, true)
 end
