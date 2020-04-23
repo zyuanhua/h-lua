@@ -122,31 +122,45 @@ hplayer.setName = function(whichPlayer, name)
     cj.SetPlayerName(whichPlayer, name)
 end
 
--- 获取玩家当前选中的单位
+--- 获取玩家当前选中的单位
+---@param whichPlayer userdata
+---@return userdata unit
 hplayer.getSelection = function(whichPlayer)
     return hplayer.get(whichPlayer, "selection", nil)
 end
--- 获取玩家当前状态
+--- 获取玩家当前状态
+---@param whichPlayer userdata
+---@return string
 hplayer.getStatus = function(whichPlayer)
     return hplayer.get(whichPlayer, "status", hplayer.player_status.none)
 end
--- 设置玩家当前状态
+--- 设置玩家当前状态
+---@param whichPlayer userdata
+---@param status string
 hplayer.setStatus = function(whichPlayer, status)
     hplayer.set(whichPlayer, "status", status)
 end
--- 获取玩家当前称号
+--- 获取玩家当前称号
+---@param whichPlayer userdata
+---@return string
 hplayer.getPrestige = function(whichPlayer)
     return hplayer.get(whichPlayer, "prestige", "初出茅庐")
 end
--- 设置玩家当前称号
+--- 设置玩家当前称号
+---@param whichPlayer userdata
+---@param status string
 hplayer.setPrestige = function(whichPlayer, prestige)
     hplayer.set(whichPlayer, "prestige", prestige)
 end
--- 获取玩家APM
+--- 获取玩家APM
+---@param whichPlayer userdata
+---@return number
 hplayer.getApm = function(whichPlayer)
     return hplayer.get(whichPlayer, "apm", 0)
 end
--- 设置玩家是否允许调节镜头高度
+--- 设置玩家是否允许调节镜头高度
+---@param whichPlayer userdata
+---@param flag boolean
 hplayer.setAllowCameraDistance = function(whichPlayer, flag)
     if (whichPlayer == nil) then
         return
@@ -156,11 +170,14 @@ hplayer.setAllowCameraDistance = function(whichPlayer, flag)
     end
     hplayer.set(whichPlayer, "allowCameraDistance", flag)
 end
--- 玩家是否允许调节镜头高度
+--- 玩家是否允许调节镜头高度
+---@param whichPlayer userdata
+---@return boolean
 hplayer.getAllowCameraDistance = function(whichPlayer)
     return hplayer.get(whichPlayer, "allowCameraDistance")
 end
--- 在所有玩家里获取一个随机的英雄
+--- 在所有玩家里获取一个随机的英雄
+---@return userdata
 hplayer.getRandomHero = function()
     local pi = {}
     for k, v in ipairs(hplayer.players) do
@@ -174,10 +191,11 @@ hplayer.getRandomHero = function()
     local ri = math.random(1, #pi)
     return hhero.getPlayerUnit(
         hplayer.players[pi[ri]],
-        math.random(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
+        math.random(1, hhero.getPlayerAllowQty(hplayer.players[pi[ri]]))
     )
 end
--- 令玩家单位全部隐藏
+--- 令玩家单位全部隐藏
+---@param whichPlayer userdata
 hplayer.hideUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -196,7 +214,8 @@ hplayer.hideUnit = function(whichPlayer)
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end
--- 令玩家单位全部删除
+--- 令玩家单位全部删除
+---@param whichPlayer userdata
 hplayer.clearUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -215,7 +234,9 @@ hplayer.clearUnit = function(whichPlayer)
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end
--- 令玩家失败
+--- 令玩家失败并退出
+---@param whichPlayer userdata
+---@param tips string
 hplayer.defeat = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
@@ -236,7 +257,9 @@ hplayer.defeat = function(whichPlayer, tips)
         end)
     end
 end
--- 令玩家胜利
+--- 令玩家胜利并退出
+---@param whichPlayer userdata
+---@param tips string
 hplayer.victory = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
@@ -257,15 +280,20 @@ hplayer.victory = function(whichPlayer, tips)
         end)
     end
 end
--- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
+--- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
+---@param whichPlayer userdata
+---@param b boolean
 hplayer.setIsAutoConvert = function(whichPlayer, b)
     hplayer.set(whichPlayer, "isAutoConvert", b)
 end
--- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
+--- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
+---@param whichPlayer userdata
+---@return boolean
 hplayer.getIsAutoConvert = function(whichPlayer)
     return hplayer.get(whichPlayer, "isAutoConvert", false)
 end
--- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
+--- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
+---@private
 hplayer.getExceedLumber = function(whichPlayer, exceedGold)
     local index = hplayer.index(whichPlayer)
     local current = hplayer.get(whichPlayer, "exceed_gold", 0)
@@ -285,11 +313,15 @@ hplayer.getExceedLumber = function(whichPlayer, exceedGold)
     hplayer.set(whichPlayer, "exceed_gold", current)
     return l
 end
--- 获取玩家造成的总伤害
+--- 获取玩家造成的总伤害
+---@param whichPlayer userdata
+---@return number
 hplayer.getDamage = function(whichPlayer)
     return hplayer.get(whichPlayer, "damage", 0)
 end
--- 增加玩家造成的总伤害
+--- 增加玩家造成的总伤害
+---@param whichPlayer userdata
+---@param val number
 hplayer.addDamage = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -297,11 +329,15 @@ hplayer.addDamage = function(whichPlayer, val)
     val = val or 0
     hplayer.set(whichPlayer, "damage", hplayer.getDamage(whichPlayer) + val)
 end
--- 获取玩家受到的总伤害
+--- 获取玩家受到的总伤害
+---@param whichPlayer userdata
+---@return number
 hplayer.getBeDamage = function(whichPlayer)
     return hplayer.get(whichPlayer, "beDamage", 0)
 end
--- 增加玩家受到的总伤害
+--- 增加玩家受到的总伤害
+---@param whichPlayer userdata
+---@param val number
 hplayer.addBeDamage = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -309,11 +345,15 @@ hplayer.addBeDamage = function(whichPlayer, val)
     val = val or 0
     hplayer.set(whichPlayer, "beDamage", hplayer.getBeDamage(whichPlayer) + val)
 end
--- 获取玩家杀敌数
+--- 获取玩家杀敌数
+---@param whichPlayer userdata
+---@return number
 hplayer.getKill = function(whichPlayer)
     return hplayer.get(whichPlayer, "kill", 0)
 end
 -- 增加玩家杀敌数
+---@param whichPlayer userdata
+---@param val number
 hplayer.addKill = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -322,7 +362,8 @@ hplayer.addKill = function(whichPlayer, val)
     hplayer.set(whichPlayer, "kill", hplayer.getKill(whichPlayer) + val)
 end
 
--- 黄金比率
+--- 黄金比率
+---@private
 hplayer.diffGoldRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "goldRatio", hplayer.get(whichPlayer, "goldRatio") + diff)

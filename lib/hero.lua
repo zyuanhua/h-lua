@@ -2,7 +2,7 @@
 hhero = {
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
     player_current_qty = {}, -- 玩家当前单位数量,默认0
-    player_units = {}, -- 玩家当前单位
+    player_heros = {}, -- 玩家当前英雄
     build_token = hslk_global.unit_hero_tavern_token,
     build_params = {
         id = hslk_global.unit_hero_tavern,
@@ -12,7 +12,7 @@ hhero = {
         allow_qty = 11,
     },
     hero_born_params = {
-        x = 250, y = 250,
+        x = 0, y = 0,
         effect = nil,
     }
 }
@@ -23,7 +23,7 @@ hhero.init = function()
         local p = cj.Player(i - 1)
         hhero.player_allow_qty[p] = 1
         hhero.player_current_qty[p] = 0
-        hhero.player_units[p] = {}
+        hhero.player_heros[p] = {}
     end
 end
 
@@ -135,9 +135,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
             u = sItem
             hRuntime.heroBuildSelection[u].canSelect = false
             cj.SetUnitOwner(u, whichPlayer, true)
-            local loc = cj.Location(hhero.hero_born_params.x, hhero.hero_born_params.y)
-            cj.SetUnitPositionLoc(u, loc)
-            cj.RemoveLocation(loc)
+            cj.SetUnitPosition(u, hhero.hero_born_params.x, hhero.hero_born_params.y)
             cj.PauseUnit(u, false)
         elseif (type == "tavern") then
             -- 酒馆方式(单位ID)
@@ -170,7 +168,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
             hmessage.echo00(whichPlayer, "hhero.addPlayerUnit类型错误", 0)
             return
         end
-        table.insert(hhero.player_units[whichPlayer], u)
+        table.insert(hhero.player_heros[whichPlayer], u)
         hhero.setIsHero(u, true)
         hunit.setInvulnerable(u, false)
         -- 触发英雄被选择事件(全局)
@@ -190,7 +188,7 @@ end
 ---@param u userdata
 ---@param type string
 hhero.removePlayerUnit = function(whichPlayer, u, type)
-    table.delete(u, hhero.player_units[whichPlayer])
+    table.delete(u, hhero.player_heros[whichPlayer])
     hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
     if (type == "click") then
         -- 点击方式
@@ -326,12 +324,12 @@ hhero.buildClick = function(during, clickQty)
                 hmessage.echo00(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return
             end
-            local qty = #hhero.player_units
-            for _, v in ipairs(hhero.player_units[p]) do
+            local qty = #hhero.player_heros
+            for _, v in ipairs(hhero.player_heros[p]) do
                 hhero.removePlayerUnit(p, v, "click")
                 table.insert(randomChooseAbleList, v)
             end
-            hhero.player_units[p] = {}
+            hhero.player_heros[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
             hmessage.echo00(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)
@@ -503,13 +501,13 @@ hhero.buildTavern = function(during)
                 hmessage.echo00(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return
             end
-            local qty = #hhero.player_units
-            for _, v in ipairs(hhero.player_units[p]) do
+            local qty = #hhero.player_heros
+            for _, v in ipairs(hhero.player_heros[p]) do
                 local heroId = cj.GetUnitTypeId(v)
                 hhero.removePlayerUnit(p, v, "tavern")
                 table.insert(randomChooseAbleList, hRuntime.heroBuildSelection[heroId].itemId)
             end
-            hhero.player_units[p] = {}
+            hhero.player_heros[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
             hmessage.echo00(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)

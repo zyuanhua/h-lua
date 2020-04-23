@@ -92,7 +92,7 @@ end
 
 --- 为单位注册属性系统所需要的基础技能
 --- hslk_global.attr
---- @private
+---@private
 hattr.regAllAbility = function(whichUnit)
     for _, v in ipairs(hslk_global.attr.ablisGradient) do
         -- 生命
