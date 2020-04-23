@@ -15,7 +15,9 @@ hweather = {
     mistred = string.char2id("FDrh") --红雾
 }
 
---删除天气
+--- 删除天气
+---@param w userdata
+---@param delay number
 hweather.del = function(w, delay)
     if (delay <= 0) then
         cj.EnableWeatherEffect(w, false)
@@ -31,17 +33,18 @@ hweather.del = function(w, delay)
         )
     end
 end
---[[
-    创建天气
-    options = {
-        x=0,y=0, 坐标
-        w=0,h=0, 长宽
-        type=hweather.sun 天气类型
-        during=10 持续时间小于等于0=无限
-    }
-]]
-hweather.create = function(
-    bean)
+
+--- 创建天气
+---@param bean table
+hweather.create = function(bean)
+    --[[
+        options = {
+            x=0,y=0, 坐标
+            w=0,h=0, 长宽
+            type=hweather.sun 天气类型
+            during=10 持续时间小于等于0=无限
+        }
+    ]]
     if (bean.w == nil or bean.h == nil or bean.w <= 0 or bean.h <= 0) then
         print_err("hweather.create -w-h")
         return nil

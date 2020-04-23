@@ -1,6 +1,7 @@
 hunit = {}
 
--- 初始化(in index)
+--- 初始化(in index)
+---@private
 hunit.init = function()
     -- 生命魔法恢复
     local period = 0.50
@@ -42,52 +43,76 @@ hunit.init = function()
     )
 end
 
--- 获取单位的最大生命值
+--- 获取单位的最大生命值
+---@param u userdata
+---@return number
 hunit.getMaxLife = function(u)
     return cj.GetUnitState(u, UNIT_STATE_MAX_LIFE)
 end
--- 获取单位的当前生命
+--- 获取单位的当前生命
+---@param u userdata
+---@return number
 hunit.getCurLife = function(u)
     return cj.GetUnitState(u, UNIT_STATE_LIFE)
 end
--- 设置单位的当前生命
+--- 设置单位的当前生命
+---@param u userdata
+---@param val number
 hunit.setCurLife = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_LIFE, val)
 end
--- 增加单位的当前生命
+--- 增加单位的当前生命
+---@param u userdata
+---@param val number
 hunit.addCurLife = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_LIFE, hunit.getCurLife(u) + val)
 end
--- 减少单位的当前生命
+--- 减少单位的当前生命
+---@param u userdata
+---@param val number
 hunit.subCurLife = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_LIFE, hunit.getCurLife(u) - val)
 end
--- 获取单位的最大魔法
+--- 获取单位的最大魔法
+---@param u userdata
+---@return number
 hunit.getMaxMana = function(u)
     return cj.GetUnitState(u, UNIT_STATE_MAX_MANA)
 end
--- 获取单位的当前魔法
+--- 获取单位的当前魔法
+---@param u userdata
+---@return number
 hunit.getCurMana = function(u)
     return cj.GetUnitState(u, UNIT_STATE_MANA)
 end
--- 设置单位的当前魔法
+--- 设置单位的当前魔法
+---@param u userdata
+---@param val number
 hunit.setCurMana = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_MANA, val)
 end
--- 增加单位的当前魔法
+--- 增加单位的当前魔法
+---@param u userdata
+---@param val number
 hunit.addCurMana = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_MANA, hunit.getCurMana(u) + val)
 end
--- 减少单位的当前魔法
+--- 减少单位的当前魔法
+---@param u userdata
+---@param val number
 hunit.subCurMana = function(u, val)
     cj.SetUnitState(u, UNIT_STATE_MANA, hunit.getCurMana(u) - val)
 end
 
--- 获取单位百分比生命
+--- 获取单位百分比生命
+---@param u userdata
+---@return number %
 hunit.getCurLifePercent = function(u)
     return math.round(100 * (hunit.getCurLife(u) / hunit.getMaxLife(u)))
 end
--- 设置单位百分比生命
+--- 设置单位百分比生命
+---@param u userdata
+---@param val number
 hunit.setCurLifePercent = function(u, val)
     local max = hunit.getMaxLife(u)
     local life = math.floor(max * val * 0.01)
@@ -96,11 +121,15 @@ hunit.setCurLifePercent = function(u, val)
     end
     hunit.setCurLife(u, life)
 end
--- 获取单位百分比魔法
+--- 获取单位百分比魔法
+---@param u userdata
+---@return number %
 hunit.getCurManaPercent = function(u)
     return math.round(100 * (hunit.getCurMana(u) / hunit.getMaxMana(u)))
 end
--- 设置单位百分比魔法
+--- 设置单位百分比魔法
+---@param u userdata
+---@param val number %
 hunit.setCurManaPercent = function(u, val)
     local max = hunit.getMaxMana(u)
     local mana = math.floor(max * val * 0.01)
@@ -110,7 +139,9 @@ hunit.setCurManaPercent = function(u, val)
     hunit.setCurLife(u, mana)
 end
 
---增加单位的经验值
+--- 增加单位的经验值
+---@param u userdata
+---@param val number
 hunit.addExp = function(u, val, showEffect)
     if (u == nil or val == nil or val <= 0) then
         return
@@ -123,17 +154,23 @@ hunit.addExp = function(u, val, showEffect)
     htextTag.style(htextTag.create2Unit(u, "+" .. val .. " Exp", 7, "c4c4ff", 1, 1.70, 60.00), "toggle", 0, 0.20)
 end
 
--- 设置单位的生命周期
+--- 设置单位的生命周期
+---@param u userdata
+---@param life number
 hunit.setPeriod = function(u, life)
     cj.UnitApplyTimedLife(u, string.char2id("BTLF"), life)
 end
 
---获取单位面向角度
+--- 获取单位面向角度
+---@param u userdata
+---@return number
 hunit.getFacing = function(u)
     return cj.GetUnitFacing(u)
 end
 
---单位是否启用硬直（系统默认不启用）
+--- 单位是否启用硬直（系统默认不启用）
+---@param u userdata
+---@return boolean
 hunit.isOpenPunish = function(u)
     if (u == nil or hRuntime.unit[u] == nil) then
         return false
@@ -144,7 +181,9 @@ hunit.isOpenPunish = function(u)
     return hRuntime.unit[u].isOpenPunish
 end
 
---设置单位无敌
+--- 设置单位无敌
+---@param u userdata
+---@param flag boolean
 hunit.setInvulnerable = function(u, flag)
     if (flag == nil) then
         flag = true
@@ -156,7 +195,10 @@ hunit.setInvulnerable = function(u, flag)
     end
 end
 
--- 设置单位的动画速度[比例尺1.00]
+--- 设置单位的动画速度[比例尺1.00]
+---@param u userdata
+---@param speed number 0.00-1.00
+---@param during number
 hunit.setAnimateSpeed = function(u, speed, during)
     if (hRuntime.unit[u] == nil) then
         hRuntime.unit[u] = {}
@@ -176,7 +218,12 @@ hunit.setAnimateSpeed = function(u, speed, during)
     end
 end
 
--- 设置单位的三原色，rgb取值0-255
+--- 设置单位的三原色，rgb取值0-255
+---@param whichUnit userdata
+---@param red number 0-255
+---@param green number 0-255
+---@param blue number 0-255
+---@param opacity number 0.0-1.0
 hunit.setRGB = function(whichUnit, red, green, blue, opacity)
     cj.SetUnitVertexColor(
         whichUnit,
@@ -390,11 +437,14 @@ hunit.create = function(bean)
     end
 end
 
--- 获取单位ID字符串
+--- 获取单位ID字符串
+---@param u userdata
+---@return string
 hunit.getId = function(u)
     return string.id2char(cj.GetUnitTypeId(u))
 end
--- 获取单位SLK数据集
+--- 获取单位SLK数据集
+---@private
 hunit.getSlk = function(uOrUid)
     local slk
     local uid
@@ -414,7 +464,9 @@ hunit.getSlk = function(uOrUid)
     end
     return slk
 end
--- 获取单位的头像
+--- 获取单位的头像
+---@param uOrUid any
+---@return string
 hunit.getAvatar = function(uOrUid)
     local slk = hunit.getSlk(uOrUid)
     if (slk ~= nil) then
@@ -423,33 +475,44 @@ hunit.getAvatar = function(uOrUid)
         return "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
     end
 end
--- 获取单位的攻击速度间隔
+--- 获取单位的攻击速度间隔
+---@param uOrUid any
+---@return number
 hunit.getAttackSpeedBaseSpace = function(uOrUid)
     local slk = hunit.getSlk(uOrUid)
     if (slk ~= nil) then
-        return slk.cool1
+        return math.round(slk.cool1)
     else
         return 2.00
     end
 end
--- 获取单位的攻击范围
+--- 获取单位的攻击范围
+---@param uOrUid any
+---@return number
 hunit.getAttackRange = function(uOrUid)
     local slk = hunit.getSlk(uOrUid)
     if (slk ~= nil) then
-        return slk.rangeN1
+        return math.floor(slk.rangeN1)
     else
         return 100
     end
 end
--- 获取单位的名称
+--- 获取单位的名称
+---@param u userdata
+---@return string
 hunit.getName = function(u)
     return cj.GetUnitName(u)
 end
--- 获取单位的自定义值
+--- 获取单位的自定义值
+---@param u userdata
+---@return number
 hunit.getUserData = function(u)
     return cj.GetUnitUserData(u)
 end
--- 设置单位的自定义值
+--- 设置单位的自定义值
+---@param u userdata
+---@param val number
+---@param during number
 hunit.setUserData = function(u, val, during)
     local oldData = hunit.getUserData(u)
     val = math.ceil(val)
@@ -466,7 +529,9 @@ hunit.setUserData = function(u, val, during)
     end
 end
 
--- 设置单位颜色,color可设置玩家索引[1-16],应用其对应的颜色
+--- 设置单位颜色,color可设置玩家索引[1-16],应用其对应的颜色
+---@param u userdata
+---@param color any 阵营颜色
 hunit.setColor = function(u, color)
     if (type(color) == "string") then
         color = string.upper(color)
@@ -478,12 +543,16 @@ hunit.setColor = function(u, color)
     end
 end
 
--- 获取单位面向角度
+--- 获取单位面向角度
+---@param u userdata
+---@return number
 hunit.getFacing = function(u)
     return cj.GetUnitFacing(u)
 end
 
--- 删除单位，延时<delay>秒
+--- 删除单位，延时<delay>秒
+---@param targetUnit userdata
+---@param delay number
 hunit.del = function(targetUnit, delay)
     if (delay == nil or delay <= 0) then
         hitem.clearUnitCache(targetUnit)
@@ -501,7 +570,9 @@ hunit.del = function(targetUnit, delay)
         )
     end
 end
--- 杀死单位，延时<delay>秒
+--- 杀死单位，延时<delay>秒
+---@param targetUnit userdata
+---@param delay number
 hunit.kill = function(targetUnit, delay)
     if (delay == nil or delay <= 0) then
         cj.KillUnit(targetUnit)
@@ -515,7 +586,9 @@ hunit.kill = function(targetUnit, delay)
         )
     end
 end
--- 爆毁单位，延时<delay>秒
+--- 爆毁单位，延时<delay>秒
+---@param targetUnit userdata
+---@param delay number
 hunit.exploded = function(targetUnit, delay)
     if (delay == nil or delay <= 0) then
         cj.SetUnitExploded(targetUnit, true)
@@ -532,18 +605,27 @@ hunit.exploded = function(targetUnit, delay)
     end
 end
 
---设置单位可飞，用于设置单位飞行高度之前
+--- 设置单位可飞，用于设置单位飞行高度之前
+---@param u userdata
 hunit.setCanFly = function(u)
     cj.UnitAddAbility(u, string.char2id("Arav"))
     cj.UnitRemoveAbility(u, string.char2id("Arav"))
 end
 
---设置单位高度，用于设置单位可飞行之后
+--- 设置单位高度，用于设置单位可飞行之后
+---@param u userdata
+---@param height number
+---@param speed number
 hunit.setFlyHeight = function(u, height, speed)
     cj.SetUnitFlyHeight(u, height, speed)
 end
 
---在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
+--- 在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
+---@param u userdata
+---@param delay number
+---@param invulnerable number 复活后的无敌时间
+---@param x number
+---@param y number
 hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
     if (his.hero(u)) then
         if (delay < 0.3) then
@@ -584,7 +666,11 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
     end
 end
 
--- 在某点复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
+--- 在某点复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
+---@param u userdata
+---@param delay number
+---@param invulnerable number 复活后的无敌时间
+---@param loc userdata
 hunit.rebornAtLoc = function(u, delay, invulnerable, loc)
     hunit.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc))
 end
