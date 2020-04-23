@@ -1,3 +1,4 @@
+---@class htime
 htime = {
     -- 获取开始游戏后经过的总秒数
     count = 0,
@@ -12,7 +13,8 @@ htime = {
     -- 内核
     kernel = {}
 }
--- 时钟
+--- 时钟
+---@private
 htime.clock = function()
     htime.count = htime.count + 1
     htime.sec = htime.sec + 1
@@ -25,7 +27,8 @@ htime.clock = function()
         end
     end
 end
--- 获取时分秒
+--- 获取时分秒
+---@return string HH:ii:ss
 htime.his = function()
     local str = ""
     if (htime.hour < 10) then
@@ -47,7 +50,8 @@ htime.his = function()
     end
     return str
 end
--- 从池中获取一个带窗口计时器
+--- 从池中获取一个带窗口计时器
+---@private
 htime.timerInPool = function()
     local t
     local td
@@ -73,7 +77,8 @@ htime.timerInPool = function()
     end
     return { t, td }
 end
--- 从内核中获取一个计时器（实际上这里获得的是timer key）
+--- 从内核中获取一个计时器（实际上这里获得的是timer key）
+---@private
 htime.timerInKernel = function(time, yourFunc, isInterval)
     local space = 0
     if (time >= 500) then
@@ -147,14 +152,17 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
     end
     return string.implode("_", { space, kernelClock })
 end
--- 内核数据
+--- 内核数据
+---@private
 htime.kernelInfo = function(t)
     local index = string.explode("_", t)
     local space = tonumber(index[1])
     local k = tonumber(index[2])
     return { space, k }
 end
--- 获取计时器设置时间
+--- 获取计时器设置时间
+---@param t userdata|string
+---@return number
 htime.getSetTime = function(t)
     if (type(t) == "userdata") then
         return cj.TimerGetTimeout(t)
@@ -164,7 +172,9 @@ htime.getSetTime = function(t)
     end
     return 0
 end
--- 获取计时器剩余时间
+--- 获取计时器剩余时间
+---@param t userdata|string
+---@return number
 htime.getRemainTime = function(t)
     if (type(t) == "userdata") then
         return cj.TimerGetRemaining(t)
@@ -175,7 +185,9 @@ htime.getRemainTime = function(t)
     return 0
 end
 
--- 获取计时器已过去时间
+--- 获取计时器已过去时间
+---@param t userdata|string
+---@return number
 htime.getElapsedTime = function(t)
     if (type(t) == "userdata") then
         return cj.TimerGetElapsed(t)
@@ -187,7 +199,8 @@ htime.getElapsedTime = function(t)
     end
     return 0
 end
--- 删除计时器
+--- 删除计时器
+---@param t userdata|string
 htime.delTimer = function(t)
     if (t == nil) then
         return
@@ -208,28 +221,36 @@ htime.delTimer = function(t)
     end
 end
 -- 设置一次性计时器
-htime.setTimeout = function(time, yourFunc, title)
-    local t = htime.timerInKernel(time, yourFunc, false)
+---@param frequency number
+---@param yourFunc function | "function(t,td) end"
+---@param title string
+---@return string
+htime.setTimeout = function(frequency, yourFunc, title)
+    local t = htime.timerInKernel(frequency, yourFunc, false)
     if (title ~= nil) then
         local pool = htime.timerInPool()
-        local t = pool[1]
+        local t2 = pool[1]
         local td = pool[2]
         cj.TimerDialogSetTitle(td, title)
         cj.TimerDialogDisplay(td, true)
-        cj.TimerStart(t, time, false, nil)
+        cj.TimerStart(t2, frequency, false, nil)
     end
     return t
 end
--- 设置周期性计时器
-htime.setInterval = function(time, yourFunc, title)
-    local t = htime.timerInKernel(time, yourFunc, true)
+--- 设置周期性计时器
+---@param frequency number
+---@param yourFunc function | "function(t,td) end"
+---@param title string
+---@return string
+htime.setInterval = function(frequency, yourFunc, title)
+    local t = htime.timerInKernel(frequency, yourFunc, true)
     if (title ~= nil) then
         local pool = htime.timerInPool()
-        local t = pool[1]
+        local t2 = pool[1]
         local td = pool[2]
         cj.TimerDialogSetTitle(td, title)
         cj.TimerDialogDisplay(td, true)
-        cj.TimerStart(t, time, true, nil)
+        cj.TimerStart(t2, frequency, true, nil)
     end
     return t
 end
