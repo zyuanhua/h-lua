@@ -103,7 +103,7 @@ hevent_default_actions = {
         leave = cj.Condition(function()
             local p = cj.GetTriggerPlayer()
             hplayer.set(p, "status", hplayer.player_status.leave)
-            hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
+            hmessage.echo(cj.GetPlayerName(p) .. "离开了游戏～")
             hplayer.clearUnit(p)
             hplayer.qty_current = hplayer.qty_current - 1
             -- 触发玩家离开事件(全局)

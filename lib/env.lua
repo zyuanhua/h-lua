@@ -1,65 +1,146 @@
---[[
-地形贴图 8 个白杨谷 5个城邦 3个达拉然
-雪地 Agrs Xbtl Xblm
-火炎 Yblm Ywmb
-城砖 Arck Alvd Ybtl
-荒地 Adrt Adrd
-]]
 henvData = {
+    --- 装饰物
     doodad = {
-        block = { "LTba" },
-        cage = { "LOcg" },
-        bucket = { "LTbr", "LTbx", "LTbs" },
-        bucketBrust = { "LTex" },
-        box = { "LTcr" },
-        supportColumn = { "BTsc" },
-        stone = { "LTrc" },
-        stoneRed = { "DTrc" },
-        stoneIce = { "ITcr" },
-        ice = { "ITf1", "ITf2", "ITf3", "ITf4" },
-        spiderEggs = { "DTes" },
-        volcano = { "Volc" }, -- 火山
-        treeSummer = { "LTlt" },
-        treeAutumn = { "FTtw" },
-        treeWinter = { "WTtw" },
-        treeWinterShow = { "WTst" },
-        treeDark = { "NTtw" }, -- 枯枝
-        treeDarkUmbrella = { "NTtc" }, -- 伞
-        treePoor = { "BTtw" }, -- 贫瘠
-        treePoorUmbrella = { "BTtc" }, -- 伞
-        treeRuins = { "ZTtw" }, -- 遗迹
-        treeRuinsUmbrella = { "ZTtc" }, -- 伞
-        treeFire = { "ZTtw" }, -- 炼狱
-        treeUnderground = { "DTsh", "GTsh" } -- 地下城
+        block = {
+            string.char2id("LTba")
+        },
+        cage = {
+            string.char2id("LOcg")
+        },
+        bucket = {
+            string.char2id("LTbr"),
+            string.char2id("LTbx"),
+            string.char2id("LTbs")
+        },
+        bucketBrust = {
+            string.char2id("LTex")
+        },
+        box = {
+            string.char2id("LTcr")
+        },
+        supportColumn = {
+            string.char2id("BTsc")
+        },
+        stone = {
+            string.char2id("LTrc")
+        },
+        stoneRed = {
+            string.char2id("DTrc")
+        },
+        stoneIce = {
+            string.char2id("ITcr")
+        },
+        ice = {
+            string.char2id("ITf1"),
+            string.char2id("ITf2"),
+            string.char2id("ITf3"),
+            string.char2id("ITf4"),
+        },
+        spiderEggs = {
+            string.char2id("DTes")
+        },
+        volcano = {
+            -- 火山
+            string.char2id("Volc")
+        },
+        treeSummer = {
+            string.char2id("LTlt")
+        },
+        treeAutumn = {
+            string.char2id("FTtw")
+        },
+        treeWinter = {
+            string.char2id("WTtw")
+        },
+        treeWinterShow = {
+            string.char2id("WTst")
+        },
+        treeDark = {
+            -- 枯枝
+            string.char2id("NTtw")
+        },
+        treeDarkUmbrella = {
+            -- 伞
+            string.char2id("NTtc")
+        },
+        treePoor = {
+            -- 贫瘠
+            string.char2id("BTtw")
+        },
+        treePoorUmbrella = {
+            -- 伞
+            string.char2id("BTtc")
+        },
+        treeRuins = {
+            -- 遗迹
+            string.char2id("ZTtw")
+        },
+        treeRuinsUmbrella = {
+            -- 伞
+            string.char2id("ZTtc")
+        },
+        treeFire = {
+            -- 炼狱
+            string.char2id("ZTtw")
+        },
+        treeUnderground = {
+            -- 地下城
+            string.char2id("DTsh"),
+            string.char2id("GTsh")
+        }
     },
+    --- 地表纹理
     ground = {
-        summer = { "Adrg" },
-        autumn = { "Ydtr" },
-        winter = { "Agrs" },
-        winterDeep = { "Agrs" },
-        dark = { "Xblm" },
-        poor = { "Adrd" },
-        ruins = { "Xhdg" },
-        fire = { "Yblm" },
-        underground = { "Yrtl" }
-    }
+        summer = string.char2id("Lgrs"), -- 洛丹伦 - 夏 - 草地
+        autumn = string.char2id("LTlt"), -- 洛丹伦 - 秋 - 草地
+        winter = string.char2id("Iice"), -- 冰封王座 - 冰
+        winterDeep = string.char2id("Iice"), -- 冰封王座 - 冰
+        poor = string.char2id("Ldrt"), -- 洛丹伦 - 夏- 泥土
+        ruins = string.char2id("Ldro"), -- 洛丹伦 - 夏- 烂泥土（坑洼的泥土）
+        fire = string.char2id("Dlvc"), -- 地下城 - 岩浆碎片
+        underground = string.char2id("Clvg"), -- 费尔伍德 - 叶子
+        sea = nil, -- 无地表
+        dark = nil, -- 无地表
+        river = nil, -- 无地表
+    },
 }
-henv = {}
+henv = {
+    --- 清理装饰物函数
+    destructableClear = function()
+        cj.RemoveDestructable(cj.GetEnumDestructable())
+    end
+}
+
+--- 随机构建时的装饰物(参考默认例子)
+---@param doodads table
+henv.setDoodad = function(doodads)
+    henvData.doodad = doodads
+end
+
+--- 随机构建时的地表纹理(参考默认例子)
+--- 这是附着的额外地形，应当在地形编辑器控制主要地形
+---@param grounds table
+henv.setGround = function(grounds)
+    henvData.ground = grounds
+end
+
+--- 清空一片区域的可破坏物
+henv.clearDestructable = function(whichRect)
+    cj.EnumDestructablesInRect(whichRect, nil, henv.destructableClear)
+end
 
 --- 构建区域装饰
 ---@param whichRect userdata
 ---@param typeStr string
----@param excludeX number
----@param excludeY number
 ---@param isDestroyRect boolean
----@param ground table
+---@param ground number
 ---@param doodad userdata
 ---@param units table
-henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, ground, doodad, units)
+henv.build = function(whichRect, typeStr, isDestroyRect, ground, doodad, units)
     if (whichRect == nil or typeStr == nil) then
         return
     end
-    if (ground == nil or doodad == nil or units == nil) then
+    if (doodad == nil or units == nil) then
         return
     end
     if (hRuntime.env[whichRect] == nil) then
@@ -72,60 +153,53 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
         hRuntime.env[whichRect] = {}
     end
     -- 清理装饰物
-    cj.EnumDestructablesInRectAll(
-        whichRect,
-        function()
-            cj.RemoveDestructable(cj.GetEnumDestructable())
-        end
-    )
+    henv.clearDestructable(whichRect)
     local rectStartX = hrect.getStartX(whichRect)
     local rectStartY = hrect.getStartY(whichRect)
     local rectEndX = hrect.getEndX(whichRect)
     local rectEndY = hrect.getEndY(whichRect)
-    local indexX = -1
-    local indexY = -1
-    local midX = (rectEndX - rectStartX) * 0.5
-    local midY = (rectEndY - rectStartY) * 0.5
+    local indexX = 0
+    local indexY = 0
     local doodads = {}
     for _, v in ipairs(doodad) do
         for _, vv in ipairs(v) do
             table.insert(doodads, vv)
         end
     end
+    local randomM = 2
     htime.setInterval(
         0.01,
         function(t)
             local x = rectStartX + indexX * 80
             local y = rectStartY + indexY * 80
-            local buildType = math.random(1, 4)
-            if (x >= rectEndX and y >= rectEndY) then
+            local buildType = math.random(1, randomM)
+            if (indexX == -1 or indexY == -1) then
                 htime.delTimer(t)
                 if (isDestroyRect) then
                     hrect.del(whichRect)
                 end
                 return
             end
-            if (x >= rectEndX) then
+            randomM = randomM + math.random(1, math.ceil(randomM / 5))
+            if (randomM > 130) then
+                randomM = 2
+            end
+            if (x > rectEndX) then
                 indexY = 1 + indexY
                 indexX = -1
             end
-            if (y >= rectEndY) then
+            if (y > rectEndY) then
                 indexY = -1
             end
             indexX = 1 + indexX
-            if (math.abs(x - midX) < (excludeX * 0.5) and math.abs(y - midY) < (excludeY * 0.5)) then
-                return
+            --- 一些特殊的地形要处理一下
+            if (typeStr == "sea") then
+                --- 海洋 - 深水不处理
+                if (cj.IsTerrainPathable(x, y, PATHING_TYPE_WALKABILITY) == true) then
+                    return
+                end
             end
-            if (buildType == 1 and uid <= 0) then
-                buildType = 2
-            end
-            if (buildType == 2 and did <= 0) then
-                buildType = -1
-            end
-            if (buildType == -1) then
-                return
-            end
-            if (buildType == 1) then
+            if (#units > 0 and buildType == 1 or buildType == 49) then
                 local tempUnit = cj.CreateUnit(
                     cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     units[math.random(1, #units)],
@@ -134,7 +208,10 @@ henv.build = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect, gro
                     bj_UNIT_FACING
                 )
                 table.insert(hRuntime.env[whichRect], tempUnit)
-            elseif (buildType == 2) then
+                if (ground ~= nil and math.random(1, 3) == 2) then
+                    cj.SetTerrainType(x, y, ground, -1, 1, 0)
+                end
+            elseif (#doodads > 0 and buildType == 10 or buildType == 50) then
                 cj.SetDestructableInvulnerable(
                     cj.CreateDestructable(
                         doodads[math.random(1, #doodads)],
@@ -157,10 +234,8 @@ end
 --- 随机构建区域装饰
 ---@param whichRect userdata
 ---@param typeStr string
----@param excludeX number
----@param excludeY number
 ---@param isDestroyRect boolean
-henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
+henv.random = function(whichRect, typeStr, isDestroyRect)
     local ground
     local doodad = {}
     local unit = {}
@@ -203,7 +278,6 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
         doodad = {
             henvData.doodad.treeWinter,
             henvData.doodad.treeWinterShow,
-            henvData.doodad.cage,
             henvData.doodad.stoneIce
         }
         unit = {
@@ -221,7 +295,6 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
         ground = henvData.ground.winterDeep
         doodad = {
             henvData.doodad.treeWinterShow,
-            henvData.doodad.cage,
             henvData.doodad.stoneIce
         }
         unit = {
@@ -334,10 +407,8 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.mushroom11
         }
     elseif (typeStr == "sea") then
-        ground = henvData.ground.ruins
-        doodad = {
-            henvData.doodad.stone
-        }
+        ground = henvData.ground.sea
+        doodad = {}
         unit = {
             hslk_global.env_model.seaweed0,
             hslk_global.env_model.seaweed1,
@@ -371,7 +442,7 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
             hslk_global.env_model.shells9
         }
     elseif (typeStr == "river") then
-        ground = henvData.ground.ruins
+        ground = henvData.ground.river
         doodad = {
             henvData.doodad.stone
         }
@@ -390,5 +461,5 @@ henv.random = function(whichRect, typeStr, excludeX, excludeY, isDestroyRect)
     else
         return
     end
-    henv.build(whichRect, typeStr, excludeX, excludeY, isDestroyRect, ground, doodad, unit)
+    henv.build(whichRect, typeStr, isDestroyRect, ground, doodad, unit)
 end
