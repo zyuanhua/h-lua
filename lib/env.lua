@@ -79,10 +79,6 @@ henvData = {
             -- 伞
             string.char2id("ZTtc")
         },
-        treeFire = {
-            -- 炼狱
-            string.char2id("ZTtw")
-        },
         treeUnderground = {
             -- 地下城
             string.char2id("DTsh"),
@@ -180,8 +176,8 @@ henv.build = function(whichRect, typeStr, isDestroyRect, ground, doodad, units)
                 end
                 return
             end
-            randomM = randomM + math.random(1, math.ceil(randomM / 5))
-            if (randomM > 130) then
+            randomM = randomM + math.random(1, 3)
+            if (randomM > 200) then
                 randomM = 2
             end
             if (x > rectEndX) then
@@ -211,7 +207,7 @@ henv.build = function(whichRect, typeStr, isDestroyRect, ground, doodad, units)
                 if (ground ~= nil and math.random(1, 3) == 2) then
                     cj.SetTerrainType(x, y, ground, -1, 1, 0)
                 end
-            elseif (#doodads > 0 and buildType == 10 or buildType == 50) then
+            elseif (#doodads > 0 and buildType == 6) then
                 cj.SetDestructableInvulnerable(
                     cj.CreateDestructable(
                         doodads[math.random(1, #doodads)],
@@ -373,7 +369,6 @@ henv.random = function(whichRect, typeStr, isDestroyRect)
     elseif (typeStr == "fire") then
         ground = henvData.ground.fire
         doodad = {
-            henvData.doodad.treeFire,
             henvData.doodad.volcano,
             henvData.doodad.stoneRed
         }
