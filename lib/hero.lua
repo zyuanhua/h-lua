@@ -148,9 +148,9 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
                 }
             )
             if (hhero.player_current_qty[whichPlayer] >= hhero.player_allow_qty[whichPlayer]) then
-                hmessage.echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", whichPlayer)
+                echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", whichPlayer)
             else
-                hmessage.echo(
+                echo(
                     "您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
                         math.floor(hhero.player_allow_qty[whichPlayer] - hhero.player_current_qty[whichPlayer])
                         .. " 个",
@@ -159,7 +159,7 @@ hhero.addPlayerUnit = function(whichPlayer, sItem, type)
             end
         end
         if (u == nil) then
-            hmessage.echo("hhero.addPlayerUnit类型错误", whichPlayer)
+            echo("hhero.addPlayerUnit类型错误", whichPlayer)
             return
         end
         table.insert(hhero.player_heros[whichPlayer], u)
@@ -287,7 +287,7 @@ hhero.buildClick = function(during, clickQty)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echo("|cffffff80你已经选够了|r", p)
+                echo("|cffffff80你已经选够了|r", p)
                 return
             end
             local txt = ""
@@ -315,7 +315,7 @@ hhero.buildClick = function(during, clickQty)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] <= 0) then
-                hmessage.echo("|cffffff80你还没有选过任何单位|r", p)
+                echo("|cffffff80你还没有选过任何单位|r", p)
                 return
             end
             local qty = #hhero.player_heros
@@ -326,7 +326,7 @@ hhero.buildClick = function(during, clickQty)
             hhero.player_heros[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
-            hmessage.echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
+            echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
         end
     )
     -- token
@@ -362,15 +362,15 @@ hhero.buildClick = function(during, clickQty)
                     return
                 end
                 if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    hmessage.echo("|cffffff80你已经选够了|r", p)
+                    echo("|cffffff80你已经选够了|r", p)
                     return
                 end
                 table.delete(u, randomChooseAbleList)
                 hhero.addPlayerUnit(p, u, "click")
                 if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    hmessage.echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", p)
+                    echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", p)
                 else
-                    hmessage.echo("您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
+                    echo("您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
                         math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个", p
                     )
                 end
@@ -393,7 +393,7 @@ hhero.buildClick = function(during, clickQty)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_repick)
             cj.DestroyTrigger(tgr_repick)
-            hmessage.echo("还剩 10 秒，还未选择的玩家尽快啦～")
+            echo("还剩 10 秒，还未选择的玩家尽快啦～")
             cj.PingMinimapEx(x1, y1, 1.00, 254, 0, 0, true)
         end
     )
@@ -436,7 +436,7 @@ hhero.buildTavern = function(during)
                 return
             end
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echo("|cffffff80你已经选够了|r", p)
+                echo("|cffffff80你已经选够了|r", p)
                 hitem.del(it, 0)
                 cj.AddItemToStock(tavern, itemId, 1, 1)
                 return
@@ -452,7 +452,7 @@ hhero.buildTavern = function(during)
         function()
             local p = cj.GetTriggerPlayer()
             if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                hmessage.echo("|cffffff80你已经选够了|r", p)
+                echo("|cffffff80你已经选够了|r", p)
                 return
             end
             local txt = ""
@@ -573,7 +573,7 @@ hhero.buildTavern = function(during)
             htime.delTimer(t)
             cj.DisableTrigger(tgr_repick)
             cj.DestroyTrigger(tgr_repick)
-            hmessage.echo("还剩 10 秒，还未选择的玩家尽快啦～")
+            echo("还剩 10 秒，还未选择的玩家尽快啦～")
             cj.PingMinimapEx(x1, y1, 1.00, 254, 0, 0, true)
         end
     )

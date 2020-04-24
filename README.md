@@ -36,6 +36,7 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── blizzard_def.lua - 实际无用，参考用途
     │   ├── color.lua - 颜色
     │   ├── debug.lua - 调试
+    │   ├── echo.lua - 游戏荧幕打印
     │   ├── f9.lua - 框架任务
     │   ├── json.lua - json库
     │   ├── math.lua - 计算库
@@ -61,7 +62,6 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── leaderBoard.lua 排行榜模块，用于简易构建排行榜
     │   ├── lightning.lua - 闪电链
     │   ├── mark.lua - 遮罩模块
-    │   ├── message.lua - 消息
     │   ├── multiBoard.lua - 多面板
     │   ├── player.lua - 玩家
     │   ├── quest.lua - 任务

@@ -38,6 +38,8 @@ require "foundation.color"
 require "foundation.slk"
 -- 加载h-lua的F9
 require "foundation.f9"
+-- 加载echo
+require "foundation.echo"
 
 -- 加载Dzapi库
 -- 需要编辑器支持网易平台的DZAPI
@@ -49,7 +51,6 @@ require "lib.dzapi"
 -- 加载h-lua库
 require "lib.time"
 require "lib.is"
-require "lib.message"
 require "lib.sound"
 require "lib.mark"
 require "lib.effect"
@@ -78,7 +79,6 @@ require "lib.leaderBoard"
 require "lib.multiBoard"
 require "lib.quest"
 -- 别称
-hmsg = hmessage
 httg = htextTag
 hattribute = hattr
 

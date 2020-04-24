@@ -73,7 +73,7 @@ hcamera.changeDistance = function(whichPlayer, diffDistance)
         elseif (toDistance > 5000) then
             toDistance = 5000
         end
-        hmessage.echo("视距已设定为：" .. toDistance, whichPlayer)
+        echo("视距已设定为：" .. toDistance, whichPlayer)
         if (oldDistance == toDistance) then
             return
         else

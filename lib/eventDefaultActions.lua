@@ -60,26 +60,26 @@ hevent_default_actions = {
             if (str == "-apc") then
                 if (his.autoConvertGoldToLumber(p) == true) then
                     his.set(p, "isAutoConvertGoldToLumber", false)
-                    hmessage.echo("|cffffcc00已关闭|r自动换算", p)
+                    echo("|cffffcc00已关闭|r自动换算", p)
                 else
                     his.set(p, "isAutoConvertGoldToLumber", true)
-                    hmessage.echo("|cffffcc00已开启|r自动换算", p)
+                    echo("|cffffcc00已开启|r自动换算", p)
                 end
             elseif (str == "-apm") then
-                hmessage.echo("您的apm为:" .. hplayer.getApm(p), p)
+                echo("您的apm为:" .. hplayer.getApm(p), p)
             elseif (str == "-eff") then
                 if (hplayer.qty_current == 1) then
                     if (heffect.enable == true) then
                         heffect.enable = false
                         hlightning.enable = false
-                        hmessage.echo("|cffffcc00已关闭|r大部分特效", p)
+                        echo("|cffffcc00已关闭|r大部分特效", p)
                     else
                         heffect.enable = true
                         hlightning.enable = true
-                        hmessage.echo("|cffffcc00已开启|r大部分特效", p)
+                        echo("|cffffcc00已开启|r大部分特效", p)
                     end
                 else
-                    hmessage.echo("此命令仅在单人时有效", p)
+                    echo("此命令仅在单人时有效", p)
                 end
             else
                 local first = string.sub(str, 1, 1)
@@ -103,7 +103,7 @@ hevent_default_actions = {
         leave = cj.Condition(function()
             local p = cj.GetTriggerPlayer()
             hplayer.set(p, "status", hplayer.player_status.leave)
-            hmessage.echo(cj.GetPlayerName(p) .. "离开了游戏～")
+            echo(cj.GetPlayerName(p) .. "离开了游戏～")
             hplayer.clearUnit(p)
             hplayer.qty_current = hplayer.qty_current - 1
             -- 触发玩家离开事件(全局)
