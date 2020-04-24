@@ -42,7 +42,7 @@ hweather.create = function(bean)
             x=0,y=0, 坐标
             w=0,h=0, 长宽
             type=hweather.sun 天气类型
-            during=10 持续时间小于等于0=无限
+            during=0 默认持续时间小于等于0:无限
         }
     ]]
     if (bean.w == nil or bean.h == nil or bean.w <= 0 or bean.h <= 0) then
