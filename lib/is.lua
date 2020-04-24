@@ -45,13 +45,13 @@ end
 --- 是否夜晚
 ---@return boolean
 his.night = function()
-    return (cj.GetTimeOfDay() <= 6.00 or cj.GetTimeOfDay() >= 18.00)
+    return (cj.GetFloatGameState(GAME_STATE_TIME_OF_DAY) <= 6.00 or cj.GetFloatGameState(GAME_STATE_TIME_OF_DAY) >= 18.00)
 end
 
 --- 是否白天
 ---@return boolean
 his.day = function()
-    return (cj.GetTimeOfDay() > 6.00 and cj.GetTimeOfDay() < 18.00)
+    return (cj.GetFloatGameState(GAME_STATE_TIME_OF_DAY) > 6.00 and cj.GetFloatGameState(GAME_STATE_TIME_OF_DAY) < 18.00)
 end
 
 --- 是否电脑
