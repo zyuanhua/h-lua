@@ -17,7 +17,7 @@ echo = function(msg, whichPlayer, duration, x, y)
             end
         end
     else
-        if (duration == nil or duration < 5) then
+        if (duration < 5) then
             cj.DisplayTextToPlayer(whichPlayer, x, y, msg)
         else
             cj.DisplayTimedTextToPlayer(whichPlayer, x, y, duration, msg)
