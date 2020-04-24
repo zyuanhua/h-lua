@@ -19,6 +19,7 @@ hweather = {
 ---@param w userdata
 ---@param delay number
 hweather.del = function(w, delay)
+    delay = delay or 0
     if (delay <= 0) then
         cj.EnableWeatherEffect(w, false)
         cj.RemoveWeatherEffect(w)
