@@ -3,11 +3,12 @@ hmessage = {}
 
 --- 在屏幕打印信息给所有玩家
 ---@param msg string
+---@param whichPlayer userdata 可选，打印给某玩家
 ---@param duration number
 ---@param x number 可选，屏幕x处
 ---@param y number 可选，屏幕y处
----@param whichPlayer userdata 可选，打印给某玩家
-hmessage.echo = function(msg, duration, x, y, whichPlayer)
+hmessage.echo = function(msg, whichPlayer, duration, x, y)
+    duration = duration or 0
     x = x or 0
     y = y or 0
     if (whichPlayer == nil) then

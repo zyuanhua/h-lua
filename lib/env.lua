@@ -207,7 +207,7 @@ henv.build = function(whichRect, typeStr, isDestroyRect, ground, doodad, units)
                 if (ground ~= nil and math.random(1, 3) == 2) then
                     cj.SetTerrainType(x, y, ground, -1, 1, 0)
                 end
-            elseif (#doodads > 0 and buildType == 6) then
+            elseif (#doodads > 0 and buildType == 16) then
                 cj.SetDestructableInvulnerable(
                     cj.CreateDestructable(
                         doodads[math.random(1, #doodads)],
