@@ -136,11 +136,12 @@ end
 --- 构建区域装饰
 ---@param whichRect userdata
 ---@param typeStr string
+---@param isInvulnerable boolean 可破坏物是否无敌
 ---@param isDestroyRect boolean
 ---@param ground number
 ---@param doodad userdata
 ---@param units table
-henv.build = function(whichRect, typeStr, isDestroyRect, ground, doodad, units)
+henv.build = function(whichRect, typeStr, isInvulnerable, isDestroyRect, ground, doodad, units)
     if (whichRect == nil or typeStr == nil) then
         return
     end
@@ -216,17 +217,17 @@ henv.build = function(whichRect, typeStr, isDestroyRect, ground, doodad, units)
                     cj.SetTerrainType(x, y, ground, -1, 1, 0)
                 end
             elseif (#doodads > 0 and buildType == 16) then
-                cj.SetDestructableInvulnerable(
-                    cj.CreateDestructable(
-                        doodads[math.random(1, #doodads)],
-                        x,
-                        y,
-                        math.random(0, 360),
-                        math.random(0.5, 1.1),
-                        0
-                    ),
-                    true
+                local dest = cj.CreateDestructable(
+                    doodads[math.random(1, #doodads)],
+                    x,
+                    y,
+                    math.random(0, 360),
+                    math.random(0.5, 1.1),
+                    0
                 )
+                if (isInvulnerable == true) then
+                    cj.SetDestructableInvulnerable(dest, true)
+                end
                 if (ground ~= nil) then
                     cj.SetTerrainType(x, y, ground, -1, 1, 0)
                 end
@@ -238,8 +239,9 @@ end
 --- 随机构建区域装饰
 ---@param whichRect userdata
 ---@param typeStr string
+---@param isInvulnerable boolean 可破坏物是否无敌
 ---@param isDestroyRect boolean
-henv.random = function(whichRect, typeStr, isDestroyRect)
+henv.random = function(whichRect, typeStr, isInvulnerable, isDestroyRect)
     local ground
     local doodad = {}
     local unit = {}
@@ -464,5 +466,5 @@ henv.random = function(whichRect, typeStr, isDestroyRect)
     else
         return
     end
-    henv.build(whichRect, typeStr, isDestroyRect, ground, doodad, unit)
+    henv.build(whichRect, typeStr, isInvulnerable, isDestroyRect, ground, doodad, unit)
 end
