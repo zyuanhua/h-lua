@@ -587,11 +587,6 @@ hattr.setHandle = function(whichUnit, attr, opr, val, dur)
                 cj.SetUnitAcquireRange(whichUnit, futureVal * 1.1)
             elseif (attr == "sight") then
                 -- 视野
-                if (futureVal < -hattr.max_sight) then
-                    futureVal = -hattr.max_sight
-                elseif (futureVal > hattr.max_sight) then
-                    futureVal = hattr.max_sight
-                end
                 for _, gradient in ipairs(hslk_global.attr.sightGradient) do
                     cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.add[gradient])
                     cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.sub[gradient])

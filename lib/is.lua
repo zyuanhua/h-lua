@@ -356,7 +356,7 @@ end
 ---@param y number
 ---@return boolean
 his.borderMap = function(x, y)
-    return cj.borderRect(his.mapInitialPlayableArea, x, y)
+    return his.borderRect(his.mapInitialPlayableArea, x, y)
 end
 
 --- 是否身上有某种物品
