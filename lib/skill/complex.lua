@@ -1073,7 +1073,7 @@ end
     options = {
         damage = 0, --伤害（必须有，但是这里可以等于0）
         whichUnit = [unit], --目标单位（必须有）
-        sourceUnit = [unit], --伤害来源单位（必须有）
+        sourceUnit = [unit], --伤害来源单位（伤害为0可无）
         odds = 100, --几率（可选,默认100）
         distance = 0, --击退距离，可选，默认0
         high = 100, --击飞高度，可选，默认100
@@ -1087,11 +1087,14 @@ hskill.crackFly = function(options)
     if (options.damage == nil or options.damage < 0) then
         return
     end
-    if (options.whichUnit == nil or options.sourceUnit == nil) then
+    if (options.whichUnit == nil) then
         return
     end
     local odds = options.odds or 100
-    local damage = options.damage
+    local damage = options.damage or 0
+    if (damage > 0 and options.sourceUnit == nil) then
+        return
+    end
     --计算抵抗
     local oppose = hattr.get(options.whichUnit, "crack_fly_oppose")
     odds = odds - oppose --(%)
@@ -1177,18 +1180,20 @@ hskill.crackFly = function(options)
             local z = 0
             local timerSetTime = htime.getSetTime(t)
             if (cost > during) then
-                hskill.damage(
-                    {
-                        sourceUnit = options.sourceUnit,
-                        targetUnit = options.whichUnit,
-                        effect = options.effect,
-                        damage = options.damage,
-                        damageKind = options.damageKind,
-                        damageType = options.damageType,
-                        damageString = "击飞",
-                        damageStringColor = "808000"
-                    }
-                )
+                if (damage > 0) then
+                    hskill.damage(
+                        {
+                            sourceUnit = options.sourceUnit,
+                            targetUnit = options.whichUnit,
+                            effect = options.effect,
+                            damage = damage,
+                            damageKind = options.damageKind,
+                            damageType = options.damageType,
+                            damageString = "击飞",
+                            damageStringColor = "808000"
+                        }
+                    )
+                end
                 cj.SetUnitFlyHeight(options.whichUnit, originHigh, 10000)
                 cj.SetUnitPathing(options.whichUnit, true)
                 his.set(options.whichUnit, "isCrackFly", false)
