@@ -107,6 +107,14 @@ henv = {
     end
 }
 
+--- 设置迷雾状态
+---@param enable boolean 战争迷雾
+---@param enableMark boolean 黑色阴影
+henv.setFogStatus = function(enable, enableMark)
+    cj.FogEnable(enable)
+    cj.FogMaskEnable(enableMark)
+end
+
 --- 随机构建时的装饰物(参考默认例子)
 ---@param doodads table
 henv.setDoodad = function(doodads)
