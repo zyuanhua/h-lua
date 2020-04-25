@@ -4,10 +4,9 @@ local tempData = {}
 
 HLUA_SLK_KEYS = {
     COMMON = 99,
-    PLAYER_MAP_LEVEL_AWARD_MAX = 100,
-    PLAYER_MAP_LEVEL_AWARD = 101,
-    UNIT_TOKEN = 102,
-    UNIT_TOKEN_LEAP = 103,
+    UNIT_TOKEN = 101,
+    UNIT_TOKEN_LEAP = 102,
+    UNIT_TOKEN_ALERT_CIRCLE = 103,
     UNIT_TREE = 104,
     SKILL_ITEM_SEPARATE = 105,
     SKILL_BREAK = 106,
@@ -46,38 +45,6 @@ HLUA_SLK_KEYS = {
     ENV_MODEL = 139,
     EX_SHAPESHIFT = 200
 }
-
---科技
--- #地图等级奖励
-table.insert(
-    tempData,
-    {
-        HLUA_SLK_KEYS.PLAYER_MAP_LEVEL_AWARD,
-        -1,
-        50,
-        "int"
-    }
-)
-for i = 1, 50 do
-    local obj = slk.upgrade.Rhde:new("dzapi_map_level_award_" .. i)
-    obj.EditorSuffix = "#h-lua"
-    obj.Name = "达到地图等级：" .. i .. "级"
-    obj.Hotkey = ""
-    obj.Tip = ""
-    obj.Ubertip = ""
-    obj.Buttonpos1 = 0
-    obj.Buttonpos2 = 0
-    obj.Art = "ReplaceableTextures\\CommandButtons\\BTNControlMagic.blp"
-    table.insert(
-        tempData,
-        {
-            HLUA_SLK_KEYS.PLAYER_MAP_LEVEL_AWARD,
-            i,
-            obj:get_id(),
-            "int"
-        }
-    )
-end
 
 --单位
 -- #token
@@ -143,6 +110,44 @@ table.insert(
     {
         HLUA_SLK_KEYS.COMMON,
         HLUA_SLK_KEYS.UNIT_TOKEN_LEAP,
+        obj:get_id(),
+        "int"
+    }
+)
+
+--警示圈 直径64px
+-- #token
+obj = slk.unit.ogru:new("unit_token_alert_circle")
+obj.EditorSuffix = "#h-lua"
+obj.Name = "Token - alertCircle"
+obj.special = 1
+obj.abilList = "Avul,Aloc"
+obj.upgrade = ""
+obj.file = "UI\\Feedback\\Target\\Target.mdl"
+obj.unitShadow = ""
+obj.collision = 0
+obj.Art = ""
+obj.modelScale = 0.90
+obj.movetp = ""
+obj.moveHeight = 0
+obj.moveFloor = 0.00
+obj.spd = 0
+obj.turnRate = 3.00
+obj.weapsOn = 0
+obj.race = "other"
+obj.fused = 0
+obj.sight = 250
+obj.nsight = 250
+obj.Builds = ""
+obj.upgrades = ""
+obj.red = 255
+obj.blue = 0
+obj.green = 0
+table.insert(
+    tempData,
+    {
+        HLUA_SLK_KEYS.COMMON,
+        HLUA_SLK_KEYS.UNIT_TOKEN_ALERT_CIRCLE,
         obj:get_id(),
         "int"
     }
