@@ -361,7 +361,7 @@ hskill.swim = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
+    if (options.damage ~= nil and options.damage > 0) then
         return
     end
     local u = options.whichUnit
@@ -1145,7 +1145,12 @@ hskill.crackFly = function(options)
     cj.SetUnitPathing(options.whichUnit, false)
     local originHigh = cj.GetUnitFlyHeight(options.whichUnit)
     local originFacing = hunit.getFacing(options.whichUnit)
-    local originDeg = math.getDegBetweenUnit(options.sourceUnit, options.whichUnit)
+    local originDeg
+    if (options.sourceUnit) then
+        originDeg = math.getDegBetweenUnit(options.sourceUnit, options.whichUnit)
+    else
+        originDeg = math.random(0, 360)
+    end
     local cost = 0
     -- @触发击飞事件
     hevent.triggerEvent(
@@ -1219,7 +1224,9 @@ hskill.crackFly = function(options)
                         originDeg
                     )
                     cj.SetUnitFacing(options.whichUnit, originFacing)
-                    cj.SetUnitPosition(options.whichUnit, pxy.x, pxy.y)
+                    if (his.borderMap(pxy.x, pxy.y) == false) then
+                        cj.SetUnitPosition(options.whichUnit, pxy.x, pxy.y)
+                    end
                 end
                 if (z > 0) then
                     cj.SetUnitFlyHeight(options.whichUnit, cj.GetUnitFlyHeight(options.whichUnit) + z, z / timerSetTime)
