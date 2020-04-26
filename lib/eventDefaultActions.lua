@@ -81,6 +81,46 @@ hevent_default_actions = {
                 else
                     echo("此命令仅在单人时有效", p)
                 end
+            elseif (str == "-random") then
+                local tp = cj.GetTriggerPlayer()
+                if (#hhero.randomSelectorPool <= 0) then
+                    echo("此命令仅在存有英雄选择操作时有效", tp)
+                    return
+                end
+                if (hhero.player_current_qty[tp] >= hhero.player_allow_qty[tp]) then
+                    echo("|cffffff80你已经选够了|r", tp)
+                    return
+                end
+                local txt = ""
+                local qty = 0
+                while (true) do
+                    local one = table.random(hhero.randomSelectorPool)
+                    table.delete(one, hhero.randomSelectorPool)
+                    local u = one
+                    if (type(one) == 'string') then
+                        u = hunit.create(
+                            {
+                                whichPlayer = tp,
+                                unitId = one,
+                                x = hhero.bornX,
+                                y = hhero.bornY
+                            }
+                        )
+                    end
+                    txt = txt .. " " .. cj.GetUnitName(u)
+                    hhero.addPlayerUnit(tp, u)
+                    qty = qty + 1
+                    if (hhero.player_current_qty[tp] >= hhero.player_allow_qty[tp]) then
+                        break
+                    end
+                end
+                echo("已为您 |cffffff80random|r 挑选了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个：|cffffff80" .. txt .. "|r", tp)
+            elseif (str == "-repick") then
+                local tp = cj.GetTriggerPlayer()
+                if (#hhero.randomSelectorPool <= 0) then
+                    echo("此命令仅在存有英雄选择操作时有效", tp)
+                    return
+                end
             else
                 local first = string.sub(str, 1, 1)
                 if (first == "+" or first == "-") then

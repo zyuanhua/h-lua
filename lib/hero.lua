@@ -1,20 +1,14 @@
----@class hhero
+---@class hhero 英雄相关
 hhero = {
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
     player_current_qty = {}, -- 玩家当前单位数量,默认0
-    player_heros = {}, -- 玩家当前英雄
+    player_heroes = {}, -- 玩家当前英雄
     build_token = hslk_global.unit_hero_tavern_token,
-    build_params = {
-        id = hslk_global.unit_hero_tavern,
-        x = 0, y = 0,
-        distance = 128.0,
-        per_row = 2,
-        allow_qty = 11,
-    },
-    hero_born_params = {
-        x = 0, y = 0,
-        effect = nil,
-    }
+    --- 英雄出生地
+    bornX = 0,
+    bornY = 0,
+    --- 随机选择池，在使用random，repick命令时有效
+    randomSelectorPool = {}
 }
 
 ---@private
@@ -23,7 +17,7 @@ hhero.init = function()
         local p = cj.Player(i - 1)
         hhero.player_allow_qty[p] = 1
         hhero.player_current_qty[p] = 0
-        hhero.player_heros[p] = {}
+        hhero.player_heroes[p] = {}
     end
 end
 
@@ -77,7 +71,7 @@ end
 ---@param u userdata
 ---@return string STR|AGI|INT
 hhero.getHeroType = function(u)
-    return hslk_global.heroesKV[cj.GetUnitTypeId(u)].Primary
+    return hslk_global.unitsKV[cj.GetUnitTypeId(u)].Primary
 end
 
 --- 获取英雄的类型文本
@@ -85,20 +79,6 @@ end
 ---@return string 力量|敏捷|智力
 hhero.getHeroTypeLabel = function(u)
     return CONST_HERO_PRIMARY[hhero.getHeroType(u)]
-end
-
---- 设定酒馆参数
-hhero.setBuildParams = function(x, y, distance, per_row, allow_qty)
-    hhero.build_params.x = x
-    hhero.build_params.y = y
-    hhero.build_params.distance = distance
-    hhero.build_params.per_row = per_row
-    hhero.build_params.allow_qty = allow_qty
-end
--- 设定英雄创建参数
-hhero.setHeroBornParams = function(x, y)
-    hhero.hero_born_params.x = x
-    hhero.hero_born_params.y = y
 end
 
 --- 设置玩家最大英雄数量,支持1 - 7
@@ -118,71 +98,46 @@ end
 ---@param whichPlayer userdata
 ---@return number
 hhero.getPlayerAllowQty = function(whichPlayer)
-    return heros.player_allow_qty[whichPlayer]
+    return hhero.player_allow_qty[whichPlayer]
+end
+
+-- 设定选择英雄的出生地
+hhero.setBornXY = function(x, y)
+    hhero.bornX = x
+    hhero.bornY = y
 end
 
 --- 添加一个英雄给玩家
 ---@private
 ---@param whichPlayer userdata
----@param sItem userdata
+---@param hero userdata
 ---@param type string
-hhero.addPlayerUnit = function(whichPlayer, sItem, type)
-    if (sItem ~= nil) then
-        hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] + 1
-        local u
-        if (type == "click") then
-            -- 点击方式
-            u = sItem
-            hRuntime.heroBuildSelection[u].canSelect = false
-            cj.SetUnitOwner(u, whichPlayer, true)
-            cj.SetUnitPosition(u, hhero.hero_born_params.x, hhero.hero_born_params.y)
-            cj.PauseUnit(u, false)
-        elseif (type == "tavern") then
-            -- 酒馆方式(单位ID)
-            u = hunit.create(
-                {
-                    whichPlayer = whichPlayer,
-                    unitId = sItem,
-                    x = hhero.hero_born_params.x,
-                    y = hhero.hero_born_params.y
-                }
-            )
-            if (hhero.player_current_qty[whichPlayer] >= hhero.player_allow_qty[whichPlayer]) then
-                echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", whichPlayer)
-            else
-                echo(
-                    "您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
-                        math.floor(hhero.player_allow_qty[whichPlayer] - hhero.player_current_qty[whichPlayer])
-                        .. " 个",
-                    whichPlayer
-                )
-            end
-        end
-        if (u == nil) then
-            echo("hhero.addPlayerUnit类型错误", whichPlayer)
-            return
-        end
-        table.insert(hhero.player_heros[whichPlayer], u)
-        hhero.setIsHero(u, true)
-        hunit.setInvulnerable(u, false)
-        -- 触发英雄被选择事件(全局)
-        hevent.triggerEvent(
-            "global",
-            CONST_EVENT.pickHero,
-            {
-                triggerPlayer = whichPlayer,
-                triggerUnit = u
-            }
-        )
-    end
+hhero.addPlayerUnit = function(whichPlayer, hero)
+    hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] + 1
+    table.insert(hhero.player_heroes[whichPlayer], hero)
+    hhero.setIsHero(hero, true)
+    hunit.setInvulnerable(hero, false)
+    cj.SetUnitOwner(hero, whichPlayer, true)
+    cj.SetUnitPosition(whichPlayer, hhero.bornX, hhero.bornY)
+    cj.PauseUnit(whichPlayer, false)
+    -- 触发英雄被选择事件(全局)
+    hevent.triggerEvent(
+        "global",
+        CONST_EVENT.pickHero,
+        {
+            triggerPlayer = whichPlayer,
+            triggerUnit = hero
+        }
+    )
 end
+
 --- 删除一个英雄单位对玩家
 ---@private
 ---@param whichPlayer userdata
 ---@param u userdata
 ---@param type string
 hhero.removePlayerUnit = function(whichPlayer, u, type)
-    table.delete(u, hhero.player_heros[whichPlayer])
+    table.delete(u, hhero.player_heroes[whichPlayer])
     hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
     if (type == "click") then
         -- 点击方式
@@ -215,7 +170,7 @@ hhero.removePlayerUnit = function(whichPlayer, u, type)
     end
 end
 
---- 设置一个单位是否拥有英雄判定(请勿重复设置)
+--- 设置一个单位是否拥有英雄判定
 --- 当设置[一般单位]为[英雄]时，框架自动屏幕，[力量|敏捷|智力]等不属于一般单位的属性，以避免引起崩溃报错
 --- 设定后 his.hero 方法会认为单位为英雄，同时属性系统也会认定它为英雄
 ---@param u userdata
@@ -229,6 +184,71 @@ hhero.setIsHero = function(u, flag)
         hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
             cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
         end)
+    end
+end
+
+--- 开始构建英雄选择
+---@param options table
+hhero.buildSelector = function(options)
+    --[[
+        options = {
+            heroes = {"H001","H002"}, -- 可以选择的单位ID
+            during = 60, -- 选择持续时间，最少30秒，默认60秒，超过这段时间未选择的玩家会被剔除出游戏
+            type = string, "tavern" | "doubleClick"
+            buildX = 0, -- 构建点X
+            buildY = 0, -- 构建点Y
+            buildDistance = 256, -- 构建距离，例如两个酒馆间，两个单位间
+            buildRowQty = 5, -- 每行构建的最大数目，例如一行最多4个酒馆
+            buildTavernQty = 10, -- 酒馆模式下，一个酒馆最多拥有几种单位
+        }
+    ]]
+    if (#options.heroes <= 0) then
+        return
+    end
+    local during = options.during or 60
+    local type = options.type or "tavern"
+    local buildX = options.buildX or 0
+    local buildY = options.buildY or 0
+    local buildDistance = options.buildDistance or 256
+    local buildRowQty = options.buildRowQty or 5
+    if (during < 30) then
+        during = 30
+    end
+    local totalRow = 1
+    local rowCurrentQty = 0
+    local x = buildX
+    local y = buildY
+    if (type == "doubleClick") then
+        for _, heroId in ipairs(options.heroes) do
+            if (rowCurrentQty >= buildRowQty) then
+                rowCurrentQty = 0
+                totalRow = totalRow + 1
+                x = buildX
+                y = y - buildDistance
+            else
+                x = buildX + rowCurrentQty * buildDistance
+            end
+            local u = hunit.create(
+                {
+                    whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                    unitId = heroId,
+                    x = x,
+                    y = y,
+                    during = during,
+                    isInvulnerable = true,
+                    isPause = true
+                }
+            )
+            hRuntime.hero[u] = {
+                selectorX = x,
+                selectorY = y,
+                selectable = true,
+            }
+            table.insert(hhero.randomSelectorPool, u)
+            rowCurrentQty = rowCurrentQty + 1
+        end
+    elseif (type == "tavern") then
+        local buildTavernQty = options.buildTavernQty or 10
     end
 end
 
@@ -318,12 +338,12 @@ hhero.buildClick = function(during, clickQty)
                 echo("|cffffff80你还没有选过任何单位|r", p)
                 return
             end
-            local qty = #hhero.player_heros
-            for _, v in ipairs(hhero.player_heros[p]) do
+            local qty = #hhero.player_heroes
+            for _, v in ipairs(hhero.player_heroes[p]) do
                 hhero.removePlayerUnit(p, v, "click")
                 table.insert(randomChooseAbleList, v)
             end
-            hhero.player_heros[p] = {}
+            hhero.player_heroes[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
             echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
@@ -489,13 +509,13 @@ hhero.buildTavern = function(during)
                 hmessage.echo00(p, "|cffffff80你还没有选过任何单位|r", 0)
                 return
             end
-            local qty = #hhero.player_heros
-            for _, v in ipairs(hhero.player_heros[p]) do
+            local qty = #hhero.player_heroes
+            for _, v in ipairs(hhero.player_heroes[p]) do
                 local heroId = cj.GetUnitTypeId(v)
                 hhero.removePlayerUnit(p, v, "tavern")
                 table.insert(randomChooseAbleList, hRuntime.heroBuildSelection[heroId].itemId)
             end
-            hhero.player_heros[p] = {}
+            hhero.player_heroes[p] = {}
             hhero.player_current_qty[p] = 0
             hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
             hmessage.echo00(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)

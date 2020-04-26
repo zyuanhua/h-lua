@@ -57,7 +57,6 @@ hslk_global = {
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
     heroesLen = 0,
-    heroes = {},
     heroesKV = {},
     heroesItems = {},
     heroesItemsKV = {},
