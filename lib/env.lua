@@ -186,7 +186,7 @@ henv.build = function(whichRect, typeStr, isInvulnerable, isDestroyRect, ground,
                 return
             end
             randomM = randomM + math.random(1, 3)
-            if (randomM > 200) then
+            if (randomM > 180) then
                 randomM = 2
             end
             if (x > rectEndX) then
@@ -204,7 +204,7 @@ henv.build = function(whichRect, typeStr, isInvulnerable, isDestroyRect, ground,
                     return
                 end
             end
-            if (#units > 0 and buildType == 1 or buildType == 49) then
+            if (#units > 0 and (buildType == 1 or buildType == 40 or (#doodads <= 0 and buildType == 51))) then
                 local tempUnit = cj.CreateUnit(
                     cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     units[math.random(1, #units)],
