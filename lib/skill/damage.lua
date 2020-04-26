@@ -44,9 +44,6 @@ hskill.damage = function(options)
     if (targetUnit == nil) then
         return
     end
-    if (sourceUnit == nil) then
-        return
-    end
     if (his.alive(options.targetUnit) == false) then
         return
     end
@@ -55,20 +52,25 @@ hskill.damage = function(options)
     end
     --双方attr get
     local targetUnitAttr = hattr.get(targetUnit)
-    local sourceUnitAttr = hattr.get(sourceUnit)
-    if (sourceUnitAttr == nil) then
-        print("sourceUnit unregister")
-        return
-    end
+    local sourceUnitAttr
     if (targetUnitAttr == nil) then
         print("targetUnit unregister")
         return
+    end
+    if (sourceUnit) then
+        sourceUnitAttr = hattr.get(sourceUnit)
+        if (sourceUnitAttr == nil) then
+            print("sourceUnit unregister")
+            return
+        end
     end
     local damageKind = options.damageKind
     local damageType = options.damageType
     if (damageType == nil) then
         if (damageKind == CONST_DAMAGE_KIND.attack) then
             damageType = hattr.get(sourceUnit, "attack_damage_type")
+        else
+            damageType = CONST_DAMAGE_TYPE.common
         end
     end
     --常规伤害判定
@@ -157,15 +159,17 @@ hskill.damage = function(options)
             damageStringColor = "76a5af"
         end
         -- @触发无视防御事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.breakArmor,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = targetUnit,
-                breakType = breakArmorType
-            }
-        )
+        if (sourceUnit ~= nil) then
+            hevent.triggerEvent(
+                sourceUnit,
+                CONST_EVENT.breakArmor,
+                {
+                    triggerUnit = sourceUnit,
+                    targetUnit = targetUnit,
+                    breakType = breakArmorType
+                }
+            )
+        end
         -- @触发被无视防御事件
         hevent.triggerEvent(
             targetUnit,
@@ -207,15 +211,17 @@ hskill.damage = function(options)
             }
         )
         -- @触发被回避事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.beAvoid,
-            {
-                triggerUnit = sourceUnit,
-                attacker = sourceUnit,
-                targetUnit = targetUnit
-            }
-        )
+        if (sourceUnit ~= nil) then
+            hevent.triggerEvent(
+                sourceUnit,
+                CONST_EVENT.beAvoid,
+                {
+                    triggerUnit = sourceUnit,
+                    attacker = sourceUnit,
+                    targetUnit = targetUnit
+                }
+            )
+        end
     end
     -- 计算自然属性
     if (lastDamage > 0) then
@@ -309,18 +315,20 @@ hskill.damage = function(options)
             heffect.toXY(effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
         end
         -- @触发伤害事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.damage,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = targetUnit,
-                sourceUnit = sourceUnit,
-                damage = lastDamage,
-                damageKind = damageKind,
-                damageType = damageType
-            }
-        )
+        if (sourceUnit ~= nil) then
+            hevent.triggerEvent(
+                sourceUnit,
+                CONST_EVENT.damage,
+                {
+                    triggerUnit = sourceUnit,
+                    targetUnit = targetUnit,
+                    sourceUnit = sourceUnit,
+                    damage = lastDamage,
+                    damageKind = damageKind,
+                    damageType = damageType
+                }
+            )
+        end
         -- @触发被伤害事件
         hevent.triggerEvent(
             targetUnit,
@@ -335,18 +343,20 @@ hskill.damage = function(options)
         )
         if (damageKind == CONST_DAMAGE_KIND.attack) then
             -- @触发攻击事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.attack,
-                {
-                    triggerUnit = sourceUnit,
-                    attacker = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = lastDamage,
-                    damageKind = damageKind,
-                    damageType = damageType
-                }
-            )
+            if (sourceUnit ~= nil) then
+                hevent.triggerEvent(
+                    sourceUnit,
+                    CONST_EVENT.attack,
+                    {
+                        triggerUnit = sourceUnit,
+                        attacker = sourceUnit,
+                        targetUnit = targetUnit,
+                        damage = lastDamage,
+                        damageKind = damageKind,
+                        damageType = damageType
+                    }
+                )
+            end
             -- @触发被攻击事件
             hevent.triggerEvent(
                 targetUnit,
@@ -362,7 +372,7 @@ hskill.damage = function(options)
             )
         end
         -- 吸血
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
+        if (sourceUnit ~= nil and damageKind == CONST_DAMAGE_KIND.attack) then
             local hemophagia = sourceUnitAttr.hemophagia - targetUnitAttr.hemophagia_oppose
             if (hemophagia > 0) then
                 hunit.addCurLife(sourceUnit, lastDamage * hemophagia * 0.01)
@@ -397,7 +407,7 @@ hskill.damage = function(options)
             end
         end
         -- 技能吸血
-        if (damageKind == CONST_DAMAGE_KIND.skill) then
+        if (sourceUnit ~= nil and damageKind == CONST_DAMAGE_KIND.skill) then
             local hemophagiaSkill = sourceUnitAttr.hemophagia_skill - targetUnitAttr.hemophagia_skill_oppose
             if (hemophagiaSkill > 0) then
                 hunit.addCurLife(sourceUnit, lastDamage * hemophagiaSkill * 0.01)
@@ -489,7 +499,7 @@ hskill.damage = function(options)
             )
         end
         -- 反伤
-        if (his.invincible(sourceUnit) == false) then
+        if (sourceUnit ~= nil and his.invincible(sourceUnit) == false) then
             local targetUnitDamageRebound = targetUnitAttr.damage_rebound - sourceUnitAttr.damage_rebound_oppose
             if (targetUnitDamageRebound > 0) then
                 local ldr = math.round(lastDamage * targetUnitDamageRebound * 0.01)
@@ -535,7 +545,7 @@ hskill.damage = function(options)
             buff = sourceUnitAttr.skill_buff
             debuff = sourceUnitAttr.skill_debuff
         end
-        if (buff ~= nil) then
+        if (buff ~= nil and sourceUnit ~= nil) then
             for _, etc in ipairs(buff) do
                 local b = etc.table
                 if (b.val ~= 0 and b.during > 0 and math.random(1, 1000) <= b.odds * 10) then

@@ -269,9 +269,6 @@ hskill.broken = function(options)
     if (options.whichUnit == nil) then
         return
     end
-    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
-        return
-    end
     local u = options.whichUnit
     local odds = options.odds or 100
     local damage = options.damage or 0
@@ -359,9 +356,6 @@ end
 ]]
 hskill.swim = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
-        return
-    end
-    if (options.damage ~= nil and options.damage > 0) then
         return
     end
     local u = options.whichUnit
@@ -497,9 +491,6 @@ hskill.silent = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
-        return
-    end
     local u = options.whichUnit
     local during = options.during
     local odds = options.odds or 100
@@ -609,9 +600,6 @@ end
 ]]
 hskill.unarm = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
-        return
-    end
-    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
         return
     end
     local u = options.whichUnit
