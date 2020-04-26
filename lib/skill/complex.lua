@@ -5,15 +5,15 @@
         odds = 0, --几率，必须
         damage = 0, --原始伤害，必须
         percent = 0, --暴击比例，必须
-        sourceUnit = nil, --来源单位，必须
+        sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.physical} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.knocking = function(options)
-    if (options.whichUnit == nil or options.sourceUnit == nil) then
-        print_err("knocking: -whichUnit - sourceUnit")
+    if (options.whichUnit == nil) then
+        print_err("knocking: -whichUnit")
         return
     end
     local odds = options.odds or 0
@@ -81,15 +81,15 @@ end
         odds = 100, --几率，必须
         damage = 0, --原始伤害，必须
         percent = 0, --暴击比例，必须
-        sourceUnit = nil, --来源单位，必须
+        sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.magic} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.violence = function(options)
-    if (options.whichUnit == nil or options.sourceUnit == nil) then
-        print_err("violence: -whichUnit - sourceUnit")
+    if (options.whichUnit == nil) then
+        print_err("violence: -whichUnit")
         return
     end
     local odds = options.odds or 0
@@ -158,15 +158,15 @@ end
         damage = 0, --原始伤害，必须
         percent = 0, --几率比例，必须
         range = 0, --分裂范围，必须
-        sourceUnit = nil, --来源单位，必须
+        sourceUnit = nil, --来源单位，可选
         effect = nil, --特效，可选
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {} --伤害的类型,注意是table（可选）
     }
 ]]
 hskill.split = function(options)
-    if (options.whichUnit == nil or options.sourceUnit == nil) then
-        print_err("split: -whichUnit - sourceUnit")
+    if (options.whichUnit == nil) then
+        print_err("split: -whichUnit")
         return
     end
     local odds = options.odds or 0
@@ -192,7 +192,7 @@ hskill.split = function(options)
                 if (his.death(filterUnit)) then
                     flag = false
                 end
-                if (his.ally(filterUnit, options.sourceUnit)) then
+                if (his.enemy(filterUnit, whichUnit)) then
                     flag = false
                 end
                 if (his.building(filterUnit)) then
@@ -274,7 +274,7 @@ hskill.broken = function(options)
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {}
+    local damageType = options.damageType or {}
     --计算抵抗
     local oppose = hattr.get(u, "broken_oppose")
     odds = odds - oppose --(%)
@@ -315,19 +315,17 @@ hskill.broken = function(options)
             }
         )
     end
-    if (sourceUnit ~= nil) then
-        -- @触发打断事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.broken,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = u,
-                odds = odds,
-                damage = damage
-            }
-        )
-    end
+    -- @触发打断事件
+    hevent.triggerEvent(
+        sourceUnit,
+        CONST_EVENT.broken,
+        {
+            triggerUnit = sourceUnit,
+            targetUnit = u,
+            odds = odds,
+            damage = damage
+        }
+    )
     -- @触发被打断事件
     hevent.triggerEvent(
         u,
@@ -362,7 +360,7 @@ hskill.swim = function(options)
     local during = options.during
     local odds = options.odds or 100
     local damage = options.damage or 0
-    local sourceUnit = options.sourceUnit or nil
+    local sourceUnit = options.sourceUnit
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
     local damageType = options.damageType or {}
     --计算抵抗
@@ -433,20 +431,18 @@ hskill.swim = function(options)
             )
         )
     end
-    if (sourceUnit ~= nil) then
-        -- @触发眩晕事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.swim,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = u,
-                odds = odds,
-                damage = damage,
-                during = during
-            }
-        )
-    end
+    -- @触发眩晕事件
+    hevent.triggerEvent(
+        sourceUnit,
+        CONST_EVENT.swim,
+        {
+            triggerUnit = sourceUnit,
+            targetUnit = u,
+            odds = odds,
+            damage = damage,
+            during = during
+        }
+    )
     -- @触发被眩晕事件
     hevent.triggerEvent(
         u,
@@ -495,9 +491,9 @@ hskill.silent = function(options)
     local during = options.during
     local odds = options.odds or 100
     local damage = options.damage or 0
-    local sourceUnit = options.sourceUnit or nil
+    local sourceUnit = options.sourceUnit
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {}
+    local damageType = options.damageType or {}
     --计算抵抗
     local oppose = hattr.get(u, "silent_oppose")
     odds = odds - oppose --(%)
@@ -543,20 +539,18 @@ hskill.silent = function(options)
             }
         )
     end
-    if (sourceUnit ~= nil) then
-        -- @触发沉默事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.silent,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = u,
-                odds = odds,
-                damage = damage,
-                during = during
-            }
-        )
-    end
+    -- @触发沉默事件
+    hevent.triggerEvent(
+        sourceUnit,
+        CONST_EVENT.silent,
+        {
+            triggerUnit = sourceUnit,
+            targetUnit = u,
+            odds = odds,
+            damage = damage,
+            during = during
+        }
+    )
     -- @触发被沉默事件
     hevent.triggerEvent(
         u,
@@ -606,9 +600,9 @@ hskill.unarm = function(options)
     local during = options.during
     local odds = options.odds or 100
     local damage = options.damage or 0
-    local sourceUnit = options.sourceUnit or nil
+    local sourceUnit = options.sourceUnit
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {}
+    local damageType = options.damageType or {}
     --计算抵抗
     local oppose = hattr.get(u, "unarm_oppose")
     odds = odds - oppose --(%)
@@ -654,20 +648,18 @@ hskill.unarm = function(options)
             }
         )
     end
-    if (sourceUnit ~= nil) then
-        -- @触发缴械事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.unarm,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = u,
-                odds = odds,
-                damage = damage,
-                during = during
-            }
-        )
-    end
+    -- @触发缴械事件
+    hevent.triggerEvent(
+        sourceUnit,
+        CONST_EVENT.unarm,
+        {
+            triggerUnit = sourceUnit,
+            targetUnit = u,
+            odds = odds,
+            damage = damage,
+            during = during
+        }
+    )
     -- @触发被缴械事件
     hevent.triggerEvent(
         u,
@@ -713,16 +705,13 @@ hskill.fetter = function(options)
     if (options.whichUnit == nil or options.during == nil or options.during <= 0) then
         return
     end
-    if (options.damage ~= nil and options.damage > 0 and options.sourceUnit == nil) then
-        return
-    end
     local u = options.whichUnit
     local during = options.during
     local odds = options.odds or 100
     local damage = options.damage or 0
     local sourceUnit = options.sourceUnit or nil
     local damageKind = options.damageKind or CONST_DAMAGE_KIND.skill
-    local damageType = options.sourceUnit or {}
+    local damageType = options.damageType or {}
     --计算抵抗
     local oppose = hattr.get(u, "fetter_oppose")
     odds = odds - oppose --(%)
@@ -758,20 +747,18 @@ hskill.fetter = function(options)
             }
         )
     end
-    if (sourceUnit ~= nil) then
-        -- @触发缚足事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.fetter,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = u,
-                odds = odds,
-                damage = damage,
-                during = during
-            }
-        )
-    end
+    -- @触发缚足事件
+    hevent.triggerEvent(
+        sourceUnit,
+        CONST_EVENT.fetter,
+        {
+            triggerUnit = sourceUnit,
+            targetUnit = u,
+            odds = odds,
+            damage = damage,
+            during = during
+        }
+    )
     -- @触发被缚足事件
     hevent.triggerEvent(
         u,
@@ -803,9 +790,6 @@ end
 ]]
 hskill.bomb = function(options)
     if (options.damage == nil or options.damage <= 0) then
-        return
-    end
-    if (options.sourceUnit == nil) then
         return
     end
     local odds = options.odds or 100
@@ -898,7 +882,7 @@ end
         damage = 0, --伤害（必须有，小于等于0直接无效）
         whichUnit = [unit], --第一个的目标单位（必须有）
         prevUnit = [unit], --上一个的目标单位（必须有，用于构建两点间闪电特效）
-        sourceUnit = nil, --伤害来源单位（必须有）
+        sourceUnit = nil, --伤害来源单位（可选）
         lightningType = [hlightning.type], -- 闪电效果类型（可选 详情查看 hlightning.type
         odds = 100, --几率（可选）
         qty = 1, --传递的最大单位数（可选，默认1）
@@ -920,13 +904,6 @@ hskill.lightningChain = function(options)
     if (options.whichUnit == nil) then
         print_err("lightningChain -whichUnit")
         return
-    end
-    if (options.sourceUnit == nil) then
-        print_err("lightningChain -sourceUnit")
-        return
-    end
-    if (options.prevUnit == nil) then
-        options.prevUnit = options.sourceUnit
     end
     local odds = options.odds or 100
     local damage = options.damage
@@ -1015,7 +992,7 @@ hskill.lightningChain = function(options)
                 if (his.death(filterUnit)) then
                     flag = false
                 end
-                if (his.ally(filterUnit, options.sourceUnit)) then
+                if (his.enemy(filterUnit, whichUnit)) then
                     flag = false
                 end
                 if (his.building(filterUnit)) then
@@ -1061,7 +1038,7 @@ end
     options = {
         damage = 0, --伤害（必须有，但是这里可以等于0）
         whichUnit = [unit], --目标单位（必须有）
-        sourceUnit = [unit], --伤害来源单位（伤害为0可无）
+        sourceUnit = [unit], --伤害来源单位（可选）
         odds = 100, --几率（可选,默认100）
         distance = 0, --击退距离，可选，默认0
         high = 100, --击飞高度，可选，默认100
@@ -1080,9 +1057,6 @@ hskill.crackFly = function(options)
     end
     local odds = options.odds or 100
     local damage = options.damage or 0
-    if (damage > 0 and options.sourceUnit == nil) then
-        return
-    end
     --计算抵抗
     local oppose = hattr.get(options.whichUnit, "crack_fly_oppose")
     odds = odds - oppose --(%)
@@ -1134,7 +1108,7 @@ hskill.crackFly = function(options)
     local originHigh = cj.GetUnitFlyHeight(options.whichUnit)
     local originFacing = hunit.getFacing(options.whichUnit)
     local originDeg
-    if (options.sourceUnit) then
+    if (options.sourceUnit ~= nil) then
         originDeg = math.getDegBetweenUnit(options.sourceUnit, options.whichUnit)
     else
         originDeg = math.random(0, 360)
@@ -1253,7 +1227,7 @@ end
         y = [point], --目标坐标Y（可选）
         filter = [function], --必须有
         damage = 0, --伤害（可选，但是这里可以等于0）
-        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
+        sourceUnit = [unit], --伤害来源单位（可选）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {} --伤害的类型,注意是table（可选）
     }
@@ -1264,10 +1238,6 @@ hskill.rangeSwim = function(options)
     local damage = options.damage or 0
     if (range <= 0 or during <= 0) then
         print_err("hskill.rangeSwim:-range -during")
-        return
-    end
-    if (damage > 0 and options.sourceUnit == nil) then
-        print_err("hskill.rangeSwim:-sourceUnit")
         return
     end
     local odds = options.odds or 100

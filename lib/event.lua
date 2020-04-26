@@ -95,7 +95,9 @@ end
 --- 触发事件（私有通用）
 ---@protected
 hevent.triggerEvent = function(handle, key, triggerData)
-    triggerData = triggerData or {}
+    if (handle == nil) then
+        return
+    end
     if (hRuntime.event.register[handle] == nil or hRuntime.event.register[handle][key] == nil) then
         return
     end
@@ -103,6 +105,7 @@ hevent.triggerEvent = function(handle, key, triggerData)
         return
     end
     -- 处理数据
+    triggerData = triggerData or {}
     if (triggerData.triggerSkill ~= nil and type(triggerData.triggerSkill) == "number") then
         triggerData.triggerSkill = string.id2char(triggerData.triggerSkill)
     end

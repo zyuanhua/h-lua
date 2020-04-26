@@ -23,7 +23,7 @@ end
 --- 造成伤害
 --[[
     options = {
-        sourceUnit = nil, --伤害来源
+        sourceUnit = nil, --伤害来源(可选)
         targetUnit = nil, --目标单位
         damage = 0, --实际伤害
         damageString = "", --伤害漂浮字颜色
@@ -57,7 +57,7 @@ hskill.damage = function(options)
         print("targetUnit unregister")
         return
     end
-    if (sourceUnit) then
+    if (sourceUnit ~= nil) then
         sourceUnitAttr = hattr.get(sourceUnit)
         if (sourceUnitAttr == nil) then
             print("sourceUnit unregister")
@@ -67,7 +67,7 @@ hskill.damage = function(options)
     local damageKind = options.damageKind
     local damageType = options.damageType
     if (damageType == nil) then
-        if (damageKind == CONST_DAMAGE_KIND.attack) then
+        if (damageKind == CONST_DAMAGE_KIND.attack and sourceUnit ~= nil) then
             damageType = hattr.get(sourceUnit, "attack_damage_type")
         else
             damageType = CONST_DAMAGE_TYPE.common
@@ -159,17 +159,15 @@ hskill.damage = function(options)
             damageStringColor = "76a5af"
         end
         -- @触发无视防御事件
-        if (sourceUnit ~= nil) then
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.breakArmor,
-                {
-                    triggerUnit = sourceUnit,
-                    targetUnit = targetUnit,
-                    breakType = breakArmorType
-                }
-            )
-        end
+        hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.breakArmor,
+            {
+                triggerUnit = sourceUnit,
+                targetUnit = targetUnit,
+                breakType = breakArmorType
+            }
+        )
         -- @触发被无视防御事件
         hevent.triggerEvent(
             targetUnit,
@@ -211,17 +209,15 @@ hskill.damage = function(options)
             }
         )
         -- @触发被回避事件
-        if (sourceUnit ~= nil) then
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.beAvoid,
-                {
-                    triggerUnit = sourceUnit,
-                    attacker = sourceUnit,
-                    targetUnit = targetUnit
-                }
-            )
-        end
+        hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.beAvoid,
+            {
+                triggerUnit = sourceUnit,
+                attacker = sourceUnit,
+                targetUnit = targetUnit
+            }
+        )
     end
     -- 计算自然属性
     if (lastDamage > 0) then
@@ -315,20 +311,18 @@ hskill.damage = function(options)
             heffect.toXY(effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
         end
         -- @触发伤害事件
-        if (sourceUnit ~= nil) then
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.damage,
-                {
-                    triggerUnit = sourceUnit,
-                    targetUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    damage = lastDamage,
-                    damageKind = damageKind,
-                    damageType = damageType
-                }
-            )
-        end
+        hevent.triggerEvent(
+            sourceUnit,
+            CONST_EVENT.damage,
+            {
+                triggerUnit = sourceUnit,
+                targetUnit = targetUnit,
+                sourceUnit = sourceUnit,
+                damage = lastDamage,
+                damageKind = damageKind,
+                damageType = damageType
+            }
+        )
         -- @触发被伤害事件
         hevent.triggerEvent(
             targetUnit,
@@ -343,20 +337,18 @@ hskill.damage = function(options)
         )
         if (damageKind == CONST_DAMAGE_KIND.attack) then
             -- @触发攻击事件
-            if (sourceUnit ~= nil) then
-                hevent.triggerEvent(
-                    sourceUnit,
-                    CONST_EVENT.attack,
-                    {
-                        triggerUnit = sourceUnit,
-                        attacker = sourceUnit,
-                        targetUnit = targetUnit,
-                        damage = lastDamage,
-                        damageKind = damageKind,
-                        damageType = damageType
-                    }
-                )
-            end
+            hevent.triggerEvent(
+                sourceUnit,
+                CONST_EVENT.attack,
+                {
+                    triggerUnit = sourceUnit,
+                    attacker = sourceUnit,
+                    targetUnit = targetUnit,
+                    damage = lastDamage,
+                    damageKind = damageKind,
+                    damageType = damageType
+                }
+            )
             -- @触发被攻击事件
             hevent.triggerEvent(
                 targetUnit,
@@ -767,7 +759,7 @@ end
         x = [point], --目标坐标X（可选）
         y = [point], --目标坐标Y（可选）
         damage = 0, --伤害（可选，但是这里可以等于0）
-        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
+        sourceUnit = [unit], --伤害来源单位（可选）
         damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
         extraInfluence = [function],
@@ -784,10 +776,6 @@ hskill.damageRange = function(options)
     end
     if (times > 1 and frequency <= 0) then
         print_err("hskill.damageRange:-frequency")
-        return
-    end
-    if (damage > 0 and options.sourceUnit == nil) then
-        print_err("hskill.damageRange:-sourceUnit")
         return
     end
     local x, y
@@ -889,7 +877,7 @@ end
         effect = "", --伤害特效（可选）
         whichGroup = [group], --单位组（必须有）
         damage = 0, --伤害（可选，但是这里可以等于0）
-        sourceUnit = [unit], --伤害来源单位（damage>0时，必须有）
+        sourceUnit = [unit], --伤害来源单位（可选）
         damageKind = CONST_DAMAGE_KIND.skill, --伤害的种类（可选）
         damageType = {CONST_DAMAGE_TYPE.real}, --伤害的类型,注意是table（可选）
         extraInfluence = [function],
@@ -905,13 +893,6 @@ hskill.damageGroup = function(options)
     end
     if (times <= 0 or frequency < 0) then
         print_err("hskill.damageGroup:-times -frequency")
-        return
-    end
-    if (damage > 0 and options.sourceUnit == nil) then
-        print_err("hskill.damageGroup:-sourceUnit")
-        return
-    end
-    if (hgroup.count(options.whichGroup) <= 0) then
         return
     end
     if (times <= 1) then
