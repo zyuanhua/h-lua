@@ -103,5 +103,6 @@ htexture.alertCircle = function(diameter, x, y, during)
     local modelScale = math.round(diameter / 64)
     local u = cj.CreateUnit(hplayer.player_passive, htexture.TEXTURE_ALERT_CIRCLE_TOKEN, x, y, bj_UNIT_FACING)
     cj.SetUnitScale(u, modelScale, modelScale, modelScale)
+    cj.SetUnitTimeScale(u, 1 / during)
     hunit.del(u, during)
 end

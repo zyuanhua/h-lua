@@ -336,8 +336,8 @@ hunit.create = function(bean)
         end
         -- 动作时间比例 %
         if (bean.timeScale ~= nil and bean.timeScale > 0) then
-            bean.timeScale = math.round(bean.timeScale)
-            cj.SetUnitTimeScalePercent(u, bean.timeScale)
+            bean.timeScale = math.round(bean.timeScale * 0.01)
+            cj.SetUnitTimeScale(u, bean.timeScale)
         end
         -- 模型缩放比例 %
         if (bean.modelScale ~= nil and bean.modelScale > 0) then
