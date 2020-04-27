@@ -7,8 +7,8 @@ hhero = {
     --- 英雄出生地
     bornX = 0,
     bornY = 0,
-    --- 随机选择池，在使用random，repick命令时有效
-    randomSelectorPool = {}
+    --- 英雄选择池
+    selectorPool = {}
 }
 
 ---@private
@@ -16,7 +16,6 @@ hhero.init = function()
     for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
         local p = cj.Player(i - 1)
         hhero.player_allow_qty[p] = 1
-        hhero.player_current_qty[p] = 0
         hhero.player_heroes[p] = {}
     end
 end
@@ -107,38 +106,14 @@ hhero.setBornXY = function(x, y)
     hhero.bornY = y
 end
 
---- 添加一个英雄给玩家
----@private
----@param whichPlayer userdata
----@param hero userdata
----@param type string
-hhero.addPlayerUnit = function(whichPlayer, hero)
-    hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] + 1
-    table.insert(hhero.player_heroes[whichPlayer], hero)
-    hhero.setIsHero(hero, true)
-    hunit.setInvulnerable(hero, false)
-    cj.SetUnitOwner(hero, whichPlayer, true)
-    cj.SetUnitPosition(whichPlayer, hhero.bornX, hhero.bornY)
-    cj.PauseUnit(whichPlayer, false)
-    -- 触发英雄被选择事件(全局)
-    hevent.triggerEvent(
-        "global",
-        CONST_EVENT.pickHero,
-        {
-            triggerPlayer = whichPlayer,
-            triggerUnit = hero
-        }
-    )
-end
-
 --- 删除一个英雄单位对玩家
 ---@private
 ---@param whichPlayer userdata
----@param u userdata
----@param type string
-hhero.removePlayerUnit = function(whichPlayer, u, type)
-    table.delete(u, hhero.player_heroes[whichPlayer])
-    hhero.player_current_qty[whichPlayer] = hhero.player_current_qty[whichPlayer] - 1
+---@param hero userdata
+hhero.removePlayerUnit = function(whichPlayer, hero)
+    table.delete(hero, hhero.player_heroes[whichPlayer])
+    local heroId = hunit.getId(hero)
+
     if (type == "click") then
         -- 点击方式
         local heroId = cj.GetUnitTypeId(u)
@@ -242,9 +217,8 @@ hhero.buildSelector = function(options)
             hRuntime.hero[u] = {
                 selectorX = x,
                 selectorY = y,
-                selectable = true,
             }
-            table.insert(hhero.randomSelectorPool, u)
+            table.insert(hhero.selectorPool, u)
             rowCurrentQty = rowCurrentQty + 1
         end
     elseif (type == "tavern") then

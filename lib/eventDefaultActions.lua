@@ -87,7 +87,7 @@ hevent_default_actions = {
                     echo("此命令仅在存有英雄选择操作时有效", tp)
                     return
                 end
-                if (hhero.player_current_qty[tp] >= hhero.player_allow_qty[tp]) then
+                if (#hhero.player_heroes[tp] >= hhero.player_allow_qty[tp]) then
                     echo("|cffffff80你已经选够了|r", tp)
                     return
                 end
@@ -106,11 +106,29 @@ hevent_default_actions = {
                                 y = hhero.bornY
                             }
                         )
+                        hRuntime.hero[u] = {
+                            selectorFrom = "tavern",
+                        }
+                    else
+                        hunit.setInvulnerable(hero, false)
+                        cj.SetUnitOwner(hero, whichPlayer, true)
+                        cj.SetUnitPosition(whichPlayer, hhero.bornX, hhero.bornY)
+                        cj.PauseUnit(whichPlayer, false)
                     end
+                    hhero.setIsHero(u, true)
+                    table.insert(hhero.player_heroes[tp], u)
+                    -- 触发英雄被选择事件(全局)
+                    hevent.triggerEvent(
+                        "global",
+                        CONST_EVENT.pickHero,
+                        {
+                            triggerPlayer = tp,
+                            triggerUnit = u
+                        }
+                    )
                     txt = txt .. " " .. cj.GetUnitName(u)
-                    hhero.addPlayerUnit(tp, u)
                     qty = qty + 1
-                    if (hhero.player_current_qty[tp] >= hhero.player_allow_qty[tp]) then
+                    if (#hhero.player_heroes[tp] >= hhero.player_allow_qty[tp]) then
                         break
                     end
                 end
@@ -121,6 +139,21 @@ hevent_default_actions = {
                     echo("此命令仅在存有英雄选择操作时有效", tp)
                     return
                 end
+                if (#hhero.player_heroes[tp] <= 0) then
+                    echo("|cffffff80你还没有选过任何单位|r", p)
+                    return
+                end
+                local qty = #hhero.player_heroes
+                for _, u in ipairs(hhero.player_heroes[p]) do
+                    hhero.removePlayerUnit(p, v, "click")
+                    if (hRuntime.hero[u].type == "doubleClick") then
+                        table.insert(hhero.randomSelectorPool, u)
+                    else
+                        table.insert(hhero.randomSelectorPool, hunit.getId(u))
+                    end
+                end
+                hhero.player_heroes[p] = {}
+                echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
             else
                 local first = string.sub(str, 1, 1)
                 if (first == "+" or first == "-") then
