@@ -1,14 +1,15 @@
 ---@class hhero 英雄相关
 hhero = {
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
-    player_current_qty = {}, -- 玩家当前单位数量,默认0
     player_heroes = {}, -- 玩家当前英雄
     build_token = hslk_global.unit_hero_tavern_token,
     --- 英雄出生地
     bornX = 0,
     bornY = 0,
     --- 英雄选择池
-    selectorPool = {}
+    selectorPool = {},
+    --- 英雄选择清理池
+    selectorClearPool = {},
 }
 
 ---@private
@@ -85,6 +86,7 @@ end
 ---@param whichPlayer userdata
 ---@param max number
 hhero.setPlayerAllowQty = function(whichPlayer, max)
+    max = math.floor(max)
     if (max < 1) then
         max = 1
     end
@@ -97,7 +99,7 @@ end
 ---@param whichPlayer userdata
 ---@return number
 hhero.getPlayerAllowQty = function(whichPlayer)
-    return hhero.player_allow_qty[whichPlayer]
+    return hhero.player_allow_qty[whichPlayer] or 0
 end
 
 -- 设定选择英雄的出生地
@@ -173,8 +175,8 @@ hhero.buildSelector = function(options)
             buildX = 0, -- 构建点X
             buildY = 0, -- 构建点Y
             buildDistance = 256, -- 构建距离，例如两个酒馆间，两个单位间
-            buildRowQty = 5, -- 每行构建的最大数目，例如一行最多4个酒馆
-            buildTavernQty = 10, -- 酒馆模式下，一个酒馆最多拥有几种单位
+            buildRowQty = 4, -- 每行构建的最大数目，例如一行最多4个酒馆
+            allowTavernQty = 10, -- 酒馆模式下，一个酒馆最多拥有几种单位
         }
     ]]
     if (#options.heroes <= 0) then
@@ -185,23 +187,23 @@ hhero.buildSelector = function(options)
     local buildX = options.buildX or 0
     local buildY = options.buildY or 0
     local buildDistance = options.buildDistance or 256
-    local buildRowQty = options.buildRowQty or 5
+    local buildRowQty = options.buildRowQty or 4
     if (during < 30) then
         during = 30
     end
     local totalRow = 1
-    local rowCurrentQty = 0
+    local currentRowQty = 0
     local x = buildX
     local y = buildY
     if (type == "doubleClick") then
         for _, heroId in ipairs(options.heroes) do
-            if (rowCurrentQty >= buildRowQty) then
-                rowCurrentQty = 0
+            if (currentRowQty >= buildRowQty) then
+                currentRowQty = 0
                 totalRow = totalRow + 1
                 x = buildX
                 y = y - buildDistance
             else
-                x = buildX + rowCurrentQty * buildDistance
+                x = buildX + currentRowQty * buildDistance
             end
             local u = hunit.create(
                 {
@@ -209,21 +211,95 @@ hhero.buildSelector = function(options)
                     unitId = heroId,
                     x = x,
                     y = y,
-                    during = during,
                     isInvulnerable = true,
                     isPause = true
                 }
             )
             hRuntime.hero[u] = {
-                selectorX = x,
-                selectorY = y,
+                selector = { x, y },
             }
+            table.insert(hhero.selectorClearPool, u)
             table.insert(hhero.selectorPool, u)
-            rowCurrentQty = rowCurrentQty + 1
+            currentRowQty = currentRowQty + 1
         end
     elseif (type == "tavern") then
-        local buildTavernQty = options.buildTavernQty or 10
+        local allowTavernQty = options.allowTavernQty or 10
+        local currentTavernQty = 0
+        local tavern
+        for _, heroId in ipairs(options.heroes) do
+            if (tavern == nil or currentTavernQty >= allowTavernQty) then
+                currentTavernQty = 0
+                if (currentRowQty >= buildRowQty) then
+                    currentRowQty = 0
+                    totalRow = totalRow + 1
+                    x = buildX
+                    y = y - buildDistance
+                else
+                    x = buildX + currentRowQty * buildDistance
+                end
+                tavern = hunit.create(
+                    {
+                        whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                        unitId = hslk_global.unit_hero_tavern,
+                        x = x,
+                        y = y,
+                    }
+                )
+                table.insert(hhero.selectorClearPool, tavern)
+                cj.SetUnitTypeSlots(tavern, allowTavernQty)
+                hevent.onUnitSell(tavern, function(evtData)
+                    local p = cj.GetOwningPlayer(evtData.buyingUnit)
+                    local soldUnit = evtData.soldUnit
+                    local soldUid = cj.GetUnitTypeId(soldUnit)
+                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                        echo("|cffffff80你已经选够~|r", p)
+                        hunit.del(soldUnit, 0)
+                        cj.AddUnitToStock(tavern, soldUid, 1, 1)
+                        return
+                    end
+                    cj.RemoveUnitFromStock(tavern, soldUid)
+                    hhero.setIsHero(soldUnit, true)
+                    table.insert(hhero.player_heroes[p], soldUnit)
+                    table.delete(string.id2char(soldUid), hhero.selectorPool)
+                    local tips = "您选择了 |cffffff80" .. cj.GetUnitName(soldUnit) .. "|r"
+                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                        echo(tips .. ",已挑选完毕", p)
+                    else
+                        echo(tips .. "还差 " .. (hhero.player_allow_qty[p] - #hhero.player_heroes[p]) .. " 个", p)
+                    end
+                    hRuntime.hero[soldUnit] = {
+                        selector = evtData.triggerUnit,
+                    }
+                end)
+                currentRowQty = currentRowQty + 1
+            end
+            currentTavernQty = currentTavernQty + 1
+            cj.AddUnitToStock(tavern, string.char2id(heroId), 1, 1)
+            table.insert(hhero.selectorPool, heroId)
+        end
     end
+    -- 视野token
+    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+        local p = cj.Player(i - 1)
+        local u = hunit.create(
+            {
+                whichPlayer = p,
+                unitId = hhero.build_token,
+                x = buildX + buildRowQty * buildDistance * 0.5,
+                y = buildY - math.floor(#options.heroes / buildRowQty) * buildDistance * 0.5,
+                isInvulnerable = true,
+                isPause = true
+            }
+        )
+        table.insert(hhero.selectorClearPool, u)
+    end
+    htime.setTimeout(during, function(t)
+        htime.delTimer(t)
+        for _, u in ipairs(hhero.selectorClearPool) do
+            hunit.del(u)
+        end
+        hhero.selectorClearPool = {}
+    end)
 end
 
 -- 构建选择单位给玩家（clickQty 击）

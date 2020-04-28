@@ -14,6 +14,7 @@ CONST_EVENT = {
     skillFinish = "skillFinish",
     itemUsed = "itemUsed",
     itemSell = "itemSell",
+    unitSell = "unitSell",
     itemDrop = "itemDrop",
     itemPawn = "itemPawn",
     itemGet = "itemGet",

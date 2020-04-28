@@ -145,12 +145,27 @@ hevent_default_actions = {
                 end
                 local qty = #hhero.player_heroes
                 for _, u in ipairs(hhero.player_heroes[p]) do
-                    hhero.removePlayerUnit(p, v, "click")
-                    if (hRuntime.hero[u].type == "doubleClick") then
-                        table.insert(hhero.randomSelectorPool, u)
-                    else
+                    if (type(hRuntime.hero[u].selector) == "userdata") then
                         table.insert(hhero.randomSelectorPool, hunit.getId(u))
+                        cj.AddUnitToStock(tavern, cj.GetUnitTypeId(u), 1, 1)
+                    else
+                        local new = hunit.create(
+                            {
+                                whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
+                                unitId = heroId,
+                                x = hRuntime.hero[u].selector[1],
+                                y = hRuntime.hero[u].selector[2],
+                                isInvulnerable = true,
+                                isPause = true
+                            }
+                        )
+                        hRuntime.hero[new] = {
+                            selector = { hRuntime.hero[u].selector[1], hRuntime.hero[u].selector[2] },
+                        }
+                        table.insert(hhero.selectorClearPool, new)
+                        table.insert(hhero.randomSelectorPool, new)
                     end
+                    hunit.del(u, 0)
                 end
                 hhero.player_heroes[p] = {}
                 echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
@@ -365,6 +380,17 @@ hevent_default_actions = {
                 }
             )
         end),
+        sell = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetSellingUnit(),
+                CONST_EVENT.unitSell,
+                {
+                    triggerUnit = cj.GetSellingUnit(),
+                    soldUnit = cj.GetSoldUnit(),
+                    buyingUnit = cj.GetBuyingUnit(),
+                }
+            )
+        end),
     },
     hero = {
         levelUp = cj.Condition(function()
@@ -482,7 +508,7 @@ hevent_default_actions = {
                                 local y = cj.GetItemX(it)
                                 hitem.del(it, 0)
                                 --这里是实现表面物品的关键
-                                hitem.create(
+                                it = hitem.create(
                                     {
                                         itemId = faceId,
                                         x = x,
@@ -498,6 +524,16 @@ hevent_default_actions = {
                     end
                 end
                 hitem.subAttribute(u, itId, charges)
+                --触发丢弃物品事件
+                hevent.triggerEvent(
+                    u,
+                    CONST_EVENT.itemDrop,
+                    {
+                        triggerUnit = u,
+                        triggerItem = it,
+                        targetUnit = cj.GetOrderTargetUnit(),
+                    }
+                )
             end
         end),
         pawn = cj.Condition(function()
@@ -511,6 +547,8 @@ hevent_default_actions = {
             local it = cj.GetSoldItem()
             local goldcost = hitem.getGoldCost(it)
             local lumbercost = hitem.getLumberCost(it)
+            local soldGold = 0
+            local soldLumber = 0
             hRuntime.clear(it)
             if (goldcost ~= 0 or lumbercost ~= 0) then
                 local p = cj.GetOwningPlayer(u)
@@ -522,16 +560,28 @@ hevent_default_actions = {
                         sellRatio = 1000
                     end
                     local tempRatio = sellRatio - 50.0
-                    local tempGold = math.floor(goldcost * tempRatio * 0.01)
-                    local tempLumber = math.floor(lumbercost * tempRatio * 0.01)
-                    if (goldcost ~= 0 and tempGold ~= 0) then
-                        hplayer.addGold(p, tempGold)
+                    soldGold = math.floor(goldcost * tempRatio * 0.01)
+                    soldLumber = math.floor(lumbercost * tempRatio * 0.01)
+                    if (goldcost ~= 0 and soldGold ~= 0) then
+                        hplayer.addGold(p, soldGold)
                     end
-                    if (lumbercost ~= 0 and tempLumber ~= 0) then
-                        hplayer.addLumber(p, tempLumber)
+                    if (lumbercost ~= 0 and soldLumber ~= 0) then
+                        hplayer.addLumber(p, soldLumber)
                     end
                 end
             end
+            --触发抵押物品事件
+            hevent.triggerEvent(
+                u,
+                CONST_EVENT.itemPawn,
+                {
+                    triggerUnit = u,
+                    soldItem = it,
+                    buyingUnit = cj.GetBuyingUnit(),
+                    soldGold = soldGold,
+                    soldLumber = soldLumber,
+                }
+            )
         end),
         use = cj.Condition(function()
             local u = cj.GetTriggerUnit()
@@ -560,6 +610,17 @@ hevent_default_actions = {
             if (perishable == true and hitem.getCharges(it) <= 0) then
                 hitem.del(it)
             end
+        end),
+        sell = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetSellingUnit(),
+                CONST_EVENT.itemSell,
+                {
+                    triggerUnit = cj.GetSellingUnit(),
+                    soldItem = cj.GetSoldItem(),
+                    buyingUnit = cj.GetBuyingUnit()
+                }
+            )
         end),
         destroy = cj.Condition(function()
             hevent.triggerEvent(

@@ -271,15 +271,6 @@ hevent.onItemUsed = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemUsed, callFunc)
 end
 
---- 出售物品(商店卖给玩家)
----@alias onItemSell fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
----@param whichUnit userdata
----@param callFunc onItemSell | "function(evtData) end"
----@return any
-hevent.onItemSell = function(whichUnit, callFunc)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.itemSell, callFunc)
-end
-
 --- 丢弃(传递)物品
 ---@alias onItemDrop fun(evtData: {triggerUnit:"丢弃单位",targetUnit:"获得单位（如果有）",triggerItem:"触发物品"}):void
 ---@param whichUnit userdata
@@ -298,12 +289,36 @@ hevent.onItemGet = function(whichUnit, callFunc)
 end
 
 --- 抵押物品（玩家把物品扔给商店）
----@alias onItemPawn fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
+---@alias onItemPawn fun(evtData: {triggerUnit:"触发单位",soldItem:"抵押物品",buyingUnit:"抵押商店",soldGold:"抵押获得黄金",soldLumber:"抵押获得木头"}):void
 ---@param whichUnit userdata
 ---@param callFunc onItemPawn | "function(evtData) end"
 ---@return any
 hevent.onItemPawn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemPawn, callFunc)
+end
+
+--- 出售物品(商店卖给玩家)
+---@alias onItemSell fun(evtData: {triggerUnit:"售卖单位",soldItem:"售卖物品",buyingUnit:"购买单位"}):void
+---@param whichUnit userdata
+---@param callFunc onItemSell | "function(evtData) end"
+---@return any
+hevent.onItemSell = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.item.sell, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SELL_ITEM)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.itemSell, callFunc)
+end
+
+--- 出售单位(商店卖给玩家)
+---@alias onUnitSell fun(evtData: {triggerUnit:"商店单位",soldUnit:"被售卖单位",buyingUnit:"购买单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUnitSell | "function(evtData) end"
+---@return any
+hevent.onUnitSell = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.sell, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SELL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.unitSell, callFunc)
 end
 
 --- 物品被破坏
