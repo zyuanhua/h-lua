@@ -222,6 +222,11 @@ hhero.buildSelector = function(options)
             table.insert(hhero.selectorPool, u)
             currentRowQty = currentRowQty + 1
         end
+        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+            hevent.onSelection(hplayer.players[i], 2, function(evtData)
+                
+            end)
+        end
     elseif (type == "tavern") then
         local allowTavernQty = options.allowTavernQty or 10
         local currentTavernQty = 0
