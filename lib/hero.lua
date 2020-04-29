@@ -266,6 +266,7 @@ hhero.buildSelector = function(options)
                     end
                     cj.RemoveUnitFromStock(tavern, soldUid)
                     hhero.setIsHero(soldUnit, true)
+                    cj.SetUnitPosition(soldUnit, hhero.bornX, hhero.bornY)
                     table.insert(hhero.player_heroes[p], soldUnit)
                     table.delete(string.id2char(soldUid), hhero.selectorPool)
                     local tips = "您选择了 |cffffff80" .. cj.GetUnitName(soldUnit) .. "|r"
@@ -282,6 +283,7 @@ hhero.buildSelector = function(options)
             end
             currentTavernQty = currentTavernQty + 1
             cj.AddUnitToStock(tavern, string.char2id(heroId), 1, 1)
+            hRuntime.hero[heroId] = tavern
             table.insert(hhero.selectorPool, heroId)
         end
     end

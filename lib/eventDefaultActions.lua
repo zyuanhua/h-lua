@@ -106,8 +106,9 @@ hevent_default_actions = {
                             }
                         )
                         hRuntime.hero[u] = {
-                            selector = "tavern",
+                            selector = hRuntime.hero[one],
                         }
+                        cj.RemoveUnitFromStock(hRuntime.hero[one], string.char2id(one))
                     else
                         table.delete(one, hhero.selectorClearPool)
                         hunit.setInvulnerable(u, false)
@@ -146,7 +147,7 @@ hevent_default_actions = {
                 for _, u in ipairs(hhero.player_heroes[p]) do
                     if (type(hRuntime.hero[u].selector) == "userdata") then
                         table.insert(hhero.selectorPool, hunit.getId(u))
-                        cj.AddUnitToStock(tavern, cj.GetUnitTypeId(u), 1, 1)
+                        cj.AddUnitToStock(hRuntime.hero[u].selector, cj.GetUnitTypeId(u), 1, 1)
                     else
                         local new = hunit.create(
                             {
