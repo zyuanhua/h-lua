@@ -1,9 +1,10 @@
--- 对话框
+---@class hdialog 对话框
 hdialog = {
     trigger = nil
 }
 
--- 自动根据key识别热键
+--- 自动根据key识别热键
+---@param key string
 hdialog.hotkey = function(key)
     if (key == nil) then
         return 0
@@ -16,46 +17,62 @@ hdialog.hotkey = function(key)
     end
 end
 
--- 创建一个新的对话框
-hdialog.create = function(whichPlayer, options, call)
+--- 删除一个对话框
+---@param whichDialog userdata
+hdialog.del = function(whichDialog)
+    hRuntime.clear(whichDialog)
+    cj.DialogClear(whichDialog)
+    cj.DialogDestroy(whichDialog)
+end
+
+--- 创建一个新的对话框
+---@param whichPlayer userdata
+---@param options table
+---@param action function
+---@return userdata
+hdialog.create = function(whichPlayer, options, action)
+    --[[
+        options = {
+            title = "h-lua对话框一个",
+            buttons = {
+                { value = "Q", label = "第1个" },
+                { value = "W", label = "第2个" },
+                { value = "D", label = "第3个" },
+            }
+        }
+    ]]
     local d = cj.DialogCreate()
     if (#options.buttons <= 0) then
         print_err("Dialog buttons is empty")
         return
     end
+    hRuntime.dialog[d] = {
+        action = action,
+        buttons = {}
+    }
     cj.DialogSetMessage(d, options.title)
     for i = 1, #options.buttons, 1 do
         if (type(options.buttons[i]) == "table") then
             local b = cj.DialogAddButton(d, options.buttons[i].label, hdialog.hotkey(options.buttons[i].value))
-            hRuntime.dialog[b] = options.buttons[i].value
+            table.insert(hRuntime.dialog[d].buttons, {
+                button = b,
+                value = options.buttons[i].value
+            })
         else
             local b = cj.DialogAddButton(d, options.buttons[i], hdialog.hotkey(options.buttons[i]))
-            hRuntime.dialog[b] = options.buttons[i]
+            table.insert(hRuntime.dialog[d].buttons, {
+                button = b,
+                value = options.buttons[i]
+            })
         end
     end
-    if (hdialog.trigger == nil) then
-        hdialog.trigger = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hdialog.trigger,
-            function()
-                local tri_d = cj.GetClickedDialog()
-                local tri_b = cj.GetClickedButton()
-                hRuntime.dialog[tri_d](hRuntime.dialog[tri_b])
-                hRuntime.dialog[tri_d] = nil
-                hRuntime.dialog[tri_b] = nil
-                cj.DialogClear(tri_d)
-                cj.DialogDestroy(tri_b)
-            end
-        )
-    end
-    hRuntime.dialog[d] = call
-    cj.TriggerRegisterDialogEvent(hdialog.trigger, d)
+    hevent.pool(d, hevent_default_actions.dialog.click, function(tgr)
+        cj.TriggerRegisterDialogEvent(tgr, d)
+    end)
     if (whichPlayer == nil) then
         for i = 1, bj_MAX_PLAYERS, 1 do
-            if
-                (cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER and
-                    cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING)
-             then
+            if (cj.GetPlayerController(hplayer.players[i]) == MAP_CONTROL_USER and
+                cj.GetPlayerSlotState(hplayer.players[i]) == PLAYER_SLOT_STATE_PLAYING) then
                 whichPlayer = hplayer.players[i]
                 break
             end

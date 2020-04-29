@@ -1,36 +1,51 @@
--- 敌人模块
+---@class henemy 敌人模块
 henemy = {
-    players = {}, -- 充当敌人的玩家
-    numbers = {}, -- 充当敌人的玩家调用次数，默认 0
-    numberLimit = 100, -- 充当敌人的玩家调用次数上限，达到就全体归0
+    -- 充当敌人的玩家
+    players = {},
+    --- 充当敌人的玩家调用次数，初始 0
+    numbers = {},
+    --- 充当敌人的玩家调用次数上限，达到就全体归0
+    numberLimit = 100,
+    --- 敌军名称
     name = "敌军",
+    --- 敌人颜色
     color = cj.ConvertPlayerColor(12),
+    --- 是否与玩家共享视野
     shareSight = false,
 }
 
--- 设置敌人的名称
+--- 设置敌人的名称
+---@param name string
 henemy.setName = function(name)
     henemy.name = name
 end
--- 获取敌人的名称
+
+--- 获取敌人的名称
+---@return string
 henemy.getName = function()
     return henemy.name
 end
 
--- 设置敌人的颜色
+--- 设置敌人的颜色
+---@param color userdata cj.ConvertPlayerColor(1~12)
 henemy.setColor = function(color)
     henemy.color = color
 end
--- 获取敌人的颜色
+
+--- 获取敌人的颜色
+---@return userdata
 henemy.getColor = function()
     return henemy.color
 end
 
--- 设置敌人是否共享视野
+--- 设置敌人是否共享视野
+---@param b boolean
 henemy.setShareSight = function(b)
     henemy.shareSight = b
 end
--- 获取敌人是否共享视野
+
+--- 获取敌人是否共享视野
+---@return boolean
 henemy.isShareSight = function()
     if (type(henemy.shareSight) == 'boolean') then
         return henemy.shareSight
@@ -38,7 +53,8 @@ henemy.isShareSight = function()
     return false
 end
 
--- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
+--- 将某个玩家位置设定为敌人，同时将他名字设定为全局的emptyName，颜色调节为黑色ConvertPlayerColor(12)
+---@param whichPlayer userdata
 henemy.setPlayer = function(whichPlayer)
     if (table.includes(whichPlayer, henemy.players)) then
         return
@@ -52,7 +68,8 @@ henemy.setPlayer = function(whichPlayer)
     cj.SetPlayerColor(whichPlayer, henemy.getColor())
 end
 
--- 将一组玩家位置设定为敌人
+--- 将一组玩家位置设定为敌人
+---@param playerArray table
 henemy.setPlayers = function(playerArray)
     if (#playerArray < 1) then
         return
@@ -62,8 +79,9 @@ henemy.setPlayers = function(playerArray)
     end
 end
 
--- 最优化自动获取一个敌人玩家
--- createQty 可设定创建单位数，更精准调用，默认权重 1
+--- 最优化自动获取一个敌人玩家
+---@param createQty number 可设定创建单位数，更精准调用，默认权重 1
+---@return userdata 敌人玩家
 henemy.getPlayer = function(createQty)
     local p
     if (createQty == nil) then
@@ -87,6 +105,7 @@ henemy.getPlayer = function(createQty)
     end
     return henemy.players[tagI]
 end
+
 --[[
     创建敌人单位/单位组
     @return 最后创建单位/单位组

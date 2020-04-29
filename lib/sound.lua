@@ -1,19 +1,25 @@
--- 声音
+---@class hsound 声音
 hsound = {}
 
--- 播放音效
+--- 播放音效
+---@param s userdata F5设定音效
 hsound.sound = function(s)
     if (s ~= nil) then
         cj.StartSound(s)
     end
 end
--- 播放音效对某个玩家
+--- 播放音效对某个玩家
+---@param s userdata
+---@param whichPlayer userdata
 hsound.sound2Player = function(s, whichPlayer)
     if (s ~= nil and cj.GetLocalPlayer() == whichPlayer) then
         cj.StartSound(s)
     end
 end
--- 绑定单位音效
+--- 绑定单位音效
+---@param s userdata
+---@param volumePercent number %
+---@param u userdata
 hsound.sound2Unit = function(s, volumePercent, u)
     if (s ~= nil) then
         cj.AttachSoundToUnit(s, u)
@@ -21,22 +27,30 @@ hsound.sound2Unit = function(s, volumePercent, u)
         cj.StartSound(s)
     end
 end
--- 绑定坐标音效
+--- 绑定坐标音效
+---@param s userdata
+---@param x number
+---@param y number
+---@param z number
 hsound.sound2XYZ = function(s, x, y, z)
     if (s ~= nil) then
         cj.SetSoundPosition(s, x, y, z)
     end
 end
--- 绑定点音效
+--- 绑定点音效
+---@param s userdata
+---@param loc userdata
 hsound.sound2Loc = function(s, loc)
     hsound.sound2XYZ(s, cj.GetLocationX(loc), cj.GetLocationY(loc), cj.GetLocationZ(loc))
 end
 
--- 播放BGM
--- 当whichPlayer为nil时代表对全员操作
--- 如果背景音乐无法循环播放，尝试格式工厂转wav再转回mp3
--- 由于音乐快速切换会卡顿，所以有3秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）
--- 延时是每个玩家独立时间，当切换的BGM为同一首时，切换不会进行
+--- 播放BGM
+--- 当whichPlayer为nil时代表对全员操作
+--- 如果背景音乐无法循环播放，尝试格式工厂转wav再转回mp3
+--- 由于音乐快速切换会卡顿，所以有3秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）
+--- 延时是每个玩家独立时间，当切换的BGM为同一首时，切换不会进行
+---@param musicFileName string
+---@param whichPlayer userdata|nil
 hsound.bgm = function(musicFileName, whichPlayer)
     if (musicFileName ~= nil and string.len(musicFileName) > 0) then
         if (whichPlayer ~= nil) then
@@ -54,7 +68,7 @@ hsound.bgm = function(musicFileName, whichPlayer)
                     htime.setTimeout(
                         hRuntime.sound[i].bgmDelay,
                         function(t)
-                                    htime.delTimer(t)
+                            htime.delTimer(t)
                             cj.PlayMusic(musicFileName)
                             hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay - 3.00
                         end
@@ -65,7 +79,8 @@ hsound.bgm = function(musicFileName, whichPlayer)
         end
     end
 end
--- 停止BGM
+--- 停止BGM
+---@param whichPlayer userdata|nil
 hsound.bgmStop = function(whichPlayer)
     if (whichPlayer == nil) then
         cj.StopMusic(true)

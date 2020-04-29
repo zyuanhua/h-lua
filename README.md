@@ -1,8 +1,7 @@
  * [github网址](https://github.com/hunzsig-warcraft3/h-lua)
  * [最佳实践：我塔非凡](https://github.com/hunzsig-warcraft3/w3x-my-tower)
- * [功能测试：崩溃压力](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
- * [功能测试：常规](https://github.com/hunzsig-warcraft3/w3x-test-event)
  * [功能测试：DZAPI](https://github.com/hunzsig-warcraft3/w3x-test-dzapi)
+ * [功能测试：崩溃压力](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
  * [极速上手文档](https://docs.qq.com/doc/DTUZZZWZzYVpyeW1o)
  * author hunzsig
  * QQ 325338043
@@ -33,10 +32,11 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── foundation - 基础文件
     │   ├── blizzard_b.lua - 暴雪B全局变量
     │   ├── blizzard_c.lua - 暴雪C全局变量
-    │   ├── blizzard_bj.lua - 实际无用，部分BJ函数，非要用bj就自行拓展编写载入
+    │   ├── blizzard_bj.lua - 暴雪部分BJ函数，实际无用，非要用bj就自行拓展编写载入
     │   ├── blizzard_def.lua - 实际无用，参考用途
     │   ├── color.lua - 颜色
     │   ├── debug.lua - 调试
+    │   ├── echo.lua - 游戏荧幕打印
     │   ├── f9.lua - 框架任务
     │   ├── json.lua - json库
     │   ├── math.lua - 计算库
@@ -62,7 +62,6 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── leaderBoard.lua 排行榜模块，用于简易构建排行榜
     │   ├── lightning.lua - 闪电链
     │   ├── mark.lua - 遮罩模块
-    │   ├── message.lua - 消息
     │   ├── multiBoard.lua - 多面板
     │   ├── player.lua - 玩家
     │   ├── quest.lua - 任务

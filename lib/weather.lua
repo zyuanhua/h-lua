@@ -15,14 +15,17 @@ hweather = {
     mistred = string.char2id("FDrh") --红雾
 }
 
---删除天气
-hweather.del = function(w, during)
-    if (during <= 0) then
+--- 删除天气
+---@param w userdata
+---@param delay number
+hweather.del = function(w, delay)
+    delay = delay or 0
+    if (delay <= 0) then
         cj.EnableWeatherEffect(w, false)
         cj.RemoveWeatherEffect(w)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 cj.EnableWeatherEffect(w, false)
@@ -31,40 +34,45 @@ hweather.del = function(w, during)
         )
     end
 end
---[[
-    创建天气
-    options = {
-        x=0,y=0, 坐标
-        w=0,h=0, 长宽
-        type=hweather.sun 天气类型
-        during=10 持续时间小于等于0=无限
-    }
-]]
-hweather.create = function(
-    bean)
-    if (bean.w == nil or bean.h == nil or bean.w <= 0 or bean.h <= 0) then
-        print_err("hweather.create -w-h")
-        return nil
-    end
-    if (bean.x == nil or bean.y == nil) then
-        print_err("hweather.create -x-y")
-        return nil
+
+--- 创建天气
+---@param bean table
+hweather.create = function(bean)
+    --[[
+        bean = {
+            x=0,y=0,w=0,h=0,
+            whichRect=nil,
+            type=hweather.sun 天气类型
+            during=0 默认持续时间小于等于0:无限
+        }
+    ]]
+    if (bean.whichRect == nil) then
+        if (bean.w == nil or bean.h == nil or bean.w <= 0 or bean.h <= 0) then
+            print_err("hweather.create -w-h")
+            return nil
+        end
+        if (bean.x == nil or bean.y == nil) then
+            print_err("hweather.create -x-y")
+            return nil
+        end
     end
     if (bean.type == nil) then
         print_err("hweather.create -type")
         return nil
     end
-    local r = hrect.createLoc(bean.x, bean.y, bean.w, bean.h)
-    local w = cj.AddWeatherEffect(r, bean.type)
+    bean.during = bean.during or 0
+    local w
+    if (bean.whichRect ~= nil) then
+        w = cj.AddWeatherEffect(bean.whichRect, bean.type)
+    else
+        local r = hrect.create(bean.x, bean.y, bean.w, bean.h)
+        w = cj.AddWeatherEffect(r, bean.type)
+        if (bean.during > 0) then
+            hrect.del(r, bean.during)
+        end
+    end
+    cj.EnableWeatherEffect(w, true)
     if (bean.during > 0) then
-        htime.setTimeout(
-            bean.during,
-            function(t)
-                htime.delTimer(t)
-                hrect.del(r, 0)
-                cj.EnableWeatherEffect(w, false)
-                cj.RemoveWeatherEffect(w)
-            end
-        )
+        hweather.del(w, bean.during)
     end
 end

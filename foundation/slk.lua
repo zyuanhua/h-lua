@@ -1,9 +1,8 @@
 local HSK = {
     COMMON = 99,
-    PLAYER_MAP_LEVEL_AWARD_MAX = 100,
-    PLAYER_MAP_LEVEL_AWARD = 101,
-    UNIT_TOKEN = 102,
-    UNIT_TOKEN_LEAP = 103,
+    UNIT_TOKEN = 101,
+    UNIT_TOKEN_LEAP = 102,
+    UNIT_TOKEN_ALERT_CIRCLE = 103,
     UNIT_TREE = 104,
     SKILL_ITEM_SEPARATE = 105,
     SKILL_BREAK = 106,
@@ -44,7 +43,6 @@ local HSK = {
 }
 
 hslk_global = {
-    dzapi_map_level_award = {},
     item_moment = {},
     env_model = {},
     skill_item_separate = 0,
@@ -54,11 +52,11 @@ hslk_global = {
     skill_shapeshift = {},
     unit_token = 0,
     unit_token_leap = 0,
+    unit_token_alert_circle = 0,
     unit_hero_tavern = 0, -- 酒馆id
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
     heroesLen = 0,
-    heroes = {},
     heroesKV = {},
     heroesItems = {},
     heroesItemsKV = {},
@@ -139,6 +137,8 @@ hslk_global.skill_hero_tavern_selection = cj.LoadInteger(cg.hash_hslk, HSK.COMMO
 hslk_global.unit_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TOKEN)
 -- unit_token_leap
 hslk_global.unit_token_leap = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TOKEN_LEAP)
+-- unit_token_alert_circle
+hslk_global.unit_token_alert_circle = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TOKEN_ALERT_CIRCLE)
 -- unit_tree
 hslk_global.unit_tree = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_TREE)
 -- unit_hero_tavern
@@ -147,12 +147,6 @@ hslk_global.unit_hero_tavern = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT
 hslk_global.unit_hero_tavern_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_HERO_TAVERN_TOKEN)
 -- unit_hero_death_token
 hslk_global.unit_hero_death_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_HERO_DEATH_TOKEN)
-
--- 地图等级奖励
-local qty = cj.LoadInteger(cg.hash_hslk, HSK.PLAYER_MAP_LEVEL_AWARD, -1)
-for i = 1, qty do
-    table.insert(hslk_global.dzapi_map_level_award, cj.LoadInteger(cg.hash_hslk, HSK.PLAYER_MAP_LEVEL_AWARD, i))
-end
 
 -- 瞬逝物系统
 qty = cj.LoadInteger(cg.hash_hslk, HSK.ITEM_MOMENT, -1)
@@ -197,7 +191,7 @@ end
 hslk_global.attr.avoid.add = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_ADD, 0)
 hslk_global.attr.avoid.sub = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AVOID_SUB, 0)
 -- 属性系统 视野
-local sightBase = {1, 2, 3, 4, 5}
+local sightBase = { 1, 2, 3, 4, 5 }
 local si = 1
 while (si <= 10000) do
     for _, v in ipairs(sightBase) do

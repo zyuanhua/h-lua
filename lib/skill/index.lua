@@ -10,6 +10,7 @@ hskill = {
     BUFF_INVULNERABLE = string.char2id("Avul")
 }
 
+---@private
 hskill.set = function(handle, key, val)
     if (handle == nil or key == nil) then
         return
@@ -20,6 +21,7 @@ hskill.set = function(handle, key, val)
     hRuntime.skill[handle][key] = val
 end
 
+---@private
 hskill.get = function(handle, key, defaultVal)
     if (handle == nil or key == nil) then
         return defaultVal
@@ -30,10 +32,13 @@ hskill.get = function(handle, key, defaultVal)
     return hRuntime.skill[handle][key]
 end
 
--- 添加技能
-hskill.add = function(whichUnit, ability_id, during)
-    local id = ability_id
-    if (type(ability_id) == "string") then
+--- 添加技能
+---@param whichUnit userdata
+---@param abilityId string|number
+---@param during number
+hskill.add = function(whichUnit, abilityId, during)
+    local id = abilityId
+    if (type(abilityId) == "string") then
         id = string.char2id(id)
     end
     if (during == nil or during <= 0) then
@@ -50,18 +55,21 @@ hskill.add = function(whichUnit, ability_id, during)
     end
 end
 
--- 删除技能
-hskill.del = function(whichUnit, ability_id, during)
-    local id = ability_id
-    if (type(ability_id) == "string") then
+--- 删除技能
+---@param whichUnit userdata
+---@param abilityId string|number
+---@param delay number
+hskill.del = function(whichUnit, abilityId, delay)
+    local id = abilityId
+    if (type(abilityId) == "string") then
         id = string.char2id(id)
     end
-    if (during == nil or during <= 0) then
+    if (delay == nil or delay <= 0) then
         cj.UnitRemoveAbility(whichUnit, id)
     else
         cj.UnitRemoveAbility(whichUnit, id)
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 cj.UnitAddAbility(whichUnit, id)
             end
@@ -69,20 +77,60 @@ hskill.del = function(whichUnit, ability_id, during)
     end
 end
 
--- 设置技能的永久使用性
-hskill.forever = function(whichUnit, ability_id)
-    local id = string.char2id(ability_id)
+--- 设置技能的永久使用性
+---@param whichUnit userdata
+---@param abilityId string|number
+hskill.forever = function(whichUnit, abilityId)
+    local id = abilityId
+    if (type(abilityId) == "string") then
+        id = string.char2id(id)
+    end
     cj.UnitMakeAbilityPermanent(whichUnit, true, id)
 end
 
--- 是否拥有技能
-hskill.has = function(whichUnit, ability_id)
-    if (whichUnit == nil or ability_id == nil) then
+--- 是否拥有技能
+---@param whichUnit userdata
+---@param abilityId string|number
+hskill.has = function(whichUnit, abilityId)
+    if (whichUnit == nil or abilityId == nil) then
         return false
     end
-    local id = string.char2id(ability_id)
+    local id = abilityId
+    if (type(abilityId) == "string") then
+        id = string.char2id(id)
+    end
     if (cj.GetUnitAbilityLevel(whichUnit, id) >= 1) then
         return true
     end
     return false
+end
+
+
+-- 初始化一些方法
+
+-- 沉默
+hRuntime.skill.silentTrigger = cj.CreateTrigger()
+cj.TriggerAddAction(
+    hRuntime.skill.silentTrigger,
+    function()
+        local u1 = cj.GetTriggerUnit()
+        if (table.includes(u1, hRuntime.skill.silentUnits)) then
+            cj.IssueImmediateOrder(u1, "stop")
+        end
+    end
+)
+-- 缴械
+hRuntime.skill.unarmTrigger = cj.CreateTrigger()
+cj.TriggerAddAction(
+    hRuntime.skill.unarmTrigger,
+    function()
+        local u1 = cj.GetAttacker()
+        if (table.includes(u1, hRuntime.skill.unarmUnits) == true) then
+            cj.IssueImmediateOrder(u1, "stop")
+        end
+    end
+)
+for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+    cj.TriggerRegisterPlayerUnitEvent(hRuntime.skill.silentTrigger, cj.Player(i - 1), EVENT_PLAYER_UNIT_SPELL_CHANNEL, nil)
+    cj.TriggerRegisterPlayerUnitEvent(hRuntime.skill.unarmTrigger, cj.Player(i - 1), EVENT_PLAYER_UNIT_ATTACKED, nil)
 end

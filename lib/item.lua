@@ -15,17 +15,49 @@ hitem = {
     },
 }
 
--- 删除物品，可延时
-hitem.del = function(it, during)
-    during = during or 0
-    if (during <= 0 and it ~= nil) then
+-- 单位注册物品
+---@protected
+hitem.register = function(u)
+    if (hRuntime.unit[u] == nil) then
+        -- 未注册unit直接跳过
+        return
+    end
+    -- 拾取
+    hevent.pool(u, hevent_default_actions.item.pickup, EVENT_UNIT_PICKUP_ITEM)
+    -- 丢弃
+    hevent.pool(u, hevent_default_actions.item.drop, EVENT_UNIT_DROP_ITEM)
+    -- 抵押
+    hevent.pool(u, hevent_default_actions.item.pawn, EVENT_UNIT_PAWN_ITEM)
+    -- 使用
+    hevent.pool(u, hevent_default_actions.item.use, EVENT_UNIT_USE_ITEM)
+end
+
+--- 令单位的物品在runtime内存中释放
+---@protected
+hitem.clearUnitCache = function(whichUnit)
+    if (hRuntime.unit[whichUnit] ~= nil) then
+        for i = 0, 5, 1 do
+            local it = cj.UnitItemInSlot(whichUnit, i)
+            if (it ~= nil) then
+                hRuntime.clear(it)
+            end
+        end
+    end
+end
+
+--- 删除物品，可延时
+---@param it userdata
+---@param delay number
+hitem.del = function(it, delay)
+    delay = delay or 0
+    if (delay <= 0 and it ~= nil) then
         hitem.setPositionType(it, nil)
         cj.SetWidgetLife(it, 1.00)
         cj.RemoveItem(it)
         hRuntime.clear(it)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 hitem.setPositionType(it, nil)
@@ -37,24 +69,33 @@ hitem.del = function(it, during)
     end
 end
 
--- 获取物品ID字符串
+--- 获取物品ID字符串
+---@param it userdata
+---@return string
 hitem.getId = function(it)
     return string.id2char(cj.GetItemTypeId(it))
 end
 
--- 获取物品名称
+--- 获取物品名称
+---@param it userdata
+---@return string
 hitem.getName = function(it)
     return cj.GetItemName(it)
 end
 
 -- 获取物品位置类型
+---@param it userdata
+---@return string
 hitem.getPositionType = function(it)
     if (hRuntime.item[it] == nil) then
         return
     end
     return hRuntime.item[it].positionType
 end
+
 -- 设置物品位置类型
+---@param it userdata
+---@param type string
 hitem.setPositionType = function(it, type)
     if (type == nil) then
         table.delete(it, hRuntime.itemPickPool)
@@ -70,7 +111,9 @@ hitem.setPositionType = function(it, type)
     end
 end
 
--- 获取物品SLK数据集
+--- 获取物品SLK数据集,需要注册
+---@param itOrId userdata|string|number
+---@return any
 hitem.getSlk = function(itOrId)
     local slk
     local itId
@@ -89,7 +132,9 @@ hitem.getSlk = function(itOrId)
     end
     return slk
 end
--- 获取物品的图标路径
+-- 获取物品的图标路径,需要注册
+---@param itOrId userdata|string|number
+---@return string
 hitem.getArt = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -98,7 +143,9 @@ hitem.getArt = function(itOrId)
         return ""
     end
 end
--- 获取物品的模型路径
+--- 获取物品的模型路径,需要注册
+---@param itOrId userdata|string|number
+---@return string
 hitem.getFile = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -107,7 +154,9 @@ hitem.getFile = function(itOrId)
         return ""
     end
 end
--- 获取物品的分类
+--- 获取物品的分类,需要注册
+---@param itOrId userdata|string|number
+---@return string
 hitem.getClass = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -116,25 +165,31 @@ hitem.getClass = function(itOrId)
         return "Permanent"
     end
 end
--- 获取物品所需的金币
+--- 获取物品所需的金币,需要注册
+---@param itOrId userdata|string|number
+---@return number
 hitem.getGoldCost = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.goldcost
+        return math.floor(slk.goldcost)
     else
         return 0
     end
 end
--- 获取物品所需的木头
+--- 获取物品所需的木头,需要注册
+---@param itOrId userdata|string|number
+---@return number
 hitem.getLumberCost = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.lumbercost
+        return math.floor(slk.lumbercost)
     else
         return 0
     end
 end
--- 获取物品是否可以使用
+--- 获取物品是否可以使用,需要注册
+---@param itOrId userdata|string|number
+---@return boolean
 hitem.getIsUsable = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -143,7 +198,9 @@ hitem.getIsUsable = function(itOrId)
         return false
     end
 end
--- 获取物品是否自动使用
+--- 获取物品是否自动使用,需要注册
+---@param itOrId userdata|string|number
+---@return boolean
 hitem.getIsPowerUp = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -152,7 +209,9 @@ hitem.getIsPowerUp = function(itOrId)
         return false
     end
 end
--- 获取物品是否使用后自动消失
+--- 获取物品是否使用后自动消失,需要注册
+---@param itOrId userdata|string|number
+---@return boolean
 hitem.getIsPerishable = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -161,7 +220,9 @@ hitem.getIsPerishable = function(itOrId)
         return nil
     end
 end
--- 获取物品是否可卖
+--- 获取物品是否可卖,需要注册
+---@param itOrId userdata|string|number
+---@return boolean
 hitem.getIsSellAble = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -170,7 +231,9 @@ hitem.getIsSellAble = function(itOrId)
         return false
     end
 end
--- 获取物品的影子ID（实现神符满格购物的关键）
+--- 获取物品的影子ID（实现神符满格购物的关键）,需要注册
+---@param itOrId userdata|string|number
+---@return string
 hitem.getShadowId = function(itOrId)
     local itId
     if (type(itOrId == "string")) then
@@ -180,7 +243,9 @@ hitem.getShadowId = function(itOrId)
     end
     return hslk_global.itemsShadowKV[itId]
 end
--- 获取物品的真实ID（实现神符满格购物的关键）
+-- 获取物品的真实ID（实现神符满格购物的关键）,需要注册
+---@param itOrId userdata|string|number
+---@return string
 hitem.getFaceId = function(itOrId)
     local itId
     if (type(itOrId == "string")) then
@@ -190,7 +255,9 @@ hitem.getFaceId = function(itOrId)
     end
     return hslk_global.itemsFaceKV[itId]
 end
--- 获取物品的回调函数
+--- 获取物品的回调函数,需要注册
+---@param itOrId userdata|string|number
+---@return function
 hitem.getTriggerCall = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -199,7 +266,9 @@ hitem.getTriggerCall = function(itOrId)
         return nil
     end
 end
--- 获取物品的最大叠加数(默认是1个,此系统以使用次数作为数量使用)
+--- 获取物品的最大叠加数(默认是1个,此系统以使用次数作为数量使用),需要注册
+---@param itOrId userdata|string|number
+---@return number
 hitem.getOverlie = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -208,7 +277,9 @@ hitem.getOverlie = function(itOrId)
         return 1
     end
 end
--- 获取物品的重量（默认为0）
+--- 获取物品的重量（默认为0）,需要注册
+---@param itOrId userdata|string|number
+---@return number
 hitem.getWeight = function(itOrId, charges)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -221,7 +292,9 @@ hitem.getWeight = function(itOrId, charges)
         return 0
     end
 end
--- 获取物品的属性加成
+--- 获取物品的属性加成,需要注册
+---@param itOrId userdata|string|number
+---@return table
 hitem.getAttribute = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
@@ -231,7 +304,9 @@ hitem.getAttribute = function(itOrId)
     end
 end
 
--- 获取物品的使用次数
+--- 获取物品的使用次数
+---@param it userdata
+---@return number
 hitem.getCharges = function(it)
     if (it ~= nil) then
         return cj.GetItemCharges(it)
@@ -239,16 +314,24 @@ hitem.getCharges = function(it)
         return 0
     end
 end
--- 设置物品的使用次数
+--- 设置物品的使用次数
+---@param it userdata
+---@param charges number
 hitem.setCharges = function(it, charges)
     if (it ~= nil and charges > 0) then
         cj.SetItemCharges(it, charges)
     end
 end
--- 获取某单位身上某种物品的使用总次数
+--- 获取某单位身上某种物品的使用总次数
+---@param itemId string|number
+---@param whichUnit userdata
+---@return number
 hitem.getTotalCharges = function(itemId, whichUnit)
     local charges = 0
     local it
+    if (type(itemId) == "string") then
+        itemId = string.char2id(itemId)
+    end
     for i = 0, 5, 1 do
         it = cj.UnitItemInSlot(whichUnit, i)
         if (it ~= nil and cj.GetItemTypeId(it) == itemId) then
@@ -258,7 +341,9 @@ hitem.getTotalCharges = function(itemId, whichUnit)
     return charges
 end
 
--- 获取某单位身上空格物品栏数量
+--- 获取某单位身上空格物品栏数量
+---@param whichUnit userdata
+---@return number
 hitem.getEmptySlot = function(whichUnit)
     local qty = cj.UnitInventorySize(whichUnit)
     local it
@@ -271,17 +356,19 @@ hitem.getEmptySlot = function(whichUnit)
     return qty
 end
 
--- 使得单位拥有拆分物品的技能
+--- 使得单位拥有拆分物品的技能
+---@param whichUnit userdata
 hitem.setAllowSeparate = function(whichUnit)
     -- 物品拆分
     cj.UnitAddAbility(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.UnitMakeAbilityPermanent(whichUnit, true, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.SetUnitAbilityLevel(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE, 1)
     -- 事件池注册
-    hevent.pool(whichUnit, 'separate', hevent.POOL_ACTIONS.separate, EVENT_UNIT_SPELL_EFFECT)
+    hevent.pool(whichUnit, hevent_default_actions.item.separate, EVENT_UNIT_SPELL_EFFECT)
 end
 
--- 计算单位获得物品后的属性
+--- 计算单位获得物品后的属性
+---@private
 hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
     if (isAdd == nil) then
         isAdd = true
@@ -309,7 +396,7 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
                 nv = string.implode(",", v)
             end
             local nvs = {}
-            for i = 1, charges do
+            for _ = 1, charges do
                 table.insert(nvs, nv)
             end
             tempDiff = opt .. string.implode(",", nvs)
@@ -332,7 +419,7 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
             end
         elseif (typev == "table") then
             local tempTable = {}
-            for i = 1, charges do
+            for _ = 1, charges do
                 for _, vv in ipairs(v) do
                     table.insert(tempTable, vv)
                 end
@@ -388,11 +475,13 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
         end
     end
 end
--- 附加单位获得物品后的属性
+--- 附加单位获得物品后的属性
+---@protected
 hitem.addAttribute = function(whichUnit, itId, charges)
     hitem.caleAttribute(true, whichUnit, itId, charges)
 end
--- 削减单位获得物品后的属性
+--- 削减单位获得物品后的属性
+---@protected
 hitem.subAttribute = function(whichUnit, itId, charges)
     hitem.caleAttribute(false, whichUnit, itId, charges)
 end
@@ -403,6 +492,7 @@ end
  3 物品数量是否支持合成
  4 根据情况执行原物品叠加、合成等操作
 ]]
+---@private
 hitem.detector = function(whichUnit, it)
     if (whichUnit == nil or it == nil) then
         print_err("detector params nil")
@@ -598,7 +688,9 @@ hitem.create = function(bean)
     return it
 end
 
--- 使一个单位的所有物品给另一个单位
+--- 使一个单位的所有物品给另一个单位
+---@param origin userdata
+---@param target userdata
 hitem.give = function(origin, target)
     if (origin == nil or target == nil) then
         return
@@ -618,7 +710,9 @@ hitem.give = function(origin, target)
     end
 end
 
--- 操作物品给一个单位
+--- 操作物品给一个单位
+---@param it userdata
+---@param targetUnit userdata
 hitem.pick = function(it, targetUnit)
     if (it == nil or targetUnit == nil) then
         return
@@ -626,39 +720,9 @@ hitem.pick = function(it, targetUnit)
     cj.UnitAddItem(targetUnit, it)
 end
 
--- 一键拾取区域(x,y)长宽(w,h)
-hitem.pickRect = function(u, x, y, w, h)
-    for k = #hRuntime.itemPickPool, 1, -1 do
-        local xi = cj.GetItemX(hRuntime.itemPickPool[k])
-        local yi = cj.GetItemY(hRuntime.itemPickPool[k])
-        if (hitem.getEmptySlot(u) > 0) then
-            local d = math.getDistanceBetweenXY(x, y, xi, yi)
-            local deg = math.getDegBetweenXY(x, y, xi, yi)
-            local distance = math.getMaxDistanceInRect(w, h, deg)
-            if (d <= distance) then
-                hitem.pick(hRuntime.itemPickPool[k], u)
-            end
-        else
-            break
-        end
-    end
-end
-
--- 一键拾取圆(x,y)半径(r)
-hitem.pickRound = function(u, x, y, r)
-    for k = #hRuntime.itemPickPool, 1, -1 do
-        local xi = cj.GetItemX(hRuntime.itemPickPool[k])
-        local yi = cj.GetItemY(hRuntime.itemPickPool[k])
-        local d = math.getDistanceBetweenXY(x, y, xi, yi)
-        if (d <= r and hitem.getEmptySlot(u) > 0) then
-            hitem.pick(hRuntime.itemPickPool[k], u)
-        else
-            break
-        end
-    end
-end
-
--- 复制一个单位的所有物品给另一个单位
+--- 复制一个单位的所有物品给另一个单位
+---@param origin userdata
+---@param target userdata
 hitem.copy = function(origin, target)
     if (origin == nil or target == nil) then
         return
@@ -678,7 +742,8 @@ hitem.copy = function(origin, target)
     end
 end
 
--- 令一个单位把物品全部仍在地上
+--- 令一个单位把物品全部仍在地上
+---@param origin userdata
 hitem.drop = function(origin)
     if (origin == nil) then
         return
@@ -699,30 +764,43 @@ hitem.drop = function(origin)
     end
 end
 
--- 单位注册物品
-hitem.register = function(u)
-    if (hRuntime.unit[u] == nil) then
-        -- 未注册unit直接跳过
-        return
+--- 一键拾取区域(x,y)长宽(w,h)
+---@param u userdata
+---@param x number
+---@param y number
+---@param w number
+---@param h number
+hitem.pickRect = function(u, x, y, w, h)
+    for k = #hRuntime.itemPickPool, 1, -1 do
+        local xi = cj.GetItemX(hRuntime.itemPickPool[k])
+        local yi = cj.GetItemY(hRuntime.itemPickPool[k])
+        if (hitem.getEmptySlot(u) > 0) then
+            local d = math.getDistanceBetweenXY(x, y, xi, yi)
+            local deg = math.getDegBetweenXY(x, y, xi, yi)
+            local distance = math.getMaxDistanceInRect(w, h, deg)
+            if (d <= distance) then
+                hitem.pick(hRuntime.itemPickPool[k], u)
+            end
+        else
+            break
+        end
     end
-    -- 拾取
-    hevent.pool(u, 'pickup', hevent.POOL_ACTIONS.pickup, EVENT_UNIT_PICKUP_ITEM)
-    -- 丢弃
-    hevent.pool(u, 'drop', hevent.POOL_ACTIONS.drop, EVENT_UNIT_DROP_ITEM)
-    -- 抵押
-    hevent.pool(u, 'pawn', hevent.POOL_ACTIONS.pawn, EVENT_UNIT_PAWN_ITEM)
-    -- 使用
-    hevent.pool(u, 'use', hevent.POOL_ACTIONS.use, EVENT_UNIT_USE_ITEM)
 end
 
---令单位的物品在runtime内存中释放
-hitem.clearUnitCache = function(whichUnit)
-    if (hRuntime.unit[whichUnit] ~= nil) then
-        for i = 0, 5, 1 do
-            local it = cj.UnitItemInSlot(whichUnit, i)
-            if (it ~= nil) then
-                hRuntime.clear(it)
-            end
+-- 一键拾取圆(x,y)半径(r)
+---@param u userdata
+---@param x number
+---@param y number
+---@param r number
+hitem.pickRound = function(u, x, y, r)
+    for k = #hRuntime.itemPickPool, 1, -1 do
+        local xi = cj.GetItemX(hRuntime.itemPickPool[k])
+        local yi = cj.GetItemY(hRuntime.itemPickPool[k])
+        local d = math.getDistanceBetweenXY(x, y, xi, yi)
+        if (d <= r and hitem.getEmptySlot(u) > 0) then
+            hitem.pick(hRuntime.itemPickPool[k], u)
+        else
+            break
         end
     end
 end

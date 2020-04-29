@@ -1,18 +1,20 @@
--- 漂浮字
+---@class htextTag 漂浮字
 htextTag = {
     qty = 0,
     limit = 90
 }
 
--- 删除漂浮字
-htextTag.del = function(ttg, during)
-    if (during == nil or during <= 0) then
+--- 删除漂浮字
+---@param ttg userdata
+---@param delay number
+htextTag.del = function(ttg, delay)
+    if (delay == nil or delay <= 0) then
         htextTag.qty = htextTag.qty - 1
         hRuntime.clear(ttg)
         cj.DestroyTextTag(ttg)
     else
         htime.setTimeout(
-            during,
+            delay,
             function(t)
                 htime.delTimer(t)
                 htextTag.qty = htextTag.qty - 1
@@ -22,10 +24,13 @@ htextTag.del = function(ttg, during)
         )
     end
 end
--- 创建漂浮字
--- 设置during为0则永久显示
--- opacity设置为0则不可见(0.0~1.0)
--- color为6位颜色代码 http://www.atool.org/colorpicker.php
+--- 创建漂浮字
+---@param msg string
+---@param size number
+---@param color string hex 6位颜色代码 http://www.atool.org/colorpicker.php
+---@param opacity number 为0则不可见(0.0~1.0)
+---@param during number 设置during为0则永久显示
+---@return userdata
 htextTag.create = function(msg, size, color, opacity, during)
     if (string.len(msg) <= 0 or during < 0) then
         return
@@ -65,21 +70,54 @@ htextTag.create = function(msg, size, color, opacity, during)
     end
     return ttg
 end
--- 漂浮文字 - 默认 (在x,y)
+--- 漂浮文字 - 默认 (在x,y)
+---@param x number
+---@param y number
+---@param msg string
+---@param size number
+---@param color string hex 6位颜色代码 http://www.atool.org/colorpicker.php
+---@param opacity number 为0则不可见(0.0~1.0)
+---@param during number 设置during为0则永久显示
+---@param zOffset number z轴高度偏移量
+---@return userdata
 htextTag.create2XY = function(x, y, msg, size, color, opacity, during, zOffset)
     local ttg = htextTag.create(msg, size, color, opacity, during)
     cj.SetTextTagPos(ttg, x - cj.StringLength(msg) * size * 0.5, y, zOffset)
     return ttg
 end
--- 漂浮文字 - 默认 (在某单位头上)
+--- 漂浮文字 - 默认 (在某单位头上)
+---@param u userdata
+---@param msg string
+---@param size number
+---@param color string hex 6位颜色代码 http://www.atool.org/colorpicker.php
+---@param opacity number 为0则不可见(0.0~1.0)
+---@param during number 设置during为0则永久显示
+---@param zOffset number z轴高度偏移量
+---@return userdata
 htextTag.create2Unit = function(u, msg, size, color, opacity, during, zOffset)
     return htextTag.create2XY(cj.GetUnitX(u), cj.GetUnitY(u), msg, size, color, opacity, during, zOffset)
 end
--- 漂浮文字 - 默认 (在某点上)
+--- 漂浮文字 - 默认 (在某点上)
+---@param loc userdata
+---@param msg string
+---@param size number
+---@param color string hex 6位颜色代码 http://www.atool.org/colorpicker.php
+---@param opacity number 为0则不可见(0.0~1.0)
+---@param during number 设置during为0则永久显示
+---@param zOffset number z轴高度偏移量
+---@return userdata
 htextTag.create2Loc = function(loc, msg, size, color, opacity, during, zOffset)
-    return htextTag.create2XY(cj.GetLocationX(u), cj.GetLocationY(u), msg, size, color, opacity, during, zOffset)
+    return htextTag.create2XY(cj.GetLocationX(loc), cj.GetLocationY(loc), msg, size, color, opacity, during, zOffset)
 end
--- 漂浮文字 - 默认 (绑定在某单位头上，跟随移动)
+--- 漂浮文字 - 默认 (绑定在某单位头上，跟随移动)
+---@param u userdata
+---@param msg string
+---@param size number
+---@param color string hex 6位颜色代码 http://www.atool.org/colorpicker.php
+---@param opacity number 为0则不可见(0.0~1.0)
+---@param during number 设置during为0则永久显示
+---@param zOffset number z轴高度偏移量
+---@return userdata
 htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffset)
     local ttg = htextTag.create2Unit(u, msg, size, color, opacity, during, zOffset)
     if (ttg == nil) then
@@ -116,53 +154,67 @@ htextTag.createFollowUnit = function(u, msg, size, color, opacity, during, zOffs
     )
     return ttg
 end
--- 获取漂浮字大小
+--- 获取漂浮字大小
+---@param ttg userdata
+---@return number
 htextTag.getSize = function(ttg)
     if (hRuntime.textTag[ttg] == nil) then
         return
     end
     return hRuntime.textTag[ttg].size
 end
--- 获取漂浮字颜色
+--- 获取漂浮字颜色
+---@param ttg userdata
+---@return string
 htextTag.getColor = function(ttg)
     if (hRuntime.textTag[ttg] == nil) then
         return
     end
     return hRuntime.textTag[ttg].color
 end
--- 获取漂浮字内容
+--- 获取漂浮字内容
+---@param ttg userdata
+---@return string
 htextTag.getMsg = function(ttg)
     if (hRuntime.textTag[ttg] == nil) then
         return
     end
     return hRuntime.textTag[ttg].msg
 end
--- 获取漂浮字透明度
+--- 获取漂浮字透明度
+---@param ttg userdata
+---@return number
 htextTag.getOpacity = function(ttg)
     if (hRuntime.textTag[ttg] == nil) then
         return
     end
     return hRuntime.textTag[ttg].opacity
 end
--- 获取漂浮字持续时间
+--- 获取漂浮字持续时间
+---@param ttg userdata
+---@return number
 htextTag.getDuring = function(ttg)
     if (hRuntime.textTag[ttg] == nil) then
         return
     end
     return hRuntime.textTag[ttg].during
 end
--- 风格特效
-htextTag.style = function(ttg, showtype, xspeed, yspeed)
+--- 风格特效
+---@param ttg userdata
+---@param showType string | "'scale'" | "'shrink'" | "'toggle'"
+---@param xSpeed number
+---@param ySpeed number
+htextTag.style = function(ttg, showType, xSpeed, ySpeed)
     if (ttg == nil) then
         return
     end
-    cj.SetTextTagVelocity(ttg, xspeed, yspeed)
+    cj.SetTextTagVelocity(ttg, xSpeed, ySpeed)
     local size = htextTag.getSize(ttg)
     local tend = htextTag.getDuring(ttg)
     if (tend <= 0) then
         tend = 0.5
     end
-    if (showtype == "scale") then
+    if (showType == "scale") then
         -- 放大
         local tnow = 0
         htime.setInterval(
@@ -177,7 +229,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
                 cj.SetTextTagText(ttg, msg, (size * (1 + tnow * 0.5 / tend)) * 0.023 / 10)
             end
         )
-    elseif (showtype == "shrink") then
+    elseif (showType == "shrink") then
         -- 缩小
         local tnow = 0
         htime.setInterval(
@@ -192,7 +244,7 @@ htextTag.style = function(ttg, showtype, xspeed, yspeed)
                 cj.SetTextTagText(ttg, msg, (size * (1 - tnow * 0.5 / tend)) * 0.023 / 10)
             end
         )
-    elseif (showtype == "toggle") then
+    elseif (showType == "toggle") then
         -- 放大再缩小
         local tnow = 0
         local tend1 = tend * 0.2

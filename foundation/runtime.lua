@@ -20,9 +20,12 @@ hRuntime = {
     env = {},
     camera = {},
     event = {
+        -- 核心注册
         register = {},
-        trigger = {},
+        -- 池
         pool = {},
+        -- 额外的触发管理
+        trigger = {},
     },
     textTag = {},
     rect = {},
@@ -30,7 +33,12 @@ hRuntime = {
     unit = {},
     hero = {},
     heroBuildSelection = {},
-    skill = {},
+    skill = {
+        silentUnits = {},
+        silentTrigger = nil,
+        unarmUnits = {},
+        unarmTrigger = nil,
+    },
     attribute = {},
     attributeDiff = {},
     attributeDamaging = {},
@@ -62,6 +70,7 @@ hRuntime = {
     multiBoard = {},
     dialog = {}
 }
+
 hRuntime.clear = function(handle)
     if (handle == nil) then
         return
@@ -85,6 +94,15 @@ hRuntime.clear = function(handle)
         hRuntime.event.register[handle] = nil
     end
     if (hRuntime.event.trigger[handle] ~= nil) then
+        local keys = {
+            CONST_EVENT.enterUnitRange,
+        }
+        for _, s in ipairs(keys) do
+            if (hRuntime.event.trigger[handle][s] ~= nil) then
+                cj.DisableTrigger(hRuntime.event.trigger[handle][s])
+                cj.DestroyTrigger(hRuntime.event.trigger[handle][s])
+            end
+        end
         hRuntime.event.trigger[handle] = nil
     end
     if (hRuntime.event.pool[handle] ~= nil) then
@@ -131,6 +149,12 @@ hRuntime.clear = function(handle)
     end
     if (hRuntime.skill[handle] ~= nil) then
         hRuntime.skill[handle] = nil
+        if (table.includes(handle, hRuntime.skill.silentUnits)) then
+            table.delete(handle, hRuntime.skill.silentUnits)
+        end
+        if (table.includes(handle, hRuntime.skill.unarmUnits)) then
+            table.delete(handle, hRuntime.skill.unarmUnits)
+        end
     end
     if (hRuntime.attribute[handle] ~= nil) then
         hRuntime.attribute[handle] = nil
@@ -149,6 +173,9 @@ hRuntime.clear = function(handle)
     end
     if (hRuntime.multiBoard[handle] ~= nil) then
         hRuntime.multiBoard[handle] = nil
+    end
+    if (hRuntime.dialog[handle] ~= nil) then
+        hRuntime.dialog[handle] = nil
     end
 end
 

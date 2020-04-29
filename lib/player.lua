@@ -1,29 +1,30 @@
+---@class hplayer
 hplayer = {
-    --用户玩家
+    --- 用户玩家
     players = {},
-    --中立敌对
+    --- 中立敌对
     player_aggressive = cj.Player(PLAYER_NEUTRAL_AGGRESSIVE),
-    --中立受害
+    --- 中立受害
     player_victim = cj.Player(bj_PLAYER_NEUTRAL_VICTIM),
-    --中立特殊
+    --- 中立特殊
     player_extra = cj.Player(bj_PLAYER_NEUTRAL_EXTRA),
-    --中立被动
+    --- 中立被动
     player_passive = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-    --玩家状态
+    --- 玩家状态
     player_status = {
         none = "无参与",
         gaming = "游戏中",
         leave = "已离开"
     },
-    --用户玩家最大数量
+    --- 用户玩家最大数量
     qty_max = 12,
-    --当前玩家数量
+    --- 当前玩家数量
     qty_current = 0,
-    --换算比率，默认：1000000金 -> 1木
+    --- 换算比率，默认：1000000金 -> 1木
     convert_ratio = 1000000
 }
 
---set
+---@private
 hplayer.set = function(whichPlayer, key, value)
     if (whichPlayer == nil) then
         print_stack()
@@ -36,7 +37,7 @@ hplayer.set = function(whichPlayer, key, value)
     hRuntime.player[index][key] = value
 end
 
---get
+---@private
 hplayer.get = function(whichPlayer, key, default)
     if (whichPlayer == nil) then
         print_stack()
@@ -49,16 +50,7 @@ hplayer.get = function(whichPlayer, key, default)
     return hRuntime.player[index][key] or default
 end
 
--- 循环玩家
-hplayer.loop = function(call)
-    if (call == nil) then
-        return
-    end
-    for i = 1, hplayer.qty_max, 1 do
-        call(hplayer.players[i], i)
-    end
-end
-
+---@private
 hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     if delta > 0 then
         if whichPlayerState == PLAYER_STATE_RESOURCE_GOLD then
@@ -78,56 +70,97 @@ hplayer.adjustPlayerState = function(delta, whichPlayer, whichPlayerState)
     cj.SetPlayerState(whichPlayer, whichPlayerState, cj.GetPlayerState(whichPlayer, whichPlayerState) + delta)
 end
 
+---@private
 hplayer.setPlayerState = function(whichPlayer, whichPlayerState, value)
     local oldValue = cj.GetPlayerState(whichPlayer, whichPlayerState)
     hplayer.adjustPlayerState(value - oldValue, whichPlayer, whichPlayerState)
 end
 
--- 设置换算比率
+--- 循环玩家
+---@alias Handler fun(whichPlayer: userdata, playerIndex: number):void
+---@param call Handler | "function(whichPlayer, playerIndex) end"
+hplayer.loop = function(call)
+    if (call == nil) then
+        return
+    end
+    for i = 1, hplayer.qty_max, 1 do
+        call(hplayer.players[i], i)
+    end
+end
+
+--- 设置换算比率
+---@param ratio number (%)
 hplayer.setConvertRatio = function(ratio)
     hplayer.convert_ratio = ratio
 end
--- 获取换算比率
+
+--- 获取换算比率
+---@return number (%)
 hplayer.getConvertRatio = function()
     return hplayer.convert_ratio
 end
--- 获取玩家ID，例如：玩家一等于1，玩家三等于3
+
+--- 获取玩家ID
+--- 例如：玩家一等于1，玩家三等于3
+---@param whichPlayer userdata
+---@return number
 hplayer.index = function(whichPlayer)
     return cj.GetPlayerId(whichPlayer) + 1
 end
--- 获取玩家名称
+
+--- 获取玩家名称
+---@param whichPlayer userdata
+---@return string
 hplayer.getName = function(whichPlayer)
     return cj.GetPlayerName(whichPlayer)
 end
--- 设置玩家名称
+
+--- 设置玩家名称
+---@param whichPlayer userdata
+---@param name string
 hplayer.setName = function(whichPlayer, name)
     cj.SetPlayerName(whichPlayer, name)
 end
--- 获取玩家当前选中的单位
+
+--- 获取玩家当前选中的单位
+---@param whichPlayer userdata
+---@return userdata unit
 hplayer.getSelection = function(whichPlayer)
     return hplayer.get(whichPlayer, "selection", nil)
 end
--- 获取玩家当前状态
+--- 获取玩家当前状态
+---@param whichPlayer userdata
+---@return string
 hplayer.getStatus = function(whichPlayer)
     return hplayer.get(whichPlayer, "status", hplayer.player_status.none)
 end
--- 设置玩家当前状态
+--- 设置玩家当前状态
+---@param whichPlayer userdata
+---@param status string
 hplayer.setStatus = function(whichPlayer, status)
     hplayer.set(whichPlayer, "status", status)
 end
--- 获取玩家当前称号
+--- 获取玩家当前称号
+---@param whichPlayer userdata
+---@return string
 hplayer.getPrestige = function(whichPlayer)
     return hplayer.get(whichPlayer, "prestige", "初出茅庐")
 end
--- 设置玩家当前称号
+--- 设置玩家当前称号
+---@param whichPlayer userdata
+---@param status string
 hplayer.setPrestige = function(whichPlayer, prestige)
     hplayer.set(whichPlayer, "prestige", prestige)
 end
--- 获取玩家APM
+--- 获取玩家APM
+---@param whichPlayer userdata
+---@return number
 hplayer.getApm = function(whichPlayer)
     return hplayer.get(whichPlayer, "apm", 0)
 end
--- 设置玩家是否允许调节镜头高度
+--- 设置玩家是否允许调节镜头高度
+---@param whichPlayer userdata
+---@param flag boolean
 hplayer.setAllowCameraDistance = function(whichPlayer, flag)
     if (whichPlayer == nil) then
         return
@@ -137,11 +170,14 @@ hplayer.setAllowCameraDistance = function(whichPlayer, flag)
     end
     hplayer.set(whichPlayer, "allowCameraDistance", flag)
 end
--- 玩家是否允许调节镜头高度
+--- 玩家是否允许调节镜头高度
+---@param whichPlayer userdata
+---@return boolean
 hplayer.getAllowCameraDistance = function(whichPlayer)
     return hplayer.get(whichPlayer, "allowCameraDistance")
 end
--- 在所有玩家里获取一个随机的英雄
+--- 在所有玩家里获取一个随机的英雄
+---@return userdata
 hplayer.getRandomHero = function()
     local pi = {}
     for k, v in ipairs(hplayer.players) do
@@ -155,10 +191,11 @@ hplayer.getRandomHero = function()
     local ri = math.random(1, #pi)
     return hhero.getPlayerUnit(
         hplayer.players[pi[ri]],
-        math.random(1, hhero.getPlayerUnitQty(hplayer.players[pi[ri]]))
+        math.random(1, hhero.getPlayerAllowQty(hplayer.players[pi[ri]]))
     )
 end
--- 令玩家单位全部隐藏
+--- 令玩家单位全部隐藏
+---@param whichPlayer userdata
 hplayer.hideUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -177,7 +214,8 @@ hplayer.hideUnit = function(whichPlayer)
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end
--- 令玩家单位全部删除
+--- 令玩家单位全部删除
+---@param whichPlayer userdata
 hplayer.clearUnit = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -196,33 +234,68 @@ hplayer.clearUnit = function(whichPlayer)
     cj.GroupClear(g)
     cj.DestroyGroup(g)
 end
--- 令玩家失败
+--- 令玩家失败并退出
+---@param whichPlayer userdata
+---@param tips string
 hplayer.defeat = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
     end
-    hplayer.clearUnit(whichPlayer)
     if (tips == "" or tips == nil) then
         tips = "失败"
     end
-    bj.CustomDefeatBJ(whichPlayer, tips)
+    hplayer.clearUnit(whichPlayer)
+    cj.RemovePlayer(whichPlayer, PLAYER_GAME_RESULT_DEFEAT)
+    if hplayer.qty_current > 1 then
+        cj.DisplayTimedTextFromPlayer(whichPlayer, 0, 0, 60, cj.GetLocalizedString("PLAYER_DEFEATED"))
+    end
+    if (cj.GetPlayerController(whichPlayer) == MAP_CONTROL_USER) then
+        hdialog.create(whichPlayer, {
+            title = tips,
+            buttons = { cj.GetLocalizedString("GAMEOVER_QUIT_MISSION") }
+        }, function()
+            cj.EndGame(true)
+        end)
+    end
 end
--- 令玩家胜利
-hplayer.victory = function(whichPlayer)
+--- 令玩家胜利并退出
+---@param whichPlayer userdata
+---@param tips string
+hplayer.victory = function(whichPlayer, tips)
     if (whichPlayer == nil) then
         return
     end
-    bj.CustomVictoryBJ(whichPlayer, true, true)
+    if (tips == "" or tips == nil) then
+        tips = "胜利"
+    end
+    cj.RemovePlayer(whichPlayer, PLAYER_GAME_RESULT_VICTORY)
+    if hplayer.qty_current > 1 then
+        cj.DisplayTimedTextFromPlayer(whichPlayer, 0, 0, 60, cj.GetLocalizedString("PLAYER_VICTORIOUS"))
+    end
+    if (cj.GetPlayerController(whichPlayer) == MAP_CONTROL_USER) then
+        cg.bj_changeLevelShowScores = true
+        hdialog.create(whichPlayer, {
+            title = tips,
+            buttons = { cj.GetLocalizedString("GAMEOVER_QUIT_MISSION") }
+        }, function()
+            cj.EndGame(true)
+        end)
+    end
 end
--- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
+--- 玩家设置是否自动将{hAwardConvertRatio}黄金换1木头
+---@param whichPlayer userdata
+---@param b boolean
 hplayer.setIsAutoConvert = function(whichPlayer, b)
     hplayer.set(whichPlayer, "isAutoConvert", b)
 end
--- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
+--- 获取玩家是否自动将{hAwardConvertRatio}黄金换1木头
+---@param whichPlayer userdata
+---@return boolean
 hplayer.getIsAutoConvert = function(whichPlayer)
     return hplayer.get(whichPlayer, "isAutoConvert", false)
 end
--- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
+--- 自动寄存超出的黄金数量，如果满转换数值，则返回对应的整数木头
+---@private
 hplayer.getExceedLumber = function(whichPlayer, exceedGold)
     local index = hplayer.index(whichPlayer)
     local current = hplayer.get(whichPlayer, "exceed_gold", 0)
@@ -242,11 +315,15 @@ hplayer.getExceedLumber = function(whichPlayer, exceedGold)
     hplayer.set(whichPlayer, "exceed_gold", current)
     return l
 end
--- 获取玩家造成的总伤害
+--- 获取玩家造成的总伤害
+---@param whichPlayer userdata
+---@return number
 hplayer.getDamage = function(whichPlayer)
     return hplayer.get(whichPlayer, "damage", 0)
 end
--- 增加玩家造成的总伤害
+--- 增加玩家造成的总伤害
+---@param whichPlayer userdata
+---@param val number
 hplayer.addDamage = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -254,11 +331,15 @@ hplayer.addDamage = function(whichPlayer, val)
     val = val or 0
     hplayer.set(whichPlayer, "damage", hplayer.getDamage(whichPlayer) + val)
 end
--- 获取玩家受到的总伤害
+--- 获取玩家受到的总伤害
+---@param whichPlayer userdata
+---@return number
 hplayer.getBeDamage = function(whichPlayer)
     return hplayer.get(whichPlayer, "beDamage", 0)
 end
--- 增加玩家受到的总伤害
+--- 增加玩家受到的总伤害
+---@param whichPlayer userdata
+---@param val number
 hplayer.addBeDamage = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -266,11 +347,15 @@ hplayer.addBeDamage = function(whichPlayer, val)
     val = val or 0
     hplayer.set(whichPlayer, "beDamage", hplayer.getBeDamage(whichPlayer) + val)
 end
--- 获取玩家杀敌数
+--- 获取玩家杀敌数
+---@param whichPlayer userdata
+---@return number
 hplayer.getKill = function(whichPlayer)
     return hplayer.get(whichPlayer, "kill", 0)
 end
 -- 增加玩家杀敌数
+---@param whichPlayer userdata
+---@param val number
 hplayer.addKill = function(whichPlayer, val)
     if (whichPlayer == nil) then
         return
@@ -279,7 +364,8 @@ hplayer.addKill = function(whichPlayer, val)
     hplayer.set(whichPlayer, "kill", hplayer.getKill(whichPlayer) + val)
 end
 
--- 黄金比率
+--- 黄金比率
+---@private
 hplayer.diffGoldRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "goldRatio", hplayer.get(whichPlayer, "goldRatio") + diff)
@@ -294,20 +380,32 @@ hplayer.diffGoldRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, val - hplayer.get(whichPlayer, "goldRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subGoldRatio = function(whichPlayer, val, during)
     hplayer.diffGoldRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getGoldRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "goldRatio") or 100
 end
 
--- 木头比率
+--- 木头比率
+---@private
 hplayer.diffLumberRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "lumberRatio", hplayer.get(whichPlayer, "lumberRatio") + diff)
@@ -322,21 +420,33 @@ hplayer.diffLumberRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setLumberRatio = function(whichPlayer, val, during)
     local index = hplayer.index(whichPlayer)
     hplayer.diffLumberRatio(whichPlayer, val - hplayer.get(whichPlayer, "lumberRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addLumberRatio = function(whichPlayer, val, during)
     hplayer.diffLumberRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subLumberRatio = function(whichPlayer, val, during)
     hplayer.diffLumberRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getLumberRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "lumberRatio")
 end
 
--- 经验比率
+--- 经验比率
+---@private
 hplayer.diffExpRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "expRatio", hplayer.get(whichPlayer, "expRatio") + diff)
@@ -351,21 +461,33 @@ hplayer.diffExpRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setExpRatio = function(whichPlayer, val, during)
     local index = hplayer.index(whichPlayer)
     hplayer.diffExpRatio(whichPlayer, val - hplayer.get(whichPlayer, "expRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addExpRatio = function(whichPlayer, val, during)
     hplayer.diffExpRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subExpRatio = function(whichPlayer, val, during)
     hplayer.diffExpRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getExpRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "expRatio")
 end
 
--- 售卖比率
+--- 售卖比率
+---@private
 hplayer.diffSellRatio = function(whichPlayer, diff, during)
     if (diff ~= 0) then
         hplayer.set(whichPlayer, "sellRatio", hplayer.get(whichPlayer, "sellRatio") + diff)
@@ -380,51 +502,79 @@ hplayer.diffSellRatio = function(whichPlayer, diff, during)
         end
     end
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.setSellRatio = function(whichPlayer, val, during)
     local index = hplayer.index(whichPlayer)
     hplayer.diffSellRatio(whichPlayer, val - hplayer.get(whichPlayer, "sellRatio"), during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.addSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, val, during)
 end
+---@param whichPlayer userdata
+---@param val number
+---@param during number
 hplayer.subSellRatio = function(whichPlayer, val, during)
     hplayer.diffSellRatio(whichPlayer, -val, during)
 end
+---@param whichPlayer userdata
+---@return number %
 hplayer.getSellRatio = function(whichPlayer)
     return hplayer.get(whichPlayer, "sellRatio", 50)
 end
 
--- 玩家总获金量
+--- 玩家总获金量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalGold = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalGold")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalGold = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalGold", hplayer.getTotalGold(whichPlayer) + val)
 end
--- 玩家总耗金量
+--- 玩家总耗金量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalGoldCost = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalGoldCost")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalGoldCost = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalGoldCost", hplayer.getTotalGoldCost(whichPlayer) + val)
 end
 
--- 玩家总获木量
+--- 玩家总获木量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalLumber = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalLumber")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalLumber = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalLumber", hplayer.getTotalLumber(whichPlayer) + val)
 end
--- 玩家总耗木量
+--- 玩家总耗木量
+---@param whichPlayer userdata
+---@return number
 hplayer.getTotalLumberCost = function(whichPlayer)
     return hplayer.get(whichPlayer, "totalLumberCost")
 end
+---@param whichPlayer userdata
+---@param val number
 hplayer.addTotalLumberCost = function(whichPlayer, val)
     return hplayer.set(whichPlayer, "totalLumberCost", hplayer.getTotalLumberCost(whichPlayer) + val)
 end
 
--- 核算玩家金钱
+--- 核算玩家金钱
+---@private
 hplayer.adjustGold = function(whichPlayer)
     local prvSys = hplayer.get(whichPlayer, "prevGold")
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
@@ -435,7 +585,8 @@ hplayer.adjustGold = function(whichPlayer)
     end
     hplayer.set(whichPlayer, "prevGold", relSys)
 end
--- 核算玩家木头
+--- 核算玩家木头
+---@private
 hplayer.adjustLumber = function(whichPlayer)
     local prvSys = hplayer.get(whichPlayer, "prevLumber")
     local relSys = cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
@@ -447,11 +598,15 @@ hplayer.adjustLumber = function(whichPlayer)
     hplayer.set(whichPlayer, "prevLumber", relSys)
 end
 
--- 获取玩家实时金钱
+--- 获取玩家实时金钱
+---@param whichPlayer userdata
+---@return number
 hplayer.getGold = function(whichPlayer)
     return cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD)
 end
--- 设置玩家实时金钱
+--- 设置玩家实时金钱
+---@param whichPlayer userdata
+---@param gold number
 hplayer.setGold = function(whichPlayer, gold)
     if (whichPlayer == nil) then
         return
@@ -471,7 +626,10 @@ hplayer.setGold = function(whichPlayer, gold)
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_GOLD, gold)
     hplayer.adjustGold(whichPlayer)
 end
--- 增加玩家金钱
+--- 增加玩家金钱
+---@param whichPlayer userdata
+---@param gold number
+---@param u userdata If u then show textTag
 hplayer.addGold = function(whichPlayer, gold, u)
     if (whichPlayer == nil) then
         return
@@ -483,7 +641,9 @@ hplayer.addGold = function(whichPlayer, gold, u)
         hsound.sound2Unit(cg.gg_snd_ReceiveGold, 100, u)
     end
 end
--- 减少玩家金钱
+--- 减少玩家金钱
+---@param whichPlayer userdata
+---@param gold number
 hplayer.subGold = function(whichPlayer, gold)
     if (whichPlayer == nil) then
         return
@@ -491,11 +651,15 @@ hplayer.subGold = function(whichPlayer, gold)
     hplayer.setGold(whichPlayer, hplayer.getGold(whichPlayer) - gold)
 end
 
--- 获取玩家实时木头
+--- 获取玩家实时木头
+---@param whichPlayer userdata
+---@return number
 hplayer.getLumber = function(whichPlayer)
     return cj.GetPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER)
 end
--- 设置玩家实时木头
+--- 设置玩家实时木头
+---@param whichPlayer userdata
+---@param lumber number
 hplayer.setLumber = function(whichPlayer, lumber)
     if (whichPlayer == nil) then
         return
@@ -503,7 +667,10 @@ hplayer.setLumber = function(whichPlayer, lumber)
     hplayer.setPlayerState(whichPlayer, PLAYER_STATE_RESOURCE_LUMBER, lumber)
     hplayer.adjustLumber(whichPlayer)
 end
--- 增加玩家木头
+--- 增加玩家木头
+---@param whichPlayer userdata
+---@param gold number
+---@param u userdata If u then show textTag
 hplayer.addLumber = function(whichPlayer, lumber, u)
     if (whichPlayer == nil) then
         return
@@ -520,7 +687,9 @@ hplayer.addLumber = function(whichPlayer, lumber, u)
         hsound.sound2Unit(cg.gg_snd_BundleOfLumber, 100, u)
     end
 end
--- 减少玩家木头
+--- 减少玩家木头
+---@param whichPlayer userdata
+---@param lumber number
 hplayer.subLumber = function(whichPlayer, lumber)
     if (whichPlayer == nil) then
         return
@@ -528,106 +697,17 @@ hplayer.subLumber = function(whichPlayer, lumber)
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) - lumber)
 end
 
--- 初始化(已内部调用)
+--- 初始化(已内部调用)
+---@private
 hplayer.init = function()
-    local triggerApm = cj.CreateTrigger()
-    local triggerApmUnit = cj.CreateTrigger()
-    local triggerLeave = cj.CreateTrigger()
-    local triggerDeSelection = cj.CreateTrigger()
-    local triggerChat = cj.CreateTrigger()
-    cj.TriggerAddAction(
-        triggerApm,
-        function()
-            local p = cj.GetTriggerPlayer()
-            hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
+    -- register APM
+    hevent.pool('global', hevent_default_actions.player.apm, function(tgr)
+        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+            cj.TriggerRegisterPlayerUnitEvent(tgr, cj.Player(i - 1), EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, nil)
+            cj.TriggerRegisterPlayerUnitEvent(tgr, cj.Player(i - 1), EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, nil)
+            cj.TriggerRegisterPlayerUnitEvent(tgr, cj.Player(i - 1), EVENT_PLAYER_UNIT_ISSUED_ORDER, nil)
         end
-    )
-    cj.TriggerAddAction(
-        triggerApmUnit,
-        function()
-            local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
-            if (his.playing(p) == true and his.playerSite(p) == true and his.computer(p) == false) then
-                hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
-            end
-        end
-    )
-    cj.TriggerAddAction(
-        triggerLeave,
-        function()
-            local p = cj.GetTriggerPlayer()
-            local g
-            hplayer.set(p, "status", hplayer.player_status.leave)
-            hmessage.echo(cj.GetPlayerName(p) .. "离开了～")
-            hplayer.clearUnit(p)
-            hplayer.qty_current = hplayer.qty_current - 1
-            -- 触发玩家离开事件(全局)
-            hevent.triggerEvent(
-                "global",
-                CONST_EVENT.playerLeave,
-                {
-                    triggerPlayer = p
-                }
-            )
-        end
-    )
-    cj.TriggerAddAction(
-        triggerDeSelection,
-        function()
-            hplayer.set(cj.GetTriggerPlayer(), "selection", nil)
-        end
-    )
-    cj.TriggerAddAction(
-        triggerChat,
-        function()
-            local p = cj.GetTriggerPlayer()
-            local str = cj.GetEventPlayerChatString()
-            if (str == "-apc") then
-                if (his.autoConvertGoldToLumber(p) == true) then
-                    his.set(p, "isAutoConvertGoldToLumber", false)
-                    hmessage.echo00(p, "|cffffcc00已关闭|r自动换算", 0)
-                else
-                    his.set(p, "isAutoConvertGoldToLumber", true)
-                    hmessage.echo00(p, "|cffffcc00已开启|r自动换算", 0)
-                end
-            elseif (str == "-apm") then
-                hmessage.echo00(p, "您的apm为:" .. hplayer.getApm(p), 0)
-            elseif (str == "-eff") then
-                if (hplayer.qty_current == 1) then
-                    if (heffect.enable == true) then
-                        heffect.enable = false
-                        hlightning.enable = false
-                        hmessage.echo00(p, "|cffffcc00已关闭|r大部分特效", 0)
-                    else
-                        heffect.enable = true
-                        hlightning.enable = true
-                        hmessage.echo00(p, "|cffffcc00已开启|r大部分特效", 0)
-                    end
-                else
-                    hmessage.echo00(p, "此命令仅在单人时有效", 0)
-                end
-            else
-                local first = string.sub(str, 1, 1)
-                if (first == "+" or first == "-") then
-                    --视距
-                    local v = string.sub(str, 2, string.len(str))
-                    local v = tonumber(v)
-                    if (v == nil) then
-                        hmessage.echo00(p, "试试敲入+500，增加视距~", 0)
-                    else
-                        local val = math.abs(v)
-                        if (first == "+") then
-                            hcamera.changeDistance(p, val)
-                        elseif (first == "-") then
-                            hcamera.changeDistance(p, -val)
-                        end
-                    end
-                end
-            end
-        end
-    )
-    bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
-    bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER)
-    bj.TriggerRegisterAnyUnitEventBJ(triggerApmUnit, EVENT_PLAYER_UNIT_ISSUED_ORDER)
+    end)
     for i = 1, bj_MAX_PLAYERS, 1 do
         hplayer.players[i] = cj.Player(i - 1)
         cj.SetPlayerHandicapXP(hplayer.players[i], 0)
@@ -654,46 +734,33 @@ hplayer.init = function()
             --
             hplayer.qty_current = hplayer.qty_current + 1
             hplayer.set(hplayer.players[i], "status", hplayer.player_status.gaming)
-            bj.TriggerRegisterPlayerSelectionEventBJ(triggerApm, hplayer.players[i], true)
-            cj.TriggerRegisterPlayerEvent(triggerLeave, hplayer.players[i], EVENT_PLAYER_LEAVE)
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_LEFT
+
+            hevent.onChat(
+                hplayer.players[i], '+', false,
+                hevent_default_actions.player.command
             )
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_RIGHT
+            hevent.onChat(
+                hplayer.players[i], '-', false,
+                hevent_default_actions.player.command
             )
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_DOWN
-            )
-            bj.TriggerRegisterPlayerKeyEventBJ(
-                triggerApm,
-                hplayer.players[i],
-                bj_KEYEVENTTYPE_DEPRESS,
-                bj_KEYEVENTKEY_UP
-            )
-            cj.TriggerRegisterPlayerUnitEvent(triggerDeSelection, hplayer.players[i], EVENT_PLAYER_UNIT_DESELECTED, nil)
-            cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "+", false)
-            cj.TriggerRegisterPlayerChatEvent(triggerChat, hplayer.players[i], "-", false)
+            -- 玩家离开游戏
+            hevent.pool(hplayer.players[i], hevent_default_actions.player.leave, function(tgr)
+                cj.TriggerRegisterPlayerEvent(tgr, hplayer.players[i], EVENT_PLAYER_LEAVE)
+            end)
+            -- 玩家取消选择单位
+            hevent.onDeSelection(hplayer.players[i], function(evtData)
+                hplayer.set(evtData.triggerPlayer, "selection", nil)
+            end)
+            -- 玩家选中单位
             hevent.onSelection(
                 hplayer.players[i],
-                2,
+                1,
                 function(evtData)
                     hplayer.set(evtData.triggerPlayer, "selection", evtData.triggerUnit)
                 end
             )
         else
-            -- his
             his.set(hplayer.players[i], "isComputer", true)
-            --
             hplayer.set(hplayer.players[i], "status", hplayer.player_status.none)
         end
     end

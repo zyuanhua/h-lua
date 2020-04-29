@@ -17,29 +17,51 @@ hlightning = {
         ling_hun_suo_lian = "SPLK" -- 闪电效果 - 灵魂锁链
     }
 }
---删除闪电
-hlightning.del = function(lightning)
-    cj.DestroyLightning(lightning)
+--- 删除闪电
+---@param lightning userdata
+---@param delay number
+hlightning.del = function(lightning, delay)
+    delay = delay or 0
+    if (delay > 0) then
+        htime.setTimeout(
+            delay,
+            function(t)
+                htime.delTimer(t)
+                hlightning.del(lightning)
+            end
+        )
+    else
+        cj.DestroyLightning(lightning)
+    end
 end
 
---xyz对xyz创建闪电
+--- xyz对xyz创建闪电
+---@param lightningType string
+---@param x1 number
+---@param y1 number
+---@param z1 number
+---@param x2 number
+---@param y2 number
+---@param z2 number
+---@param during number 大于0时延时删除
+---@return userdata
 hlightning.xyz2xyz = function(lightningType, x1, y1, z1, x2, y2, z2, during)
     if (hlightning.enable ~= true) then
         return
     end
     local lightning = cj.AddLightningEx(lightningType, true, x1, y1, z1, x2, y2, z2)
-    during = during or 0.25
-    htime.setTimeout(
-        during,
-        function(t)
-            htime.delTimer(t)
-            hlightning.del(lightning)
-        end
-    )
+    if (during > 0) then
+        hlightning.del(lightning, during)
+    end
     return lightning
 end
 
---点对点创建闪电
+--- 点对点创建闪电
+---@param lightningType string
+---@param loc1 userdata
+---@param loc2 userdata
+---@param during number 大于0时延时删除
+---@return userdata
 hlightning.loc2loc = function(lightningType, loc1, loc2, during)
     return hlightning.xyz2xyz(
         lightningType,
@@ -53,7 +75,12 @@ hlightning.loc2loc = function(lightningType, loc1, loc2, during)
     )
 end
 
---单位对单位创建闪电
+--- 单位对单位创建闪电
+---@param lightningType string
+---@param unit1 userdata
+---@param unit2 userdata
+---@param during number 大于0时延时删除
+---@return userdata
 hlightning.unit2unit = function(lightningType, unit1, unit2, during)
     local loc1 = cj.GetUnitLoc(unit1)
     local loc2 = cj.GetUnitLoc(unit2)

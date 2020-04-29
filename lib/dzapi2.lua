@@ -6,12 +6,14 @@ hdzapi = {
         index = 0,
         queue = {},
     },
+    ---@private
     commandHash = function(command)
         if (hdzapi.commandHashCache[command] == nil) then
             hdzapi.commandHashCache[command] = cj.StringHash(command)
         end
         return hdzapi.commandHashCache[command]
     end,
+    ---@private
     talloc = function()
         local index = -1
         local i = hdzapi.tallocStatus.index + 1
@@ -42,6 +44,7 @@ hdzapi = {
         hdzapi.tallocStatus.queue[index].result = nil
         return cg['Hlua_DzAPI_Tgr_' .. index], index
     end,
+    ---@private
     exec = function(command, ...)
         if (hdzapi.enable ~= true) then
             print_err("Please copy ./plugin/dzapi.jass")
@@ -77,23 +80,30 @@ hdzapi = {
 }
 
 -- 初始化
+---@private
 hdzapi.init = function()
     if (cg.HLUA_DZAPI_FLAG == true) then
         hdzapi.enable = true
     end
 end
 
--- 是否红V
+--- 是否红V
+---@param whichPlayer userdata
+---@return boolean
 hdzapi.isVipRed = function(whichPlayer)
     return hdzapi.exec("IsRedVIP", whichPlayer) == "1"
 end
 
--- 是否蓝V
+--- 是否蓝V
+---@param whichPlayer userdata
+---@return boolean
 hdzapi.isVipBlue = function(whichPlayer)
     return hdzapi.exec("IsBlueVIP", whichPlayer) == "1"
 end
 
--- 获取地图等级
+--- 获取地图等级
+---@param whichPlayer userdata
+---@return number
 hdzapi.mapLv = function(whichPlayer)
     local lv = hdzapi.exec("GetMapLevel", whichPlayer)
     if (lv == nil or lv == "") then
@@ -107,7 +117,10 @@ hdzapi.mapLv = function(whichPlayer)
     return lv
 end
 
--- 是否有商城道具,由于官方设置的key必须大写，所以这里自动转换
+--- 是否有商城道具,由于官方设置的key必须大写，所以这里自动转换
+---@param whichPlayer userdata
+---@param key string
+---@return boolean
 hdzapi.hasMallItem = function(whichPlayer, key)
     if (whichPlayer == nil or key == nil) then
         return false
@@ -119,7 +132,8 @@ hdzapi.hasMallItem = function(whichPlayer, key)
     return hdzapi.exec("HasMallItem", whichPlayer, key) == "1"
 end
 
--- 设置一个玩家为特殊商城人员，可以获得所有的道具
+--- 设置一个玩家为特殊商城人员，可以获得所有的道具
+---@param whichPlayer userdata
 hdzapi.setMallItemCheater = function(whichPlayer)
     if (whichPlayer == nil) then
         return
@@ -129,19 +143,25 @@ end
 
 -- 服务器存档
 hdzapi.server = {}
--- 读取服务器存档是否成功，没有开通或这服务器崩了返回false
+
+--- 读取服务器存档是否成功，没有开通或这服务器崩了返回false
+---@param whichPlayer userdata
+---@return boolean
 hdzapi.server.ready = function(whichPlayer)
     return hdzapi.exec("GetPlayerServerValueSuccess", whichPlayer) == "1"
 end
 
--- 设置房间数据
+--- 设置房间数据
+---@param whichPlayer userdata
+---@param key string
+---@param text string
 hdzapi.setRoomStat = function(whichPlayer, key, text)
     if (hdzapi.server.ready(whichPlayer) == true) then
         hdzapi.exec("Stat_SetStat", whichPlayer, tostring(key), tostring(text))
     end
 end
 
--- save / load
+---@private
 hdzapi.server.save = function(whichPlayer, key, data)
     if (data == nil) then
         return
@@ -151,6 +171,7 @@ hdzapi.server.save = function(whichPlayer, key, data)
     end
 end
 
+---@private
 hdzapi.server.load = function(whichPlayer, key)
     if (hdzapi.server.ready(whichPlayer) == true) then
         return hdzapi.exec("GetServerValue", whichPlayer, key)
@@ -158,13 +179,15 @@ hdzapi.server.load = function(whichPlayer, key)
 end
 
 -- 清理服务器存档数据
+---@param whichPlayer userdata
+---@param key string
 hdzapi.server.clear = function(whichPlayer, key)
     if (hdzapi.server.ready(whichPlayer) == true) then
         hdzapi.exec("SaveServerValue", whichPlayer, key, "")
     end
 end
 
--- 封装的服务器存档 get / set
+--- 封装的服务器存档 get / set
 hdzapi.server.set = {
     int = function(whichPlayer, key, data)
         hdzapi.server.save(whichPlayer, "I" .. key, data or 0)

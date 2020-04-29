@@ -1,223 +1,10 @@
 hevent = {
     POOL = {},
-    POOL_RED_LINE = 30000,
-    POOL_ACTIONS = {
-        damaged = cj.Condition(function()
-            local sourceUnit = cj.GetEventDamageSource()
-            local targetUnit = cj.GetTriggerUnit()
-            local damage = cj.GetEventDamage()
-            local oldLife = hunit.getCurLife(targetUnit)
-            if (damage > 0.125) then
-                hattr.set(targetUnit, 0, { life = "+" .. damage })
-                htime.setTimeout(
-                    0,
-                    function(t)
-                        htime.delTimer(t)
-                        hattr.set(targetUnit, 0, { life = "-" .. damage })
-                        hunit.setCurLife(targetUnit, oldLife)
-                        hskill.damage(
-                            {
-                                sourceUnit = sourceUnit,
-                                targetUnit = targetUnit,
-                                damage = damage,
-                                damageKind = "attack"
-                            }
-                        )
-                    end
-                )
-            end
-        end),
-        death = cj.Condition(function()
-            local u = cj.GetTriggerUnit()
-            local killer = hevent.getLastDamageUnit(u)
-            if (killer ~= nil) then
-                hplayer.addKill(cj.GetOwningPlayer(killer), 1)
-            end
-            -- @触发死亡事件
-            hevent.triggerEvent(
-                u,
-                CONST_EVENT.dead,
-                {
-                    triggerUnit = u,
-                    killer = killer
-                }
-            )
-            -- @触发击杀事件
-            hevent.triggerEvent(
-                killer,
-                CONST_EVENT.kill,
-                {
-                    triggerUnit = killer,
-                    killer = killer,
-                    targetUnit = u
-                }
-            )
-        end),
-        pickup = cj.Condition(function()
-            local it = cj.GetManipulatedItem()
-            local itId = string.id2char(cj.GetItemTypeId(it))
-            if (hslk_global.itemsKV[itId] == nil) then
-                -- 排除掉没有注册的物品。例如框架内自带的一些物品
-                return
-            end
-            if (hRuntime.item[it] ~= nil and hRuntime.item[it].positionType == hitem.POSITION_TYPE.UNIT) then
-                -- 排除掉runtime内已创建给unit的物品
-                return
-            end
-            local u = cj.GetTriggerUnit()
-            local charges = cj.GetItemCharges(it)
-            local shadowItId = hitem.getShadowId(itId)
-            if (shadowItId == nil) then
-                if (hitem.getIsPowerUp(itId) == true) then
-                    --检测是否有回调动作
-                    local call = hitem.getTriggerCall(itId)
-                    if (call ~= nil and type(call) == "function") then
-                        call(u, it, itId, charges)
-                    end
-                    --触发使用物品事件
-                    hevent.triggerEvent(
-                        u,
-                        CONST_EVENT.itemUsed,
-                        {
-                            triggerUnit = u,
-                            triggerItem = it
-                        }
-                    )
-                else
-                    --这里删除重建是为了实现地上物品的过期重置
-                    hitem.del(it, 0)
-                    hitem.create(
-                        {
-                            itemId = itId,
-                            whichUnit = u,
-                            charges = charges,
-                            during = 0
-                        }
-                    )
-                end
-            else
-                --注意，系统内此处先获得了face物品，此物品100%是PowerUp的
-                --这里删除重建是为了实现地上物品的过期重置
-                hitem.del(it, 0)
-                --这里是实现神符满格的关键
-                hitem.create(
-                    {
-                        itemId = shadowItId,
-                        whichUnit = u,
-                        charges = charges,
-                        during = 0
-                    }
-                )
-            end
-        end),
-        drop = cj.Condition(function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
-            local itId = string.id2char(cj.GetItemTypeId(it))
-            local faceId = hitem.getFaceId(itId)
-            local orderId = cj.OrderId("dropitem")
-            local charges = cj.GetItemCharges(it)
-            if (cj.GetUnitCurrentOrder(u) == orderId) then
-                if (hRuntime.item[it] ~= nil) then
-                    if (faceId ~= nil) then
-                        htime.setTimeout(
-                            0,
-                            function(t)
-                                htime.delTimer(t)
-                                local x = cj.GetItemX(it)
-                                local y = cj.GetItemX(it)
-                                hitem.del(it, 0)
-                                --这里是实现表面物品的关键
-                                hitem.create(
-                                    {
-                                        itemId = faceId,
-                                        x = x,
-                                        y = y,
-                                        charges = charges,
-                                        during = 0
-                                    }
-                                )
-                            end
-                        )
-                    else
-                        hitem.setPositionType(it, hitem.POSITION_TYPE.COORDINATE)
-                    end
-                end
-                hitem.subAttribute(u, itId, charges)
-            end
-        end),
-        pawn = cj.Condition(function()
-            --[[
-                抵押物品的原理，首先默认是设定：物品售卖为50%，也就是地图的默认设置
-                根据玩家的sellRatio，额外的减少或增加玩家的收入
-                从而实现玩家的售卖率提升，至于物品的价格是根据slk获取
-                所以如果无法获取slk的属性时，此方法自动无效
-            ]]
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetSoldItem()
-            local goldcost = hitem.getGoldCost(it)
-            local lumbercost = hitem.getLumberCost(it)
-            hRuntime.clear(it)
-            if (goldcost ~= 0 or lumbercost ~= 0) then
-                local p = cj.GetOwningPlayer(u)
-                local sellRatio = hplayer.getSellRatio(u)
-                if (sellRatio ~= 50) then
-                    if (sellRatio < 0) then
-                        sellRatio = 0
-                    elseif (sellRatio > 1000) then
-                        sellRatio = 1000
-                    end
-                    local tempRatio = sellRatio - 50.0
-                    local tempGold = math.floor(goldcost * tempRatio * 0.01)
-                    local tempLumber = math.floor(lumbercost * tempRatio * 0.01)
-                    if (goldcost ~= 0 and tempGold ~= 0) then
-                        hplayer.addGold(p, tempGold)
-                    end
-                    if (lumbercost ~= 0 and tempLumber ~= 0) then
-                        hplayer.addLumber(p, tempLumber)
-                    end
-                end
-            end
-        end),
-        use = cj.Condition(function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
-            local itId = cj.GetItemTypeId(it)
-            local perishable = hitem.getIsPerishable(itId)
-            --检测是否使用后自动消失，如果不是，次数补回1
-            if (perishable == false) then
-                hitem.setCharges(it, hitem.getCharges(it) + 1)
-            end
-            --检测是否有回调动作
-            local call = hitem.getTriggerCall(itId)
-            if (call ~= nil and type(call) == "function") then
-                call(u, it, itId, charges)
-            end
-            --触发使用物品事件
-            hevent.triggerEvent(
-                u,
-                CONST_EVENT.itemUsed,
-                {
-                    triggerUnit = u,
-                    triggerItem = it
-                }
-            )
-            --消失的清理cache
-            if (perishable == true and hitem.getCharges(it) <= 0) then
-                hitem.del(it)
-            end
-        end),
-        separate = cj.Condition(function()
-            local u = cj.GetTriggerUnit()
-            local it = cj.GetManipulatedItem()
-            if (it ~= nil and cj.GetSpellAbilityId() == hitem.DEFAULT_SKILL_ITEM_SEPARATE) then
-                print_err("拆分物品尚未完成")
-            end
-        end),
-    },
+    POOL_RED_LINE = 3000,
 }
 
--- set
+--- set
+---@private
 hevent.set = function(handle, key, value)
     if (handle == nil) then
         print_stack()
@@ -229,7 +16,8 @@ hevent.set = function(handle, key, value)
     hRuntime.event[handle][key] = value
 end
 
--- get
+--- get
+---@private
 hevent.get = function(handle, key)
     if (handle == nil) then
         print_stack()
@@ -241,8 +29,15 @@ hevent.get = function(handle, key)
     return hRuntime.event[handle][key]
 end
 
--- 触发池
-hevent.pool = function(u, key, action, cjEvent)
+--- 触发池
+--- 使用一个handle，以不同的conditionAction累计计数
+--- 分配触发到回调注册
+---@protected
+hevent.pool = function(handle, conditionAction, regEvent)
+    if (type(regEvent) ~= 'function') then
+        return
+    end
+    local key = cj.GetHandleId(conditionAction)
     if (hevent.POOL[key] == nil) then
         hevent.POOL[key] = {}
     end
@@ -254,22 +49,23 @@ hevent.pool = function(u, key, action, cjEvent)
             count = 0,
             trigger = tgr
         })
-        cj.TriggerAddCondition(tgr, action)
+        cj.TriggerAddCondition(tgr, conditionAction)
         poolIndex = #hevent.POOL[key]
     end
-    if (hRuntime.event.pool[u] == nil) then
-        hRuntime.event.pool[u] = {}
+    if (hRuntime.event.pool[handle] == nil) then
+        hRuntime.event.pool[handle] = {}
     end
-    table.insert(hRuntime.event.pool[u], {
+    table.insert(hRuntime.event.pool[handle], {
         key = key,
         poolIndex = poolIndex,
     })
     hevent.POOL[key][poolIndex].count = hevent.POOL[key][poolIndex].count + 1
     hevent.POOL[key][poolIndex].stock = hevent.POOL[key][poolIndex].stock + 1
-    cj.TriggerRegisterUnitEvent(hevent.POOL[key][poolIndex].trigger, u, cjEvent)
+    regEvent(hevent.POOL[key][poolIndex].trigger)
 end
 
--- set最后一位伤害的单位
+--- set最后一位伤害的单位
+---@protected
 hevent.setLastDamageUnit = function(whichUnit, lastUnit)
     if (whichUnit == nil and lastUnit == nil) then
         return
@@ -277,12 +73,14 @@ hevent.setLastDamageUnit = function(whichUnit, lastUnit)
     hevent.set(whichUnit, "lastDamageUnit", lastUnit)
 end
 
--- 最后一位伤害的单位
+--- 最后一位伤害的单位
+---@protected
 hevent.getLastDamageUnit = function(whichUnit)
     return hevent.get(whichUnit, "lastDamageUnit")
 end
 
--- 注册事件，会返回一个event_id（私有通用）
+--- 注册事件，会返回一个event_id（私有通用）
+---@protected
 hevent.registerEvent = function(handle, key, callFunc)
     if (hRuntime.event.register[handle] == nil) then
         hRuntime.event.register[handle] = {}
@@ -294,9 +92,12 @@ hevent.registerEvent = function(handle, key, callFunc)
     return #hRuntime.event.register[handle][key]
 end
 
--- 触发事件（私有通用）
+--- 触发事件（私有通用）
+---@protected
 hevent.triggerEvent = function(handle, key, triggerData)
-    triggerData = triggerData or {}
+    if (handle == nil) then
+        return
+    end
     if (hRuntime.event.register[handle] == nil or hRuntime.event.register[handle][key] == nil) then
         return
     end
@@ -304,6 +105,7 @@ hevent.triggerEvent = function(handle, key, triggerData)
         return
     end
     -- 处理数据
+    triggerData = triggerData or {}
     if (triggerData.triggerSkill ~= nil and type(triggerData.triggerSkill) == "number") then
         triggerData.triggerSkill = string.id2char(triggerData.triggerSkill)
     end
@@ -319,7 +121,10 @@ hevent.triggerEvent = function(handle, key, triggerData)
     end
 end
 
--- 删除事件（需要event_id）
+--- 删除事件（需要event_id）
+---@param handle userdata
+---@param key string
+---@param eventId any
 hevent.deleteEvent = function(handle, key, eventId)
     if (handle == nil or key == nil or eventId == nil) then
         print_stack()
@@ -331,819 +136,678 @@ hevent.deleteEvent = function(handle, key, eventId)
     table.remove(hRuntime.event.register[handle], eventId)
 end
 
--- 注意到攻击目标
--- triggerUnit 获取触发单位
--- targetUnit 获取被注意/目标单位
+--- 注意到攻击目标
+---@alias onAttackDetect fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位"}):void
+---@param whichUnit userdata
+---@param callFunc onAttackDetect | "function(evtData) end"
+---@return any
 hevent.onAttackDetect = function(whichUnit, callFunc)
-    local key = CONST_EVENT.attackDetect
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        targetUnit = cj.GetEventTargetUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_ACQUIRED_TARGET)
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.attackDetect, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_ACQUIRED_TARGET)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.attackDetect, callFunc)
 end
 
--- 获取攻击目标
--- triggerUnit 获取触发单位
--- targetUnit 获取被获取/目标单位
+--- 获取攻击目标
+---@alias onAttackGetTarget fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位"}):void
+---@param whichUnit userdata
+---@param callFunc onAttackGetTarget | "function(evtData) end"
+---@return any
 hevent.onAttackGetTarget = function(whichUnit, callFunc)
-    local key = CONST_EVENT.attackGetTarget
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        targetUnit = cj.GetEventTargetUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.attackGetTarget, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_TARGET_IN_RANGE)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.attackGetTarget, callFunc)
 end
 
--- 准备攻击
--- triggerUnit 获取攻击单位
--- targetUnit 获取被攻击单位
--- attacker 获取攻击单位
-hevent.onAttackReadyAction = function(whichUnit, callFunc)
-    local key = CONST_EVENT.attackReady
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetAttacker(),
-                    key,
-                    {
-                        triggerUnit = cj.GetAttacker(),
-                        targetUnit = cj.GetTriggerUnit(),
-                        attacker = cj.GetAttacker()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
-end
-
--- 准备被攻击
--- triggerUnit 获取被攻击单位
--- targetUnit 获取攻击单位
--- attacker 获取攻击单位
+--- 准备被攻击
+---@alias onBeAttackReady fun(evtData: {triggerUnit:"被攻击单位",targetUnit:"攻击单位",attacker:"攻击单位"}):void
+---@param whichUnit userdata
+---@param callFunc onBeAttackReady | "function(evtData) end"
+---@return any
 hevent.onBeAttackReady = function(whichUnit, callFunc)
-    local key = CONST_EVENT.beAttackReady
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_ATTACKED)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        targetUnit = cj.GetAttacker(),
-                        attacker = cj.GetAttacker()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.beAttackReady, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_ATTACKED)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.beAttackReady, callFunc)
 end
 
--- 造成攻击
--- triggerUnit 获取攻击来源
--- targetUnit 获取被攻击单位
--- attacker 获取攻击来源
--- damage 获取伤害
--- damageKind 获取伤害方式
--- damageType 获取伤害类型
+--- 造成攻击
+---@alias onAttack fun(evtData: {triggerUnit:"攻击单位",targetUnit:"被攻击单位",attacker:"攻击单位",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
+---@param whichUnit userdata
+---@param callFunc onAttack | "function(evtData) end"
+---@return any
 hevent.onAttack = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.attack, callFunc)
 end
 
--- 承受攻击
--- triggerUnit 获取被攻击单位
--- attacker 获取攻击来源
--- damage 获取伤害
--- damageKind 获取伤害方式
--- damageType 获取伤害类型
+--- 承受攻击
+---@alias onBeAttack fun(evtData: {triggerUnit:"被攻击单位",attacker:"攻击来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
+---@param whichUnit userdata
+---@param callFunc onBeAttack | "function(evtData) end"
+---@return any
 hevent.onBeAttack = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beAttack, callFunc)
 end
 
--- 学习技能
--- triggerUnit 获取学习单位
--- triggerSkill 获取学习技能ID
+--- 学习技能
+---@alias onSkillStudy fun(evtData: {triggerUnit:"学习单位",triggerSkill:"学习技能ID字符串"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillStudy | "function(evtData) end"
+---@return any
 hevent.onSkillStudy = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillStudy
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_HERO_SKILL)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetLearnedSkill()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillStudy, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_HERO_SKILL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillStudy, callFunc)
 end
 
--- 准备施放技能
--- triggerUnit 获取施放单位
--- triggerSkill 获取施放技能ID
--- targetUnit 获取目标单位(只对对目标施放有效)
--- targetX 获取施放目标点X
--- targetY 获取施放目标点Y
--- targetZ 获取施放目标点Z
+--- 准备施放技能
+---@alias onSkillReady fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillReady | "function(evtData) end"
+---@return any
 hevent.onSkillReady = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillReady
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_CHANNEL)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId(),
-                        targetUnit = cj.GetSpellTargetUnit(),
-                        targetLoc = cj.GetSpellTargetLoc()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillReady, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_CHANNEL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillReady, callFunc)
 end
 
--- 开始施放技能
--- triggerUnit 获取施放单位
--- triggerSkill 获取施放技能ID
--- targetUnit 获取目标单位(只对对目标施放有效)
--- targetX 获取施放目标点X
--- targetY 获取施放目标点Y
--- targetZ 获取施放目标点Z
-hevent.onSkillStart = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillStart
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_CAST)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId(),
-                        targetUnit = cj.GetSpellTargetUnit(),
-                        targetLoc = cj.GetSpellTargetLoc()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+--- 开始施放技能
+---@alias onSkillCast fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillCast | "function(evtData) end"
+---@return any
+hevent.onSkillCast = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillCast, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_CAST)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillCast, callFunc)
 end
 
--- 停止施放技能
--- triggerUnit 获取施放单位
--- triggerSkill 获取施放技能ID
+--- 停止施放技能
+---@alias onSkillStop fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillStop | "function(evtData) end"
+---@return any
 hevent.onSkillStop = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillStop
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_ENDCAST)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillStop, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_ENDCAST)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillStop, callFunc)
 end
 
--- 发动技能效果
--- triggerUnit 获取施放单位
--- triggerSkill 获取施放技能ID
--- targetUnit 获取目标单位(只对对目标施放有效)
--- targetX 获取施放目标点X
--- targetY 获取施放目标点Y
--- targetZ 获取施放目标点Z
-hevent.onSkillHappen = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillHappen
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_EFFECT)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId(),
-                        targetUnit = cj.GetSpellTargetUnit(),
-                        targetLoc = cj.GetSpellTargetLoc()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+--- 发动技能效果
+---@alias onSkillEffect fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串",targetUnit:"获取目标单位",targetX:"获取施放目标点X",targetY:"获取施放目标点Y",targetZ:"获取施放目标点Z"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillEffect | "function(evtData) end"
+---@return any
+hevent.onSkillEffect = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillEffect, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_EFFECT)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillEffect, callFunc)
 end
 
--- 施放技能结束
--- triggerUnit 获取施放单位
--- triggerSkill 获取施放技能ID
-hevent.onSkillOver = function(whichUnit, callFunc)
-    local key = CONST_EVENT.skillOver
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SPELL_FINISH)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit(),
-                        triggerSkill = cj.GetSpellAbilityId()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+--- 施放技能结束
+---@alias onSkillFinish fun(evtData: {triggerUnit:"施放单位",triggerSkill:"施放技能ID字符串"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillFinish | "function(evtData) end"
+---@return any
+hevent.onSkillFinish = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.skillFinish, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_FINISH)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.skillFinish, callFunc)
 end
 
--- 单位使用物品
--- triggerUnit 获取触发单位
--- triggerItem 获取触发物品
+--- 单位使用物品
+---@alias onItemUsed fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
+---@param whichUnit userdata
+---@param callFunc onItemUsed | "function(evtData) end"
+---@return any
 hevent.onItemUsed = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemUsed, callFunc)
 end
 
--- 出售物品(商店卖给玩家)
--- triggerUnit 获取触发单位
--- triggerItem 获取触发物品
-hevent.onItemSell = function(whichUnit, callFunc)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.itemSell, callFunc)
-end
-
--- 丢弃物品
--- triggerUnit 获取触发/出售单位
--- targetUnit 获取购买单位
--- triggerItem 获取触发/出售物品
+--- 丢弃(传递)物品
+---@alias onItemDrop fun(evtData: {triggerUnit:"丢弃单位",targetUnit:"获得单位（如果有）",triggerItem:"触发物品"}):void
+---@param whichUnit userdata
+---@return any
 hevent.onItemDrop = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemDrop, callFunc)
 end
 
--- 获得物品
--- triggerUnit 获取触发单位
--- triggerItem 获取触发物品
+--- 获得物品
+---@alias onItemGet fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
+---@param whichUnit userdata
+---@param callFunc onItemGet | "function(evtData) end"
+---@return any
 hevent.onItemGet = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemGet, callFunc)
 end
 
--- 抵押物品（玩家把物品扔给商店）
--- triggerUnit 获取触发单位
--- triggerItem 获取触发物品
+--- 抵押物品（玩家把物品扔给商店）
+---@alias onItemPawn fun(evtData: {triggerUnit:"触发单位",soldItem:"抵押物品",buyingUnit:"抵押商店",soldGold:"抵押获得黄金",soldLumber:"抵押获得木头"}):void
+---@param whichUnit userdata
+---@param callFunc onItemPawn | "function(evtData) end"
+---@return any
 hevent.onItemPawn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemPawn, callFunc)
 end
 
--- 物品被破坏
--- triggerUnit 获取触发单位
--- triggerItem 获取触发物品
+--- 出售物品(商店卖给玩家)
+---@alias onItemSell fun(evtData: {triggerUnit:"售卖单位",soldItem:"售卖物品",buyingUnit:"购买单位"}):void
+---@param whichUnit userdata
+---@param callFunc onItemSell | "function(evtData) end"
+---@return any
+hevent.onItemSell = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.item.sell, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SELL_ITEM)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.itemSell, callFunc)
+end
+
+--- 出售单位(商店卖给玩家)
+---@alias onUnitSell fun(evtData: {triggerUnit:"商店单位",soldUnit:"被售卖单位",buyingUnit:"购买单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUnitSell | "function(evtData) end"
+---@return any
+hevent.onUnitSell = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.sell, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SELL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.unitSell, callFunc)
+end
+
+--- 物品被破坏
+---@alias onItemDestroy fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
+---@param whichUnit userdata
+---@param callFunc onItemDestroy | "function(evtData) end"
+---@return any
 hevent.onItemDestroy = function(whichItem, callFunc)
-    local key = CONST_EVENT.itemDestroy
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetManipulatedItem(),
-                    key,
-                    {
-                        triggerItem = cj.GetManipulatedItem(),
-                        triggerUnit = cj.GetKillingUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterDeathEvent(hRuntime.event.trigger[key], whichItem)
-    return hevent.registerEvent(whichItem, key, callFunc)
+    hevent.pool(whichItem, hevent_default_actions.item.destroy, function(tgr)
+        cj.TriggerRegisterDeathEvent(tgr, whichItem)
+    end)
+    return hevent.registerEvent(whichItem, CONST_EVENT.itemDestroy, callFunc)
 end
 
--- 合成物品
--- triggerUnit 获取触发单位
--- triggerItem 获取合成的物品
-hevent.onItemMix = function(whichUnit, callFunc)
-    return hevent.registerEvent(whichUnit, CONST_EVENT.itemMix, callFunc)
+--- 合成物品
+---@alias onItemMixed fun(evtData: {triggerUnit:"触发单位",triggerItem:"合成物品"}):void
+---@param whichUnit userdata
+---@param callFunc onItemMixed | "function(evtData) end"
+---@return any
+hevent.onItemMixed = function(whichUnit, callFunc)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.itemMixed, callFunc)
 end
 
--- 拆分物品
--- triggerUnit 获取触发单位
--- id 获取拆分的物品ID
---[[
-    type 获取拆分的类型
-        simple 单件拆分(同一种物品拆成很多件)
-        mixed 合成品拆分(一种物品拆成零件的种类)
-]]
+--- 拆分物品
+---@alias onItemSeparate fun(evtData: {triggerUnit:"触发单位",triggerItemId:"被拆分物品ID字符串",type:"拆分的类型:simple(多次数)|mixed(合成物)"}):void
+---@param whichUnit userdata
+---@param callFunc onItemSeparate | "function(evtData) end"
+---@return any
 hevent.onItemSeparate = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemSeparate, callFunc)
 end
 
--- 物品超重
--- triggerUnit 获取触发单位
--- triggerItem 获取得到的物品
--- value 获取超出的重量
+--- 物品超重
+---@alias onItemOverWeight fun(evtData: {triggerUnit:"触发单位",triggerItem:"得到的物品",value:"超出的重量(kg)"}):void
+---@param whichUnit userdata
+---@param callFunc onItemOverWeight | "function(evtData) end"
+---@return any
 hevent.onItemOverWeight = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemOverWeight, callFunc)
 end
 
--- 单位满格
--- triggerUnit 获取触发单位
--- triggerItem 获取触发的物品
+--- 单位满格
+---@alias onItemOverSlot fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发的物品"}):void
+---@param whichUnit userdata
+---@param callFunc onItemOverSlot | "function(evtData) end"
+---@return any
 hevent.onItemOverSlot = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.itemOverSlot, callFunc)
 end
 
--- 造成伤害
--- triggerUnit 获取伤害来源
--- targetUnit 获取被伤害单位
--- sourceUnit 获取伤害来源
--- damage 获取伤害
--- damageKind 获取伤害方式
--- damageType 获取伤害类型
+--- 造成伤害
+---@alias onDamage fun(evtData: {triggerUnit:"伤害来源",targetUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
+---@param whichUnit userdata
+---@param callFunc onDamage | "function(evtData) end"
+---@return any
 hevent.onDamage = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.damage, callFunc)
 end
 
--- 承受伤害
--- triggerUnit 获取被伤害单位
--- sourceUnit 获取伤害来源
--- damage 获取伤害
--- damageKind 获取伤害方式
--- damageType 获取伤害类型
+--- 承受伤害
+---@alias onBeDamage fun(evtData: {triggerUnit:"被伤害单位",sourceUnit:"伤害来源",damage:"伤害",damageKind:"伤害方式",damageType:"伤害类型"}):void
+---@param whichUnit userdata
+---@param callFunc onBeDamage | "function(evtData) end"
+---@return any
 hevent.onBeDamage = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beDamage, callFunc)
 end
 
--- 回避攻击成功
--- triggerUnit 获取触发单位
--- attacker 获取攻击单位
+--- 回避攻击成功
+---@alias onAvoid fun(evtData: {triggerUnit:"触发单位",attacker:"攻击单位"}):void
+---@param whichUnit userdata
+---@param callFunc onAvoid | "function(evtData) end"
+---@return any
 hevent.onAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.avoid, callFunc)
 end
 
--- 攻击被回避
--- triggerUnit 获取攻击单位
--- attacker 获取攻击单位
--- targetUnit 获取回避的单位
+--- 攻击被回避
+---@alias onBeAvoid fun(evtData: {triggerUnit:"攻击单位",attacker:"攻击单位",targetUnit:"回避的单位"}):void
+---@param whichUnit userdata
+---@param callFunc onBeAvoid | "function(evtData) end"
+---@return any
 hevent.onBeAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beAvoid, callFunc)
 end
 
--- 破防（护甲/魔抗）成功
--- breakType 获取无视类型
--- triggerUnit 获取触发无视单位
--- targetUnit 获取目标单位
--- value 获取破护甲的数值
+--- 破防（护甲/魔抗）成功
+---@alias onBreakArmor fun(evtData: {breakType:"无视类型",triggerUnit:"触发无视单位",targetUnit:"目标单位",value:"破防的数值"}):void
+---@param whichUnit userdata
+---@param callFunc onBreakArmor | "function(evtData) end"
+---@return any
 hevent.onBreakArmor = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.breakArmor, callFunc)
 end
 
--- 被破防（护甲/魔抗）成功
--- breakType 获取无视类型
--- triggerUnit 获取被破甲单位
--- sourceUnit 获取来源单位
--- value 获取破护甲的数值
+--- 被破防（护甲/魔抗）成功
+---@alias onBeBreakArmor fun(evtData: {breakType:"无视类型",triggerUnit:"被破甲单位",sourceUnit:"来源单位",value:"破防的数值"}):void
+---@param whichUnit userdata
+---@param callFunc onBeBreakArmor | "function(evtData) end"
+---@return any
 hevent.onBeBreakArmor = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBreakArmor, callFunc)
 end
 
--- 眩晕成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被眩晕单位
--- odds 获取眩晕几率百分比
--- during 获取眩晕时间（秒）
--- damage 获取眩晕伤害
+--- 眩晕成功
+---@alias onSwim fun(evtData: {triggerUnit:"触发单位",targetUnit:"被眩晕单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onSwim | "function(evtData) end"
+---@return any
 hevent.onSwim = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.swim, callFunc)
 end
 
--- 被眩晕
--- triggerUnit 获取被眩晕单位
--- sourceUnit 获取来源单位
--- odds 获取眩晕几率百分比
--- during 获取眩晕时间（秒）
--- damage 获取眩晕伤害
+--- 被眩晕
+---@alias onBeSwim fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeSwim | "function(evtData) end"
+---@return any
 hevent.onBeSwim = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSwim, callFunc)
 end
 
--- 打断成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被打断单位
--- odds 获取几率百分比
--- damage 获取打断伤害
+--- 打断成功
+---@alias onBroken fun(evtData: {triggerUnit:"触发单位",targetUnit:"被打断单位",odds:"几率百分比",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBroken | "function(evtData) end"
+---@return any
 hevent.onBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.broken, callFunc)
 end
 
--- 被打断
--- triggerUnit 获取被打断单位
--- sourceUnit 获取来源单位
--- odds 获取几率百分比
--- damage 获取打断伤害
+--- 被打断
+---@alias onBeBroken fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeBroken | "function(evtData) end"
+---@return any
 hevent.onBeBroken = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBroken, callFunc)
 end
 
--- 沉默成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被沉默单位
--- during 获取沉默时间（秒）
--- odds 获取几率百分比
--- damage 获取沉默伤害
+--- 沉默成功
+---@alias onSilent fun(evtData: {triggerUnit:"触发单位",targetUnit:"被沉默单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onSilent | "function(evtData) end"
+---@return any
 hevent.onSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.silent, callFunc)
 end
 
--- 被沉默
--- triggerUnit 获取被沉默单位
--- sourceUnit 获取来源单位
--- during 获取沉默时间（秒）
--- odds 获取几率百分比
--- damage 获取沉默伤害
+--- 被沉默
+---@alias onBeSilent fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeSilent | "function(evtData) end"
+---@return any
 hevent.onBeSilent = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSilent, callFunc)
 end
 
--- 缴械成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被缴械单位
--- during 获取缴械时间（秒）
--- odds 获取几率百分比
--- damage 获取缴械伤害
+--- 缴械成功
+---@alias onUnarm fun(evtData: {triggerUnit:"触发单位",targetUnit:"被缴械单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onUnarm | "function(evtData) end"
+---@return any
 hevent.onUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.unarm, callFunc)
 end
 
--- 被缴械
--- triggerUnit 获取被缴械单位
--- sourceUnit 获取来源单位
--- during 获取缴械时间（秒）
--- odds 获取几率百分比
--- damage 获取缴械伤害
+--- 被缴械
+---@alias onBeUnarm fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeUnarm | "function(evtData) end"
+---@return any
 hevent.onBeUnarm = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beUnarm, callFunc)
 end
 
--- 缚足成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被缚足单位
--- during 获取缚足时间（秒）
--- odds 获取几率百分比
--- damage 获取缚足伤害
+--- 缚足成功
+---@alias onFetter fun(evtData: {triggerUnit:"触发单位",targetUnit:"被缚足单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onFetter | "function(evtData) end"
+---@return any
 hevent.onFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.fetter, callFunc)
 end
 
--- 被缚足
--- triggerUnit 获取被缚足单位
--- sourceUnit 获取来源单位
--- during 获取缚足时间（秒）
--- odds 获取几率百分比
--- damage 获取缚足伤害
+--- 被缚足
+---@alias onBeFetter fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",during:"持续时间（秒）",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeFetter | "function(evtData) end"
+---@return any
 hevent.onBeFetter = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beFetter, callFunc)
 end
 
--- 爆破成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被爆破单位
--- damage 获取爆破伤害
--- odds 获取几率百分比
--- range 获取爆破范围
+--- 爆破成功
+---@alias onBomb fun(evtData: {triggerUnit:"触发单位",targetUnit:"被爆破单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBomb | "function(evtData) end"
+---@return any
 hevent.onBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.bomb, callFunc)
 end
 
--- 被爆破
--- triggerUnit 获取被爆破单位
--- sourceUnit 获取来源单位
--- damage 获取爆破伤害
--- odds 获取几率百分比
--- range 获取爆破范围
+--- 被爆破
+---@alias onBeBomb fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",range:"爆破范围",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeBomb | "function(evtData) end"
+---@return any
 hevent.onBeBomb = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beBomb, callFunc)
 end
 
--- 闪电链成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被闪电链单位
--- odds 获取几率百分比
--- damage 获取闪电链伤害
--- range 获取闪电链范围
--- index 获取单位是第几个被电到的
+--- 闪电链成功
+---@alias onLightningChain fun(evtData: {triggerUnit:"触发单位",targetUnit:"被闪电链单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}):void
+---@param whichUnit userdata
+---@param callFunc onLightningChain | "function(evtData) end"
+---@return any
 hevent.onLightningChain = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.lightningChain, callFunc)
 end
 
--- 被闪电链
--- triggerUnit 获取被闪电链单位
--- sourceUnit 获取来源单位
--- odds 获取几率百分比
--- damage 获取闪电链伤害
--- range 获取闪电链范围
--- index 获取单位是第几个被电到的
+--- 被闪电链
+---@alias onBeLightningChain fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",range:"闪电链范围",damage:"伤害",index:"是第几个被电到的"}):void
+---@param whichUnit userdata
+---@param callFunc onBeLightningChain | "function(evtData) end"
+---@return any
 hevent.onBeLightningChain = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beLightningChain, callFunc)
 end
 
--- 击飞成功
--- triggerUnit 获取触发单位
--- targetUnit 获取被击飞单位
--- odds 获取几率百分比
--- damage 获取击飞伤害
--- high 获取击飞高度
--- distance 获取击飞距离
+--- 击飞成功
+---@alias onCrackFly fun(evtData: {triggerUnit:"触发单位",targetUnit:"被击飞单位",odds:"几率百分比",damage:"伤害",high:"击飞高度",distance:"击飞距离"}):void
+---@param whichUnit userdata
+---@param callFunc onCrackFly | "function(evtData) end"
+---@return any
 hevent.onCrackFly = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.crackFly, callFunc)
 end
 
--- 被击飞
--- triggerUnit 获取被击飞单位
--- sourceUnit 获取来源单位
--- odds 获取几率百分比
--- damage 获取击飞伤害
--- high 获取击飞高度
--- distance 获取击飞距离
+--- 被击飞
+---@alias onBeCrackFly fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",odds:"几率百分比",damage:"伤害",high:"击飞高度",distance:"击飞距离"}):void
+---@param whichUnit userdata
+---@param callFunc onBeCrackFly | "function(evtData) end"
+---@return any
 hevent.onBeCrackFly = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beCrackFly, callFunc)
 end
 
--- 反伤时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取反伤伤害
+--- 反伤时
+---@alias onRebound fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"反伤伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onRebound | "function(evtData) end"
+---@return any
 hevent.onRebound = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.rebound, callFunc)
 end
 
--- 造成无法回避的伤害时
--- triggerUnit 获取触发单位
--- targetUnit 获取目标单位
--- damage 获取伤害值
+--- 被反伤时
+---@alias onBeRebound fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"反伤伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeRebound | "function(evtData) end"
+---@return any
+hevent.onBeRebound = function(whichUnit, callFunc)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.beRebound, callFunc)
+end
+
+--- 造成无法回避的伤害时
+---@alias onNoAvoid fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onNoAvoid | "function(evtData) end"
+---@return any
 hevent.onNoAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.noAvoid, callFunc)
 end
 
--- 被造成无法回避的伤害时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取伤害值
+--- 被造成无法回避的伤害时
+---@alias onBeNoAvoid fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害"}):void
+---@param whichUnit userdata
+---@param callFunc onBeNoAvoid | "function(evtData) end"
+---@return any
 hevent.onBeNoAvoid = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beNoAvoid, callFunc)
 end
 
--- 物理暴击时
--- triggerUnit 获取触发单位
--- targetUnit 获取目标单位
--- damage 获取暴击伤害值
--- odds 获取暴击几率百分比
--- percent 获取暴击增幅百分比
+--- 物理暴击时
+---@alias onKnocking fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onKnocking | "function(evtData) end"
+---@return any
 hevent.onKnocking = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.knocking, callFunc)
 end
 
--- 承受物理暴击时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取暴击伤害值
--- odds 获取暴击几率百分比
--- percent 获取暴击增幅百分比
+--- 承受物理暴击时
+---@alias onBeKnocking fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeKnocking | "function(evtData) end"
+---@return any
 hevent.onBeKnocking = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beKnocking, callFunc)
 end
 
--- 魔法暴击时
--- triggerUnit 获取触发单位
--- targetUnit 获取目标单位
--- damage 获取暴击伤害值
--- odds 获取暴击几率百分比
--- percent 获取暴击增幅百分比
+--- 魔法暴击时
+---@alias onViolence fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onViolence | "function(evtData) end"
+---@return any
 hevent.onViolence = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.violence, callFunc)
 end
 
--- 承受魔法暴击时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取暴击伤害值
--- odds 获取暴击几率百分比
--- percent 获取暴击增幅百分比
+--- 承受魔法暴击时
+---@alias onBeViolence fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害",odds:"几率百分比",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeViolence | "function(evtData) end"
+---@return any
 hevent.onBeViolence = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beViolence, callFunc)
 end
 
--- 分裂时
--- triggerUnit 获取触发单位
--- targetUnit 获取目标单位
--- damage 获取分裂伤害值
--- range 获取分裂范围(px)
--- percent 获取分裂百分比
+--- 分裂时
+---@alias onSpilt fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",damage:"伤害",range:"分裂范围",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onSpilt | "function(evtData) end"
+---@return any
 hevent.onSpilt = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.spilt, callFunc)
 end
 
--- 承受分裂时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取分裂伤害值
--- range 获取分裂范围(px)
--- percent 获取分裂百分比
+--- 承受分裂时
+---@alias onBeSpilt fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",damage:"伤害",range:"分裂范围",percent:"增幅百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeSpilt | "function(evtData) end"
+---@return any
 hevent.onBeSpilt = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSpilt, callFunc)
 end
 
--- 极限减伤抵抗（减伤不足以抵扣）
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
+--- 极限减伤抵抗（减伤不足以抵扣）
+---@alias onLimitToughness fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位"}):void
+---@param whichUnit userdata
+---@param callFunc onLimitToughness | "function(evtData) end"
+---@return any
 hevent.onLimitToughness = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.limitToughness, callFunc)
 end
 
--- 吸血时
--- triggerUnit 获取触发单位
--- targetUnit 获取目标单位
--- damage 获取吸血值
--- percent 获取吸血百分比
+--- 吸血时
+---@alias onHemophagia fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onHemophagia | "function(evtData) end"
+---@return any
 hevent.onHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.hemophagia, callFunc)
 end
 
--- 被吸血时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取吸血值
--- percent 获取吸血百分比
+--- 被吸血时
+---@alias onBeHemophagia fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeHemophagia | "function(evtData) end"
+---@return any
 hevent.onBeHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beHemophagia, callFunc)
 end
 
--- 技能吸血时
--- triggerUnit 获取触发单位
--- targetUnit 获取目标单位
--- damage 获取吸血值
--- percent 获取吸血百分比
+--- 技能吸血时
+---@alias onSkillHemophagia fun(evtData: {triggerUnit:"触发单位",targetUnit:"目标单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onSkillHemophagia | "function(evtData) end"
+---@return any
 hevent.onSkillHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.skillHemophagia, callFunc)
 end
 
--- 被技能吸血时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- damage 获取吸血值
--- percent 获取吸血百分比
+--- 被技能吸血时
+---@alias onBeHemophagia fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",value:"吸血值",percent:"吸血百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onBeHemophagia | "function(evtData) end"
+---@return any
 hevent.onBeSkillHemophagia = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.beSkillHemophagia, callFunc)
 end
 
--- 硬直时
--- triggerUnit 获取触发单位
--- sourceUnit 获取来源单位
--- percent 获取硬直程度百分比
--- during 获取持续时间
+--- 硬直时
+---@alias onPunish fun(evtData: {triggerUnit:"触发单位",sourceUnit:"来源单位",during:"持续时间",percent:"硬直程度百分比"}):void
+---@param whichUnit userdata
+---@param callFunc onPunish | "function(evtData) end"
+---@return any
 hevent.onPunish = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, ONST_EVENT.punish, callFunc)
 end
 
--- 死亡时
--- triggerUnit 获取触发单位
--- killer 获取凶手单位
+--- 死亡时
+---@alias onDead fun(evtData: {triggerUnit:"触发单位",killer:"凶手单位"}):void
+---@param whichUnit userdata
+---@param callFunc onDead | "function(evtData) end"
+---@return any
 hevent.onDead = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.dead, callFunc)
 end
 
--- 击杀时
--- triggerUnit 获取触发单位
--- killer 获取凶手单位
--- targetUnit 获取死亡单位
+--- 击杀时
+---@alias onKill fun(evtData: {triggerUnit:"触发单位",killer:"凶手单位",targetUnit:"获取死亡单位"}):void
+---@param whichUnit userdata
+---@param callFunc onKill | "function(evtData) end"
+---@return any
 hevent.onKill = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.kill, callFunc)
 end
 
--- triggerUnit 获取触发单位
--- 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
+--- 复活时(必须使用 hunit.reborn 方法才能嵌入到事件系统)
+---@alias onReborn fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onReborn | "function(evtData) end"
+---@return any
 hevent.onReborn = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.reborn, callFunc)
 end
 
--- 提升升等级时
--- triggerUnit 获取触发单位
--- value 获取提升了多少级
+--- 提升等级时
+---@alias onLevelUp fun(evtData: {triggerUnit:"触发单位",value:"获取提升了多少级"}):void
+---@param whichUnit userdata
+---@param callFunc onLevelUp | "function(evtData) end"
+---@return any
 hevent.onLevelUp = function(whichUnit, callFunc)
     return hevent.registerEvent(whichUnit, CONST_EVENT.levelUp, callFunc)
 end
 
--- 被召唤时
--- triggerUnit 获取被召唤单位
-hevent.onSummon = function(whichUnit, callFunc)
-    local key = CONST_EVENT.summon
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        bj.TriggerRegisterAnyUnitEventBJ(hRuntime.event.trigger[key], EVENT_PLAYER_UNIT_SUMMON)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichUnit, key, callFunc)
+--- 建筑升级开始时
+---@alias onUpgradeStart fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUpgradeStart | "function(evtData) end"
+---@return any
+hevent.onUpgradeStart = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeStart, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_START)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeStart, callFunc)
 end
 
--- 进入某单位（whichUnit）范围内
--- centerUnit 被进入范围的中心单位
--- triggerUnit 进入范围的单位
--- enterUnit 进入范围的单位
--- range 设定范围
+--- 建筑升级取消时
+---@alias onUpgradeCancel fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUpgradeCancel | "function(evtData) end"
+---@return any
+hevent.onUpgradeCancel = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeCancel, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeCancel, callFunc)
+end
+
+--- 建筑升级完成时
+---@alias onUpgradeFinish fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichUnit userdata
+---@param callFunc onUpgradeFinish | "function(evtData) end"
+---@return any
+hevent.onUpgradeFinish = function(whichUnit, callFunc)
+    hevent.pool(whichUnit, hevent_default_actions.unit.upgradeFinish, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_UPGRADE_FINISH)
+    end)
+    return hevent.registerEvent(whichUnit, CONST_EVENT.upgradeFinish, callFunc)
+end
+
+--- 进入某单位（whichUnit）范围内
+---@alias onEnterUnitRange fun(evtData: {centerUnit:"被进入范围的中心单位",enterUnit:"进入范围的单位",range:"设定范围"}):void
+---@param whichUnit userdata
+---@param range number
+---@param callFunc onEnterUnitRange | "function(evtData) end"
+---@return any
 hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
-    local key = CONST_EVENT.enterUnitRange .. "#range"
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    local key = CONST_EVENT.enterUnitRange
+    if (hRuntime.event.trigger[whichUnit] == nil) then
+        hRuntime.event.trigger[whichUnit] = {}
     end
-    if (hRuntime.event.trigger[key][whichUnit] == nil) then
-        hRuntime.event.trigger[key][whichUnit] = cj.CreateTrigger()
-        cj.TriggerRegisterUnitInRangeSimple(hRuntime.event.trigger[key][whichUnit], range, whichUnit)
+    if (hRuntime.event.trigger[whichUnit][key] == nil) then
+        hRuntime.event.trigger[whichUnit][key] = cj.CreateTrigger()
+        cj.TriggerRegisterUnitInRange(
+            hRuntime.event.trigger[whichUnit][key],
+            whichUnit, range, nil
+        )
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichUnit],
+            hRuntime.event.trigger[whichUnit][key],
             function()
                 hevent.triggerEvent(
                     whichUnit,
                     key,
                     {
                         centerUnit = whichUnit,
-                        triggerUnit = cj.GetTriggerUnit(),
                         enterUnit = cj.GetTriggerUnit(),
                         range = range
                     }
@@ -1154,21 +818,23 @@ hevent.onEnterUnitRange = function(whichUnit, range, callFunc)
     return hevent.registerEvent(whichUnit, key, callFunc)
 end
 
--- 进入某区域
--- triggerRect 获取被进入的矩形区域
--- triggerUnit 获取进入矩形区域的单位
+--- 进入某区域
+---@alias onEnterRect fun(evtData: {triggerRect:"被进入的矩形区域",triggerUnit:"进入矩形区域的单位"}):void
+---@param whichRect userdata
+---@param callFunc onEnterRect | "function(evtData) end"
+---@return any
 hevent.onEnterRect = function(whichRect, callFunc)
     local key = CONST_EVENT.enterRect
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichRect] == nil) then
+        hRuntime.event.trigger[whichRect] = {}
     end
-    if (hRuntime.event.trigger[key][whichRect] == nil) then
-        hRuntime.event.trigger[key][whichRect] = cj.CreateTrigger()
+    if (hRuntime.event.trigger[whichRect][key] == nil) then
+        hRuntime.event.trigger[whichRect][key] = cj.CreateTrigger()
         local rectRegion = cj.CreateRegion()
         cj.RegionAddRect(rectRegion, whichRect)
-        cj.TriggerRegisterEnterRegion(hRuntime.event.trigger[key][whichRect], rectRegion, nil)
+        cj.TriggerRegisterEnterRegion(hRuntime.event.trigger[whichRect][key], rectRegion, nil)
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichRect],
+            hRuntime.event.trigger[whichRect][key],
             function()
                 hevent.triggerEvent(
                     whichRect,
@@ -1184,21 +850,23 @@ hevent.onEnterRect = function(whichRect, callFunc)
     return hevent.registerEvent(whichRect, key, callFunc)
 end
 
--- 离开某区域
--- triggerRect 获取被离开的矩形区域
--- triggerUnit 获取离开矩形区域的单位
+--- 离开某区域
+---@alias onLeaveRect fun(evtData: {triggerRect:"被离开的矩形区域",triggerUnit:"离开矩形区域的单位"}):void
+---@param whichRect userdata
+---@param callFunc onLeaveRect | "function(evtData) end"
+---@return any
 hevent.onLeaveRect = function(whichRect, callFunc)
     local key = CONST_EVENT.leaveRect
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichRect] == nil) then
+        hRuntime.event.trigger[whichRect] = {}
     end
-    if (hRuntime.event.trigger[key][whichRect] == nil) then
-        hRuntime.event.trigger[key][whichRect] = cj.CreateTrigger()
+    if (hRuntime.event.trigger[whichRect][key] == nil) then
+        hRuntime.event.trigger[whichRect][key] = cj.CreateTrigger()
         local rectRegion = cj.CreateRegion()
         cj.RegionAddRect(rectRegion, whichRect)
-        cj.TriggerRegisterLeaveRegion(hRuntime.event.trigger[key][whichRect], rectRegion, nil)
+        cj.TriggerRegisterLeaveRegion(hRuntime.event.trigger[whichRect][key], rectRegion, nil)
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichRect],
+            hRuntime.event.trigger[whichRect][key],
             function()
                 hevent.triggerEvent(
                     whichRect,
@@ -1214,53 +882,70 @@ hevent.onLeaveRect = function(whichRect, callFunc)
     return hevent.registerEvent(whichRect, key, callFunc)
 end
 
--- 当聊天时
--- params matchAll 是否全匹配，false为like
--- triggerPlayer 获取聊天的玩家
--- chatString 获取聊天的内容
--- matchedString 获取匹配命中的内容
-hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
-    if (whichPlayer == nil or chatStr == nil) then
-        return
-    end
-    --local key = CONST_EVENT.chat
-    local tg = cj.CreateTrigger()
-    cj.TriggerRegisterPlayerChatEvent(tg, whichPlayer, chatStr, matchAll)
-    cj.TriggerAddAction(
-        tg,
-        function()
-            callFunc(
-                {
-                    triggerPlayer = cj.GetTriggerPlayer(),
-                    chatString = cj.GetEventPlayerChatString(),
-                    matchedString = cj.GetEventPlayerChatStringMatched()
-                }
-            )
-        end
-    )
+--- 任意建筑建造开始时
+---@alias onConstructStart fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onConstructStart | "function(evtData) end"
+---@return any
+hevent.onConstructStart = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructStart, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructStart, callFunc)
 end
 
--- 按ESC
--- triggerPlayer 获取触发玩家
-hevent.onEsc = function(whichPlayer, callFunc)
-    local key = CONST_EVENT.esc
-    if (whichPlayer == nil) then
-        return
+--- 任意建筑建造取消时
+---@alias onConstructCancel fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onConstructCancel | "function(evtData) end"
+---@return any
+hevent.onConstructCancel = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructCancel, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructCancel, callFunc)
+end
+
+--- 任意建筑建造完成时
+---@alias onConstructFinish fun(evtData: {triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onConstructFinish | "function(evtData) end"
+---@return any
+hevent.onConstructFinish = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.constructFinish, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_FINISH, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.constructFinish, callFunc)
+end
+
+--- 当聊天时
+---@alias onChat fun(evtData: {triggerPlayer:"聊天的玩家",chatString:"聊天的内容",matchedString:"匹配命中的内容"}):void
+---@param whichPlayer userdata
+---@param chatStr string
+---@param matchAll boolean
+---@param callFunc onChat | "function(evtData) end"
+---@return any
+hevent.onChat = function(whichPlayer, chatStr, matchAll, callFunc)
+    local key = CONST_EVENT.chat .. chatStr .. '|F'
+    if (matchAll) then
+        key = CONST_EVENT.chat .. chatStr .. '|T'
     end
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichPlayer] == nil) then
+        hRuntime.event.trigger[whichPlayer] = {}
     end
-    if (hRuntime.event.trigger[key][whichPlayer] == nil) then
-        hRuntime.event.trigger[key][whichPlayer] = cj.CreateTrigger()
-        cj.TriggerRegisterPlayerEventEndCinematic(hRuntime.event.trigger[key][whichPlayer], whichPlayer)
+    if (hRuntime.event.trigger[whichPlayer][key] == nil) then
+        hRuntime.event.trigger[whichPlayer][key] = cj.CreateTrigger()
+        cj.TriggerRegisterPlayerChatEvent(hRuntime.event.trigger[whichPlayer][key], whichPlayer, chatStr, matchAll)
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichPlayer],
+            hRuntime.event.trigger[whichPlayer][key],
             function()
                 hevent.triggerEvent(
-                    whichPlayer,
+                    cj.GetTriggerPlayer(),
                     key,
                     {
-                        triggerPlayer = cj.GetTriggerPlayer()
+                        triggerPlayer = cj.GetTriggerPlayer(),
+                        chatString = cj.GetEventPlayerChatString(),
+                        matchedString = cj.GetEventPlayerChatStringMatched()
                     }
                 )
             end
@@ -1269,35 +954,52 @@ hevent.onEsc = function(whichPlayer, callFunc)
     return hevent.registerEvent(whichPlayer, key, callFunc)
 end
 
--- 玩家选择单位(点击了qty次)
--- triggerPlayer 获取触发玩家
--- triggerUnit 获取触发单位
+--- 按ESC
+---@alias onEsc fun(evtData: {triggerPlayer:"触发玩家"}):void
+---@param whichPlayer userdata
+---@param callFunc onEsc | "function(evtData) end"
+---@return any
+hevent.onEsc = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.esc, function(tgr)
+        cj.TriggerRegisterPlayerEventEndCinematic(tgr, whichPlayer)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.esc, callFunc)
+end
+
+--- 玩家选择单位(点击了qty次)
+---@alias onSelection fun(evtData: {triggerPlayer:"触发玩家",triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param qty number
+---@param callFunc onSelection | "function(evtData) end"
+---@return any
 hevent.onSelection = function(whichPlayer, qty, callFunc)
-    if (whichPlayer == nil or qty == nil or qty <= 0) then
-        return
-    end
     local key = CONST_EVENT.selection .. "#" .. qty
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
+    if (hRuntime.event.trigger[whichPlayer] == nil) then
+        hRuntime.event.trigger[whichPlayer] = {}
     end
-    if (hRuntime.event.trigger[key][whichPlayer] == nil) then
-        hRuntime.event.trigger[key].click = 0
-        hRuntime.event.trigger[key][whichPlayer] = cj.CreateTrigger()
-        bj.TriggerRegisterPlayerSelectionEventBJ(hRuntime.event.trigger[key][whichPlayer], whichPlayer, true)
+    if (hRuntime.event.trigger[whichPlayer][key] == nil) then
+        hRuntime.event.trigger[whichPlayer][key] = {
+            click = 0,
+            trigger = cj.CreateTrigger(),
+        }
+        cj.TriggerRegisterPlayerUnitEvent(
+            hRuntime.event.trigger[whichPlayer][key].trigger,
+            whichPlayer, EVENT_PLAYER_UNIT_SELECTED, nil
+        )
         cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichPlayer],
+            hRuntime.event.trigger[whichPlayer][key].trigger,
             function()
                 local triggerPlayer = cj.GetTriggerPlayer()
                 local triggerUnit = cj.GetTriggerUnit()
-                hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click + 1
+                hRuntime.event.trigger[triggerPlayer][key].click = hRuntime.event.trigger[triggerPlayer][key].click + 1
                 htime.setTimeout(
                     0.3,
                     function(t)
                         htime.delTimer(t)
-                        hRuntime.event.trigger[key].click = hRuntime.event.trigger[key].click - 1
+                        hRuntime.event.trigger[triggerPlayer][key].click = hRuntime.event.trigger[triggerPlayer][key].click - 1
                     end
                 )
-                if (hRuntime.event.trigger[key].click >= qty) then
+                if (hRuntime.event.trigger[triggerPlayer][key].click >= qty) then
                     hevent.triggerEvent(
                         triggerPlayer,
                         key,
@@ -1314,194 +1016,30 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
     return hevent.registerEvent(whichPlayer, key, callFunc)
 end
 
--- 玩家取消选择单位
--- triggerPlayer 获取触发玩家
--- triggerUnit 获取触发单位
-hevent.onUnSelection = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.unSelection
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = {}
-    end
-    if (hRuntime.event.trigger[key][whichPlayer] == nil) then
-        hRuntime.event.trigger[key][whichPlayer] = cj.CreateTrigger()
-        bj.TriggerRegisterPlayerSelectionEventBJ(hRuntime.event.trigger[key][whichPlayer], whichPlayer, false)
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key][whichPlayer],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerPlayer(),
-                    key,
-                    {
-                        triggerPlayer = cj.GetTriggerPlayer(),
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    return hevent.registerEvent(whichPlayer, key, callFunc)
+--- 玩家取消选择单位
+---@alias onDeSelection fun(evtData: {triggerPlayer:"触发玩家",triggerUnit:"触发单位"}):void
+---@param whichPlayer userdata
+---@param callFunc onDeSelection | "function(evtData) end"
+---@return any
+hevent.onDeSelection = function(whichPlayer, callFunc)
+    hevent.pool(whichPlayer, hevent_default_actions.player.deSelection, function(tgr)
+        cj.TriggerRegisterPlayerUnitEvent(tgr, whichPlayer, EVENT_PLAYER_UNIT_DESELECTED, nil)
+    end)
+    return hevent.registerEvent(whichPlayer, CONST_EVENT.deSelection, callFunc)
 end
 
--- 玩家离开游戏事件(注意这是全局事件)
--- triggerPlayer 获取触发玩家
+--- 玩家离开游戏事件(注意这是全局事件)
+---@alias onPlayerLeave fun(evtData: {triggerPlayer:"触发玩家"}):void
+---@param callFunc onPlayerLeave | "function(evtData) end"
+---@return any
 hevent.onPlayerLeave = function(callFunc)
     return hevent.registerEvent("global", CONST_EVENT.playerLeave, callFunc)
 end
 
--- 建筑升级开始时
--- triggerUnit 获取触发单位
-hevent.onUpgradeStart = function(whichUnit, callFunc)
-    local key = CONST_EVENT.upgradeStart
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_UPGRADE_START)
-    return hevent.registerEvent(whichUnit, key, callFunc)
-end
-
--- 建筑升级取消时
--- triggerUnit 获取触发单位
-hevent.onUpgradeCancel = function(whichUnit, callFunc)
-    local key = CONST_EVENT.upgradeCancel
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_UPGRADE_CANCEL)
-    return hevent.registerEvent(whichUnit, key, callFunc)
-end
-
--- 建筑升级完成时
--- triggerUnit 获取触发单位
-hevent.onUpgradeFinish = function(whichUnit, callFunc)
-    local key = CONST_EVENT.upgradeFinish
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    cj.GetTriggerUnit(),
-                    key,
-                    {
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterUnitEvent(hRuntime.event.trigger[key], whichUnit, EVENT_UNIT_UPGRADE_FINISH)
-    return hevent.registerEvent(whichUnit, key, callFunc)
-end
-
--- 任意建筑建造开始时
--- triggerUnit 获取触发单位
-hevent.onConstructStart = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.constructStart
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    whichPlayer,
-                    key,
-                    {
-                        triggerKey = key,
-                        triggerUnit = cj.GetTriggerUnit()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterPlayerUnitEvent(hRuntime.event.trigger[key], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_START, nil)
-    return hevent.registerEvent(whichPlayer, key, whichPlayer, callFunc)
-end
-
--- 任意建筑建造取消时
--- triggerUnit 获取触发单位
-hevent.onConstructCancel = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.constructCancel
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    whichPlayer,
-                    key,
-                    {
-                        triggerUnit = cj.GetCancelledStructure()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterPlayerUnitEvent(hRuntime.event.trigger[key], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-    return hevent.registerEvent(whichPlayer, key, callFunc)
-end
-
--- 任意建筑建造完成时
--- triggerUnit 获取触发单位
-hevent.onConstructFinish = function(whichPlayer, callFunc)
-    if (whichPlayer == nil) then
-        return
-    end
-    local key = CONST_EVENT.constructFinish
-    if (hRuntime.event.trigger[key] == nil) then
-        hRuntime.event.trigger[key] = cj.CreateTrigger()
-        cj.TriggerAddAction(
-            hRuntime.event.trigger[key],
-            function()
-                hevent.triggerEvent(
-                    whichPlayer,
-                    key,
-                    {
-                        triggerUnit = cj.GetConstructedStructure()
-                    }
-                )
-            end
-        )
-    end
-    cj.TriggerRegisterPlayerUnitEvent(hRuntime.event.trigger[key], whichPlayer, EVENT_PLAYER_UNIT_CONSTRUCT_CANCEL, nil)
-    return hevent.registerEvent(whichPlayer, key, callFunc)
-end
-
--- 任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
--- triggerPlayer 获取触发玩家
--- triggerUnit 获取触发单位
+--- 任意单位经过hero方法被玩家所挑选为英雄时(注意这是全局事件)
+---@alias onPickHero fun(evtData: {triggerPlayer:"触发玩家",triggerUnit:"触发单位"}):void
+---@param callFunc onPickHero | "function(evtData) end"
+---@return any
 hevent.onPickHero = function(callFunc)
     return hevent.onEventByHandle("global", CONST_EVENT.pickHero, callFunc)
 end

@@ -5,7 +5,6 @@ cg = require "jass.globals"
 -- 加载blizzard
 require "foundation.blizzard_c"
 require "foundation.blizzard_b"
-require "foundation.blizzard_bj"
 
 -- 加载const
 require "const.attribute"
@@ -35,10 +34,12 @@ require "foundation.string"
 require "foundation.table"
 -- 加载color
 require "foundation.color"
--- 加载h-lua的F9
-require "foundation.f9"
 -- 加载runtime
 require "foundation.slk"
+-- 加载h-lua的F9
+require "foundation.f9"
+-- 加载echo
+require "foundation.echo"
 
 -- 加载Dzapi库
 -- 需要编辑器支持网易平台的DZAPI
@@ -50,15 +51,15 @@ require "lib.dzapi"
 -- 加载h-lua库
 require "lib.time"
 require "lib.is"
-require "lib.message"
 require "lib.sound"
-require "lib.mark"
+require "lib.texture"
 require "lib.effect"
 require "lib.lightning"
 require "lib.weather"
 require "lib.env"
 require "lib.camera"
 require "lib.event"
+require "lib.eventDefaultActions"
 require "lib.textTag"
 require "lib.rect"
 require "lib.player"
@@ -78,7 +79,6 @@ require "lib.leaderBoard"
 require "lib.multiBoard"
 require "lib.quest"
 -- 别称
-hmsg = hmessage
 httg = htextTag
 hattribute = hattr
 
@@ -95,6 +95,8 @@ hunit.del(u)
 hplayer.init()
 -- 单位
 hunit.init()
+-- 英雄
+hhero.init()
 -- DzApi
 hdzapi.init()
 --F9任务
