@@ -323,7 +323,7 @@ end
 
 --- 物品被破坏
 ---@alias onItemDestroy fun(evtData: {triggerUnit:"触发单位",triggerItem:"触发物品"}):void
----@param whichUnit userdata
+---@param whichItem userdata
 ---@param callFunc onItemDestroy | "function(evtData) end"
 ---@return any
 hevent.onItemDestroy = function(whichItem, callFunc)
