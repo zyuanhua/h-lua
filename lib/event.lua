@@ -991,6 +991,9 @@ hevent.onSelection = function(whichPlayer, qty, callFunc)
             function()
                 local triggerPlayer = cj.GetTriggerPlayer()
                 local triggerUnit = cj.GetTriggerUnit()
+                print_mb(hplayer.getName(triggerPlayer))
+                print_mb(hunit.getName(triggerUnit))
+                print("click", hRuntime.event.trigger[triggerPlayer][key].click)
                 hRuntime.event.trigger[triggerPlayer][key].click = hRuntime.event.trigger[triggerPlayer][key].click + 1
                 htime.setTimeout(
                     0.3,

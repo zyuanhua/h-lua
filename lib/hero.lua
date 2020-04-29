@@ -108,45 +108,6 @@ hhero.setBornXY = function(x, y)
     hhero.bornY = y
 end
 
---- 删除一个英雄单位对玩家
----@private
----@param whichPlayer userdata
----@param hero userdata
-hhero.removePlayerUnit = function(whichPlayer, hero)
-    table.delete(hero, hhero.player_heroes[whichPlayer])
-    local heroId = hunit.getId(hero)
-
-    if (type == "click") then
-        -- 点击方式
-        local heroId = cj.GetUnitTypeId(u)
-        local x = hRuntime.heroBuildSelection[u].x
-        local y = hRuntime.heroBuildSelection[u].y
-        hRuntime.heroBuildSelection[u] = nil
-        hunit.del(u)
-        local u_new = hunit.create(
-            {
-                whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                unitId = heroId,
-                x = x,
-                y = y,
-                isPause = true
-            }
-        )
-        hRuntime.heroBuildSelection[u_new] = {
-            x = x,
-            x = y,
-            canChoose = true
-        }
-    elseif (type == "tavern") then
-        -- 酒馆方式
-        local heroId = cj.GetUnitTypeId(u)
-        local itemId = hRuntime.heroBuildSelection[heroId].itemId
-        local tavern = hRuntime.heroBuildSelection[heroId].tavern
-        hunit.del(u)
-        cj.AddItemToStock(tavern, itemId, 1, 1)
-    end
-end
-
 --- 设置一个单位是否拥有英雄判定
 --- 当设置[一般单位]为[英雄]时，框架自动屏幕，[力量|敏捷|智力]等不属于一般单位的属性，以避免引起崩溃报错
 --- 设定后 his.hero 方法会认为单位为英雄，同时属性系统也会认定它为英雄
@@ -171,7 +132,7 @@ hhero.buildSelector = function(options)
         options = {
             heroes = {"H001","H002"}, -- 可以选择的单位ID
             during = 60, -- 选择持续时间，最少30秒，默认60秒，超过这段时间未选择的玩家会被剔除出游戏
-            type = string, "tavern" | "doubleClick"
+            type = string, "tavern" | "click"
             buildX = 0, -- 构建点X
             buildY = 0, -- 构建点Y
             buildDistance = 256, -- 构建距离，例如两个酒馆间，两个单位间
@@ -180,6 +141,10 @@ hhero.buildSelector = function(options)
         }
     ]]
     if (#options.heroes <= 0) then
+        return
+    end
+    if (#hhero.selectorClearPool > 0) then
+        echo("已经有1个选择事件在执行，请不要同时构建2个")
         return
     end
     local during = options.during or 60
@@ -195,7 +160,7 @@ hhero.buildSelector = function(options)
     local currentRowQty = 0
     local x = buildX
     local y = buildY
-    if (type == "doubleClick") then
+    if (type == "click") then
         for _, heroId in ipairs(options.heroes) do
             if (currentRowQty >= buildRowQty) then
                 currentRowQty = 0
@@ -222,9 +187,46 @@ hhero.buildSelector = function(options)
             table.insert(hhero.selectorPool, u)
             currentRowQty = currentRowQty + 1
         end
-        for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+        for i = 1, hplayer.qty_max, 1 do
             hevent.onSelection(hplayer.players[i], 2, function(evtData)
-                
+                local p = evtData.triggerPlayer
+                local u = evtData.triggerUnit
+                if (table.includes(u, hhero.selectorClearPool) == false) then
+                    return
+                end
+                if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
+                    return
+                end
+                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    echo("|cffffff80你已经选够了|r", p)
+                    return
+                end
+                print_r(hhero.selectorPool)
+                print(u)
+                table.delete(u, hhero.selectorPool)
+                table.delete(u, hhero.selectorClearPool)
+                hunit.setInvulnerable(u, false)
+                cj.SetUnitOwner(u, p, true)
+                cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
+                cj.PauseUnit(u, false)
+                hhero.setIsHero(u, true)
+                table.insert(hhero.player_heroes[p], u)
+                -- 触发英雄被选择事件(全局)
+                hevent.triggerEvent(
+                    "global",
+                    CONST_EVENT.pickHero,
+                    {
+                        triggerPlayer = tp,
+                        triggerUnit = u
+                    }
+                )
+                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", p)
+                else
+                    echo("您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
+                        math.floor(hhero.player_allow_qty[p] - #hhero.player_heroes[p]) .. " 个", p
+                    )
+                end
             end)
         end
     elseif (type == "tavern") then
@@ -284,7 +286,7 @@ hhero.buildSelector = function(options)
         end
     end
     -- 视野token
-    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+    for i = 1, hplayer.qty_max, 1 do
         local p = cj.Player(i - 1)
         local u = hunit.create(
             {
@@ -298,372 +300,23 @@ hhero.buildSelector = function(options)
         )
         table.insert(hhero.selectorClearPool, u)
     end
-    htime.setTimeout(during, function(t)
+    -- 还剩10秒给个选英雄提示
+    htime.setTimeout(
+        during - 10.0,
+        function(t)
+            local x2 = buildX + buildRowQty * buildDistance * 0.5
+            local y2 = buildY - math.floor(#options.heroes / buildRowQty) * buildDistance * 0.5
+            htime.delTimer(t)
+            hhero.selectorPool = {}
+            echo("还剩 10 秒，还未选择的玩家尽快啦～")
+            cj.PingMinimapEx(x2, y2, 8, 255, 0, 0, true)
+        end
+    )
+    htime.setTimeout(during - 0.5, function(t)
         htime.delTimer(t)
         for _, u in ipairs(hhero.selectorClearPool) do
             hunit.del(u)
         end
         hhero.selectorClearPool = {}
-    end)
-end
-
--- 构建选择单位给玩家（clickQty 击）
-hhero.buildClick = function(during, clickQty)
-    if (during <= 20) then
-        print_err("建立点击选英雄模式必须设定during大于20秒")
-        return
-    end
-    if (clickQty == nil or clickQty <= 1) then
-        clickQty = 2
-    end
-    during = during + 1
-    -- build
-    local randomChooseAbleList = {}
-    local totalRow = 1
-    local rowNowQty = 0
-    local x = 0
-    local y = 0
-    for _, v in ipairs(hslk_global.heroes) do
-        local heroId = v.heroID
-        if (heroId > 0) then
-            if (rowNowQty >= hhero.build_params.per_row) then
-                rowNowQty = 0
-                totalRow = totalRow + 1
-                x = hhero.build_params.x
-                y = y - hhero.build_params.distance
-            else
-                x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
-            end
-            local u = hunit.create(
-                {
-                    whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                    unitId = heroId,
-                    x = x,
-                    y = y,
-                    during = during,
-                    isInvulnerable = true,
-                    isPause = true
-                }
-            )
-            hRuntime.heroBuildSelection[u] = {
-                x = x,
-                x = y,
-                canChoose = true
-            }
-            table.insert(randomChooseAbleList, u)
-            rowNowQty = rowNowQty + 1
-        end
-    end
-    -- evt
-    local tgr_random = cj.CreateTrigger()
-    local tgr_repick = cj.CreateTrigger()
-    cj.TriggerAddAction(
-        tgr_random,
-        function()
-            local p = cj.GetTriggerPlayer()
-            if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                echo("|cffffff80你已经选够了|r", p)
-                return
-            end
-            local txt = ""
-            local qty = 0
-            while (true) do
-                local u = table.random(randomChooseAbleList)
-                table.delete(u, randomChooseAbleList)
-                txt = txt .. " " .. cj.GetUnitName(u)
-                hhero.addPlayerUnit(p, u, "click")
-                hhero.player_current_qty[p] = hhero.player_current_qty[p] + 1
-                qty = qty + 1
-                if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    break
-                end
-            end
-            hmessage.echo00(
-                "已为您 |cffffff80random|r 选择了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个单位：|cffffff80" .. txt .. "|r",
-                0,
-                p
-            )
-        end
-    )
-    cj.TriggerAddAction(
-        tgr_repick,
-        function()
-            local p = cj.GetTriggerPlayer()
-            if (hhero.player_current_qty[p] <= 0) then
-                echo("|cffffff80你还没有选过任何单位|r", p)
-                return
-            end
-            local qty = #hhero.player_heroes
-            for _, v in ipairs(hhero.player_heroes[p]) do
-                hhero.removePlayerUnit(p, v, "click")
-                table.insert(randomChooseAbleList, v)
-            end
-            hhero.player_heroes[p] = {}
-            hhero.player_current_qty[p] = 0
-            hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
-            echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
-        end
-    )
-    -- token
-    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-        local p = cj.Player(i - 1)
-        local u = hunit.create(
-            {
-                whichPlayer = p,
-                unitId = hhero.build_token,
-                x = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance,
-                y = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance,
-                during = during,
-                isInvulnerable = true,
-                isPause = true
-            }
-        )
-        hunit.del(u, during)
-        cj.TriggerRegisterPlayerChatEvent(tgr_random, p, "-random", true)
-        cj.TriggerRegisterPlayerChatEvent(tgr_repick, p, "-repick", true)
-        local tgr_click = hevent.onSelection(
-            p,
-            clickQty,
-            function(data)
-                local p = data.triggerPlayer
-                local u = data.triggerUnit
-                if (hRuntime.heroBuildSelection[u] == nil) then
-                    return
-                end
-                if (hRuntime.heroBuildSelection[u].canSelect == false) then
-                    return
-                end
-                if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
-                    return
-                end
-                if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    echo("|cffffff80你已经选够了|r", p)
-                    return
-                end
-                table.delete(u, randomChooseAbleList)
-                hhero.addPlayerUnit(p, u, "click")
-                if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", p)
-                else
-                    echo("您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
-                        math.floor(hhero.player_allow_qty[p] - hhero.player_current_qty[p]) .. " 个", p
-                    )
-                end
-            end
-        )
-        htime.setTimeout(
-            during - 0.5,
-            function(t)
-                htime.delTimer(t)
-                hevent.deleteEvent(p, CONST_EVENT.selection .. "#" .. clickQty, tgr_click)
-            end
-        )
-    end
-    -- 还剩10秒给个选英雄提示
-    htime.setTimeout(
-        during - 10.0,
-        function(t)
-            local x1 = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance
-            local y1 = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance
-            htime.delTimer(t)
-            cj.DisableTrigger(tgr_repick)
-            cj.DestroyTrigger(tgr_repick)
-            echo("还剩 10 秒，还未选择的玩家尽快啦～")
-            cj.PingMinimapEx(x1, y1, 1.00, 254, 0, 0, true)
-        end
-    )
-    -- 一定时间后clear
-    htime.setTimeout(
-        during - 0.5,
-        function(t)
-            htime.delTimer(t)
-            cj.DisableTrigger(tgr_random)
-            cj.DestroyTrigger(tgr_random)
-        end,
-        "选择英雄"
-    )
-    -- 转移玩家镜头
-    hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
-end
-
--- 构建选择单位给玩家（商店物品）
-hhero.buildTavern = function(during)
-    if (during <= 20) then
-        print_err("建立酒馆选英雄模式必须设定during大于20秒")
-        return
-    end
-    during = during + 1
-    local randomChooseAbleList = {}
-    -- evt
-    local tgr_sell = cj.CreateTrigger()
-    local tgr_random = cj.CreateTrigger()
-    local tgr_repick = cj.CreateTrigger()
-    cj.TriggerAddAction(
-        tgr_sell,
-        function()
-            local it = cj.GetSoldItem()
-            local itemId = cj.GetItemTypeId(it)
-            local p = cj.GetOwningPlayer(cj.GetBuyingUnit())
-            local unitId = hRuntime.heroBuildSelection[itemId].unitId
-            local tavern = hRuntime.heroBuildSelection[itemId].tavern
-            if (unitId == nil or tavern == nil) then
-                print_err("hhero.buildTavern-tgr_sell=nil")
-                return
-            end
-            if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                echo("|cffffff80你已经选够了|r", p)
-                hitem.del(it, 0)
-                cj.AddItemToStock(tavern, itemId, 1, 1)
-                return
-            end
-            hhero.player_current_qty[p] = hhero.player_current_qty[p] + 1
-            cj.RemoveItemFromStock(tavern, itemId)
-            table.delete(itemId, randomChooseAbleList)
-            hhero.addPlayerUnit(p, unitId, "tavern")
-        end
-    )
-    cj.TriggerAddAction(
-        tgr_random,
-        function()
-            local p = cj.GetTriggerPlayer()
-            if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                echo("|cffffff80你已经选够了|r", p)
-                return
-            end
-            local txt = ""
-            local qty = 0
-            while (true) do
-                local itemId = table.random(randomChooseAbleList)
-                table.delete(itemId, randomChooseAbleList)
-                local unitId = hRuntime.heroBuildSelection[itemId].unitId
-                local tavern = hRuntime.heroBuildSelection[itemId].tavern
-                if (unitId == nil or tavern == nil) then
-                    print_err("hhero.buildTavern-tgr_random=nil")
-                    return
-                end
-                txt = txt .. " " .. hslk_global.heroesKV[unitId].Name
-                hhero.addPlayerUnit(p, unitId, "tavern")
-                hhero.player_current_qty[p] = hhero.player_current_qty[p] + 1
-                qty = qty + 1
-                if (hhero.player_current_qty[p] >= hhero.player_allow_qty[p]) then
-                    break
-                end
-            end
-            hmessage.echo00(
-                p,
-                "已为您 |cffffff80random|r 选择了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个单位：|cffffff80" .. txt .. "|r",
-                0
-            )
-        end
-    )
-    cj.TriggerAddAction(
-        tgr_repick,
-        function()
-            local p = cj.GetTriggerPlayer()
-            if (hhero.player_current_qty[p] <= 0) then
-                hmessage.echo00(p, "|cffffff80你还没有选过任何单位|r", 0)
-                return
-            end
-            local qty = #hhero.player_heroes
-            for _, v in ipairs(hhero.player_heroes[p]) do
-                local heroId = cj.GetUnitTypeId(v)
-                hhero.removePlayerUnit(p, v, "tavern")
-                table.insert(randomChooseAbleList, hRuntime.heroBuildSelection[heroId].itemId)
-            end
-            hhero.player_heroes[p] = {}
-            hhero.player_current_qty[p] = 0
-            hcamera.toXY(p, 0, hhero.build_params.x, hhero.build_params.y)
-            hmessage.echo00(p, "已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", 0)
-        end
-    )
-    -- build
-    local totalRow = 1
-    local rowNowQty = 0
-    local x = 0
-    local y = hhero.build_params.y
-    local tavern
-    local tavernNowQty = {}
-    for k, v in ipairs(hslk_global.heroesItems) do
-        local itemId = v.itemID
-        local heroId = v.heroID
-        if (itemID > 0 and heroId > 0) then
-            if (tavern == nil or tavernNowQty[tavern] == nil or tavernNowQty[tavern] >= hhero.build_params.allow_qty) then
-                tavernNowQty[tavern] = 0
-                if (rowNowQty >= hhero.build_params.per_row) then
-                    rowNowQty = 0
-                    totalRow = totalRow + 1
-                    x = hhero.build_params.x
-                    y = y - hhero.build_params.distance
-                else
-                    x = hhero.build_params.x + rowNowQty * hhero.build_params.distance
-                end
-                tavern = hunit.create(
-                    {
-                        whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                        unitId = hhero.build_params.id,
-                        x = x,
-                        y = y,
-                        during = during
-                    }
-                )
-                cj.SetItemTypeSlots(tavern, hhero.build_params.allow_qty)
-                cj.TriggerRegisterUnitEvent(tgr_sell, tavern, EVENT_UNIT_SELL_ITEM)
-                rowNowQty = rowNowQty + 1
-            end
-            tavernNowQty[tavern] = tavernNowQty[tavern] + 1
-            cj.AddItemToStock(tavern, itemId, 1, 1)
-            hRuntime.heroBuildSelection[itemId] = {
-                heroId = heroId,
-                tavern = tavern
-            }
-            hRuntime.heroBuildSelection[heroId] = {
-                itemId = itemId,
-                tavern = tavern
-            }
-            table.insert(randomChooseAbleList, itemId)
-        end
-    end
-    -- token
-    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-        local p = cj.Player(i - 1)
-        local u = hunit.create(
-            {
-                whichPlayer = p,
-                unitId = hhero.build_token,
-                x = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance,
-                y = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance,
-                isPause = true
-            }
-        )
-        hunit.del(u, during)
-        cj.TriggerRegisterPlayerChatEvent(tgr_random, p, "-random", true)
-        cj.TriggerRegisterPlayerChatEvent(tgr_repick, p, "-repick", true)
-    end
-    -- 还剩10秒给个选英雄提示
-    htime.setTimeout(
-        during - 10.0,
-        function(t)
-            local x1 = hhero.build_params.x + hhero.build_params.per_row * 0.5 * hhero.build_params.distance
-            local y1 = hhero.build_params.y - totalRow * 0.5 * hhero.build_params.distance
-            htime.delTimer(t)
-            cj.DisableTrigger(tgr_repick)
-            cj.DestroyTrigger(tgr_repick)
-            echo("还剩 10 秒，还未选择的玩家尽快啦～")
-            cj.PingMinimapEx(x1, y1, 1.00, 254, 0, 0, true)
-        end
-    )
-    -- 一定时间后clear
-    htime.setTimeout(
-        during - 0.5,
-        function(t)
-            htime.delTimer(t)
-            cj.DisableTrigger(tgr_random)
-            cj.DestroyTrigger(tgr_random)
-            cj.DisableTrigger(tgr_sell)
-            cj.DestroyTrigger(tgr_sell)
-        end,
-        "选择英雄"
-    )
-    -- 转移玩家镜头
-    hcamera.toXY(nil, 0, hhero.build_params.x, hhero.build_params.y)
+    end, "英雄选择")
 end

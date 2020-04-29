@@ -83,8 +83,8 @@ hevent_default_actions = {
                 end
             elseif (str == "-random") then
                 local tp = cj.GetTriggerPlayer()
-                if (#hhero.randomSelectorPool <= 0) then
-                    echo("此命令仅在存有英雄选择操作时有效", tp)
+                if (#hhero.selectorPool <= 0) then
+                    echo("已禁止random", tp)
                     return
                 end
                 if (#hhero.player_heroes[tp] >= hhero.player_allow_qty[tp]) then
@@ -94,8 +94,8 @@ hevent_default_actions = {
                 local txt = ""
                 local qty = 0
                 while (true) do
-                    local one = table.random(hhero.randomSelectorPool)
-                    table.delete(one, hhero.randomSelectorPool)
+                    local one = table.random(hhero.selectorPool)
+                    table.delete(one, hhero.selectorPool)
                     local u = one
                     if (type(one) == 'string') then
                         u = hunit.create(
@@ -107,13 +107,14 @@ hevent_default_actions = {
                             }
                         )
                         hRuntime.hero[u] = {
-                            selectorFrom = "tavern",
+                            selector = "tavern",
                         }
                     else
-                        hunit.setInvulnerable(hero, false)
-                        cj.SetUnitOwner(hero, whichPlayer, true)
-                        cj.SetUnitPosition(whichPlayer, hhero.bornX, hhero.bornY)
-                        cj.PauseUnit(whichPlayer, false)
+                        table.delete(one, hhero.selectorClearPool)
+                        hunit.setInvulnerable(u, false)
+                        cj.SetUnitOwner(u, tp, true)
+                        cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
+                        cj.PauseUnit(u, false)
                     end
                     hhero.setIsHero(u, true)
                     table.insert(hhero.player_heroes[tp], u)
@@ -135,8 +136,8 @@ hevent_default_actions = {
                 echo("已为您 |cffffff80random|r 挑选了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个：|cffffff80" .. txt .. "|r", tp)
             elseif (str == "-repick") then
                 local tp = cj.GetTriggerPlayer()
-                if (#hhero.randomSelectorPool <= 0) then
-                    echo("此命令仅在存有英雄选择操作时有效", tp)
+                if (#hhero.selectorPool <= 0) then
+                    echo("已禁止repick", tp)
                     return
                 end
                 if (#hhero.player_heroes[tp] <= 0) then
@@ -146,7 +147,7 @@ hevent_default_actions = {
                 local qty = #hhero.player_heroes
                 for _, u in ipairs(hhero.player_heroes[p]) do
                     if (type(hRuntime.hero[u].selector) == "userdata") then
-                        table.insert(hhero.randomSelectorPool, hunit.getId(u))
+                        table.insert(hhero.selectorPool, hunit.getId(u))
                         cj.AddUnitToStock(tavern, cj.GetUnitTypeId(u), 1, 1)
                     else
                         local new = hunit.create(
@@ -163,7 +164,7 @@ hevent_default_actions = {
                             selector = { hRuntime.hero[u].selector[1], hRuntime.hero[u].selector[2] },
                         }
                         table.insert(hhero.selectorClearPool, new)
-                        table.insert(hhero.randomSelectorPool, new)
+                        table.insert(hhero.selectorPool, new)
                     end
                     hunit.del(u, 0)
                 end
