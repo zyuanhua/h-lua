@@ -1,5 +1,5 @@
  * [github网址](https://github.com/hunzsig-warcraft3/h-lua)
- * [最佳实践：我塔非凡](https://github.com/hunzsig-warcraft3/w3x-my-tower)
+ * [开源地图：我塔非凡](https://github.com/hunzsig-warcraft3/w3x-my-tower)
  * [功能测试：DZAPI](https://github.com/hunzsig-warcraft3/w3x-test-dzapi)
  * [功能测试：崩溃压力](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
  * [极速上手文档](https://docs.qq.com/doc/DTUZZZWZzYVpyeW1o)
@@ -61,13 +61,13 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
     │   ├── item.lua - 物品模块，与属性系统无缝结合，合成/分拆等功能
     │   ├── leaderBoard.lua 排行榜模块，用于简易构建排行榜
     │   ├── lightning.lua - 闪电链
-    │   ├── mark.lua - 遮罩模块
     │   ├── multiBoard.lua - 多面板
     │   ├── player.lua - 玩家
     │   ├── quest.lua - 任务
     │   ├── rect.lua - 区域
     │   ├── sound.lua - 声音模块
     │   ├── textTag.lua - 漂浮字
+    │   ├── texture.lua - 遮罩、贴图
     │   ├── time.lua - 时间/计时器 * 常用
     │   ├── unit.lua - 单位
     │   └── weather.lua - 天气
