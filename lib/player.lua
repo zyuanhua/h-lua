@@ -254,6 +254,7 @@ hplayer.defeat = function(whichPlayer, tips)
             title = tips,
             buttons = { cj.GetLocalizedString("GAMEOVER_QUIT_MISSION") }
         }, function()
+            cj.EndGame(true)
         end)
     end
 end
@@ -277,6 +278,7 @@ hplayer.victory = function(whichPlayer, tips)
             title = tips,
             buttons = { cj.GetLocalizedString("GAMEOVER_QUIT_MISSION") }
         }, function()
+            cj.EndGame(true)
         end)
     end
 end
