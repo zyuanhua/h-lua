@@ -23,13 +23,21 @@ hitem.register = function(u)
         return
     end
     -- 拾取
-    hevent.pool(u, hevent_default_actions.item.pickup, EVENT_UNIT_PICKUP_ITEM)
+    hevent.pool(u, hevent_default_actions.item.pickup, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_PICKUP_ITEM)
+    end)
     -- 丢弃
-    hevent.pool(u, hevent_default_actions.item.drop, EVENT_UNIT_DROP_ITEM)
+    hevent.pool(u, hevent_default_actions.item.drop, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_DROP_ITEM)
+    end)
     -- 抵押
-    hevent.pool(u, hevent_default_actions.item.pawn, EVENT_UNIT_PAWN_ITEM)
+    hevent.pool(u, hevent_default_actions.item.pawn, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_PAWN_ITEM)
+    end)
     -- 使用
-    hevent.pool(u, hevent_default_actions.item.use, EVENT_UNIT_USE_ITEM)
+    hevent.pool(u, hevent_default_actions.item.use, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_USE_ITEM)
+    end)
 end
 
 --- 令单位的物品在runtime内存中释放
@@ -364,7 +372,9 @@ hitem.setAllowSeparate = function(whichUnit)
     cj.UnitMakeAbilityPermanent(whichUnit, true, hitem.DEFAULT_SKILL_ITEM_SEPARATE)
     cj.SetUnitAbilityLevel(whichUnit, hitem.DEFAULT_SKILL_ITEM_SEPARATE, 1)
     -- 事件池注册
-    hevent.pool(whichUnit, hevent_default_actions.item.separate, EVENT_UNIT_SPELL_EFFECT)
+    hevent.pool(whichUnit, hevent_default_actions.item.separate, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichUnit, EVENT_UNIT_SPELL_EFFECT)
+    end)
 end
 
 --- 计算单位获得物品后的属性
