@@ -312,11 +312,18 @@ hhero.buildSelector = function(options)
             cj.PingMinimapEx(x2, y2, 8, 255, 0, 0, true)
         end
     )
+    -- 逾期不选赶出游戏
+    -- 对于可以选择多个的玩家，有选即可，不要求全选
     htime.setTimeout(during - 0.5, function(t)
         htime.delTimer(t)
         for _, u in ipairs(hhero.selectorClearPool) do
             hunit.del(u)
         end
         hhero.selectorClearPool = {}
+        for i = 1, hplayer.qty_max, 1 do
+            if (#hhero.player_heroes[hplayer.players[i]] <= 0) then
+                hplayer.defeat(hplayer.players[i], "未选英雄")
+            end
+        end
     end, "英雄选择")
 end

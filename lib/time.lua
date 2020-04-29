@@ -142,7 +142,7 @@ htime.timerInKernel = function(time, yourFunc, isInterval)
                 yourFunc = yourFunc,
             }
         )
-        kernelClock = #htime.kernel
+        kernelClock = #htime.kernel[space]
     else
         htime.kernel[space][kernelClock] = {
             running = true,
@@ -195,22 +195,21 @@ htime.delTimer = function(t)
     if (t == nil) then
         return
     end
+    -- 清理反射的隐藏计时器
+    if (htime.reflect[t] ~= nil) then
+        cj.PauseTimer(htime.reflect[t])
+        for _, v in ipairs(htime.pool) do
+            if (htime.reflect[t] == v.timer) then
+                cj.TimerDialogDisplay(v.dialog, false)
+                v.free = true
+                break
+            end
+        end
+        htime.reflect[t] = nil
+    end
     local k = htime.kernelInfo(t)
     if (htime.kernel[k[1]] ~= nil and htime.kernel[k[1]][k[2]] ~= nil) then
         htime.kernel[k[1]][k[2]].running = false
-    end
-    -- 清理反射的隐藏计时器
-    if (htime.reflect[t] ~= nil) then
-        local reflect = htime.reflect[t]
-        cj.PauseTimer(reflect)
-        for _, v in ipairs(htime.pool) do
-            if (reflect == v.timer) then
-                cj.TimerDialogDisplay(v.dialog, false)
-                v.free = true
-            end
-            break
-        end
-        htime.reflect[t] = nil
     end
 end
 -- 设置一次性计时器
@@ -233,7 +232,7 @@ htime.setTimeout = function(frequency, yourFunc, title)
 end
 --- 设置周期性计时器
 ---@param frequency number
----@param yourFunc function | "function(t,td) end"
+---@param yourFunc function | "function(curTimer) end"
 ---@param title string
 ---@return string
 htime.setInterval = function(frequency, yourFunc, title)
@@ -246,6 +245,7 @@ htime.setInterval = function(frequency, yourFunc, title)
         cj.TimerDialogDisplay(td, true)
         cj.TimerStart(t2, frequency, true, nil)
         htime.reflect[t] = t2
+        print_r(htime.reflect)
     end
     return t
 end

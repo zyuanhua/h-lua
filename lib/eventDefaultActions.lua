@@ -82,13 +82,12 @@ hevent_default_actions = {
                     echo("此命令仅在单人时有效", p)
                 end
             elseif (str == "-random") then
-                local tp = cj.GetTriggerPlayer()
                 if (#hhero.selectorPool <= 0) then
-                    echo("已禁止random", tp)
+                    echo("已禁止random", p)
                     return
                 end
-                if (#hhero.player_heroes[tp] >= hhero.player_allow_qty[tp]) then
-                    echo("|cffffff80你已经选够了|r", tp)
+                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    echo("|cffffff80你已经选够了|r", p)
                     return
                 end
                 local txt = ""
@@ -100,7 +99,7 @@ hevent_default_actions = {
                     if (type(one) == 'string') then
                         u = hunit.create(
                             {
-                                whichPlayer = tp,
+                                whichPlayer = p,
                                 unitId = one,
                                 x = hhero.bornX,
                                 y = hhero.bornY
@@ -112,39 +111,38 @@ hevent_default_actions = {
                     else
                         table.delete(one, hhero.selectorClearPool)
                         hunit.setInvulnerable(u, false)
-                        cj.SetUnitOwner(u, tp, true)
+                        cj.SetUnitOwner(u, p, true)
                         cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
                         cj.PauseUnit(u, false)
                     end
                     hhero.setIsHero(u, true)
-                    table.insert(hhero.player_heroes[tp], u)
+                    table.insert(hhero.player_heroes[p], u)
                     -- 触发英雄被选择事件(全局)
                     hevent.triggerEvent(
                         "global",
                         CONST_EVENT.pickHero,
                         {
-                            triggerPlayer = tp,
+                            triggerPlayer = p,
                             triggerUnit = u
                         }
                     )
                     txt = txt .. " " .. cj.GetUnitName(u)
                     qty = qty + 1
-                    if (#hhero.player_heroes[tp] >= hhero.player_allow_qty[tp]) then
+                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
                         break
                     end
                 end
-                echo("已为您 |cffffff80random|r 挑选了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个：|cffffff80" .. txt .. "|r", tp)
+                echo("已为您 |cffffff80random|r 挑选了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个：|cffffff80" .. txt .. "|r", p)
             elseif (str == "-repick") then
-                local tp = cj.GetTriggerPlayer()
                 if (#hhero.selectorPool <= 0) then
-                    echo("已禁止repick", tp)
+                    echo("已禁止repick", p)
                     return
                 end
-                if (#hhero.player_heroes[tp] <= 0) then
+                if (#hhero.player_heroes[p] <= 0) then
                     echo("|cffffff80你还没有选过任何单位|r", p)
                     return
                 end
-                local qty = #hhero.player_heroes
+                local qty = #hhero.player_heroes[p]
                 for _, u in ipairs(hhero.player_heroes[p]) do
                     if (type(hRuntime.hero[u].selector) == "userdata") then
                         table.insert(hhero.selectorPool, hunit.getId(u))
@@ -153,7 +151,7 @@ hevent_default_actions = {
                         local new = hunit.create(
                             {
                                 whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                                unitId = heroId,
+                                unitId = cj.GetUnitTypeId(u),
                                 x = hRuntime.hero[u].selector[1],
                                 y = hRuntime.hero[u].selector[2],
                                 isInvulnerable = true,
