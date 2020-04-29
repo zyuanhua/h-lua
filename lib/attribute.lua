@@ -754,6 +754,8 @@ end
 ---@param data any
 hattr.set = function(whichUnit, during, data)
     if (whichUnit == nil) then
+        -- 例如有时造成伤害之前把单位删除就捕捉不到这个伤害来源了
+        -- 虽然这里直接返回不执行即可，但是提示下可以帮助完善业务的构成~
         print_stack("whichUnit is nil")
         return
     end
