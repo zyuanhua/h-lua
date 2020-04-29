@@ -52,7 +52,7 @@ hskill.damage = function(options)
     end
     --双方attr get
     local targetUnitAttr = hattr.get(targetUnit)
-    local sourceUnitAttr
+    local sourceUnitAttr = {}
     if (targetUnitAttr == nil) then
         print("targetUnit unregister")
         return
@@ -193,8 +193,8 @@ hskill.damage = function(options)
     end
     -- 计算回避 X 命中
     if
-    (damageKind == CONST_DAMAGE_KIND.attack and targetUnitAttr.avoid - sourceUnitAttr.aim > 0 and
-        math.random(1, 100) <= targetUnitAttr.avoid - sourceUnitAttr.aim)
+    (damageKind == CONST_DAMAGE_KIND.attack and targetUnitAttr.avoid - (sourceUnitAttr.aim or 0) > 0 and
+        math.random(1, 100) <= targetUnitAttr.avoid - (sourceUnitAttr.aim or 0))
     then
         isAvoid = true
         lastDamage = 0
@@ -224,7 +224,7 @@ hskill.damage = function(options)
         -- 自然属性
         local tempNatural = {}
         for _, natural in ipairs(CONST_DAMAGE_TYPE_NATURE) do
-            tempNatural[natural] = 10 + sourceUnitAttr["natural_" .. natural] - targetUnitAttr["natural_" .. natural .. "_oppose"]
+            tempNatural[natural] = 10 + (sourceUnitAttr["natural_" .. natural] or 0) - targetUnitAttr["natural_" .. natural .. "_oppose"]
             if (tempNatural[natural] < -100) then
                 tempNatural[natural] = -100
             end
@@ -262,7 +262,7 @@ hskill.damage = function(options)
     end
 
     -- 计算伤害增幅
-    if (lastDamage > 0 and sourceUnitAttr.damage_extent ~= 0) then
+    if (lastDamage > 0 and sourceUnit ~= nil and sourceUnitAttr.damage_extent ~= 0) then
         lastDamagePercent = lastDamagePercent + sourceUnitAttr.damage_extent * 0.01
     end
     -- 合计 lastDamagePercent
