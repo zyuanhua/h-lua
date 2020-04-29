@@ -81,6 +81,8 @@ hevent_default_actions = {
                 else
                     echo("此命令仅在单人时有效", p)
                 end
+            elseif (string.lower(str) == "gg") then
+                hplayer.defeat(p, "GG")
             elseif (str == "-random") then
                 if (#hhero.selectorPool <= 0) then
                     echo("已禁止random", p)
