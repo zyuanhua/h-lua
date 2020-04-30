@@ -662,6 +662,7 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y, showDialog)
                     htime.delTimer(t)
                     cj.ReviveHero(u, x, y, true)
                     if (invulnerable > 0) then
+                        hattr.set(u,invulnerable,{life_back = ""})
                         hskill.invulnerable(u, invulnerable)
                     end
                     -- @触发复活事件

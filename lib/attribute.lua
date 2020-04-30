@@ -725,13 +725,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 -- 三围影响
                 local three = table.obj2arr(hattribute.threeBuff[subAttr], CONST_ATTR_KEYS)
                 for _, d in ipairs(three) do
-                    local k = d.key
-                    local v = d.value
-                    local tempV = diff * v
+                    local tempV = diff * d.value
                     if (tempV < 0) then
-                        hattribute.set(whichUnit, 0, { k = "-" .. math.abs(tempV) })
+                        hattribute.set(whichUnit, 0, { [d.key] = "-" .. math.abs(tempV) })
                     elseif (tempV > 0) then
-                        hattribute.set(whichUnit, 0, { k = "+" .. tempV })
+                        hattribute.set(whichUnit, 0, { [d.key] = "+" .. tempV })
                     end
                 end
             elseif (his.hero(whichUnit) and table.includes(attr, { "str_white", "agi_white", "int_white" })) then
@@ -753,13 +751,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 -- 三围影响
                 local three = table.obj2arr(hattribute.threeBuff[subAttr], CONST_ATTR_KEYS)
                 for _, d in ipairs(three) do
-                    local k = d.key
-                    local v = d.value
-                    local tempV = diff * v
+                    local tempV = diff * d.value
                     if (tempV < 0) then
-                        hattribute.set(whichUnit, 0, { k = "-" .. math.abs(tempV) })
+                        hattribute.set(whichUnit, 0, { [d.key] = "-" .. math.abs(tempV) })
                     elseif (tempV > 0) then
-                        hattribute.set(whichUnit, 0, { k = "+" .. tempV })
+                        hattribute.set(whichUnit, 0, { [d.key] = "+" .. tempV })
                     end
                 end
             elseif (attr == "life_back" or attr == "mana_back") then
