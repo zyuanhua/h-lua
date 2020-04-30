@@ -201,8 +201,6 @@ hhero.buildSelector = function(options)
                     echo("|cffffff80你已经选够了|r", p)
                     return
                 end
-                print_r(hhero.selectorPool)
-                print(u)
                 table.delete(u, hhero.selectorPool)
                 table.delete(u, hhero.selectorClearPool)
                 hunit.setInvulnerable(u, false)
@@ -323,7 +321,7 @@ hhero.buildSelector = function(options)
         end
         hhero.selectorClearPool = {}
         for i = 1, hplayer.qty_max, 1 do
-            if (#hhero.player_heroes[hplayer.players[i]] <= 0) then
+            if (his.playing(hplayer.players[i]) and #hhero.player_heroes[hplayer.players[i]] <= 0) then
                 hplayer.defeat(hplayer.players[i], "未选英雄")
             end
         end
