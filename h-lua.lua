@@ -78,9 +78,10 @@ require "lib.dialog"
 require "lib.leaderBoard"
 require "lib.multiBoard"
 require "lib.quest"
+require "lib.storage"
 -- 别称
 httg = htextTag
-hattribute = hattr
+hattr = hattribute
 
 -- 时钟初始化
 -- 全局计时器
