@@ -8,7 +8,23 @@ hattribute = {
     max_attack_range = 9999,
     min_attack_range = 0,
     default_attack_speed_space = 1.50,
-    DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv") -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
+    threeBuff = {
+        -- 每一点三围对属性的影响，默认会写一些，可以通过 hattr.setThreeBuff 方法来改变系统构成
+        -- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
+        primary = 1, -- 每点主属性提升1点白字攻击（默认例子，这是模拟原生平衡性常数，需要设置平衡性常数为0）
+        str = {
+            life = 19, -- 每点力量提升10生命（默认例子）
+            life_back = 0.05 -- 每点力量提升0.05生命恢复（默认例子）
+        },
+        agi = {
+            defend = 0.01 -- 每点敏捷提升0.01护甲（默认例子）
+        },
+        int = {
+            mana = 6, -- 每点智力提升6魔法（默认例子）
+            mana_back = 0.05 -- 每点力量提升0.05生命恢复（默认例子）
+        }
+    },
+    DEFAULT_SKILL_ITEM_SLOT = string.char2id("AInv"), -- 默认物品栏技能（英雄6格那个）默认认定这个技能为物品栏
 }
 
 --- 为单位添加N个同样的生命魔法技能 1级设0 2级设负 负减法（搜[卡血牌bug]，了解原理）
@@ -86,7 +102,7 @@ end
 ---@param buff table
 hattribute.setThreeBuff = function(buff)
     if (type(buff) == "table") then
-        hRuntime.attributeThreeBuff = buff
+        hattribute.threeBuff = buff
     end
 end
 
@@ -688,19 +704,25 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                         max = math.floor(max / 10)
                     end
                 end
-                local setting = {}
-                local three = table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_green", "")], CONST_ATTR_KEYS)
+                local subAttr = string.gsub(attr, "_green", "")
+                -- 主属性影响(<= 0自动忽略)
+                if (hattribute.threeBuff.main > 0) then
+                    if (subAttr == string.lower(hhero.getHeroType(whichUnit))) then
+                        hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.main })
+                    end
+                end
+                -- 三围影响
+                local three = table.obj2arr(hattribute.threeBuff[subAttr], CONST_ATTR_KEYS)
                 for _, d in ipairs(three) do
                     local k = d.key
                     local v = d.value
                     local tempV = diff * v
                     if (tempV < 0) then
-                        setting[k] = "-" .. math.abs(tempV)
+                        hattribute.set(whichUnit, 0, { k = "-" .. math.abs(tempV) })
                     elseif (tempV > 0) then
-                        setting[k] = "+" .. tempV
+                        hattribute.set(whichUnit, 0, { k = "+" .. tempV })
                     end
                 end
-                hattribute.set(whichUnit, 0, setting)
             elseif (his.hero(whichUnit) and table.includes(attr, { "str_white", "agi_white", "int_white" })) then
                 -- 白字力量 敏捷 智力
                 if (attr == "str_white") then
@@ -710,19 +732,25 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (attr == "int_white") then
                     cj.SetHeroInt(whichUnit, math.floor(futureVal), true)
                 end
-                local setting = {}
-                local three = table.obj2arr(hRuntime.attributeThreeBuff[string.gsub(attr, "_white", "")], CONST_ATTR_KEYS)
+                local subAttr = string.gsub(attr, "_white", "")
+                -- 主属性影响(<= 0自动忽略)
+                if (hattribute.threeBuff.main > 0) then
+                    if (subAttr == string.lower(hhero.getHeroType(whichUnit))) then
+                        hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.main })
+                    end
+                end
+                -- 三围影响
+                local three = table.obj2arr(hattribute.threeBuff[subAttr], CONST_ATTR_KEYS)
                 for _, d in ipairs(three) do
                     local k = d.key
                     local v = d.value
                     local tempV = diff * v
                     if (tempV < 0) then
-                        setting[k] = "-" .. math.abs(tempV)
+                        hattribute.set(whichUnit, 0, { k = "-" .. math.abs(tempV) })
                     elseif (tempV > 0) then
-                        setting[k] = "+" .. tempV
+                        hattribute.set(whichUnit, 0, { k = "+" .. tempV })
                     end
                 end
-                hattribute.set(whichUnit, 0, setting)
             elseif (attr == "life_back" or attr == "mana_back") then
                 -- 生命,魔法恢复
                 if (math.abs(futureVal) > 0.02 and table.includes(whichUnit, hRuntime.attributeGroup[attr]) == false) then

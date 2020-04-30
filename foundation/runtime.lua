@@ -47,23 +47,6 @@ hRuntime = {
         mana_back = {},
         punish = {}
     },
-    attributeThreeBuff = {
-        -- 每一点三围对属性的影响，默认会写一些，可以通过 hattr.setThreeBuff 方法来改变系统构成
-        -- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
-        str = {
-            life = 10, -- 每点力量提升10生命（默认例子）
-            life_back = 0.1 -- 每点力量提升0.1生命恢复（默认例子）
-        },
-        agi = {
-            attack_white = 1, -- 每点敏捷提升1白字攻击（默认例子）
-            defend = 0.01 -- 每点敏捷提升0.01护甲（默认例子）
-        },
-        int = {
-            attack_green = 1, -- 每点智力提升1绿字攻击（默认例子）
-            mana = 6, -- 每点智力提升6魔法（默认例子）
-            mana_back = 0.05 -- 每点力量提升0.05生命恢复（默认例子）
-        }
-    },
     item = {},
     itemPickPool = {},
     leaderBoard = {},
