@@ -272,7 +272,7 @@ hhero.buildSelector = function(options)
                     "global",
                     CONST_EVENT.pickHero,
                     {
-                        triggerPlayer = tp,
+                        triggerPlayer = p,
                         triggerUnit = u
                     }
                 )
