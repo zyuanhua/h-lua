@@ -654,14 +654,13 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y, showDialog)
         else
             local title
             if (showDialog == true) then
-                title = hunit.getName(u) .. "复活中"
+                title = hunit.getName(u)
             end
             htime.setTimeout(
                 delay,
                 function(t)
                     htime.delTimer(t)
                     cj.ReviveHero(u, x, y, true)
-                    hattr.resetAttrGroups(u)
                     if (invulnerable > 0) then
                         hskill.invulnerable(u, invulnerable)
                     end
