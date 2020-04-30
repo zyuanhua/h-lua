@@ -119,6 +119,67 @@ hhero.setHeroIds = function(ids)
     end
 end
 
+--- 在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
+---@param u userdata
+---@param delay number
+---@param invulnerable number 复活后的无敌时间
+---@param x number
+---@param y number
+---@param showDialog boolean 是否显示倒计时窗口
+hhero.rebornAtXY = function(u, delay, invulnerable, x, y, showDialog)
+    if (his.hero(u)) then
+        if (delay < 0.3) then
+            cj.ReviveHero(u, x, y, true)
+            hattr.resetAttrGroups(u)
+            if (invulnerable > 0) then
+                hskill.invulnerable(u, invulnerable)
+            end
+            -- @触发复活事件
+            hevent.triggerEvent(
+                u,
+                CONST_EVENT.reborn,
+                {
+                    triggerUnit = u
+                }
+            )
+        else
+            local title
+            if (showDialog == true) then
+                title = hunit.getName(u)
+            end
+            htime.setTimeout(
+                delay,
+                function(t)
+                    htime.delTimer(t)
+                    cj.ReviveHero(u, x, y, true)
+                    if (invulnerable > 0) then
+                        hskill.invulnerable(u, invulnerable)
+                    end
+                    -- @触发复活事件
+                    hevent.triggerEvent(
+                        u,
+                        CONST_EVENT.reborn,
+                        {
+                            triggerUnit = u
+                        }
+                    )
+                end,
+                title
+            )
+        end
+    end
+end
+
+--- 在某点复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
+---@param u userdata
+---@param delay number
+---@param invulnerable number 复活后的无敌时间
+---@param loc userdata
+---@param showDialog boolean 是否显示倒计时窗口
+hhero.rebornAtLoc = function(u, delay, invulnerable, loc)
+    hhero.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc), showDialog)
+end
+
 --- 开始构建英雄选择
 ---@param options table
 hhero.buildSelector = function(options)
@@ -253,24 +314,30 @@ hhero.buildSelector = function(options)
                     local p = cj.GetOwningPlayer(evtData.buyingUnit)
                     local soldUnit = evtData.soldUnit
                     local soldUid = cj.GetUnitTypeId(soldUnit)
+                    hunit.del(soldUnit, 0)
                     if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
                         echo("|cffffff80你已经选够~|r", p)
-                        hunit.del(soldUnit, 0)
                         cj.AddUnitToStock(tavern, soldUid, 1, 1)
                         return
                     end
                     cj.RemoveUnitFromStock(tavern, soldUid)
-                    cj.SetUnitPosition(soldUnit, hhero.bornX, hhero.bornY)
-                    table.insert(hhero.player_heroes[p], soldUnit)
+                    local u = hunit.create(
+                        {
+                            whichPlayer = p,
+                            unitId = soldUid,
+                            x = hhero.bornX,
+                            y = hhero.bornY,
+                        }
+                    )
+                    table.insert(hhero.player_heroes[p], u)
                     table.delete(string.id2char(soldUid), hhero.selectorPool)
-                    hattribute.formatHero(soldUnit)
-                    local tips = "您选择了 |cffffff80" .. cj.GetUnitName(soldUnit) .. "|r"
+                    local tips = "您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r"
                     if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
                         echo(tips .. ",已挑选完毕", p)
                     else
                         echo(tips .. "还差 " .. (hhero.player_allow_qty[p] - #hhero.player_heroes[p]) .. " 个", p)
                     end
-                    hRuntime.hero[soldUnit] = {
+                    hRuntime.hero[u] = {
                         selector = evtData.triggerUnit,
                     }
                     -- 触发英雄被选择事件(全局)
@@ -279,7 +346,7 @@ hhero.buildSelector = function(options)
                         CONST_EVENT.pickHero,
                         {
                             triggerPlayer = p,
-                            triggerUnit = soldUnit
+                            triggerUnit = u
                         }
                     )
                 end)
