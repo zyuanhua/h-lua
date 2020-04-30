@@ -47,7 +47,7 @@ end
 --- 创建一个遮罩
 ---@public
 ---@param path string 贴图路径 512x256 png->blp
----@param during number 持续时间
+---@param during number 持续时间,默认3秒
 ---@param whichPlayer userdata|nil 玩家
 ---@param red number 0-255
 ---@param green number 0-255
@@ -56,6 +56,7 @@ htexture.mark = function(path, during, whichPlayer, red, green, blue)
     red = red or 255
     green = green or 255
     blue = blue or 255
+    during = during or 3
     if (whichPlayer == nil) then
         htexture.cinematicFilterGeneric(
             0.50,
@@ -78,30 +79,35 @@ htexture.mark = function(path, during, whichPlayer, red, green, blue)
             end
         )
     elseif (whichPlayer ~= nil) then
-        if (whichPlayer == cj.GetLocalPlayer()) then
-            htexture.cinematicFilterGeneric(
-                0.50,
-                BLEND_MODE_ADDITIVE,
-                path,
-                red, green, blue, 255,
-                red, green, blue, 0
+        local playerIndex = hplayer.index(whichPlayer)
+        if (hRuntime.player[playerIndex].marking ~= true) then
+            hRuntime.player[playerIndex].marking = true
+            if (whichPlayer == cj.GetLocalPlayer()) then
+                htexture.cinematicFilterGeneric(
+                    0.50,
+                    BLEND_MODE_ADDITIVE,
+                    path,
+                    red, green, blue, 255,
+                    red, green, blue, 0
+                )
+            end
+            htime.setTimeout(
+                during,
+                function(t)
+                    htime.delTimer(t)
+                    hRuntime.player[playerIndex].marking = false
+                    if (whichPlayer == cj.GetLocalPlayer()) then
+                        htexture.cinematicFilterGeneric(
+                            0.50,
+                            BLEND_MODE_ADDITIVE,
+                            path,
+                            red, green, blue, 0,
+                            red, green, blue, 255
+                        )
+                    end
+                end
             )
         end
-        htime.setTimeout(
-            during,
-            function(t)
-                htime.delTimer(t)
-                if (whichPlayer == cj.GetLocalPlayer()) then
-                    htexture.cinematicFilterGeneric(
-                        0.50,
-                        BLEND_MODE_ADDITIVE,
-                        path,
-                        red, green, blue, 0,
-                        red, green, blue, 255
-                    )
-                end
-            end
-        )
     end
 end
 
