@@ -634,7 +634,8 @@ end
 ---@param invulnerable number 复活后的无敌时间
 ---@param x number
 ---@param y number
-hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
+---@param showDialog boolean 是否显示倒计时窗口
+hunit.rebornAtXY = function(u, delay, invulnerable, x, y, showDialog)
     if (his.hero(u)) then
         if (delay < 0.3) then
             cj.ReviveHero(u, x, y, true)
@@ -651,6 +652,10 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
                 }
             )
         else
+            local title
+            if (showDialog == true) then
+                title = hunit.getName(u) .. "复活中"
+            end
             htime.setTimeout(
                 delay,
                 function(t)
@@ -668,7 +673,8 @@ hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
                             triggerUnit = u
                         }
                     )
-                end
+                end,
+                title
             )
         end
     end
@@ -679,6 +685,7 @@ end
 ---@param delay number
 ---@param invulnerable number 复活后的无敌时间
 ---@param loc userdata
+---@param showDialog boolean 是否显示倒计时窗口
 hunit.rebornAtLoc = function(u, delay, invulnerable, loc)
-    hunit.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc))
+    hunit.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc), showDialog)
 end

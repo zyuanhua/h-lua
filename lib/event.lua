@@ -1041,5 +1041,5 @@ end
 ---@param callFunc onPickHero | "function(evtData) end"
 ---@return any
 hevent.onPickHero = function(callFunc)
-    return hevent.onEventByHandle("global", CONST_EVENT.pickHero, callFunc)
+    return hevent.registerEvent("global", CONST_EVENT.pickHero, callFunc)
 end
