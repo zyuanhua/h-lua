@@ -189,9 +189,9 @@ hattribute.init = function(whichUnit)
         str_green = 0.0,
         agi_green = 0.0,
         int_green = 0.0,
-        str_white = cj.GetHeroStr(whichUnit, false),
-        agi_white = cj.GetHeroAgi(whichUnit, false),
-        int_white = cj.GetHeroInt(whichUnit, false),
+        str_white = 0,
+        agi_white = 0,
+        int_white = 0,
         life_back = 0.0,
         mana_back = 0.0,
         resistance = 0.0,
@@ -333,6 +333,17 @@ end
 --- @private
 hattribute.subAccumuDiff = function(whichUnit, attr, value)
     hattribute.setAccumuDiff(whichUnit, attr, hattribute.getAccumuDiff(whichUnit, attr) - value)
+end
+
+--- 初始化英雄的属性,一般设定好英雄ID和使用框架内create方法创建自动会使用
+--- 但例如酒馆选英雄，地图放置等这些英雄单位就被忽略了，所以可以试用此方法补回
+---@param whichHero userdata
+hattribute.formatHero = function(whichHero)
+    hattribute.set(whichHero, 0, {
+        str_white = "=" .. cj.GetHeroStr(whichHero, false),
+        agi_white = "=" .. cj.GetHeroAgi(whichHero, false),
+        int_white = "=" .. cj.GetHeroInt(whichHero, false),
+    })
 end
 
 -- 设定属性
@@ -706,9 +717,9 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 end
                 local subAttr = string.gsub(attr, "_green", "")
                 -- 主属性影响(<= 0自动忽略)
-                if (hattribute.threeBuff.main > 0) then
+                if (hattribute.threeBuff.primary > 0) then
                     if (subAttr == string.lower(hhero.getHeroType(whichUnit))) then
-                        hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.main })
+                        hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.primary })
                     end
                 end
                 -- 三围影响
@@ -734,9 +745,9 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 end
                 local subAttr = string.gsub(attr, "_white", "")
                 -- 主属性影响(<= 0自动忽略)
-                if (hattribute.threeBuff.main > 0) then
+                if (hattribute.threeBuff.primary > 0) then
                     if (subAttr == string.lower(hhero.getHeroType(whichUnit))) then
-                        hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.main })
+                        hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.primary })
                     end
                 end
                 -- 三围影响

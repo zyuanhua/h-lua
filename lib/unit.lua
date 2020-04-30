@@ -420,6 +420,14 @@ hunit.create = function(bean)
                 hitem.register(u)
             end
         end
+        -- 如果是英雄，注册事件和计算初次属性
+        if (his.hero(u) == true) then
+            hhero.setPrevLevel(u, 1)
+            hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
+                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
+            end)
+            hattribute.formatHero(u)
+        end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then
             hunit.setPeriod(u, bean.life)

@@ -1,5 +1,6 @@
 ---@class hhero 英雄相关
 hhero = {
+    judge_ids = {},
     player_allow_qty = {}, -- 玩家最大单位数量,默认1
     player_heroes = {}, -- 玩家当前英雄
     build_token = hslk_global.unit_hero_tavern_token,
@@ -71,7 +72,7 @@ end
 ---@param u userdata
 ---@return string STR|AGI|INT
 hhero.getHeroType = function(u)
-    return hslk_global.unitsKV[cj.GetUnitTypeId(u)].Primary
+    return hslk_global.unitsKV[hunit.getId(u)].Primary
 end
 
 --- 获取英雄的类型文本
@@ -108,20 +109,13 @@ hhero.setBornXY = function(x, y)
     hhero.bornY = y
 end
 
---- 设置一个单位是否拥有英雄判定
---- 当设置[一般单位]为[英雄]时，框架自动屏幕，[力量|敏捷|智力]等不属于一般单位的属性，以避免引起崩溃报错
---- 设定后 his.hero 方法会认为单位为英雄，同时属性系统也会认定它为英雄
----@param u userdata
----@param flag boolean
-hhero.setIsHero = function(u, flag)
-    flag = flag or false
-    his.set(u, "isHero", flag)
-    if (flag == true and his.get(u, "isHeroInit") == false) then
-        his.set(u, "isHeroInit", true)
-        hhero.setPrevLevel(u, 1)
-        hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
-            cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
-        end)
+--- 设置一组ID，这组ID会拥有英雄判定
+--- 当设置[一般单位]为[英雄]时，框架自动屏蔽[力量|敏捷|智力]等不属于一般单位的属性，以避免引起崩溃报错
+--- 设定后 his.hero 方法会认为ID对应的单位类型为英雄，同时属性系统也会认定它为英雄
+---@param ids table <number, string>
+hhero.setHeroIds = function(ids)
+    if (type(ids) == "table" and #ids > 0) then
+        hhero.judge_ids = ids
     end
 end
 
@@ -130,7 +124,7 @@ end
 hhero.buildSelector = function(options)
     --[[
         options = {
-            heroes = {"H001","H002"}, -- 可以选择的单位ID
+            heroes = {"H001","H002"}, -- (可选)供选的单位ID数组，默认是全局的 hhero.judge_ids
             during = 60, -- 选择持续时间，最少30秒，默认60秒，超过这段时间未选择的玩家会被剔除出游戏
             type = string, "tavern" | "click"
             buildX = 0, -- 构建点X
@@ -140,7 +134,11 @@ hhero.buildSelector = function(options)
             allowTavernQty = 10, -- 酒馆模式下，一个酒馆最多拥有几种单位
         }
     ]]
-    if (#options.heroes <= 0) then
+    local heroIds = options.heroes
+    if (heroIds == nil or #heroIds <= 0) then
+        heroIds = hhero.judge_ids
+    end
+    if (#heroIds <= 0) then
         return
     end
     if (#hhero.selectorClearPool > 0) then
@@ -161,7 +159,7 @@ hhero.buildSelector = function(options)
     local x = buildX
     local y = buildY
     if (type == "click") then
-        for _, heroId in ipairs(options.heroes) do
+        for _, heroId in ipairs(heroIds) do
             if (currentRowQty >= buildRowQty) then
                 currentRowQty = 0
                 totalRow = totalRow + 1
@@ -207,7 +205,6 @@ hhero.buildSelector = function(options)
                 cj.SetUnitOwner(u, p, true)
                 cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
                 cj.PauseUnit(u, false)
-                hhero.setIsHero(u, true)
                 table.insert(hhero.player_heroes[p], u)
                 -- 触发英雄被选择事件(全局)
                 hevent.triggerEvent(
@@ -231,7 +228,7 @@ hhero.buildSelector = function(options)
         local allowTavernQty = options.allowTavernQty or 10
         local currentTavernQty = 0
         local tavern
-        for _, heroId in ipairs(options.heroes) do
+        for _, heroId in ipairs(heroIds) do
             if (tavern == nil or currentTavernQty >= allowTavernQty) then
                 currentTavernQty = 0
                 if (currentRowQty >= buildRowQty) then
@@ -256,14 +253,15 @@ hhero.buildSelector = function(options)
                     local p = cj.GetOwningPlayer(evtData.buyingUnit)
                     local soldUnit = evtData.soldUnit
                     local soldUid = cj.GetUnitTypeId(soldUnit)
+                    cj.RemoveUnitFromStock(tavern, soldUid)
+                    hunit.del(soldUnit, 0)
                     if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
                         echo("|cffffff80你已经选够~|r", p)
                         hunit.del(soldUnit, 0)
                         cj.AddUnitToStock(tavern, soldUid, 1, 1)
                         return
                     end
-                    cj.RemoveUnitFromStock(tavern, soldUid)
-                    hhero.setIsHero(soldUnit, true)
+                    hattribute.formatHero(soldUnit)
                     cj.SetUnitPosition(soldUnit, hhero.bornX, hhero.bornY)
                     table.insert(hhero.player_heroes[p], soldUnit)
                     table.delete(string.id2char(soldUid), hhero.selectorPool)
@@ -302,7 +300,7 @@ hhero.buildSelector = function(options)
                 whichPlayer = p,
                 unitId = hhero.build_token,
                 x = buildX + buildRowQty * buildDistance * 0.5,
-                y = buildY - math.floor(#options.heroes / buildRowQty) * buildDistance * 0.5,
+                y = buildY - math.floor(#heroIds / buildRowQty) * buildDistance * 0.5,
                 isInvulnerable = true,
                 isPause = true
             }
@@ -314,7 +312,7 @@ hhero.buildSelector = function(options)
         during - 10.0,
         function(t)
             local x2 = buildX + buildRowQty * buildDistance * 0.5
-            local y2 = buildY - math.floor(#options.heroes / buildRowQty) * buildDistance * 0.5
+            local y2 = buildY - math.floor(#heroIds / buildRowQty) * buildDistance * 0.5
             htime.delTimer(t)
             hhero.selectorPool = {}
             echo("还剩 10 秒，还未选择的玩家尽快啦～")

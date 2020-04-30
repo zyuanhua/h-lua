@@ -166,7 +166,7 @@ end
 ---@param whichUnit userdata
 ---@return boolean
 his.hero = function(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or his.get(whichUnit, "isHero") == true
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or table.includes(hunit.getId(whichUnit), hhero.judge_ids) == true
 end
 
 --- 是否建筑

@@ -334,8 +334,8 @@ obj.abilList = "Avul,Asud," .. aid
 obj.Sellunits = ""
 obj.pathTex = ""
 obj.collision = ""
-obj.modelScale = 0.60
-obj.scale = 2.00
+obj.modelScale = 0.80
+obj.scale = 2.80
 obj.uberSplat = ""
 obj.teamColor = 12
 table.insert(

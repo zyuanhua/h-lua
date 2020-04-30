@@ -118,7 +118,6 @@ hevent_default_actions = {
                         cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
                         cj.PauseUnit(u, false)
                     end
-                    hhero.setIsHero(u, true)
                     table.insert(hhero.player_heroes[p], u)
                     -- 触发英雄被选择事件(全局)
                     hevent.triggerEvent(
