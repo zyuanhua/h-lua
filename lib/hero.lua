@@ -276,6 +276,15 @@ hhero.buildSelector = function(options)
                     hRuntime.hero[soldUnit] = {
                         selector = evtData.triggerUnit,
                     }
+                    -- 触发英雄被选择事件(全局)
+                    hevent.triggerEvent(
+                        "global",
+                        CONST_EVENT.pickHero,
+                        {
+                            triggerPlayer = p,
+                            triggerUnit = soldUnit
+                        }
+                    )
                 end)
                 currentRowQty = currentRowQty + 1
             end
