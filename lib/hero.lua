@@ -253,18 +253,17 @@ hhero.buildSelector = function(options)
                     local p = cj.GetOwningPlayer(evtData.buyingUnit)
                     local soldUnit = evtData.soldUnit
                     local soldUid = cj.GetUnitTypeId(soldUnit)
-                    cj.RemoveUnitFromStock(tavern, soldUid)
-                    hunit.del(soldUnit, 0)
                     if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
                         echo("|cffffff80你已经选够~|r", p)
                         hunit.del(soldUnit, 0)
                         cj.AddUnitToStock(tavern, soldUid, 1, 1)
                         return
                     end
-                    hattribute.formatHero(soldUnit)
+                    cj.RemoveUnitFromStock(tavern, soldUid)
                     cj.SetUnitPosition(soldUnit, hhero.bornX, hhero.bornY)
                     table.insert(hhero.player_heroes[p], soldUnit)
                     table.delete(string.id2char(soldUid), hhero.selectorPool)
+                    hattribute.formatHero(soldUnit)
                     local tips = "您选择了 |cffffff80" .. cj.GetUnitName(soldUnit) .. "|r"
                     if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
                         echo(tips .. ",已挑选完毕", p)
