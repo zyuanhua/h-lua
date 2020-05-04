@@ -335,6 +335,11 @@ his.allyPlayer = function(whichUnit, whichPlayer)
     return cj.IsUnitAlly(whichUnit, whichPlayer)
 end
 
+--- 是否在区域内
+his.inRect = function(whichRect, x, y)
+    return (x < cj.GetRectMaxX(whichRect) and x > cj.GetRectMinX(whichRect) and y < cj.GetRectMaxY(whichRect) and y > cj.GetRectMinY(whichRect))
+end
+
 --- 是否超出区域边界
 ---@param whichRect userdata
 ---@param x number

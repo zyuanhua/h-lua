@@ -23,7 +23,7 @@ end
 hsound.sound2Unit = function(s, volumePercent, u)
     if (s ~= nil) then
         cj.AttachSoundToUnit(s, u)
-        cj.SetSoundVolume(s, cj.R2I(volumePercent * cj.I2R(127) * 0.01))
+        cj.SetSoundVolume(s, math.floor(volumePercent * 127 * 0.01))
         cj.StartSound(s)
     end
 end
@@ -54,8 +54,7 @@ end
 hsound.bgm = function(musicFileName, whichPlayer)
     if (musicFileName ~= nil and string.len(musicFileName) > 0) then
         if (whichPlayer ~= nil) then
-            local index = hplayer.index(whichPlayer)
-            if (hRuntime.sound[index].currentBgm ~= musicFileName) then
+            if (hRuntime.sound[hplayer.index(whichPlayer)].currentBgm == musicFileName) then
                 return
             end
         end
@@ -86,5 +85,11 @@ hsound.bgmStop = function(whichPlayer)
         cj.StopMusic(true)
     elseif (cj.GetLocalPlayer() == whichPlayer) then
         cj.StopMusic(true)
+    end
+    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
+        local p = cj.Player(i - 1)
+        if (whichPlayer == nil or (p == whichPlayer and cj.GetLocalPlayer() == whichPlayer)) then
+            hRuntime.sound[i].currentBgm = nil
+        end
     end
 end
