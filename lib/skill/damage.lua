@@ -293,7 +293,7 @@ hskill.damage = function(options)
         end
         his.set(targetUnit, "isDamaging", true)
         hRuntime.attributeDamaging[targetUnit] = htime.setTimeout(
-            2.5,
+            3.5,
             function(t)
                 htime.delTimer(t)
                 hRuntime.attributeDamaging[targetUnit] = nil
