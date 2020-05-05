@@ -37,11 +37,25 @@ hsound.sound2XYZ = function(s, x, y, z)
         cj.SetSoundPosition(s, x, y, z)
     end
 end
---- 绑定点音效
+
+--- 绑定区域音效
 ---@param s userdata
----@param loc userdata
-hsound.sound2Loc = function(s, loc)
-    hsound.sound2XYZ(s, cj.GetLocationX(loc), cj.GetLocationY(loc), cj.GetLocationZ(loc))
+---@param whichRect userdata
+---@param during number 0=unLimit
+hsound.sound2Rect = function(s, whichRect, during)
+    if (s ~= nil) then
+        during = during or 0
+        local width = cj.GetRectMaxX(whichRect) - cj.GetRectMinX(whichRect)
+        local height = cj.GetRectMaxY(whichRect) - cj.GetRectMinY(whichRect)
+        cj.SetSoundPosition(s, cj.GetRectCenterX(whichRect), cj.GetRectCenterY(whichRect), 0)
+        cj.RegisterStackedSound(s, true, width, height)
+        if (during > 0) then
+            htime.setTimeout(during, function(curTimer)
+                htime.delTimer(curTimer)
+                cj.UnregisterStackedSound(s, true, width, height)
+            end)
+        end
+    end
 end
 
 --- 播放BGM
