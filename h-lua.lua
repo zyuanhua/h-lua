@@ -99,5 +99,3 @@ hunit.init()
 hhero.init()
 -- DzApi
 hdzapi.init()
---F9任务
-hf9({ 'apm', 'sight', 'eff' })
