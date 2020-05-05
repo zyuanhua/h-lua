@@ -61,7 +61,7 @@ end
 --- 播放BGM
 --- 当whichPlayer为nil时代表对全员操作
 --- 如果背景音乐无法循环播放，尝试格式工厂转wav再转回mp3
---- 由于音乐快速切换会卡顿，所以有3秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）
+--- 由于音乐快速切换会卡顿，所以有4秒的延时（如果同时切换很多次延时会累积！所以请不要过分地切换BGM）
 --- 延时是每个玩家独立时间，当切换的BGM为同一首时，切换不会进行
 ---@param musicFileName string
 ---@param whichPlayer userdata|nil
@@ -83,10 +83,10 @@ hsound.bgm = function(musicFileName, whichPlayer)
                         function(t)
                             htime.delTimer(t)
                             cj.PlayMusic(musicFileName)
-                            hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay - 3.00
+                            hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay - 4.00
                         end
                     )
-                    hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay + 3.00
+                    hRuntime.sound[i].bgmDelay = hRuntime.sound[i].bgmDelay + 4.00
                 end
             end
         end
