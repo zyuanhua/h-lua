@@ -58,7 +58,7 @@ hf9 = function(allow)
     if (table.includes('hero', allow)) then
         txt = ""
         txt = txt .. "当地图可以自主选择英雄时："
-        txt = txt .. "-random 随机选择"
+        txt = txt .. "|n-random 随机选择"
         txt = txt .. "|n-repick 重新选择"
         hquest.create({
             side = "right",

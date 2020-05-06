@@ -80,7 +80,7 @@ require "lib.multiBoard"
 require "lib.quest"
 -- 别称
 httg = htextTag
-hattribute = hattr
+hattr = hattribute
 
 -- 时钟初始化
 -- 全局计时器
@@ -99,5 +99,3 @@ hunit.init()
 hhero.init()
 -- DzApi
 hdzapi.init()
---F9任务
-hf9({ 'apm', 'sight', 'eff' })

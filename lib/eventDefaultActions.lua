@@ -56,7 +56,7 @@ hevent_default_actions = {
         end),
         command = function()
             local p = cj.GetTriggerPlayer()
-            local str = cj.GetEventPlayerChatString()
+            local str = string.lower(cj.GetEventPlayerChatString())
             if (str == "-apc") then
                 if (his.autoConvertGoldToLumber(p) == true) then
                     his.set(p, "isAutoConvertGoldToLumber", false)
@@ -81,6 +81,8 @@ hevent_default_actions = {
                 else
                     echo("此命令仅在单人时有效", p)
                 end
+            elseif (str == "-gg") then
+                hplayer.defeat(p, "GG")
             elseif (str == "-random") then
                 if (#hhero.selectorPool <= 0) then
                     echo("已禁止random", p)
@@ -116,7 +118,6 @@ hevent_default_actions = {
                         cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
                         cj.PauseUnit(u, false)
                     end
-                    hhero.setIsHero(u, true)
                     table.insert(hhero.player_heroes[p], u)
                     -- 触发英雄被选择事件(全局)
                     hevent.triggerEvent(

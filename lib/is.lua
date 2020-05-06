@@ -166,7 +166,7 @@ end
 ---@param whichUnit userdata
 ---@return boolean
 his.hero = function(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or his.get(whichUnit, "isHero") == true
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or table.includes(hunit.getId(whichUnit), hhero.judge_ids) == true
 end
 
 --- 是否建筑
@@ -333,6 +333,11 @@ end
 ---@return boolean
 his.allyPlayer = function(whichUnit, whichPlayer)
     return cj.IsUnitAlly(whichUnit, whichPlayer)
+end
+
+--- 是否在区域内
+his.inRect = function(whichRect, x, y)
+    return (x < cj.GetRectMaxX(whichRect) and x > cj.GetRectMinX(whichRect) and y < cj.GetRectMaxY(whichRect) and y > cj.GetRectMinY(whichRect))
 end
 
 --- 是否超出区域边界

@@ -420,6 +420,14 @@ hunit.create = function(bean)
                 hitem.register(u)
             end
         end
+        -- 如果是英雄，注册事件和计算初次属性
+        if (his.hero(u) == true) then
+            hhero.setPrevLevel(u, 1)
+            hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
+                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
+            end)
+            hattribute.formatHero(u)
+        end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then
             hunit.setPeriod(u, bean.life)
@@ -618,59 +626,4 @@ end
 ---@param speed number
 hunit.setFlyHeight = function(u, height, speed)
     cj.SetUnitFlyHeight(u, height, speed)
-end
-
---- 在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
----@param u userdata
----@param delay number
----@param invulnerable number 复活后的无敌时间
----@param x number
----@param y number
-hunit.rebornAtXY = function(u, delay, invulnerable, x, y)
-    if (his.hero(u)) then
-        if (delay < 0.3) then
-            cj.ReviveHero(u, x, y, true)
-            hattr.resetAttrGroups(u)
-            if (invulnerable > 0) then
-                hskill.invulnerable(u, invulnerable)
-            end
-            -- @触发复活事件
-            hevent.triggerEvent(
-                u,
-                CONST_EVENT.reborn,
-                {
-                    triggerUnit = u
-                }
-            )
-        else
-            htime.setTimeout(
-                delay,
-                function(t)
-                    htime.delTimer(t)
-                    cj.ReviveHero(u, x, y, true)
-                    hattr.resetAttrGroups(u)
-                    if (invulnerable > 0) then
-                        hskill.invulnerable(u, invulnerable)
-                    end
-                    -- @触发复活事件
-                    hevent.triggerEvent(
-                        u,
-                        CONST_EVENT.reborn,
-                        {
-                            triggerUnit = u
-                        }
-                    )
-                end
-            )
-        end
-    end
-end
-
---- 在某点复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
----@param u userdata
----@param delay number
----@param invulnerable number 复活后的无敌时间
----@param loc userdata
-hunit.rebornAtLoc = function(u, delay, invulnerable, loc)
-    hunit.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc))
 end
