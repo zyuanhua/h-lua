@@ -745,8 +745,81 @@ hskill.damage = function(options)
     end
 end
 
+--- 多频多段伤害
+--- 特别适用于例如中毒，灼烧等效果
 --[[
-    范围持续伤害
+    options = {
+        whichUnit = [unit], --受伤单位（必须有）
+        frequency = 0, --伤害频率（必须有）
+        times = 0, --伤害次数（必须有）
+        effect = "", --特效（可选）
+        damage = 0, --单次伤害（大于0）
+        sourceUnit = [unit], --伤害来源单位（可选）
+        damageKind = CONST_DAMAGE_KIND.skill --伤害的种类（可选）
+        damageType = {CONST_DAMAGE_TYPE.real} --伤害的类型,注意是table（可选）
+        extraInfluence = [function],
+    }
+]]
+hskill.damageStep = function(options)
+    local times = options.times or 0
+    local frequency = options.frequency or 0
+    local damage = options.damage or 0
+    if (options.whichUnit == nil) then
+        print_err("hskill.damageRange:-whichUnit")
+        return
+    end
+    if (times <= 0 or damage <= 0) then
+        print_err("hskill.damageRange:-times -damage")
+        return
+    end
+    if (times > 1 and frequency <= 0) then
+        print_err("hskill.damageRange:-frequency")
+        return
+    end
+    if (times <= 1) then
+        hskill.damage(
+            {
+                sourceUnit = options.sourceUnit,
+                targetUnit = options.whichUnit,
+                effect = options.effect,
+                damage = damage,
+                damageKind = options.damageKind,
+                damageType = options.damageType
+            }
+        )
+        if (type(options.extraInfluence) == "function") then
+            options.extraInfluence(eu)
+        end
+    else
+        local ti = 0
+        htime.setInterval(
+            frequency,
+            function(t)
+                ti = ti + 1
+                if (ti > times) then
+                    htime.delTimer(t)
+                    return
+                end
+                hskill.damage(
+                    {
+                        sourceUnit = options.sourceUnit,
+                        targetUnit = options.whichUnit,
+                        effect = options.effect,
+                        damage = damage,
+                        damageKind = options.damageKind,
+                        damageType = options.damageType
+                    }
+                )
+                if (type(options.extraInfluence) == "function") then
+                    options.extraInfluence(eu)
+                end
+            end
+        )
+    end
+end
+
+--- 范围持续伤害
+--[[
     options = {
         range = 0, --范围（必须有）
         frequency = 0, --伤害频率（必须有）
