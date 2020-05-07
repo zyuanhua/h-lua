@@ -727,7 +727,7 @@ end
 ---@param x number 坐标X
 ---@param y number 坐标Y
 ---@param during number 持续时间（可选，默认30秒）
----@param yourFunc function 回调hevent.onEnterUnitRange事件的evtData
+---@param yourFunc onEnterUnitRange | "function(evtData) end"
 hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
     if (fleetingType == nil or hitem.FLEETING_IDS[fleetingType] == nil) then
         print_err("hitem fleeting -type")
