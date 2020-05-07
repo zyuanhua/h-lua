@@ -16,7 +16,7 @@ HLUA_SLK_KEYS = {
     UNIT_HERO_TAVERN = 110,
     UNIT_HERO_TAVERN_TOKEN = 111,
     UNIT_HERO_DEATH_TOKEN = 112,
-    ITEM_MOMENT = 113,
+    ITEM_FLEETING = 113,
     ATTR_STR_GREEN_ADD = 114,
     ATTR_STR_GREEN_SUB = 115,
     ATTR_AGI_GREEN_ADD = 116,
@@ -425,14 +425,9 @@ table.insert(
 )
 
 -- #地上自动捡拾物
-local item_moments = {
+local itemFleeting = {
     { Name = "金币", file = "Objects\\InventoryItems\\PotofGold\\PotofGold.mdl", modelScale = 1.00, moveHeight = -30 },
-    {
-        Name = "木材",
-        file = "Objects\\InventoryItems\\BundleofLumber\\BundleofLumber.mdl",
-        modelScale = 1.00,
-        moveHeight = -30
-    },
+    { Name = "木材", file = "Objects\\InventoryItems\\BundleofLumber\\BundleofLumber.mdl", modelScale = 1.00, moveHeight = -30 },
     { Name = "黄色书", file = "Objects\\InventoryItems\\tomeBrown\\tomeBrown.mdl", modelScale = 1.00, moveHeight = -20 },
     { Name = "绿色书", file = "Objects\\InventoryItems\\tomeGreen\\tomeGreen.mdl", modelScale = 1.00, moveHeight = -20 },
     { Name = "紫色书", file = "Objects\\InventoryItems\\tome\\tome.mdl", modelScale = 1.00, moveHeight = -20 },
@@ -440,12 +435,7 @@ local item_moments = {
     { Name = "红色书", file = "Objects\\InventoryItems\\tomeRed\\tomeRed.mdl", modelScale = 1.00, moveHeight = -20 },
     { Name = "神符", file = "Objects\\InventoryItems\\runicobject\\runicobject.mdl", modelScale = 0.80, moveHeight = -10 },
     { Name = "浮雕", file = "Objects\\InventoryItems\\Glyph\\Glyph.mdl", modelScale = 0.60, moveHeight = 0 },
-    {
-        Name = "蛋",
-        file = "Objects\\InventoryItems\\ThunderLizardEgg\\ThunderLizardEgg.mdl",
-        modelScale = 1.30,
-        moveHeight = 20
-    },
+    { Name = "蛋", file = "Objects\\InventoryItems\\ThunderLizardEgg\\ThunderLizardEgg.mdl", modelScale = 1.30, moveHeight = 20 },
     { Name = "碎片", file = "Objects\\InventoryItems\\CrystalShard\\CrystalShard.mdl", modelScale = 1.00, moveHeight = -20 },
     { Name = "问号", file = "Objects\\InventoryItems\\QuestionMark\\QuestionMark.mdl", modelScale = 0.60, moveHeight = 0 },
     { Name = "荧光草", file = "Objects\\InventoryItems\\Shimmerweed\\Shimmerweed.mdl", modelScale = 0.80, moveHeight = 0 },
@@ -456,10 +446,10 @@ local item_moments = {
     { Name = "Dota2幻象符", file = "war3mapImported\\Dota2.Runes.Illusion.mdl", modelScale = 0.80, moveHeight = -10 },
     { Name = "Dota2隐身符", file = "war3mapImported\\Dota2.Runes.Invisibility.mdl", modelScale = 0.80, moveHeight = -10 }
 }
-local itemMomentsLen = 0
-for k, v in ipairs(item_moments) do
-    itemMomentsLen = itemMomentsLen + 1
-    obj = slk.unit.ogru:new("item_moment_" .. v.Name)
+local itemFleetingLen = 0
+for k, v in ipairs(itemFleeting) do
+    itemFleetingLen = itemFleetingLen + 1
+    obj = slk.unit.ogru:new("item_fleeting_" .. v.Name)
     obj.EditorSuffix = "#h-lua"
     obj.Name = "瞬逝物系统 " .. v.Name
     obj.special = 1
@@ -482,7 +472,7 @@ for k, v in ipairs(item_moments) do
     table.insert(
         tempData,
         {
-            HLUA_SLK_KEYS.ITEM_MOMENT,
+            HLUA_SLK_KEYS.ITEM_FLEETING,
             k,
             obj:get_id(),
             "int"
@@ -492,9 +482,9 @@ end
 table.insert(
     tempData,
     {
-        HLUA_SLK_KEYS.ITEM_MOMENT,
+        HLUA_SLK_KEYS.ITEM_FLEETING,
         -1,
-        itemMomentsLen,
+        itemFleetingLen,
         "int"
     }
 )
