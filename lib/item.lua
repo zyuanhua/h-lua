@@ -728,6 +728,7 @@ end
 ---@param y number 坐标Y
 ---@param during number 持续时间（可选，默认30秒）
 ---@param yourFunc onEnterUnitRange | "function(evtData) end"
+---@return userdata item-unit
 hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
     if (fleetingType == nil) then
         print_err("hitem fleeting -type")
