@@ -744,6 +744,8 @@ hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
         register = false,
         whichPlayer = hplayer.player_passive,
         unitId = fleetingType,
+        x = x,
+        y = y,
         during = during,
     })
     if (type(yourFunc) == "function") then
