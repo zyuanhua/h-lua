@@ -3,8 +3,8 @@
  * [Test: DZAPI](https://github.com/hunzsig-warcraft3/w3x-test-dzapi)
  * [Test: Crash](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
  * [Quick start(zh-cn)](https://docs.qq.com/doc/DTUZZZWZzYVpyeW1o)
- * Author hunzsig
- * QQ 325338043
+ * Author: hunzsig
+ * QQ Group Number: 325338043(China)
 
 
 ## Introduction
