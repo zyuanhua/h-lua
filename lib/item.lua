@@ -749,7 +749,7 @@ hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
         during = during,
     })
     if (type(yourFunc) == "function") then
-        hevent.onEnterUnitRange(it, 225, yourFunc)
+        hevent.onEnterUnitRange(it, 127, yourFunc)
     end
     return it
 end
