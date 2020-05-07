@@ -729,7 +729,7 @@ end
 ---@param during number 持续时间（可选，默认30秒）
 ---@param yourFunc onEnterUnitRange | "function(evtData) end"
 hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
-    if (fleetingType == nil or hitem.FLEETING_IDS[fleetingType] == nil) then
+    if (fleetingType == nil) then
         print_err("hitem fleeting -type")
         return
     end
@@ -743,7 +743,7 @@ hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
     local it = hunit.create({
         register = false,
         whichPlayer = hplayer.player_passive,
-        unitId = hitem.FLEETING_IDS[fleetingType],
+        unitId = fleetingType,
         during = during,
     })
     if (type(yourFunc) == "function") then
