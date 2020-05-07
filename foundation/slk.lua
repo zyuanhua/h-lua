@@ -12,7 +12,7 @@ local HSK = {
     UNIT_HERO_TAVERN = 110,
     UNIT_HERO_TAVERN_TOKEN = 111,
     UNIT_HERO_DEATH_TOKEN = 112,
-    ITEM_MOMENT = 113,
+    ITEM_FLEETING = 113,
     ATTR_STR_GREEN_ADD = 114,
     ATTR_STR_GREEN_SUB = 115,
     ATTR_AGI_GREEN_ADD = 116,
@@ -43,7 +43,7 @@ local HSK = {
 }
 
 hslk_global = {
-    item_moment = {},
+    item_fleeting = {},
     env_model = {},
     skill_item_separate = 0,
     skill_break = {},
@@ -149,9 +149,9 @@ hslk_global.unit_hero_tavern_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HS
 hslk_global.unit_hero_death_token = cj.LoadInteger(cg.hash_hslk, HSK.COMMON, HSK.UNIT_HERO_DEATH_TOKEN)
 
 -- 瞬逝物系统
-qty = cj.LoadInteger(cg.hash_hslk, HSK.ITEM_MOMENT, -1)
+qty = cj.LoadInteger(cg.hash_hslk, HSK.ITEM_FLEETING, -1)
 for i = 1, qty do
-    table.insert(hslk_global.item_moment, cj.LoadInteger(cg.hash_hslk, HSK.ITEM_MOMENT, i))
+    table.insert(hslk_global.item_fleeting, cj.LoadInteger(cg.hash_hslk, HSK.ITEM_FLEETING, i))
 end
 
 -- 环境系统

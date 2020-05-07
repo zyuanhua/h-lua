@@ -13,6 +13,27 @@ hitem = {
         COORDINATE = "coordinate", --坐标
         UNIT = "unit" --单位
     },
+    FLEETING_IDS = {
+        GOLD = hslk_global.item_fleeting[1], -- 默认金币（模型）
+        LUMBER = hslk_global.item_fleeting[2], -- 默认木头
+        BOOK_YELLOW = hslk_global.item_fleeting[3], -- 技能书系列
+        BOOK_GREEN = hslk_global.item_fleeting[4],
+        BOOK_PURPLE = hslk_global.item_fleeting[5],
+        BOOK_BLUE = hslk_global.item_fleeting[6],
+        BOOK_RED = hslk_global.item_fleeting[7],
+        RUNE = hslk_global.item_fleeting[8], -- 神符（紫色符文）
+        RELIEF = hslk_global.item_fleeting[9], -- 浮雕（橙色像块炭）
+        EGG = hslk_global.item_fleeting[10], -- 蛋
+        FRAGMENT = hslk_global.item_fleeting[11], -- 碎片（蓝色石头）
+        QUESTION = hslk_global.item_fleeting[12], -- 问号
+        GRASS = hslk_global.item_fleeting[13], -- 荧光草
+        DOTA2_GOLD = hslk_global.item_fleeting[14], -- Dota2赏金符
+        DOTA2_DAMAGE = hslk_global.item_fleeting[15], -- Dota2伤害符
+        DOTA2_CURE = hslk_global.item_fleeting[16], -- Dota2恢复符
+        DOTA2_SPEED = hslk_global.item_fleeting[17], -- Dota2极速符
+        DOTA2_VISION = hslk_global.item_fleeting[18], -- Dota2幻象符
+        DOTA2_INVISIBLE = hslk_global.item_fleeting[19], -- Dota2隐身符
+    }
 }
 
 -- 单位注册物品
@@ -694,6 +715,39 @@ hitem.create = function(bean)
                 end
             )
         end
+    end
+    return it
+end
+
+--- 创建[瞬逝物]物品
+--- 是以单位模拟的物品，进入范围瞬间消失并生效
+--- 可以增加玩家的反馈刺激感
+--- [type]金币,木材,黄色书,绿色书,紫色书,蓝色书,红色书,神符,浮雕,蛋",碎片,问号,荧光草Dota2赏金符,Dota2伤害符,Dota2恢复符,Dota2极速符,Dota2幻象符,Dota2隐身符
+---@param fleetingType number hitem.FLEETING_IDS[n]
+---@param x number 坐标X
+---@param y number 坐标Y
+---@param during number 持续时间（可选，默认30秒）
+---@param yourFunc function 回调hevent.onEnterUnitRange事件的evtData
+hitem.fleeting = function(fleetingType, x, y, during, yourFunc)
+    if (fleetingType == nil or hitem.FLEETING_IDS[fleetingType] == nil) then
+        print_err("hitem fleeting -type")
+        return
+    end
+    if (x == nil or y == nil) then
+        return
+    end
+    during = during or 30
+    if (during < 0) then
+        return
+    end
+    local it = hunit.create({
+        register = false,
+        whichPlayer = hplayer.player_passive,
+        unitId = hitem.FLEETING_IDS[fleetingType],
+        during = during,
+    })
+    if (type(yourFunc) == "function") then
+        hevent.onEnterUnitRange(it, 225, yourFunc)
     end
     return it
 end
