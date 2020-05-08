@@ -752,6 +752,10 @@ hplayer.init = function()
                 hplayer.set(evtData.triggerPlayer, "selection", nil)
             end)
             -- 玩家选中单位
+            hevent.pool(hplayer.players[i], hevent_default_actions.player.selection, function(tgr)
+                cj.TriggerRegisterPlayerUnitEvent(tgr, hplayer.players[i], EVENT_PLAYER_UNIT_SELECTED, nil)
+            end)
+
             hevent.onSelection(
                 hplayer.players[i],
                 1,
