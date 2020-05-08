@@ -1,5 +1,6 @@
 hdzapi = {
     enable = false,
+    tips_showed = false,
     commandHashCache = {},
     mallItemCheater = {},
     ---@private
@@ -12,7 +13,10 @@ hdzapi = {
     ---@private
     exec = function(command, ...)
         if (hdzapi.enable ~= true) then
-            print_err("Please copy ./plugin/dzapi.jass")
+            if (hdzapi.tips_showed == false) then
+                print("Copy ./plugin/dzapi.jass For Dzapi.lua")
+                hdzapi.tips_showed = true
+            end
             return
         end
         local whichPlayer = select("1", ...)
@@ -38,12 +42,6 @@ hdzapi = {
         end
     end
 }
-
---- 初始化
----@private
-hdzapi.init = function()
-    hdzapi.enable = true
-end
 
 --- 是否红V
 ---@param whichPlayer userdata

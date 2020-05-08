@@ -82,20 +82,4 @@ require "lib.quest"
 httg = htextTag
 hattr = hattribute
 
--- 时钟初始化
--- 全局计时器
-cj.TimerStart(cj.CreateTimer(), 1.00, true, htime.clock)
-
--- 预读preread
-local u = cj.CreateUnit(hplayer.player_passive, hslk_global.unit_token, 0, 0, 0)
-hattr.regAllAbility(u)
-hunit.del(u)
-
--- 玩家
-hplayer.init()
--- 单位
-hunit.init()
--- 英雄
-hhero.init()
--- DzApi
-hdzapi.init()
+require "lib.initialization"

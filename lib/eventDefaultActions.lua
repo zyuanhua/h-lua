@@ -204,6 +204,37 @@ hevent_default_actions = {
                 }
             )
         end),
+        selection = cj.Condition(function()
+            local triggerPlayer = cj.GetTriggerPlayer()
+            local triggerUnit = cj.GetTriggerUnit()
+            if (hRuntime.player[triggerPlayer] == nil) then
+                hRuntime.player[triggerPlayer] = {}
+            end
+            if (hRuntime.player[triggerPlayer].click == nil) then
+                hRuntime.player[triggerPlayer].click = 0
+            end
+            hRuntime.player[triggerPlayer].click = hRuntime.player[triggerPlayer].click + 1
+            htime.setTimeout(
+                0.3,
+                function(ct)
+                    htime.delTimer(ct)
+                    hRuntime.player[triggerPlayer].click = hRuntime.player[triggerPlayer].click - 1
+                end
+            )
+            for qty = 1, 10 do
+                if (hRuntime.player[triggerPlayer].click >= qty) then
+                    hevent.triggerEvent(
+                        triggerPlayer,
+                        CONST_EVENT.selection .. "#" .. qty,
+                        {
+                            triggerPlayer = triggerPlayer,
+                            triggerUnit = triggerUnit,
+                            qty = qty
+                        }
+                    )
+                end
+            end
+        end),
     },
     unit = {
         attackDetect = cj.Condition(function()
