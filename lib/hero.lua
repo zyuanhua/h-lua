@@ -13,15 +13,6 @@ hhero = {
     selectorClearPool = {},
 }
 
----@private
-hhero.init = function()
-    for i = 1, bj_MAX_PLAYER_SLOTS, 1 do
-        local p = cj.Player(i - 1)
-        hhero.player_allow_qty[p] = 1
-        hhero.player_heroes[p] = {}
-    end
-end
-
 --- 设置英雄之前的等级
 ---@protected
 ---@param u userdata
