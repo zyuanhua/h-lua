@@ -29,6 +29,7 @@ hRuntime = {
     rect = {},
     player = {},
     unit = {},
+    group = {}, -- 单位选择器
     hero = {},
     heroBuildSelection = {},
     skill = {
@@ -109,6 +110,9 @@ hRuntime.clear = function(handle)
     end
     if (hRuntime.unit[handle] ~= nil) then
         hRuntime.unit[handle] = nil
+    end
+    if (table.includes(handle, hRuntime.group)) then
+        table.delete(handle, hRuntime.group)
     end
     if (hRuntime.hero[handle] ~= nil) then
         hRuntime.hero[handle] = nil

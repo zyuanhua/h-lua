@@ -488,7 +488,7 @@ hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
     end
     hattr.set(whichUnit, 0, diff)
     if (#diffPlayer > 0) then
-        local p = cj.GetOwningPlayer(whichUnit)
+        local p = hunit.getOwner(whichUnit)
         for _, dp in ipairs(diffPlayer) do
             local pk = dp[1]
             local pv = dp[2]

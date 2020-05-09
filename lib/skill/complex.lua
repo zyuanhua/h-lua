@@ -1001,7 +1001,7 @@ hskill.lightningChain = function(options)
                 if (his.unit(whichUnit, filterUnit)) then
                     flag = false
                 end
-                if (isRepeat ~= true and hgroup.isIn(options.repeatGroup, filterUnit)) then
+                if (isRepeat ~= true and hgroup.includes(options.repeatGroup, filterUnit)) then
                     flag = false
                 end
                 return flag
@@ -1082,7 +1082,7 @@ hskill.crackFly = function(options)
     end
     his.set(options.whichUnit, "isCrackFly", true)
     --镜头放大模式下，距离缩小一半
-    if (hcamera.getModel(cj.GetOwningPlayer(options.whichUnit)) == "zoomin") then
+    if (hcamera.getModel(hunit.getOwner(options.whichUnit)) == "zoomin") then
         distance = distance * 0.5
         high = high * 0.5
     end
@@ -1187,7 +1187,7 @@ hskill.crackFly = function(options)
                     )
                     cj.SetUnitFacing(options.whichUnit, originFacing)
                     if (his.borderMap(pxy.x, pxy.y) == false) then
-                        cj.SetUnitPosition(options.whichUnit, pxy.x, pxy.y)
+                        hunit.portal(options.whichUnit, pxy.x, pxy.y)
                     end
                 end
                 if (z > 0) then
@@ -1204,7 +1204,7 @@ hskill.crackFly = function(options)
                         originDeg
                     )
                     cj.SetUnitFacing(options.whichUnit, originFacing)
-                    cj.SetUnitPosition(options.whichUnit, pxy.x, pxy.y)
+                    hunit.portal(options.whichUnit, pxy.x, pxy.y)
                 end
                 if (z > 0) then
                     cj.SetUnitFlyHeight(options.whichUnit, cj.GetUnitFlyHeight(options.whichUnit) - z, z / timerSetTime)
@@ -1482,7 +1482,7 @@ hskill.leap = function(options)
         arrowUnit = hunit.create(
             {
                 register = false,
-                whichPlayer = cj.GetOwningPlayer(sourceUnit),
+                whichPlayer = hunit.getOwner(sourceUnit),
                 unitId = hskill.SKILL_LEAP,
                 x = cxy.x,
                 y = cxy.y,
@@ -1547,7 +1547,7 @@ hskill.leap = function(options)
             end
             local fac = math.getDegBetweenXY(ax, ay, tx, ty)
             local txy = math.polarProjection(ax, ay, speed, fac)
-            cj.SetUnitPosition(arrowUnit, txy.x, txy.y)
+            hunit.portal(arrowUnit, txy.x, txy.y)
             cj.SetUnitFacing(arrowUnit, fac)
             if (options.effectMovement ~= nil) then
                 heffect.toXY(options.effectMovement, txy.x, txy.y, 0)
@@ -1561,7 +1561,7 @@ hskill.leap = function(options)
                     damageMovementRange,
                     function(filterUnit)
                         local flag = filter(filterUnit)
-                        if (damageMovementRepeat ~= true and hgroup.isIn(repeatGroup, filterUnit)) then
+                        if (damageMovementRepeat ~= true and hgroup.includes(repeatGroup, filterUnit)) then
                             flag = false
                         end
                         return flag
@@ -1590,7 +1590,7 @@ hskill.leap = function(options)
                                 )
                             end
                             if (damageMovementDrag == true) then
-                                cj.SetUnitPosition(eu, txy.x, txy.y)
+                                hunit.portal(eu, txy.x, txy.y)
                             end
                             if (type(extraInfluence) == "function") then
                                 extraInfluence(eu)
@@ -1658,7 +1658,7 @@ hskill.leap = function(options)
                     hunit.setInvulnerable(arrowUnit, false)
                     cj.SetUnitPathing(arrowUnit, true)
                     cj.SetUnitVertexColor(arrowUnit, 255, 255, 255, 1)
-                    cj.SetUnitPosition(arrowUnit, txy.x, txy.y)
+                    hunit.portal(arrowUnit, txy.x, txy.y)
                 else
                     hunit.kill(arrowUnit, 0)
                 end
@@ -1961,7 +1961,7 @@ hskill.rectangleStrike = function(options)
             hgroup.loop(
                 hgroup.createByXY(txy.x, txy.y, range, options.filter),
                 function(eu)
-                    if (hgroup.isIn(tg, eu) == false) then
+                    if (hgroup.includes(tg, eu) == false) then
                         cj.GroupAddUnit(tg, eu)
                     end
                 end,

@@ -106,7 +106,7 @@ hunit.addExp = function(u, val, showEffect)
     if (type(showEffect) ~= "boolean") then
         showEffect = false
     end
-    val = cj.R2I(val * hplayer.getExpRatio(cj.GetOwningPlayer(u)) / 100)
+    val = cj.R2I(val * hplayer.getExpRatio(hunit.getOwner(u)) / 100)
     cj.AddHeroXP(u, val, showEffect)
     htextTag.style(htextTag.create2Unit(u, "+" .. val .. " Exp", 7, "c4c4ff", 1, 1.70, 60.00), "toggle", 0, 0.20)
 end
@@ -189,6 +189,31 @@ hunit.setRGB = function(whichUnit, red, green, blue, opacity)
         blue,
         255 * opacity
     )
+end
+
+--- 获取单位当前归属玩家
+---@param whichUnit userdata
+---@return userdata ownerPlayer
+hunit.getOwner = function(whichUnit)
+    if (whichUnit == nil) then
+        return
+    end
+    return cj.GetOwningPlayer(whichUnit)
+end
+
+--- 瞬间传送单位到X,Y坐标
+---@param whichUnit userdata
+---@param x number
+---@param y number
+---@param facing number|nil
+hunit.portal = function(whichUnit, x, y, facing)
+    if (whichUnit == nil or x == nil or y == nil) then
+        return
+    end
+    cj.SetUnitPosition(whichUnit, x, y)
+    if (facing ~= nil) then
+        cj.SetUnitFacing(facing)
+    end
 end
 
 --[[
@@ -345,22 +370,22 @@ hunit.create = function(bean)
                 cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
             end
         end
-        --注册系统(默认注册)
+        -- 记入group选择器（不在框架系统内的单位，也不会被group选择到）
+        table.insert(hRuntime.group, u)
+        -- 记入realtime
+        hRuntime.unit[u] = {
+            id = bean.unitId,
+            life = bean.life,
+            during = bean.during,
+            isOpenPunish = bean.isOpenPunish,
+            isShadow = bean.isShadow,
+            animateSpeed = bean.timeScale,
+        }
+        -- 注册系统(默认注册)
         if (type(bean.register) ~= "boolean") then
             bean.register = true
         end
         if (bean.register == true) then
-            --记入realtime
-            hRuntime.unit[u] = {
-                id = bean.unitId,
-                whichPlayer = bean.whichPlayer,
-                x = x,
-                y = y,
-                life = bean.life,
-                during = bean.during,
-                isOpenPunish = bean.isOpenPunish,
-                isShadow = bean.isShadow
-            }
             -- 单位受伤
             hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
                 cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)

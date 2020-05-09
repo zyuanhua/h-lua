@@ -244,7 +244,7 @@ hhero.buildSelector = function(options)
                 if (table.includes(u, hhero.selectorClearPool) == false) then
                     return
                 end
-                if (cj.GetOwningPlayer(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
+                if (hunit.getOwner(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
                     return
                 end
                 if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
@@ -255,7 +255,7 @@ hhero.buildSelector = function(options)
                 table.delete(u, hhero.selectorClearPool)
                 hunit.setInvulnerable(u, false)
                 cj.SetUnitOwner(u, p, true)
-                cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
+                hunit.portal(u, hhero.bornX, hhero.bornY)
                 cj.PauseUnit(u, false)
                 table.insert(hhero.player_heroes[p], u)
                 -- 触发英雄被选择事件(全局)
@@ -302,7 +302,7 @@ hhero.buildSelector = function(options)
                 table.insert(hhero.selectorClearPool, tavern)
                 cj.SetUnitTypeSlots(tavern, allowTavernQty)
                 hevent.onUnitSell(tavern, function(evtData)
-                    local p = cj.GetOwningPlayer(evtData.buyingUnit)
+                    local p = hunit.getOwner(evtData.buyingUnit)
                     local soldUnit = evtData.soldUnit
                     local soldUid = cj.GetUnitTypeId(soldUnit)
                     hunit.del(soldUnit, 0)
