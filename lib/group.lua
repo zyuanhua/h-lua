@@ -98,7 +98,7 @@ hgroup.createByXY = function(x, y, radius, filterFunc)
             idx = idx - 1
         end
         -- 排除超过距离的单位
-        if (radius >= math.getDegBetweenXY(x, y, cj.GetUnitX(filterUnit), cj.GetUnitY(filterUnit))) then
+        if (radius >= math.getDistanceBetweenXY(x, y, cj.GetUnitX(filterUnit), cj.GetUnitY(filterUnit))) then
             if (filterFunc ~= nil) then
                 if (filterFunc(filterUnit) == true) then
                     table.insert(g, filterUnit)
@@ -143,7 +143,7 @@ hgroup.createByRect = function(r, filterFunc)
             table.remove(hRuntime.group, idx)
             idx = idx - 1
         end
-        -- 排除超过距离的单位
+        -- 排除区域外
         if (his.inRect(r, cj.GetUnitX(filterUnit), cj.GetUnitY(filterUnit))) then
             if (filterFunc ~= nil) then
                 if (filterFunc(filterUnit) == true) then

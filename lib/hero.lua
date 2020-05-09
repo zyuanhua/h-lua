@@ -23,6 +23,7 @@ hhero.setPrevLevel = function(u, lv)
     end
     hRuntime.hero[u].prevLevel = lv
 end
+
 --- 获取英雄之前的等级
 ---@protected
 ---@param u userdata
