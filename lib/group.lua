@@ -203,14 +203,14 @@ end
 
 --- 指挥单位组所有单位做动作
 ---@param whichGroup userdata
----@param animateStr string
-hgroup.animate = function(whichGroup, animateStr)
-    if (whichGroup == nil or animateStr == nil) then
+---@param animate string | number
+hgroup.animate = function(whichGroup, animate)
+    if (whichGroup == nil or animate == nil) then
         return
     end
     hgroup.loop(whichGroup, function(eu)
         if (his.death(eu) == false) then
-            cj.SetUnitAnimation(eu, animateStr)
+            hunit.animate(eu, animate)
         end
     end)
 end

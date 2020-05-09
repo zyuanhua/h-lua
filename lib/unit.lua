@@ -216,6 +216,22 @@ hunit.portal = function(whichUnit, x, y, facing)
     end
 end
 
+--- 命令单位做动画动作，如 "attack"
+--- 当动作为整型序号时，自动播放对应的序号行为(每种模型的序号并不一致)
+---@param whichUnit userdata
+---@param animate number | string
+hunit.animate = function(whichUnit, animate)
+    if (whichUnit == nil or animate == nil) then
+        return
+    end
+    if (type(animate) == "string") then
+        cj.SetUnitAnimation(whichUnit, animate)
+    elseif (type(animate) == "number") then
+        animate = math.floor(animate)
+        cj.SetUnitAnimationByIndex(whichUnit, animate)
+    end
+end
+
 --[[
     创建单位/单位组
     @return 最后创建单位/单位组

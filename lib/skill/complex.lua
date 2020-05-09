@@ -1357,7 +1357,7 @@ hskill.whirlwind = function(options)
                 return
             end
             if (options.animation) then
-                cj.SetUnitAnimation(options.sourceUnit, options.animation)
+                hunit.animate(options.sourceUnit, options.animation)
             end
             local g = hgroup.createByUnit(options.sourceUnit, range, filter)
             if (g == nil) then
