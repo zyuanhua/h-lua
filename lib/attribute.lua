@@ -576,7 +576,7 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 if (futureVal < 0) then
                     cj.SetUnitMoveSpeed(whichUnit, 0)
                 else
-                    if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
+                    if (hcamera.getModel(hunit.getOwner(whichUnit)) == "zoomin") then
                         cj.SetUnitMoveSpeed(whichUnit, math.floor(futureVal * 0.5))
                     else
                         cj.SetUnitMoveSpeed(whichUnit, math.floor(futureVal))
@@ -608,7 +608,7 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (futureVal > hattribute.max_attack_range) then
                     futureVal = hattribute.max_attack_range
                 end
-                if (hcamera.getModel(cj.GetOwningPlayer(whichUnit)) == "zoomin") then
+                if (hcamera.getModel(hunit.getOwner(whichUnit)) == "zoomin") then
                     futureVal = futureVal * 0.5
                 end
                 cj.SetUnitAcquireRange(whichUnit, futureVal * 1.1)

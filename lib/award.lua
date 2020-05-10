@@ -18,7 +18,7 @@ haward.forUnit = function(whichUnit, exp, gold, lumber)
     if (whichUnit == nil) then
         return
     end
-    local p = cj.GetOwningPlayer(whichUnit)
+    local p = hunit.getOwner(whichUnit)
     local index = hplayer.index(p)
     local realGold = cj.R2I(gold)
     local realLumber = cj.R2I(lumber)

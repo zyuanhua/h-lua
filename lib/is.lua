@@ -308,7 +308,7 @@ end
 ---@param otherUnit userdata
 ---@return boolean
 his.enemy = function(whichUnit, otherUnit)
-    return cj.IsUnitEnemy(whichUnit, cj.GetOwningPlayer(otherUnit))
+    return cj.IsUnitEnemy(whichUnit, hunit.getOwner(otherUnit))
 end
 
 --- 是否友军单位
@@ -316,7 +316,7 @@ end
 ---@param otherUnit userdata
 ---@return boolean
 his.ally = function(whichUnit, otherUnit)
-    return cj.IsUnitAlly(whichUnit, cj.GetOwningPlayer(otherUnit))
+    return cj.IsUnitAlly(whichUnit, hunit.getOwner(otherUnit))
 end
 
 --- 是否敌人玩家

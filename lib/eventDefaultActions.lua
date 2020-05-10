@@ -23,7 +23,7 @@ hevent_default_actions = {
         end),
         constructStart = cj.Condition(function()
             hevent.triggerEvent(
-                cj.GetOwningPlayer(cj.GetTriggerUnit()),
+                hunit.getOwner(cj.GetTriggerUnit()),
                 CONST_EVENT.constructStart,
                 {
                     triggerUnit = cj.GetTriggerUnit()
@@ -32,7 +32,7 @@ hevent_default_actions = {
         end),
         constructCancel = cj.Condition(function()
             hevent.triggerEvent(
-                cj.GetOwningPlayer(cj.GetTriggerUnit()),
+                hunit.getOwner(cj.GetTriggerUnit()),
                 CONST_EVENT.constructCancel,
                 {
                     triggerUnit = cj.GetCancelledStructure()
@@ -41,7 +41,7 @@ hevent_default_actions = {
         end),
         constructFinish = cj.Condition(function()
             hevent.triggerEvent(
-                cj.GetOwningPlayer(cj.GetTriggerUnit()),
+                hunit.getOwner(cj.GetTriggerUnit()),
                 CONST_EVENT.constructFinish,
                 {
                     triggerUnit = cj.GetConstructedStructure()
@@ -49,7 +49,7 @@ hevent_default_actions = {
             )
         end),
         apm = cj.Condition(function()
-            local p = cj.GetOwningPlayer(cj.GetTriggerUnit())
+            local p = hunit.getOwner(cj.GetTriggerUnit())
             if (his.playing(p) == true and his.playerSite(p) == true and his.computer(p) == false) then
                 hplayer.set(p, "apm", hplayer.get(p, "apm", 0) + 1)
             end
@@ -115,7 +115,7 @@ hevent_default_actions = {
                         table.delete(one, hhero.selectorClearPool)
                         hunit.setInvulnerable(u, false)
                         cj.SetUnitOwner(u, p, true)
-                        cj.SetUnitPosition(u, hhero.bornX, hhero.bornY)
+                        hunit.portal(u, hhero.bornX, hhero.bornY)
                         cj.PauseUnit(u, false)
                     end
                     table.insert(hhero.player_heroes[p], u)
@@ -390,7 +390,7 @@ hevent_default_actions = {
             local u = cj.GetTriggerUnit()
             local killer = hevent.getLastDamageUnit(u)
             if (killer ~= nil) then
-                hplayer.addKill(cj.GetOwningPlayer(killer), 1)
+                hplayer.addKill(hunit.getOwner(killer), 1)
             end
             -- @触发死亡事件
             hevent.triggerEvent(
@@ -583,7 +583,7 @@ hevent_default_actions = {
             local soldLumber = 0
             hRuntime.clear(it)
             if (goldcost ~= 0 or lumbercost ~= 0) then
-                local p = cj.GetOwningPlayer(u)
+                local p = hunit.getOwner(u)
                 local sellRatio = hplayer.getSellRatio(u)
                 if (sellRatio ~= 50) then
                     if (sellRatio < 0) then

@@ -203,7 +203,7 @@ hplayer.hideUnit = function(whichPlayer)
     local g = hgroup.createByRect(
         cj.GetWorldBounds(),
         function(filterUnit)
-            return cj.GetOwningPlayer(filterUnit) == whichPlayer
+            return hunit.getOwner(filterUnit) == whichPlayer
         end
     )
     while (hgroup.isEmpty(g) ~= true) do
@@ -223,7 +223,7 @@ hplayer.clearUnit = function(whichPlayer)
     local g = hgroup.createByRect(
         cj.GetWorldBounds(),
         function(filterUnit)
-            return cj.GetOwningPlayer(filterUnit) == whichPlayer
+            return hunit.getOwner(filterUnit) == whichPlayer
         end
     )
     while (hgroup.isEmpty(g) ~= true) do

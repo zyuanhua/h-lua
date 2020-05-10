@@ -243,7 +243,7 @@ hrect.lock = function(bean)
                     end
                     if (distance > 0.0) then
                         local polar = math.polarProjection(x, y, distance, deg)
-                        cj.SetUnitPosition(u, polar.x, polar.y)
+                        hunit.portal(u, polar.x, polar.y)
                         heffect.bindUnit("Abilities\\Spells\\Human\\Defend\\DefendCaster.mdl", u, "origin", 0.2)
                     end
                 end,

@@ -304,8 +304,8 @@ hskill.damage = function(options)
         _damageTtg(targetUnit, lastDamage, damageString, damageStringColor)
         --
         hevent.setLastDamageUnit(targetUnit, sourceUnit)
-        hplayer.addDamage(cj.GetOwningPlayer(sourceUnit), lastDamage)
-        hplayer.addBeDamage(cj.GetOwningPlayer(targetUnit), lastDamage)
+        hplayer.addDamage(hunit.getOwner(sourceUnit), lastDamage)
+        hplayer.addBeDamage(hunit.getOwner(targetUnit), lastDamage)
         hunit.subCurLife(targetUnit, lastDamage)
         if (type(effect) == "string" and string.len(effect) > 0) then
             heffect.toXY(effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
