@@ -226,6 +226,7 @@ hplayer.clearUnit = function(whichPlayer)
             return hunit.getOwner(filterUnit) == whichPlayer
         end
     )
+    hgroup.clear(g, true, true)
     while (hgroup.isEmpty(g) ~= true) do
         local u = cj.FirstOfGroup(g)
         cj.GroupRemoveUnit(g, u)

@@ -168,7 +168,7 @@ hrect.lock = function(bean)
         return
     end
     local inc = 0
-    local lockGroup = cj.CreateGroup()
+    local lockGroup = {}
     htime.setInterval(
         0.1,
         function(t)
@@ -208,12 +208,12 @@ hrect.lock = function(bean)
                 end
             end
             local lockRect
-            local tempGroup = cj.CreateGroup()
+            local tempGroup
             if (bean.type == "square") then
                 lockRect = cj.Rect(x - (w * 0.5), y - (h * 0.5), x + (w * 0.5), y + (h * 0.5))
-                cj.GroupEnumUnitsInRect(tempGroup, lockRect, nil)
+                tempGroup = hgroup.createByRect(lockRect)
             elseif (bean.type == "circle") then
-                cj.GroupEnumUnitsInRange(tempGroup, x, y, math.min(w / 2, h / 2), nil)
+                tempGroup = hgroup.createByXY(x, y, math.min(w / 2, h / 2))
             end
             hgroup.loop(
                 tempGroup,
