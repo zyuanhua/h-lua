@@ -232,42 +232,43 @@ hunit.animate = function(whichUnit, animate)
     end
 end
 
---[[
-    创建单位/单位组
-    @return 最后创建单位/单位组
-    {
-        register = true, --是否注册进系统
-        whichPlayer = nil, --归属玩家
-        unitId = nil, --类型id,如'H001'
-        x = nil, --创建坐标X，可选
-        y = nil, --创建坐标Y，可选
-        loc = nil, --创建点，可选
-        height = 高度，0，可选
-        timeScale = 动作时间比例，1~，可选
-        modelScale = 模型缩放比例，1~，可选
-        opacity = 透明，0.0～1.0，可选,0不可见
-        qty = 1, --数量，可选，可选
-        life = nil, --生命周期，到期死亡，可选
-        during = nil, --持续时间，到期删除，可选
-        facing = nil, --面向角度，可选
-        facingX = nil, --面向X，可选
-        facingY = nil, --面向Y，可选
-        facingLoc = nil, --面向点，可选
-        facingUnit = nil, --面向单位，可选
-        attackX = nil, --攻击X，可选
-        attackY = nil, --攻击Y，可选
-        attackLoc = nil, --攻击点，可选
-        attackUnit = nil, --攻击单位，可选
-        isOpenSlot = false, --是否开启物品栏(自动注册)可选
-        isOpenPunish = false, --是否开启硬直系统，可选
-        isShadow = false, --是否影子，可选
-        isUnSelectable = false, --是否不可鼠标选中，可选
-        isPause = false, -- 是否暂停
-        isInvulnerable = false, --是否无敌，可选
-        isShareSight = false, --是否与所有玩家共享视野，可选
-    }
-]]
+--- 创建单位/单位组
+---@param bean table
+---@return userdata|table 最后创建单位|单位组
 hunit.create = function(bean)
+    --[[
+        bean = {
+            register = true, --是否注册进系统
+            whichPlayer = nil, --归属玩家
+            unitId = nil, --类型id,如'H001'
+            x = nil, --创建坐标X，可选
+            y = nil, --创建坐标Y，可选
+            loc = nil, --创建点，可选
+            height = 高度，0，可选
+            timeScale = 动作时间比例，1~，可选
+            modelScale = 模型缩放比例，1~，可选
+            opacity = 透明，0.0～1.0，可选,0不可见
+            qty = 1, --数量，可选，可选
+            life = nil, --生命周期，到期死亡，可选
+            during = nil, --持续时间，到期删除，可选
+            facing = nil, --面向角度，可选
+            facingX = nil, --面向X，可选
+            facingY = nil, --面向Y，可选
+            facingLoc = nil, --面向点，可选
+            facingUnit = nil, --面向单位，可选
+            attackX = nil, --攻击X，可选
+            attackY = nil, --攻击Y，可选
+            attackLoc = nil, --攻击点，可选
+            attackUnit = nil, --攻击单位，可选
+            isOpenSlot = false, --是否开启物品栏(自动注册)可选
+            isOpenPunish = false, --是否开启硬直系统，可选
+            isShadow = false, --是否影子，可选
+            isUnSelectable = false, --是否不可鼠标选中，可选
+            isPause = false, -- 是否暂停
+            isInvulnerable = false, --是否无敌，可选
+            isShareSight = false, --是否与所有玩家共享视野，可选
+        }
+    ]]
     if (bean.qty == nil) then
         bean.qty = 1
     end
@@ -318,7 +319,7 @@ hunit.create = function(bean)
         facing = bj_UNIT_FACING
     end
     if (bean.qty > 1) then
-        g = cj.CreateGroup()
+        g = {}
     end
     for _ = 1, bean.qty, 1 do
         if (bean.x ~= nil and bean.y ~= nil) then
@@ -355,7 +356,7 @@ hunit.create = function(bean)
             cj.IssueTargetOrder(u, "attack", bean.attackUnit)
         end
         if (bean.qty > 1) then
-            cj.GroupAddUnit(g, u)
+            hgroup.addUnit(g, u)
         end
         --是否可选
         if (bean.isUnSelectable ~= nil and bean.isUnSelectable == true) then

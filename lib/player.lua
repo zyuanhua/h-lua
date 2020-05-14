@@ -201,18 +201,14 @@ hplayer.hideUnit = function(whichPlayer)
         return
     end
     local g = hgroup.createByRect(
-        cj.GetWorldBounds(),
+        hrect.WORLD_BOUND,
         function(filterUnit)
             return hunit.getOwner(filterUnit) == whichPlayer
         end
     )
-    while (hgroup.isEmpty(g) ~= true) do
-        local u = cj.FirstOfGroup(g)
-        cj.GroupRemoveUnit(g, u)
-        cj.ShowUnit(u, false)
-    end
-    cj.GroupClear(g)
-    cj.DestroyGroup(g)
+    hgroup.loop(g, function(enumUnit)
+        cj.ShowUnit(enumUnit, false)
+    end, true)
 end
 --- 令玩家单位全部删除
 ---@param whichPlayer userdata
@@ -221,18 +217,12 @@ hplayer.clearUnit = function(whichPlayer)
         return
     end
     local g = hgroup.createByRect(
-        cj.GetWorldBounds(),
+        hrect.WORLD_BOUND,
         function(filterUnit)
             return hunit.getOwner(filterUnit) == whichPlayer
         end
     )
-    while (hgroup.isEmpty(g) ~= true) do
-        local u = cj.FirstOfGroup(g)
-        cj.GroupRemoveUnit(g, u)
-        hunit.del(u)
-    end
-    cj.GroupClear(g)
-    cj.DestroyGroup(g)
+    hgroup.clear(g, true, true)
 end
 --- 令玩家失败并退出
 ---@param whichPlayer userdata

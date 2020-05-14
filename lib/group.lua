@@ -6,21 +6,22 @@ hgroup = {}
 ---@param actions GroupLoop | "function(enumUnit) end"
 ---@param autoDel boolean
 hgroup.loop = function(whichGroup, actions, autoDel)
-    if (whichGroup == nil or type(actions) ~= "function") then
+    if (whichGroup == nil) then
         return
     end
-    if (#whichGroup == 0) then
-        return
-    end
-    if (type(autoDel) ~= "boolean") then
-        autoDel = false
-    end
-    for idx, eu in ipairs(whichGroup) do
-        if (his.deleted(eu) == false) then
-            actions(eu)
-        else
-            table.remove(whichGroup, idx)
-            idx = idx - 1
+    if (#whichGroup > 0) then
+        if (type(autoDel) ~= "boolean") then
+            autoDel = false
+        end
+        for idx, eu in ipairs(whichGroup) do
+            if (his.deleted(eu) == false) then
+                if (type(actions) == "function") then
+                    actions(eu)
+                end
+            else
+                table.remove(whichGroup, idx)
+                idx = idx - 1
+            end
         end
     end
     if (autoDel == true) then

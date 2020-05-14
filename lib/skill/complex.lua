@@ -221,11 +221,9 @@ hskill.split = function(options)
                         }
                     )
                 end
-            end
+            end,
+            true
         )
-        cj.GroupClear(g)
-        cj.DestroyGroup(g)
-        g = nil
         -- @触发分裂事件
         hevent.triggerEvent(
             sourceUnit,
@@ -980,9 +978,9 @@ hskill.lightningChain = function(options)
     if (options.qty > 0) then
         if (isRepeat ~= true) then
             if (options.repeatGroup == nil) then
-                options.repeatGroup = cj.CreateGroup()
+                options.repeatGroup = {}
             end
-            cj.GroupAddUnit(options.repeatGroup, whichUnit)
+            hgroup.addUnit(options.repeatGroup, whichUnit)
         end
         local g = hgroup.createByUnit(
             whichUnit,
@@ -1014,8 +1012,7 @@ hskill.lightningChain = function(options)
         options.damage = options.damage * (1 + change)
         options.prevUnit = whichUnit
         options.odds = 9999 --闪电链只要开始能延续下去就是100%几率了
-        cj.GroupClear(g)
-        cj.DestroyGroup(g)
+        hgroup.clear(g, true, false)
         if (options.damage > 0) then
             htime.setTimeout(
                 0.35,
@@ -1027,8 +1024,7 @@ hskill.lightningChain = function(options)
         end
     else
         if (options.repeatGroup ~= nil) then
-            cj.GroupClear(options.repeatGroup)
-            cj.DestroyGroup(options.repeatGroup)
+            options.repeatGroup = nil
         end
     end
 end
@@ -1475,7 +1471,7 @@ hskill.leap = function(options)
     end
     local repeatGroup
     if (damageMovement > 0 and damageMovementRepeat == false) then
-        repeatGroup = cj.CreateGroup()
+        repeatGroup = {}
     end
     if (arrowUnit == nil) then
         local cxy = math.polarProjection(cj.GetUnitX(prevUnit), cj.GetUnitY(prevUnit), 100, initFacing)
@@ -1520,8 +1516,6 @@ hskill.leap = function(options)
                     heffect.del(tempEffectArrow)
                 end
                 if (repeatGroup ~= nil) then
-                    cj.GroupClear(repeatGroup)
-                    cj.DestroyGroup(repeatGroup)
                     repeatGroup = nil
                 end
                 if (leapType == "unit") then
@@ -1607,8 +1601,6 @@ hskill.leap = function(options)
                     heffect.del(tempEffectArrow)
                 end
                 if (repeatGroup ~= nil) then
-                    cj.GroupClear(repeatGroup)
-                    cj.DestroyGroup(repeatGroup)
                     repeatGroup = nil
                 end
                 if (options.effectEnd ~= nil) then
@@ -1932,7 +1924,7 @@ hskill.rectangleStrike = function(options)
     end
     if (frequency <= 0) then
         local i = 0
-        local tg = cj.CreateGroup()
+        local tg = {}
         while (true) do
             i = i + 1
             local d = i * range * 0.33
@@ -1962,7 +1954,7 @@ hskill.rectangleStrike = function(options)
                 hgroup.createByXY(txy.x, txy.y, range, options.filter),
                 function(eu)
                     if (hgroup.includes(tg, eu) == false) then
-                        cj.GroupAddUnit(tg, eu)
+                        hgroup.addUnit(tg, eu)
                     end
                 end,
                 true
@@ -1983,8 +1975,7 @@ hskill.rectangleStrike = function(options)
                 }
             )
         end
-        cj.GroupClear(tg)
-        cj.DestroyGroup(tg)
+        tg = nil
     else
         local i = 0
         htime.setInterval(
@@ -2031,8 +2022,7 @@ hskill.rectangleStrike = function(options)
                         }
                     )
                 end
-                cj.GroupClear(g)
-                cj.DestroyGroup(g)
+                g = nil
             end
         )
     end
