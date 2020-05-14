@@ -1,5 +1,7 @@
 ---@class hrect
-hrect = {}
+hrect = {
+    WORLD_BOUND = cj.GetWorldBounds(),
+}
 
 --- 创建一个设定中心（x,y）创建一个长w宽h的矩形区域
 ---@param x number
