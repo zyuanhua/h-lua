@@ -362,6 +362,21 @@ hitem.getEmptySlot = function(whichUnit)
     return qty
 end
 
+--- 循环获取某单位6格物品
+---@alias SlotLoop fun(enumUnit: userdata):void
+---@param whichUnit userdata
+---@param action SlotLoop | "function(slotItem, slotIndex) end"
+---@return number
+hitem.slotLoop = function(whichUnit, action)
+    local it
+    for i = 0, 5, 1 do
+        it = cj.UnitItemInSlot(whichUnit, i)
+        if (it ~= nil) then
+            action(it, i)
+        end
+    end
+end
+
 --- 使得单位拥有拆分物品的技能
 ---@param whichUnit userdata
 hitem.setAllowSeparate = function(whichUnit)
