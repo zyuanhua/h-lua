@@ -46,25 +46,25 @@ library zzzSlk initializer Init
         local hi = { 0, 0, 0, 0 }
         for _,v in ipairs(slkHelperHashData)do
             if(v.type == "item")then
-                ?>
-                call SaveStr(hash_hslk_helper, 1, <?=hi[1]?>, "<?=v.data?>")
-                <?
                 hi[1] = hi[1] + 1
+                ?>
+                call SaveStr(hash_hslk_helper, 1, <?=hi[1]?>, "<?=string.addslashes(json.stringify(v.data))?>")
+                <?
             elseif(v.type == "unit")then
-                ?>
-                call SaveStr(hash_hslk_helper, 2, <?=hi[2]?>, "<?=v.data?>")
-                <?
                 hi[2] = hi[2] + 1
+                ?>
+                call SaveStr(hash_hslk_helper, 2, <?=hi[2]?>, "<?=string.addslashes(json.stringify(v.data))?>")
+                <?
             elseif(v.type == "ability")then
-                ?>
-                call SaveStr(hash_hslk_helper, 3, <?=hi[3]?>, "<?=v.data?>")
-                <?
                 hi[3] = hi[3] + 1
-            elseif(v.type == "technology")then
                 ?>
-                call SaveStr(hash_hslk_helper, 4, <?=hi[4]?>, "<?=v.data?>")
+                call SaveStr(hash_hslk_helper, 3, <?=hi[3]?>, "<?=string.addslashes(json.stringify(v.data))?>")
                 <?
+            elseif(v.type == "technology")then
                 hi[4] = hi[4] + 1
+                ?>
+                call SaveStr(hash_hslk_helper, 4, <?=hi[4]?>, "<?=string.addslashes(json.stringify(v.data))?>")
+                <?
             end
         end
         for i,v in ipairs(hi)do

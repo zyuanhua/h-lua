@@ -1,6 +1,7 @@
 slkHelperHashData = {}
 
 slkHelper = {
+    count = 0,
     shapeshiftIndex = 1
 }
 
@@ -15,28 +16,24 @@ slkHelper.attrForItem = function(attr, sep)
         if (table.includes(k, { "life_back", "mana_back" })) then
             v = v .. "每秒"
         end
-        if
-        (table.includes(
-            k,
-            {
-                "attack_speed",
-                "resistance",
-                "avoid",
-                "aim",
-                "hemophagia",
-                "hemophagia_skill",
-                "split",
-                "luck",
-                "invincible",
-                "damage_extent",
-                "damage_rebound",
-                "cure",
-                "gold_ratio",
-                "lumber_ratio",
-                "exp_ratio",
-                "sell_ratio"
-            }
-        ))
+        if (table.includes(k, {
+            "attack_speed",
+            "resistance",
+            "avoid",
+            "aim",
+            "hemophagia",
+            "hemophagia_skill",
+            "split",
+            "luck",
+            "invincible",
+            "damage_extent",
+            "damage_rebound",
+            "cure",
+            "gold_ratio",
+            "lumber_ratio",
+            "exp_ratio",
+            "sell_ratio"
+        }))
         then
             v = v .. "%"
         end
@@ -61,18 +58,14 @@ slkHelper.attrForItem = function(attr, sep)
             str = str .. opt .. string.implode(",", av)
             av = nil
             str = str .. temp .. sep
-        elseif
-        (table.includes(
-            k,
-            {
-                "attack_buff",
-                "attack_debuff",
-                "skill_buff",
-                "skill_debuff",
-                "attack_effect",
-                "skill_effect"
-            }
-        ) == false)
+        elseif (table.includes(k, {
+            "attack_buff",
+            "attack_debuff",
+            "skill_buff",
+            "skill_debuff",
+            "attack_effect",
+            "skill_effect"
+        }) == false)
         then
             str = str .. (CONST_ATTR[k] or "") .. "："
             str = str .. v .. sep
@@ -85,18 +78,14 @@ slkHelper.attrForItemTable = function(attr, sep)
     local str = ""
     sep = sep or "|n"
     for k, v in pairs(attr) do
-        if
-        (table.includes(
-            k,
-            {
-                "attack_buff",
-                "attack_debuff",
-                "skill_buff",
-                "skill_debuff",
-                "attack_effect",
-                "skill_effect"
-            }
-        ))
+        if (table.includes(k, {
+            "attack_buff",
+            "attack_debuff",
+            "skill_buff",
+            "skill_debuff",
+            "attack_effect",
+            "skill_effect"
+        }))
         then
             str = str .. (CONST_ATTR[k] or "") .. "："
             local temp = ""
@@ -140,9 +129,7 @@ slkHelper.attrForItemTable = function(attr, sep)
                     elseif (vv["attr"] == "split" or vv["attr"] == "bomb") then
                         temp2 = temp2 .. "击出" .. range .. "范围"
                         temp2 = temp2 .. percent .. "%的" .. CONST_ATTR[vv["attr"]] .. "伤害"
-                    elseif
-                    (vv["attr"] == "swim" or vv["attr"] == "silent" or vv["attr"] == "unarm" or
-                        vv["attr"] == "fetter")
+                    elseif (vv["attr"] == "swim" or vv["attr"] == "silent" or vv["attr"] == "unarm" or vv["attr"] == "fetter")
                     then
                         temp2 = temp2 .. CONST_ATTR[vv["attr"]] .. "目标" .. during .. "秒"
                         if (val > 0) then
@@ -181,7 +168,6 @@ end
 
 -- 组装物品的描述
 slkHelper.itemDesc = function(v)
-    local desc = ""
     local d = {}
     if (v.ACTIVE ~= nil) then
         table.insert(d, "主动：" .. v.ACTIVE)
@@ -205,14 +191,11 @@ end
 
 -- 组装物品的说明
 slkHelper.itemUbertip = function(v)
-    local desc = ""
     local d = {}
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(
-            d,
-            hColor.green(slkHelper.attrForItem(v.ATTR, "|n")) .. hColor.yellow(slkHelper.attrForItemTable(v.ATTR, "|n"))
-        )
+        table.insert(d, hColor.green(slkHelper.attrForItem(v.ATTR, "|n"))
+            .. hColor.yellow(slkHelper.attrForItemTable(v.ATTR, "|n")))
     end
     if (v.ACTIVE ~= nil) then
         table.insert(d, hColor.yellow("主动：" .. v.ACTIVE))
@@ -256,6 +239,7 @@ end
 
 -- 创建一件物品
 slkHelper.item = function(v)
+    slkHelper.count = slkHelper.count + 1
     local cd = slkHelper.itemCooldownID(v)
     local abilList = ""
     local usable = 0
@@ -279,6 +263,8 @@ slkHelper.item = function(v)
     if (lv < 1) then
         lv = 1
     end
+    v.Name = v.Name or "未命名" .. slkHelper.count
+    v.Art = v.Art or "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
     v.file = v.file or "Objects\\InventoryItems\\TreasureChest\\treasurechest.mdl"
     v.powerup = v.powerup or 0
     v.perishable = v.perishable or 0
@@ -326,8 +312,9 @@ slkHelper.item = function(v)
     local id = obj:get_id()
     table.insert(slkHelperHashData, {
         type = "item",
-        data = json.stringify({
-            id = id,
+        data = {
+            ITEM_ID = id,
+            Name = v.Name,
             class = v.class,
             Art = v.Art,
             file = v.file,
@@ -340,7 +327,7 @@ slkHelper.item = function(v)
             OVERLIE = OVERLIE,
             WEIGHT = WEIGHT,
             ATTR = v.ATTR,
-        })
+        }
     })
     return id
 end
