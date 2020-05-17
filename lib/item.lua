@@ -310,6 +310,16 @@ hitem.getAttribute = function(itOrId)
     end
 end
 
+--- 获取物品的等级
+---@param it userdata
+---@return number
+hitem.getLevel = function(it)
+    if (it ~= nil) then
+        return cj.GetItemLevel(it)
+    end
+    return 0
+end
+
 --- 获取物品的使用次数
 ---@param it userdata
 ---@return number
@@ -328,6 +338,7 @@ hitem.setCharges = function(it, charges)
         cj.SetItemCharges(it, charges)
     end
 end
+
 --- 获取某单位身上某种物品的使用总次数
 ---@param itemId string|number
 ---@param whichUnit userdata

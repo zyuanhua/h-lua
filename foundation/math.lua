@@ -52,16 +52,16 @@ end
 ---@return number
 math.numberFormat = function(value)
     local txt = ""
-    if (value > 10000 * 10000 * 10000 * 10000) then
-        txt = string.format("%.2f", value / 10000 * 10000 * 10000 * 10000) .. "亿亿"
-    elseif (value > 10000 * 10000 * 10000) then
-        txt = string.format("%.2f", value / 10000 * 10000 * 10000) .. "万亿"
-    elseif (value > 10000 * 10000) then
-        txt = string.format("%.2f", value / 10000 * 10000) .. "亿"
+    if (value > 10000 * 100000000) then
+        txt = string.format("%.2f", value / 10000 * 100000000) .. "T"
+    elseif (value > 10 * 100000000) then
+        txt = string.format("%.2f", value / 10 * 100000000) .. "B"
+    elseif (value > 100 * 10000) then
+        txt = string.format("%.2f", value / 100 * 10000) .. "M"
     elseif (value > 10000) then
-        txt = string.format("%.2f", value / 10000) .. "万"
+        txt = string.format("%.2f", value / 10000) .. "W"
     elseif (value > 1000) then
-        txt = string.format("%.2f", value / 1000) .. "千"
+        txt = string.format("%.2f", value / 1000) .. "K"
     else
         txt = string.format("%.2f", value)
     end
