@@ -1,3 +1,5 @@
+slkHelperHashData = {}
+
 slkHelper = {
     shapeshiftIndex = 1
 }
@@ -10,32 +12,32 @@ slkHelper.attrForItem = function(attr, sep)
         if (k == "attack_speed_space") then
             v = v .. "击每秒"
         end
-        if (table.includes(k, {"life_back", "mana_back"})) then
+        if (table.includes(k, { "life_back", "mana_back" })) then
             v = v .. "每秒"
         end
         if
-            (table.includes(
-                k,
-                {
-                    "attack_speed",
-                    "resistance",
-                    "avoid",
-                    "aim",
-                    "hemophagia",
-                    "hemophagia_skill",
-                    "split",
-                    "luck",
-                    "invincible",
-                    "damage_extent",
-                    "damage_rebound",
-                    "cure",
-                    "gold_ratio",
-                    "lumber_ratio",
-                    "exp_ratio",
-                    "sell_ratio"
-                }
-            ))
-         then
+        (table.includes(
+            k,
+            {
+                "attack_speed",
+                "resistance",
+                "avoid",
+                "aim",
+                "hemophagia",
+                "hemophagia_skill",
+                "split",
+                "luck",
+                "invincible",
+                "damage_extent",
+                "damage_rebound",
+                "cure",
+                "gold_ratio",
+                "lumber_ratio",
+                "exp_ratio",
+                "sell_ratio"
+            }
+        ))
+        then
             v = v .. "%"
         end
         local s = string.find(k, "oppose")
@@ -60,18 +62,18 @@ slkHelper.attrForItem = function(attr, sep)
             av = nil
             str = str .. temp .. sep
         elseif
-            (table.includes(
-                k,
-                {
-                    "attack_buff",
-                    "attack_debuff",
-                    "skill_buff",
-                    "skill_debuff",
-                    "attack_effect",
-                    "skill_effect"
-                }
-            ) == false)
-         then
+        (table.includes(
+            k,
+            {
+                "attack_buff",
+                "attack_debuff",
+                "skill_buff",
+                "skill_debuff",
+                "attack_effect",
+                "skill_effect"
+            }
+        ) == false)
+        then
             str = str .. (CONST_ATTR[k] or "") .. "："
             str = str .. v .. sep
         end
@@ -84,18 +86,18 @@ slkHelper.attrForItemTable = function(attr, sep)
     sep = sep or "|n"
     for k, v in pairs(attr) do
         if
-            (table.includes(
-                k,
-                {
-                    "attack_buff",
-                    "attack_debuff",
-                    "skill_buff",
-                    "skill_debuff",
-                    "attack_effect",
-                    "skill_effect"
-                }
-            ))
-         then
+        (table.includes(
+            k,
+            {
+                "attack_buff",
+                "attack_debuff",
+                "skill_buff",
+                "skill_debuff",
+                "attack_effect",
+                "skill_effect"
+            }
+        ))
+        then
             str = str .. (CONST_ATTR[k] or "") .. "："
             local temp = ""
             for kk, vv in pairs(v) do
@@ -139,9 +141,9 @@ slkHelper.attrForItemTable = function(attr, sep)
                         temp2 = temp2 .. "击出" .. range .. "范围"
                         temp2 = temp2 .. percent .. "%的" .. CONST_ATTR[vv["attr"]] .. "伤害"
                     elseif
-                        (vv["attr"] == "swim" or vv["attr"] == "silent" or vv["attr"] == "unarm" or
-                            vv["attr"] == "fetter")
-                     then
+                    (vv["attr"] == "swim" or vv["attr"] == "silent" or vv["attr"] == "unarm" or
+                        vv["attr"] == "fetter")
+                    then
                         temp2 = temp2 .. CONST_ATTR[vv["attr"]] .. "目标" .. during .. "秒"
                         if (val > 0) then
                             temp2 = temp2 .. ",并造成" .. val .. "点伤害"
@@ -191,8 +193,12 @@ slkHelper.itemDesc = function(v)
         table.sort(v.ATTR)
         table.insert(d, slkHelper.attrForItem(v.ATTR, ";") .. slkHelper.attrForItemTable(v.ATTR, ";"))
     end
-    if (v.Description ~= nil and v.Description ~= "") then
-        table.insert(d, v.Description)
+    local overlie = v.OVERLIE or 1
+    local weight = v.WEIGHT or 0
+    weight = tostring(math.round(weight))
+    table.insert(d, "叠加：" .. overlie .. "|n重量：" .. weight .. "Kg")
+    if (v.Desc ~= nil and v.Desc ~= "") then
+        table.insert(d, v.Desc)
     end
     return string.implode("|n", d)
 end
@@ -209,13 +215,17 @@ slkHelper.itemUbertip = function(v)
         )
     end
     if (v.ACTIVE ~= nil) then
-        table.insert(d, hColor.red("主动：" .. v.ACTIVE))
+        table.insert(d, hColor.yellow("主动：" .. v.ACTIVE))
     end
     if (v.PASSIVE ~= nil) then
         table.insert(d, hColor.seaLight(v.PASSIVE))
     end
-    if (v.Description ~= nil) then
-        table.insert(d, hColor.grey(v.Description))
+    local overlie = v.OVERLIE or 1
+    local weight = v.WEIGHT or 0
+    weight = tostring(math.round(weight))
+    table.insert(d, hColor.purpleLight("叠加：" .. overlie .. "|n重量：" .. weight .. "Kg"))
+    if (v.Desc ~= nil and v.Desc ~= "") then
+        table.insert(d, hColor.grey(v.Desc))
     end
     return string.implode("|n", d)
 end
@@ -242,6 +252,97 @@ slkHelper.itemCooldownID = function(v)
     oob.CasterArt = v.CasterArt or ""
     oob.Cool = v.cooldown
     return oob:get_id()
+end
+
+-- 创建一件物品
+slkHelper.item = function(v)
+    local cd = slkHelper.itemCooldownID(v)
+    local abilList = ""
+    local usable = 0
+    if (cd ~= "AIat") then
+        abilList = cd
+        usable = 1
+        if (v.perishable == nil) then
+            v.perishable = 1
+        end
+        v.class = "Charged"
+    else
+        if (v.perishable == nil) then
+            v.perishable = 0
+        end
+        v.class = "Permanent"
+    end
+    local lv = 1
+    v.goldcost = v.goldcost or 0
+    v.lumbercost = v.lumbercost or 0
+    lv = math.floor((v.goldcost + v.lumbercost) / 500)
+    if (lv < 1) then
+        lv = 1
+    end
+    v.file = v.file or "Objects\\InventoryItems\\TreasureChest\\treasurechest.mdl"
+    v.powerup = v.powerup or 0
+    v.perishable = v.perishable or 0
+    v.sellable = v.sellable or 1
+    v.pawnable = v.pawnable or 1
+    v.dropable = v.dropable or 1
+    local OVERLIE = v.OVERLIE or 1
+    local WEIGHT = v.WEIGHT or 0
+    local obj = slk.item.rat9:new("items_" .. v.Name)
+    obj.Name = v.Name
+    obj.Description = slkHelper.itemDesc(v)
+    obj.Ubertip = slkHelper.itemUbertip(v)
+    obj.goldcost = v.goldcost or 1000000
+    obj.lumbercost = v.lumbercost or 1000000
+    obj.class = v.class
+    obj.Level = lv
+    obj.oldLevel = lv
+    obj.Art = v.Art
+    obj.file = v.file
+    obj.stockStart = v.stockStart or 0
+    obj.stockRegen = v.stockRegen or 1
+    obj.prio = v.prio or 0
+    obj.cooldownID = cd
+    obj.abilList = abilList
+    obj.ignoreCD = v.ignoreCD or 0
+    obj.drop = v.drop or 0
+    obj.perishable = v.perishable
+    obj.usable = usable
+    obj.powerup = v.powerup
+    obj.sellable = v.sellable
+    obj.pawnable = v.pawnable
+    obj.droppable = v.dropable
+    obj.pickRandom = v.pickRandom or 1
+    obj.uses = 1
+    if (v.HotKey ~= nil) then
+        obj.HotKey = v.HotKey
+        v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
+        v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+        obj.Tip = "购买" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
+    else
+        obj.Buttonpos1 = v.Buttonpos1 or 0
+        obj.Buttonpos2 = v.Buttonpos2 or 0
+        obj.Tip = "购买" .. v.Name
+    end
+    local id = obj:get_id()
+    table.insert(slkHelperHashData, {
+        type = "item",
+        data = json.stringify({
+            id = id,
+            class = v.class,
+            Art = v.Art,
+            file = v.file,
+            goldcost = v.goldcost,
+            lumbercost = v.lumbercost,
+            usable = usable,
+            powerup = v.powerup,
+            perishable = v.perishable,
+            sellable = v.sellable,
+            OVERLIE = OVERLIE,
+            WEIGHT = WEIGHT,
+            ATTR = v.ATTR,
+        })
+    })
+    return id
 end
 
 --[[

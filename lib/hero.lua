@@ -64,7 +64,7 @@ end
 ---@param u userdata
 ---@return string STR|AGI|INT
 hhero.getHeroType = function(u)
-    return hslk_global.unitsKV[hunit.getId(u)].Primary
+    return hslk_global.key2Value.unit[hunit.getId(u)].Primary
 end
 
 --- 获取英雄的类型文本

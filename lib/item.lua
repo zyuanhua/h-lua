@@ -156,8 +156,8 @@ hitem.getSlk = function(itOrId)
     else
         itId = hitem.getId(itOrId)
     end
-    if (hslk_global.itemsKV[itId] ~= nil) then
-        slk = hslk_global.itemsKV[itId]
+    if (hslk_global.key2Value.item[itId] ~= nil) then
+        slk = hslk_global.key2Value.item[itId]
     end
     return slk
 end
@@ -260,40 +260,17 @@ hitem.getIsSellAble = function(itOrId)
         return false
     end
 end
---- 获取物品的影子ID（实现神符满格购物的关键）,需要注册
+--- 获取物品的(表面/影子)ID（实现神符满格购物的关键，会自动获得相对ID）,需要注册
 ---@param itOrId userdata|string|number
 ---@return string
-hitem.getShadowId = function(itOrId)
+hitem.getShadowMappingId = function(itOrId)
     local itId
     if (type(itOrId == "string")) then
         itId = itOrId
     else
         itId = hitem.getId(itOrId)
     end
-    return hslk_global.itemsShadowKV[itId]
-end
--- 获取物品的真实ID（实现神符满格购物的关键）,需要注册
----@param itOrId userdata|string|number
----@return string
-hitem.getFaceId = function(itOrId)
-    local itId
-    if (type(itOrId == "string")) then
-        itId = itOrId
-    else
-        itId = hitem.getId(itOrId)
-    end
-    return hslk_global.itemsFaceKV[itId]
-end
---- 获取物品的回调函数,需要注册
----@param itOrId userdata|string|number
----@return function
-hitem.getTriggerCall = function(itOrId)
-    local slk = hitem.getSlk(itOrId)
-    if (slk ~= nil) then
-        return slk.TRIGGER_CALL
-    else
-        return nil
-    end
+    return hslk_global.itemsShadowMapping[itId]
 end
 --- 获取物品的最大叠加数(默认是1个,此系统以使用次数作为数量使用),需要注册
 ---@param itOrId userdata|string|number

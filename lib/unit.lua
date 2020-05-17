@@ -466,8 +466,8 @@ hunit.getSlk = function(uOrUid)
     else
         uid = hunit.getId(uOrUid)
     end
-    if (hslk_global.unitsKV[uid] ~= nil) then
-        slk = hslk_global.unitsKV[uid]
+    if (hslk_global.key2Value.unit[uid] ~= nil) then
+        slk = hslk_global.key2Value.unit[uid]
     end
     return slk
 end

@@ -46,7 +46,7 @@ require "foundation.echo"
 -- 如果在lua中无法找到Dzapi，你需要检查下面的部分：
 -- 1. YDWE——配置——魔兽插件——[勾上]LUA引擎——[勾上]Dzapi（不行就做第2步）
 -- 2. 打开触发窗口（F4），创建一个不运行的触发（无事件），在条件及动作补充你需要的Dzapi
-require "lib.dzapi"
+require "lib.dzapi.lua"
 
 -- 加载h-lua库
 require "lib.time"

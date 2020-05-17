@@ -468,7 +468,7 @@ hevent_default_actions = {
         pickup = cj.Condition(function()
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
-            if (hslk_global.itemsKV[itId] == nil) then
+            if (hslk_global.key2Value.item[itId] == nil) then
                 -- 排除掉没有注册的物品。例如框架内自带的一些物品
                 return
             end
@@ -478,14 +478,9 @@ hevent_default_actions = {
             end
             local u = cj.GetTriggerUnit()
             local charges = cj.GetItemCharges(it)
-            local shadowItId = hitem.getShadowId(itId)
+            local shadowItId = hitem.getShadowMappingId(itId)
             if (shadowItId == nil) then
                 if (hitem.getIsPowerUp(itId) == true) then
-                    --检测是否有回调动作
-                    local call = hitem.getTriggerCall(itId)
-                    if (call ~= nil and type(call) == "function") then
-                        call(u, it, itId, charges)
-                    end
                     --触发使用物品事件
                     hevent.triggerEvent(
                         u,
@@ -526,7 +521,7 @@ hevent_default_actions = {
             local u = cj.GetTriggerUnit()
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
-            local faceId = hitem.getFaceId(itId)
+            local faceId = hitem.getShadowMappingId(itId)
             local orderId = cj.OrderId("dropitem")
             local charges = cj.GetItemCharges(it)
             if (cj.GetUnitCurrentOrder(u) == orderId) then
@@ -623,11 +618,6 @@ hevent_default_actions = {
             --检测是否使用后自动消失，如果不是，次数补回1
             if (perishable == false) then
                 hitem.setCharges(it, hitem.getCharges(it) + 1)
-            end
-            --检测是否有回调动作
-            local call = hitem.getTriggerCall(itId)
-            if (call ~= nil and type(call) == "function") then
-                call(u, it, itId, charges)
             end
             --触发使用物品事件
             hevent.triggerEvent(
