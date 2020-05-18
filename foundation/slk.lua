@@ -226,7 +226,6 @@ for i = 1, 4 do
     if (qty > 0) then
         for j = 1, qty do
             local js = cj.LoadStr(cg.hash_hslk_helper, i, j)
-            print(js)
             local data = json.parse(js)
             if (data) then
                 if (i == 1) then
