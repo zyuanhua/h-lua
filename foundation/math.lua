@@ -49,23 +49,40 @@ end
 
 --- 数字格式化
 ---@param value number
----@return number
+---@return string
 math.numberFormat = function(value)
-    local txt = ""
     if (value > 10000 * 100000000) then
-        txt = string.format("%.2f", value / 10000 * 100000000) .. "T"
+        return string.format("%.2f", value / 10000 * 100000000) .. "T"
     elseif (value > 10 * 100000000) then
-        txt = string.format("%.2f", value / 10 * 100000000) .. "B"
+        return string.format("%.2f", value / 10 * 100000000) .. "B"
     elseif (value > 100 * 10000) then
-        txt = string.format("%.2f", value / 100 * 10000) .. "M"
+        return string.format("%.2f", value / 100 * 10000) .. "M"
     elseif (value > 10000) then
-        txt = string.format("%.2f", value / 10000) .. "W"
+        return string.format("%.2f", value / 10000) .. "W"
     elseif (value > 1000) then
-        txt = string.format("%.2f", value / 1000) .. "K"
+        return string.format("%.2f", value / 1000) .. "K"
     else
-        txt = string.format("%.2f", value)
+        return string.format("%.2f", value)
     end
-    return txt
+end
+
+--- 整型格式化
+---@param value number
+---@return string
+math.integerFormat = function(value)
+    if (value > 10000 * 100000000) then
+        return math.floor(value / 10000 * 100000000) .. "T"
+    elseif (value > 10 * 100000000) then
+        return math.floor(value / 10 * 100000000) .. "B"
+    elseif (value > 100 * 10000) then
+        return math.floor(value / 100 * 10000) .. "M"
+    elseif (value > 10000) then
+        return math.floor(value / 10000) .. "W"
+    elseif (value > 1000) then
+        return math.floor(value / 1000) .. "K"
+    else
+        return tostring(math.floor(value))
+    end
 end
 
 --- 获取两个坐标间角度，如果其中一个单位为空 返回0

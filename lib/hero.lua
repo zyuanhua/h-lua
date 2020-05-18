@@ -92,7 +92,7 @@ end
 ---@param whichPlayer userdata
 ---@return number
 hhero.getPlayerAllowQty = function(whichPlayer)
-    return hhero.player_allow_qty[whichPlayer] or 0
+    return hhero.player_allow_qty[hplayer.index(whichPlayer)] or 0
 end
 
 -- 设定选择英雄的出生地
@@ -248,7 +248,8 @@ hhero.buildSelector = function(options)
                 if (hunit.getOwner(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
                     return
                 end
-                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                local pIndex = hplayer.index(p)
+                if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                     echo("|cffffff80你已经选够了|r", p)
                     return
                 end
@@ -258,7 +259,7 @@ hhero.buildSelector = function(options)
                 cj.SetUnitOwner(u, p, true)
                 hunit.portal(u, hhero.bornX, hhero.bornY)
                 cj.PauseUnit(u, false)
-                table.insert(hhero.player_heroes[p], u)
+                table.insert(hhero.player_heroes[pIndex], u)
                 -- 触发英雄被选择事件(全局)
                 hevent.triggerEvent(
                     "global",
@@ -268,11 +269,11 @@ hhero.buildSelector = function(options)
                         triggerUnit = u
                     }
                 )
-                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                     echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", p)
                 else
                     echo("您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
-                        math.floor(hhero.player_allow_qty[p] - #hhero.player_heroes[p]) .. " 个", p
+                        math.floor(hhero.player_allow_qty[pIndex] - #hhero.player_heroes[pIndex]) .. " 个", p
                     )
                 end
             end)
@@ -307,7 +308,8 @@ hhero.buildSelector = function(options)
                     local soldUnit = evtData.soldUnit
                     local soldUid = cj.GetUnitTypeId(soldUnit)
                     hunit.del(soldUnit, 0)
-                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    local pIndex = hplayer.index(p)
+                    if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                         echo("|cffffff80你已经选够~|r", p)
                         cj.AddUnitToStock(tavern, soldUid, 1, 1)
                         return
@@ -321,13 +323,13 @@ hhero.buildSelector = function(options)
                             y = hhero.bornY,
                         }
                     )
-                    table.insert(hhero.player_heroes[p], u)
+                    table.insert(hhero.player_heroes[pIndex], u)
                     table.delete(string.id2char(soldUid), hhero.selectorPool)
                     local tips = "您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r"
-                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                         echo(tips .. ",已挑选完毕", p)
                     else
-                        echo(tips .. "还差 " .. (hhero.player_allow_qty[p] - #hhero.player_heroes[p]) .. " 个", p)
+                        echo(tips .. "还差 " .. (hhero.player_allow_qty[pIndex] - #hhero.player_heroes[pIndex]) .. " 个", p)
                     end
                     hRuntime.hero[u] = {
                         selector = evtData.triggerUnit,
@@ -386,7 +388,7 @@ hhero.buildSelector = function(options)
         end
         hhero.selectorClearPool = {}
         for i = 1, hplayer.qty_max, 1 do
-            if (his.playing(hplayer.players[i]) and #hhero.player_heroes[hplayer.players[i]] <= 0) then
+            if (his.playing(hplayer.players[i]) and #hhero.player_heroes[i] <= 0) then
                 hplayer.defeat(hplayer.players[i], "未选英雄")
             end
         end

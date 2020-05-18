@@ -30,8 +30,8 @@ for i = 1, bj_MAX_PLAYERS, 1 do
     hplayer.players[i] = cj.Player(i - 1)
 
     -- 英雄模块初始化
-    hhero.player_allow_qty[hplayer.players[i]] = 1
-    hhero.player_heroes[hplayer.players[i]] = {}
+    hhero.player_allow_qty[i] = 1
+    hhero.player_heroes[i] = {}
 
     cj.SetPlayerHandicapXP(hplayer.players[i], 0) -- 经验置0
 

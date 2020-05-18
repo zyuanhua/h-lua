@@ -88,7 +88,8 @@ hevent_default_actions = {
                     echo("已禁止random", p)
                     return
                 end
-                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                local pIndex = hplayer.index(p)
+                if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                     echo("|cffffff80你已经选够了|r", p)
                     return
                 end
@@ -118,7 +119,7 @@ hevent_default_actions = {
                         hunit.portal(u, hhero.bornX, hhero.bornY)
                         cj.PauseUnit(u, false)
                     end
-                    table.insert(hhero.player_heroes[p], u)
+                    table.insert(hhero.player_heroes[pIndex], u)
                     -- 触发英雄被选择事件(全局)
                     hevent.triggerEvent(
                         "global",
@@ -130,7 +131,7 @@ hevent_default_actions = {
                     )
                     txt = txt .. " " .. cj.GetUnitName(u)
                     qty = qty + 1
-                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                         break
                     end
                 end
@@ -140,12 +141,13 @@ hevent_default_actions = {
                     echo("已禁止repick", p)
                     return
                 end
-                if (#hhero.player_heroes[p] <= 0) then
+                local pIndex = hplayer.index(p)
+                if (#hhero.player_heroes[pIndex] <= 0) then
                     echo("|cffffff80你还没有选过任何单位|r", p)
                     return
                 end
-                local qty = #hhero.player_heroes[p]
-                for _, u in ipairs(hhero.player_heroes[p]) do
+                local qty = #hhero.player_heroes[pIndex]
+                for _, u in ipairs(hhero.player_heroes[pIndex]) do
                     if (type(hRuntime.hero[u].selector) == "userdata") then
                         table.insert(hhero.selectorPool, hunit.getId(u))
                         cj.AddUnitToStock(hRuntime.hero[u].selector, cj.GetUnitTypeId(u), 1, 1)
@@ -168,7 +170,7 @@ hevent_default_actions = {
                     end
                     hunit.del(u, 0)
                 end
-                hhero.player_heroes[p] = {}
+                hhero.player_heroes[pIndex] = {}
                 echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
             else
                 local first = string.sub(str, 1, 1)
