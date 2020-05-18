@@ -303,11 +303,11 @@ slkHelper.item = function(v)
         obj.HotKey = v.HotKey
         v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
         v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
-        obj.Tip = "购买" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
+        obj.Tip = "获得" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
     else
         obj.Buttonpos1 = v.Buttonpos1 or 0
         obj.Buttonpos2 = v.Buttonpos2 or 0
-        obj.Tip = "购买" .. v.Name
+        obj.Tip = "获得" .. v.Name
     end
     local id = obj:get_id()
     table.insert(slkHelperHashData, {
