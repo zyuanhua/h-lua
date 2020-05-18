@@ -174,14 +174,31 @@ hdzapi.server.load = function(whichPlayer, key)
     end
 end
 
--- 清理服务器存档数据
+--- 清理服务器存档数据
 ---@param whichPlayer userdata
 ---@param key string
-hdzapi.server.clear = function(whichPlayer, key)
-    if (hdzapi.server.ready(whichPlayer) == true) then
-        hdzapi.exec("SaveServerValue", whichPlayer, key, "")
+hdzapi.server.clear = {
+    int = function(whichPlayer, key)
+        hdzapi.server.save(whichPlayer, "I" .. key, nil)
+    end,
+    real = function(whichPlayer, key)
+        hdzapi.server.save(whichPlayer, "R" .. key, nil)
+    end,
+    bool = function(whichPlayer, key)
+        hdzapi.server.save(whichPlayer, "B" .. key, nil)
+    end,
+    str = function(whichPlayer, key)
+        hdzapi.server.save(whichPlayer, "S" .. key, nil)
+    end,
+    unit = function(whichPlayer, key)
+        hdzapi.server.save(whichPlayer, "S" .. key, nil)
+    end,
+    item = function(whichPlayer, key)
+        hdzapi.server.save(whichPlayer, "S" .. key, nil)
     end
-end
+}
+
+hdzapi.server.save(whichPlayer, key, "")
 
 --- 封装的服务器存档 get / set
 hdzapi.server.set = {
