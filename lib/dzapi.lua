@@ -179,22 +179,22 @@ end
 ---@param key string
 hdzapi.server.clear = {
     int = function(whichPlayer, key)
-        hdzapi.server.save(whichPlayer, "I" .. key, nil)
+        hdzapi.server.save(whichPlayer, "I" .. key, "")
     end,
     real = function(whichPlayer, key)
-        hdzapi.server.save(whichPlayer, "R" .. key, nil)
+        hdzapi.server.save(whichPlayer, "R" .. key, "")
     end,
     bool = function(whichPlayer, key)
-        hdzapi.server.save(whichPlayer, "B" .. key, nil)
+        hdzapi.server.save(whichPlayer, "B" .. key, "")
     end,
     str = function(whichPlayer, key)
-        hdzapi.server.save(whichPlayer, "S" .. key, nil)
+        hdzapi.server.save(whichPlayer, "S" .. key, "")
     end,
     unit = function(whichPlayer, key)
-        hdzapi.server.save(whichPlayer, "S" .. key, nil)
+        hdzapi.server.save(whichPlayer, "S" .. key, "")
     end,
     item = function(whichPlayer, key)
-        hdzapi.server.save(whichPlayer, "S" .. key, nil)
+        hdzapi.server.save(whichPlayer, "S" .. key, "")
     end
 }
 
