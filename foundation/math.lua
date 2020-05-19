@@ -114,7 +114,7 @@ math.getDegBetweenUnit = function(u1, u2)
     if (u1 == nil or u2 == nil) then
         return 0
     end
-    return math.getDegBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
+    return math.getDegBetweenXY(hunit.x(u1), hunit.y(u1), hunit.x(u2), hunit.y(u2))
 end
 
 --- 获取两个坐标距离
@@ -142,7 +142,7 @@ end
 ---@param u2 userdata
 ---@return number
 math.getDistanceBetweenUnit = function(u1, u2)
-    return math.getDistanceBetweenXY(cj.GetUnitX(u1), cj.GetUnitY(u1), cj.GetUnitX(u2), cj.GetUnitY(u2))
+    return math.getDistanceBetweenXY(hunit.x(u1), hunit.y(u1), hunit.x(u2), hunit.y(u2))
 end
 
 --- 获取矩形区域内某角度距离边缘最大距离

@@ -156,8 +156,8 @@ hitem.getSlk = function(itOrId)
     else
         itId = hitem.getId(itOrId)
     end
-    if (hslk_global.key2Value.item[itId] ~= nil) then
-        slk = hslk_global.key2Value.item[itId]
+    if (hslk_global.id2Value.item[itId] ~= nil) then
+        slk = hslk_global.id2Value.item[itId]
     end
     return slk
 end
@@ -305,6 +305,18 @@ hitem.getAttribute = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
         return slk.ATTR or slk.ATTRIBUTE or {}
+    else
+        return {}
+    end
+end
+
+--- 获取物品的SLK自定义数据CUSTOM_DATA
+---@param itOrId any
+---@return table
+hitem.getCustomData = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
+    if (slk ~= nil) then
+        return slk.CUSTOM_DATA or {}
     else
         return {}
     end
@@ -684,10 +696,10 @@ hitem.create = function(bean)
         it = cj.CreateItem(bean.itemId, bean.x, bean.y)
         type = hitem.POSITION_TYPE.COORDINATE
     elseif (bean.whichUnitPosition ~= nil) then
-        it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
+        it = cj.CreateItem(bean.itemId, hunit.x(bean.whichUnit), hunit.y(bean.whichUnit))
         type = hitem.POSITION_TYPE.COORDINATE
     elseif (bean.whichUnit ~= nil) then
-        it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
+        it = cj.CreateItem(bean.itemId, hunit.x(bean.whichUnit), hunit.y(bean.whichUnit))
         type = hitem.POSITION_TYPE.UNIT
     elseif (bean.whichLoc ~= nil) then
         it = cj.CreateItem(bean.itemId, cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
@@ -825,8 +837,8 @@ hitem.drop = function(origin)
                 {
                     itemId = hitem.getId(it),
                     charges = hitem.getCharges(it),
-                    x = cj.GetUnitX(origin),
-                    x = cj.GetUnitY(origin)
+                    x = hunit.x(origin),
+                    x = hunit.y(origin)
                 }
             )
             htime.del(it, 0)

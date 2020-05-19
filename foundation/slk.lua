@@ -57,7 +57,7 @@ hslk_global = {
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
     itemsShadowMapping = {},
-    key2Value = {
+    id2Value = {
         unit = {},
         item = {},
         ability = {},
@@ -231,6 +231,10 @@ for i = 1, 4 do
                 if (i == 1) then
                     hRuntime.register.item(data)
                 elseif (i == 2) then
+                    hRuntime.register.unit(data)
+                    if (data.UNIT_TYPE == "hero") then
+                        table.insert(hRuntime.hero_judge_ids, data.UNIT_ID)
+                    end
                 elseif (i == 3) then
                 elseif (i == 4) then
 

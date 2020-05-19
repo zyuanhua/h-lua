@@ -166,7 +166,7 @@ end
 ---@param whichUnit userdata
 ---@return boolean
 his.hero = function(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or table.includes(hunit.getId(whichUnit), hhero.judge_ids) == true
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or table.includes(hunit.getId(whichUnit), hRuntime.hero_judge_ids) == true
 end
 
 --- 是否建筑
@@ -285,14 +285,14 @@ end
 ---@param whichUnit userdata
 ---@return boolean
 his.water = function(whichUnit)
-    return cj.IsTerrainPathable(cj.GetUnitX(whichUnit), cj.GetUnitY(whichUnit), PATHING_TYPE_FLOATABILITY) == false
+    return cj.IsTerrainPathable(hunit.x(whichUnit), hunit.y(whichUnit), PATHING_TYPE_FLOATABILITY) == false
 end
 
 --- 是否处于地面
 ---@param whichUnit userdata
 ---@return boolean
 his.floor = function(whichUnit)
-    return cj.IsTerrainPathable(cj.GetUnitX(whichUnit), cj.GetUnitY(whichUnit), PATHING_TYPE_FLOATABILITY) == true
+    return cj.IsTerrainPathable(hunit.x(whichUnit), hunit.y(whichUnit), PATHING_TYPE_FLOATABILITY) == true
 end
 
 --- 是否某个特定单位

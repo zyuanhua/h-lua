@@ -99,7 +99,7 @@ hgroup.createByXY = function(x, y, radius, filterFunc)
             idx = idx - 1
         end
         -- 排除超过距离的单位
-        if (radius >= math.getDistanceBetweenXY(x, y, cj.GetUnitX(filterUnit), cj.GetUnitY(filterUnit))) then
+        if (radius >= math.getDistanceBetweenXY(x, y, hunit.x(filterUnit), hunit.y(filterUnit))) then
             if (filterFunc ~= nil) then
                 if (filterFunc(filterUnit) == true) then
                     table.insert(g, filterUnit)
@@ -118,7 +118,7 @@ end
 ---@param filterFunc GroupFilter | "function(filterUnit) end"
 ---@return userdata
 hgroup.createByUnit = function(u, radius, filterFunc)
-    return hgroup.createByXY(cj.GetUnitX(u), cj.GetUnitY(u), radius, filterFunc)
+    return hgroup.createByXY(hunit.x(u), hunit.y(u), radius, filterFunc)
 end
 
 --- 创建单位组,以loc点为中心radius距离
@@ -145,7 +145,7 @@ hgroup.createByRect = function(r, filterFunc)
             idx = idx - 1
         end
         -- 排除区域外
-        if (his.inRect(r, cj.GetUnitX(filterUnit), cj.GetUnitY(filterUnit))) then
+        if (his.inRect(r, hunit.x(filterUnit), hunit.y(filterUnit))) then
             if (filterFunc ~= nil) then
                 if (filterFunc(filterUnit) == true) then
                     table.insert(g, filterUnit)
@@ -173,7 +173,7 @@ hgroup.getClosest = function(whichGroup, x, y)
     local closeDist = 99999
     local closeUnit
     hgroup.loop(whichGroup, function(eu)
-        local dist = math.getDistanceBetweenXY(x, y, cj.GetUnitX(eu), cj.GetUnitY(eu))
+        local dist = math.getDistanceBetweenXY(x, y, hunit.x(eu), hunit.y(eu))
         if (dist < closeDist) then
             closeUnit = eu
         end

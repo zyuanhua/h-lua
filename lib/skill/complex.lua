@@ -289,8 +289,8 @@ hskill.broken = function(options)
             register = false,
             unitId = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
-            x = cj.GetUnitX(u),
-            y = cj.GetUnitY(u)
+            x = hunit.x(u),
+            y = hunit.y(u)
         }
     )
     cj.UnitAddAbility(cu, hskill.SKILL_BREAK[0.05])
@@ -392,8 +392,8 @@ hskill.swim = function(options)
             register = false,
             unitId = hskill.SKILL_TOKEN,
             whichPlayer = hplayer.player_passive,
-            x = cj.GetUnitX(u),
-            y = cj.GetUnitY(u)
+            x = hunit.x(u),
+            y = hunit.y(u)
         }
     )
     --判断during的时候是否小于0.5秒，使用眩晕0.05-0.5的技能，大于0.5使用无限眩晕法
@@ -1008,7 +1008,7 @@ hskill.lightningChain = function(options)
         if (hgroup.isEmpty(g)) then
             return
         end
-        options.whichUnit = hgroup.getClosest(g, cj.GetUnitX(whichUnit), cj.GetUnitY(whichUnit))
+        options.whichUnit = hgroup.getClosest(g, hunit.x(whichUnit), hunit.y(whichUnit))
         options.damage = options.damage * (1 + change)
         options.prevUnit = whichUnit
         options.odds = 9999 --闪电链只要开始能延续下去就是100%几率了
@@ -1176,8 +1176,8 @@ hskill.crackFly = function(options)
                 z = high / (during * 0.35 / timerSetTime)
                 if (dist > 0) then
                     local pxy = math.polarProjection(
-                        cj.GetUnitX(options.whichUnit),
-                        cj.GetUnitY(options.whichUnit),
+                        hunit.x(options.whichUnit),
+                        hunit.y(options.whichUnit),
                         dist,
                         originDeg
                     )
@@ -1194,8 +1194,8 @@ hskill.crackFly = function(options)
                 z = high / (during * 0.65 / timerSetTime)
                 if (dist > 0) then
                     local pxy = math.polarProjection(
-                        cj.GetUnitX(options.whichUnit),
-                        cj.GetUnitY(options.whichUnit),
+                        hunit.x(options.whichUnit),
+                        hunit.y(options.whichUnit),
                         dist,
                         originDeg
                     )
@@ -1243,8 +1243,8 @@ hskill.rangeSwim = function(options)
         x = options.x
         y = options.y
     elseif (options.whichUnit ~= nil) then
-        x = cj.GetUnitX(options.whichUnit)
-        y = cj.GetUnitY(options.whichUnit)
+        x = hunit.x(options.whichUnit)
+        y = hunit.y(options.whichUnit)
     elseif (options.whichLoc ~= nil) then
         x = cj.GetLocatonX(options.whichLoc)
         y = cj.GetLocatonY(options.whichLoc)
@@ -1464,7 +1464,7 @@ hskill.leap = function(options)
     if (options.targetUnit ~= nil) then
         initFacing = math.getDegBetweenUnit(prevUnit, options.targetUnit)
     elseif (options.x ~= nil and options.y ~= nil) then
-        initFacing = math.getDegBetweenXY(cj.GetUnitX(prevUnit), cj.GetUnitY(prevUnit), options.x, options.y)
+        initFacing = math.getDegBetweenXY(hunit.x(prevUnit), hunit.y(prevUnit), options.x, options.y)
     else
         print_err("leapType: -unknow")
         return
@@ -1474,7 +1474,7 @@ hskill.leap = function(options)
         repeatGroup = {}
     end
     if (arrowUnit == nil) then
-        local cxy = math.polarProjection(cj.GetUnitX(prevUnit), cj.GetUnitY(prevUnit), 100, initFacing)
+        local cxy = math.polarProjection(hunit.x(prevUnit), hunit.y(prevUnit), 100, initFacing)
         arrowUnit = hunit.create(
             {
                 register = false,
@@ -1508,8 +1508,8 @@ hskill.leap = function(options)
     htime.setInterval(
         frequency,
         function(t)
-            local ax = cj.GetUnitX(arrowUnit)
-            local ay = cj.GetUnitY(arrowUnit)
+            local ax = hunit.x(arrowUnit)
+            local ay = hunit.y(arrowUnit)
             if (his.death(sourceUnit)) then
                 htime.delTimer(t)
                 if (tempEffectArrow ~= nil) then
@@ -1533,8 +1533,8 @@ hskill.leap = function(options)
             local tx = 0
             local ty = 0
             if (options.targetUnit ~= nil) then
-                tx = cj.GetUnitX(options.targetUnit)
-                ty = cj.GetUnitY(options.targetUnit)
+                tx = hunit.x(options.targetUnit)
+                ty = hunit.y(options.targetUnit)
             else
                 tx = options.x
                 ty = options.y
@@ -1594,7 +1594,7 @@ hskill.leap = function(options)
                     )
                 end
             end
-            local distance = math.getDistanceBetweenXY(cj.GetUnitX(arrowUnit), cj.GetUnitY(arrowUnit), tx, ty)
+            local distance = math.getDistanceBetweenXY(hunit.x(arrowUnit), hunit.y(arrowUnit), tx, ty)
             if (distance <= speed or speed <= 0 or his.death(arrowUnit) == true) then
                 htime.delTimer(t)
                 if (tempEffectArrow ~= nil) then
@@ -1695,14 +1695,14 @@ hskill.leapPow = function(options)
     end
     local x, y
     if (options.targetUnit ~= nil) then
-        x = cj.GetUnitX(options.targetUnit)
-        y = cj.GetUnitY(options.targetUnit)
+        x = hunit.x(options.targetUnit)
+        y = hunit.y(options.targetUnit)
     else
         x = options.x
         y = options.y
     end
-    local sx = cj.GetUnitX(options.sourceUnit)
-    local sy = cj.GetUnitY(options.sourceUnit)
+    local sx = hunit.x(options.sourceUnit)
+    local sy = hunit.y(options.sourceUnit)
     local facing = math.getDegBetweenXY(sx, sy, x, y)
     local distance = math.getDistanceBetweenXY(sx, sy, x, y)
     local firstDeg = facing + (deg * (qty - 1) * 0.5)
@@ -1771,8 +1771,8 @@ hskill.leapRange = function(options)
     local filter = options.filter
     local x, y
     if (options.targetUnit ~= nil) then
-        x = cj.GetUnitX(options.targetUnit)
-        y = cj.GetUnitY(options.targetUnit)
+        x = hunit.x(options.targetUnit)
+        y = hunit.y(options.targetUnit)
         options.x = nil
         options.y = nil
     else
@@ -1811,8 +1811,8 @@ hskill.leapRange = function(options)
             if (options.targetUnit ~= nil) then
                 tmp.targetUnit = eu
             else
-                tmp.x = cj.GetUnitX(eu)
-                tmp.y = cj.GetUnitY(eu)
+                tmp.x = hunit.x(eu)
+                tmp.y = hunit.y(eu)
             end
             hskill.leap(tmp)
         end,

@@ -118,11 +118,45 @@ hunit.setPeriod = function(u, life)
     cj.UnitApplyTimedLife(u, string.char2id("BTLF"), life)
 end
 
+--- 设置单位面向角度
+---@param u userdata
+---@param facing number
+hunit.setFacing = function(u, facing)
+    cj.SetUnitFacing(u, facing)
+end
+
 --- 获取单位面向角度
 ---@param u userdata
 ---@return number
 hunit.getFacing = function(u)
     return cj.GetUnitFacing(u)
+end
+
+--- 显示单位
+---@param u userdata
+hunit.show = function(u)
+    cj.ShowUnit(u, true)
+end
+
+--- 隐藏单位
+---@param u userdata
+---@return number
+hunit.hide = function(u)
+    cj.ShowUnit(u, false)
+end
+
+--- 获取单位X坐标
+---@param u userdata
+---@return number
+hunit.x = function(u)
+    return cj.GetUnitX(u)
+end
+
+--- 获取单位Y坐标
+---@param u userdata
+---@return number
+hunit.y = function(u)
+    return cj.GetUnitY(u)
 end
 
 --- 单位是否启用硬直（系统默认不启用）
@@ -314,7 +348,7 @@ hunit.create = function(bean)
     elseif (bean.facingLoc ~= nil) then
         facing = math.getDegBetweenXY(x, y, cj.GetLocationX(bean.facingLoc), cj.GetLocationY(bean.facingLoc))
     elseif (bean.facingUnit ~= nil) then
-        facing = math.getDegBetweenXY(x, y, cj.GetUnitX(bean.facingUnit), cj.GetUnitY(bean.facingUnit))
+        facing = math.getDegBetweenXY(x, y, hunit.x(bean.facingUnit), hunit.y(bean.facingUnit))
     else
         facing = bj_UNIT_FACING
     end
@@ -466,8 +500,8 @@ hunit.getSlk = function(uOrUid)
     else
         uid = hunit.getId(uOrUid)
     end
-    if (hslk_global.key2Value.unit[uid] ~= nil) then
-        slk = hslk_global.key2Value.unit[uid]
+    if (hslk_global.id2Value.unit[uid] ~= nil) then
+        slk = hslk_global.id2Value.unit[uid]
     end
     return slk
 end
@@ -504,6 +538,18 @@ hunit.getAttackRange = function(uOrUid)
         return 100
     end
 end
+--- 获取单位的SLK自定义数据CUSTOM_DATA
+---@param uOrUid any
+---@return table
+hunit.getCustomData = function(uOrUid)
+    local slk = hunit.getSlk(uOrUid)
+    if (slk ~= nil) then
+        return slk.CUSTOM_DATA or {}
+    else
+        return {}
+    end
+end
+
 --- 获取单位的名称
 ---@param u userdata
 ---@return string
@@ -548,13 +594,6 @@ hunit.setColor = function(u, color)
     else
         cj.SetUnitColor(u, cj.ConvertPlayerColor(color - 1))
     end
-end
-
---- 获取单位面向角度
----@param u userdata
----@return number
-hunit.getFacing = function(u)
-    return cj.GetUnitFacing(u)
 end
 
 --- 删除单位，延时<delay>秒

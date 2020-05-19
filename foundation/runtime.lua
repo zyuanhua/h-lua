@@ -2,11 +2,11 @@ hRuntime = {
     -- 注册runtime的数据
     register = {
         unit = function(json)
-            hslk_global.key2Value.unit[json.UNIT_ID] = json
+            hslk_global.id2Value.unit[json.UNIT_ID] = json
             hslk_global.name2Value.unit[json.Name] = json
         end,
         item = function(json)
-            hslk_global.key2Value.item[json.ITEM_ID] = json
+            hslk_global.id2Value.item[json.ITEM_ID] = json
             hslk_global.name2Value.item[json.Name] = json
             if (type(json.SHADOW_ID) == "string") then
                 hslk_global.itemsShadowMapping[json.ITEM_ID] = json.SHADOW_ID
@@ -14,11 +14,11 @@ hRuntime = {
             end
         end,
         ability = function(json)
-            hslk_global.key2Value.ability[json.ABILITY_ID] = json
+            hslk_global.id2Value.ability[json.ABILITY_ID] = json
             hslk_global.name2Value.ability[json.Name] = json
         end,
         technology = function(json)
-            hslk_global.key2Value.technology[json.TECHNOLOGY_ID] = json
+            hslk_global.id2Value.technology[json.TECHNOLOGY_ID] = json
             hslk_global.name2Value.technology[json.Name] = json
         end,
     },
@@ -38,6 +38,7 @@ hRuntime = {
     unit = {},
     group = {}, -- 单位选择器
     hero = {},
+    hero_judge_ids = {},
     heroBuildSelection = {},
     skill = {
         silentUnits = {},

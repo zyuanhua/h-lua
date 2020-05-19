@@ -84,8 +84,8 @@ hevent_default_actions = {
             elseif (str == "-gg") then
                 hplayer.defeat(p, "GG")
             elseif (str == "-random") then
-                if (#hhero.selectorPool <= 0) then
-                    echo("已禁止random", p)
+                if (#hhero.selectorPool <= 0 or hplayer.getAllowCommandPick(p) ~= true) then
+                    echo("-random命令被禁用", p)
                     return
                 end
                 local pIndex = hplayer.index(p)
@@ -137,8 +137,8 @@ hevent_default_actions = {
                 end
                 echo("已为您 |cffffff80random|r 挑选了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个：|cffffff80" .. txt .. "|r", p)
             elseif (str == "-repick") then
-                if (#hhero.selectorPool <= 0) then
-                    echo("已禁止repick", p)
+                if (#hhero.selectorPool <= 0 or hplayer.getAllowCommandPick(p) ~= true) then
+                    echo("-repick命令被禁用", p)
                     return
                 end
                 local pIndex = hplayer.index(p)
@@ -470,7 +470,7 @@ hevent_default_actions = {
         pickup = cj.Condition(function()
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
-            if (hslk_global.key2Value.item[itId] == nil) then
+            if (hslk_global.id2Value.item[itId] == nil) then
                 -- 排除掉没有注册的物品。例如框架内自带的一些物品
                 return
             end

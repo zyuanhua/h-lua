@@ -308,7 +308,7 @@ hskill.damage = function(options)
         hplayer.addBeDamage(hunit.getOwner(targetUnit), lastDamage)
         hunit.subCurLife(targetUnit, lastDamage)
         if (type(effect) == "string" and string.len(effect) > 0) then
-            heffect.toXY(effect, cj.GetUnitX(targetUnit), cj.GetUnitY(targetUnit), 0)
+            heffect.toXY(effect, hunit.x(targetUnit), hunit.y(targetUnit), 0)
         end
         -- @触发伤害事件
         hevent.triggerEvent(
@@ -856,8 +856,8 @@ hskill.damageRange = function(options)
         x = options.x
         y = options.y
     elseif (options.whichUnit ~= nil) then
-        x = cj.GetUnitX(options.whichUnit)
-        y = cj.GetUnitY(options.whichUnit)
+        x = hunit.x(options.whichUnit)
+        y = hunit.y(options.whichUnit)
     elseif (options.whichLoc ~= nil) then
         x = cj.GetLocatonX(options.whichLoc)
         y = cj.GetLocatonY(options.whichLoc)

@@ -170,22 +170,22 @@ hattribute.init = function(whichUnit)
     if (unitId == nil) then
         return false
     end
-    if (hslk_global.key2Value.unit[unitId] == nil) then
-        hslk_global.key2Value.unit[unitId] = {}
+    if (hslk_global.id2Value.unit[unitId] == nil) then
+        hslk_global.id2Value.unit[unitId] = {}
     end
     hRuntime.attribute[whichUnit] = {
-        primary = hslk_global.key2Value.unit[unitId].Primary or "NIL",
+        primary = hslk_global.id2Value.unit[unitId].Primary or "NIL",
         life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE),
         mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA),
-        move = hslk_global.key2Value.unit[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
-        defend = hslk_global.key2Value.unit[unitId].def or 0.0,
+        move = hslk_global.id2Value.unit[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
+        defend = hslk_global.id2Value.unit[unitId].def or 0.0,
         attack_damage_type = {},
         attack_speed = 0.0,
-        attack_speed_space = hslk_global.key2Value.unit[unitId].cool1 or hattribute.default_attack_speed_space,
+        attack_speed_space = hslk_global.id2Value.unit[unitId].cool1 or hattribute.default_attack_speed_space,
         attack_white = 0.0,
         attack_green = 0.0,
-        attack_range = hslk_global.key2Value.unit[unitId].rangeN1 or 100.0,
-        sight = hslk_global.key2Value.unit[unitId].sight or 800,
+        attack_range = hslk_global.id2Value.unit[unitId].rangeN1 or 100.0,
+        sight = hslk_global.id2Value.unit[unitId].sight or 800,
         str_green = 0.0,
         agi_green = 0.0,
         int_green = 0.0,
@@ -906,7 +906,7 @@ hattribute.reRegister = function(whichUnit)
     end
     hRuntime.attribute[whichUnit].life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)
     hRuntime.attribute[whichUnit].mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA)
-    hRuntime.attribute[whichUnit].defend = hslk_global.key2Value.unit[unitId].def or 0.0
+    hRuntime.attribute[whichUnit].defend = hslk_global.id2Value.unit[unitId].def or 0.0
     hRuntime.attribute[whichUnit].attack_speed = 0
     hRuntime.attribute[whichUnit].attack_white = 0
     hRuntime.attribute[whichUnit].attack_green = 0
