@@ -417,7 +417,7 @@ end
 ---@public
 slkHelper.unit = function(v)
     slkHelper.count = slkHelper.count + 1
-    v.Name = v.Name or "未命名" .. slkHelper.count
+    v.Name = v.Name or "单位-" .. slkHelper.count
     local Ubertip = v.Ubertip or ""
     local targs1 = v.targs1 or "vulnerable,ground,ward,structure,organic,mechanical,debris,air" --攻击目标
     local abl = {}
@@ -577,7 +577,7 @@ end
 ---@public
 slkHelper.hero = function(v)
     slkHelper.count = slkHelper.count + 1
-    v.Name = v.Name or "未命名" .. slkHelper.count
+    v.Name = v.Name or "英雄-" .. slkHelper.count
     local Primary = v.Primary or "STR"
     local Ubertip = ""
     Ubertip = Ubertip .. hColor.red("攻击类型：" .. CONST_WEAPON_TYPE[v.weapTp1].label .. "(" .. v.cool1 .. "秒/击)")
@@ -768,6 +768,47 @@ slkHelper.hero = function(v)
             rangeN1 = v.rangeN1,
             sight = v.sight,
             nsight = v.nsight,
+        }
+    })
+    return id
+end
+
+--- 创建一个商店
+--- 设置的CUSTOM_DATA数据会自动传到数据中
+---@public
+slkHelper.shop = function(v)
+    slkHelper.count = slkHelper.count + 1
+    v.Name = v.Name or "商店-" .. slkHelper.count
+    v.Makeitems = v.Makeitems or ""
+    v.Sellitems = v.Sellitems or ""
+    local obj = slk.unit.ngme:new("slk_shops_" .. v.Name)
+    obj.Name = v.Name
+    obj.pathTex = v.pathTex or "PathTextures\\8x8Round.tga"
+    obj.abilList = v.abilList or "Avul,Apit,Aall"
+    obj.file = v.file or "buildings\\other\\FruitStand\\FruitStand"
+    obj.modelScale = v.modelScale or 1.00
+    obj.scale = v.scale or 1.00
+    obj.HP = v.HP or 99999
+    obj.sight = v.sight or 800
+    obj.nsight = v.nsight or 800
+    obj.unitSound = v.unitSound or ""
+    obj.Makeitems = v.Makeitems
+    obj.Sellitems = v.Sellitems
+    obj.UberSplat = ""
+    local id = obj:get_id()
+    table.insert(slkHelperHashData, {
+        type = "unit",
+        data = {
+            CUSTOM_DATA = v.CUSTOM_DATA or {},
+            UNIT_ID = id,
+            UNIT_TYPE = "shop",
+            Name = v.Name,
+            Art = v.Art,
+            file = v.file,
+            sight = v.sight,
+            nsight = v.nsight,
+            Makeitems = v.Makeitems,
+            Sellitems = v.Sellitems,
         }
     })
     return id
