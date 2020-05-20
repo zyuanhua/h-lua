@@ -1,5 +1,54 @@
 hunit = {}
 
+--- [SLK] 获取英雄在slkHelper设定的部分数据
+--- 数值键值是根据地图编辑器作为标准的，所以大小写也是与之一致
+---@param whichUnit userdata
+---@return table
+hunit.getSlk = function(whichUnit)
+    local default = {
+        -- 参考数据
+        UNIT_ID = nil,
+        UNIT_TYPE = "normal",
+        CUSTOM_DATA = {},
+        Art = nil,
+        file = nil,
+        goldcost = 0,
+        lumbercost = 0,
+        cool1 = 1.50,
+        def = 0,
+        rangeN1 = 100,
+        sight = 1800,
+        nsight = 800,
+    }
+    if (whichUnit ~= nil) then
+        default.Name = cj.GetUnitName(whichUnit)
+    else
+        default.Name = ""
+    end
+    if (whichUnit == nil or his.deleted(whichUnit)) then
+        return default
+    end
+    if (his.hero(whichUnit)) then
+        default.UNIT_TYPE = "hero"
+        default.Primary = nil
+        default.STR = cj.GetHeroStr(whichUnit, false)
+        default.AGI = cj.GetHeroStr(whichUnit, false)
+        default.INT = cj.GetHeroStr(whichUnit, false)
+        default.STRplus = nil
+        default.AGIplus = nil
+        default.INTplus = nil
+    end
+    return hslk_global.id2Value.unit[hunit.getId(whichUnit)] or default
+end
+
+--- 获取单位的头像
+---@param uOrUid any
+---@return string
+hunit.getAvatar = function(whichUnit)
+    local slk = hunit.getSlk(whichUnit)
+    return slk.Art or "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
+end
+
 --- 获取单位的最大生命值
 ---@param u userdata
 ---@return number
@@ -483,71 +532,6 @@ end
 ---@return string
 hunit.getId = function(u)
     return string.id2char(cj.GetUnitTypeId(u))
-end
---- 获取单位SLK数据集
----@private
-hunit.getSlk = function(uOrUid)
-    local slk
-    local uid
-    if (uOrUid == nil) then
-        print_err("uOrUid is nil")
-        return nil
-    end
-    if (type(uOrUid) == "string") then
-        uid = uOrUid
-    elseif (type(uOrUid) == "number") then
-        uid = string.id2char(uOrUid)
-    else
-        uid = hunit.getId(uOrUid)
-    end
-    if (hslk_global.id2Value.unit[uid] ~= nil) then
-        slk = hslk_global.id2Value.unit[uid]
-    end
-    return slk
-end
---- 获取单位的头像
----@param uOrUid any
----@return string
-hunit.getAvatar = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return slk.Art
-    else
-        return "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
-    end
-end
---- 获取单位的攻击速度间隔
----@param uOrUid any
----@return number
-hunit.getAttackSpeedBaseSpace = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return math.round(slk.cool1)
-    else
-        return 2.00
-    end
-end
---- 获取单位的攻击范围
----@param uOrUid any
----@return number
-hunit.getAttackRange = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return math.floor(slk.rangeN1)
-    else
-        return 100
-    end
-end
---- 获取单位的SLK自定义数据CUSTOM_DATA
----@param uOrUid any
----@return table
-hunit.getCustomData = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return slk.CUSTOM_DATA or {}
-    else
-        return {}
-    end
 end
 
 --- 获取单位的名称

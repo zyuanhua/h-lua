@@ -12,65 +12,86 @@ hhero = {
     selectorClearPool = {},
 }
 
+--- 获取英雄的类型（STR AGI INT）
+--- 先会判断SLK中是否存在，如果没有会将英雄当前的白字属性视为主属性
+--- 如果两个白字属性相等，则以力->敏->智的优先级返回
+---@param whichHero userdata
+---@return string STR|AGI|INT
+hhero.getPrimary = function(whichHero)
+    local slk = hunit.getSlk(whichHero)
+    local primary = slk.Primary
+    if (primary == nil) then
+        primary = "STR"
+        if (slk.AGI > slk.STR) then
+            primary = "AGI"
+        end
+        if (slk.INT > slk.STR and slk.INT > slk.AGI) then
+            primary = "INT"
+        end
+    end
+    return string.upper(primary)
+end
+
+--- 获取英雄的类型文本
+---@param whichHero userdata
+---@return string 力量|敏捷|智力
+hhero.getPrimaryLabel = function(whichHero)
+    return CONST_HERO_PRIMARY[hhero.getPrimary(whichHero)]
+end
+
 --- 设置英雄之前的等级
 ---@protected
----@param u userdata
+---@param whichHero userdata
 ---@param lv number
-hhero.setPrevLevel = function(u, lv)
-    if (hRuntime.hero[u] == nil) then
-        hRuntime.hero[u] = {}
+hhero.setPrevLevel = function(whichHero, lv)
+    if (hRuntime.hero[whichHero] == nil) then
+        hRuntime.hero[whichHero] = {}
     end
-    hRuntime.hero[u].prevLevel = lv
+    hRuntime.hero[whichHero].prevLevel = lv
 end
 
 --- 获取英雄之前的等级
 ---@protected
----@param u userdata
+---@param whichHero userdata
 ---@return number
-hhero.getPrevLevel = function(u)
-    if (hRuntime.hero[u] == nil) then
-        hRuntime.hero[u] = {}
+hhero.getPrevLevel = function(whichHero)
+    if (hRuntime.hero[whichHero] == nil) then
+        hRuntime.hero[whichHero] = {}
     end
-    return hRuntime.hero[u].prevLevel or 0
+    return hRuntime.hero[whichHero].prevLevel or 0
 end
 
 --- 获取英雄当前等级
----@param u userdata
+---@param whichHero userdata
 ---@return number
-hhero.getCurLevel = function(u)
-    return cj.GetHeroLevel(u) or 1
+hhero.getCurLevel = function(whichHero)
+    return cj.GetHeroLevel(whichHero) or 1
 end
 --- 设置英雄当前的等级
 ---@paramu userdata
 ---@param newLevel number
 ---@param showEffect boolean
-hhero.setCurLevel = function(u, newLevel, showEffect)
+hhero.setCurLevel = function(whichHero, newLevel, showEffect)
     if (type(showEffect) ~= "boolean") then
         showEffect = false
     end
-    local oldLevel = cj.GetHeroLevel(u)
+    local oldLevel = cj.GetHeroLevel(whichHero)
     if (newLevel > oldLevel) then
-        cj.SetHeroLevel(u, newLevel, showEffect)
+        cj.SetHeroLevel(whichHero, newLevel, showEffect)
     elseif (newLevel < oldLevel) then
-        cj.UnitStripHeroLevel(u, oldLevel - newLevel)
+        cj.UnitStripHeroLevel(whichHero, oldLevel - newLevel)
     else
         return
     end
-    hhero.setPrevLevel(u, newLevel)
+    hhero.setPrevLevel(whichHero, newLevel)
 end
 
---- 获取英雄的类型（STR AGI INT）需要注册
----@param u userdata
+--- 获取英雄的黄金消耗
+---@param whichHero userdata
 ---@return string STR|AGI|INT
-hhero.getHeroType = function(u)
-    return hslk_global.id2Value.unit[hunit.getId(u)].Primary
-end
-
---- 获取英雄的类型文本
----@param u userdata
----@return string 力量|敏捷|智力
-hhero.getHeroTypeLabel = function(u)
-    return CONST_HERO_PRIMARY[hhero.getHeroType(u)]
+hhero.getSlkGoldcost = function(whichHero)
+    local slk = hhero.getSlk(whichHero)
+    return slk.goldcost or 0
 end
 
 --- 设置玩家最大英雄数量,支持1 - 7
@@ -111,47 +132,47 @@ hhero.setHeroIds = function(ids)
 end
 
 --- 在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
----@param u userdata
+---@param whichHero userdata
 ---@param delay number
 ---@param invulnerable number 复活后的无敌时间
 ---@param x number
 ---@param y number
 ---@param showDialog boolean 是否显示倒计时窗口
-hhero.rebornAtXY = function(u, delay, invulnerable, x, y, showDialog)
-    if (his.hero(u)) then
+hhero.rebornAtXY = function(whichHero, delay, invulnerable, x, y, showDialog)
+    if (his.hero(whichHero)) then
         if (delay < 0.3) then
-            cj.ReviveHero(u, x, y, true)
-            hattr.resetAttrGroups(u)
+            cj.ReviveHero(whichHero, x, y, true)
+            hattr.resetAttrGroups(whichHero)
             if (invulnerable > 0) then
-                hskill.invulnerable(u, invulnerable)
+                hskill.invulnerable(whichHero, invulnerable)
             end
             -- @触发复活事件
             hevent.triggerEvent(
-                u,
+                whichHero,
                 CONST_EVENT.reborn,
                 {
-                    triggerUnit = u
+                    triggerUnit = whichHero
                 }
             )
         else
             local title
             if (showDialog == true) then
-                title = hunit.getName(u)
+                title = hunit.getName(whichHero)
             end
             htime.setTimeout(
                 delay,
                 function(t)
                     htime.delTimer(t)
-                    cj.ReviveHero(u, x, y, true)
+                    cj.ReviveHero(whichHero, x, y, true)
                     if (invulnerable > 0) then
-                        hskill.invulnerable(u, invulnerable)
+                        hskill.invulnerable(whichHero, invulnerable)
                     end
                     -- @触发复活事件
                     hevent.triggerEvent(
-                        u,
+                        whichHero,
                         CONST_EVENT.reborn,
                         {
-                            triggerUnit = u
+                            triggerUnit = whichHero
                         }
                     )
                 end,
@@ -162,13 +183,13 @@ hhero.rebornAtXY = function(u, delay, invulnerable, x, y, showDialog)
 end
 
 --- 在某点复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
----@param u userdata
+---@param whichHero userdata
 ---@param delay number
 ---@param invulnerable number 复活后的无敌时间
 ---@param loc userdata
 ---@param showDialog boolean 是否显示倒计时窗口
-hhero.rebornAtLoc = function(u, delay, invulnerable, loc)
-    hhero.rebornAtXY(u, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc), showDialog)
+hhero.rebornAtLoc = function(whichHero, delay, invulnerable, loc)
+    hhero.rebornAtXY(whichHero, delay, invulnerable, cj.GetLocationX(loc), cj.GetLocationY(loc), showDialog)
 end
 
 --- 开始构建英雄选择
@@ -224,7 +245,7 @@ hhero.buildSelector = function(options)
             else
                 x = buildX + currentRowQty * buildDistanceX
             end
-            local u = hunit.create(
+            local whichHero = hunit.create(
                 {
                     whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
                     unitId = heroId,
@@ -234,21 +255,21 @@ hhero.buildSelector = function(options)
                     isPause = true
                 }
             )
-            hRuntime.hero[u] = {
+            hRuntime.hero[whichHero] = {
                 selector = { x, y },
             }
-            table.insert(hhero.selectorClearPool, u)
-            table.insert(hhero.selectorPool, u)
+            table.insert(hhero.selectorClearPool, whichHero)
+            table.insert(hhero.selectorPool, whichHero)
             currentRowQty = currentRowQty + 1
         end
         for i = 1, hplayer.qty_max, 1 do
             hevent.onSelection(hplayer.players[i], 2, function(evtData)
                 local p = evtData.triggerPlayer
-                local u = evtData.triggerUnit
-                if (table.includes(u, hhero.selectorClearPool) == false) then
+                local whichHero = evtData.triggerUnit
+                if (table.includes(whichHero, hhero.selectorClearPool) == false) then
                     return
                 end
-                if (hunit.getOwner(u) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
+                if (hunit.getOwner(whichHero) ~= cj.Player(PLAYER_NEUTRAL_PASSIVE)) then
                     return
                 end
                 local pIndex = hplayer.index(p)
@@ -256,26 +277,26 @@ hhero.buildSelector = function(options)
                     echo("|cffffff80你已经选够了|r", p)
                     return
                 end
-                table.delete(u, hhero.selectorPool)
-                table.delete(u, hhero.selectorClearPool)
-                hunit.setInvulnerable(u, false)
-                cj.SetUnitOwner(u, p, true)
-                hunit.portal(u, hhero.bornX, hhero.bornY)
-                cj.PauseUnit(u, false)
-                table.insert(hhero.player_heroes[pIndex], u)
+                table.delete(whichHero, hhero.selectorPool)
+                table.delete(whichHero, hhero.selectorClearPool)
+                hunit.setInvulnerable(whichHero, false)
+                cj.SetUnitOwner(whichHero, p, true)
+                hunit.portal(whichHero, hhero.bornX, hhero.bornY)
+                cj.PauseUnit(whichHero, false)
+                table.insert(hhero.player_heroes[pIndex], whichHero)
                 -- 触发英雄被选择事件(全局)
                 hevent.triggerEvent(
                     "global",
                     CONST_EVENT.pickHero,
                     {
                         triggerPlayer = p,
-                        triggerUnit = u
+                        triggerUnit = whichHero
                     }
                 )
                 if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
-                    echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(u) .. "|r,已挑选完毕", p)
+                    echo("您选择了 " .. "|cffffff80" .. cj.GetUnitName(whichHero) .. "|r,已挑选完毕", p)
                 else
-                    echo("您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r,还要选 " ..
+                    echo("您选择了 |cffffff80" .. cj.GetUnitName(whichHero) .. "|r,还要选 " ..
                         math.floor(hhero.player_allow_qty[pIndex] - #hhero.player_heroes[pIndex]) .. " 个", p
                     )
                 end
@@ -323,7 +344,7 @@ hhero.buildSelector = function(options)
                             return
                         end
                         cj.RemoveUnitFromStock(tavern, soldUid)
-                        local u = hunit.create(
+                        local whichHero = hunit.create(
                             {
                                 whichPlayer = p,
                                 unitId = soldUid,
@@ -331,15 +352,15 @@ hhero.buildSelector = function(options)
                                 y = hhero.bornY,
                             }
                         )
-                        table.insert(hhero.player_heroes[pIndex], u)
+                        table.insert(hhero.player_heroes[pIndex], whichHero)
                         table.delete(string.id2char(soldUid), hhero.selectorPool)
-                        local tips = "您选择了 |cffffff80" .. cj.GetUnitName(u) .. "|r"
+                        local tips = "您选择了 |cffffff80" .. cj.GetUnitName(whichHero) .. "|r"
                         if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                             echo(tips .. ",已挑选完毕", p)
                         else
                             echo(tips .. "还差 " .. (hhero.player_allow_qty[pIndex] - #hhero.player_heroes[pIndex]) .. " 个", p)
                         end
-                        hRuntime.hero[u] = {
+                        hRuntime.hero[whichHero] = {
                             selector = evtData.triggerUnit,
                         }
                         -- 触发英雄被选择事件(全局)
@@ -348,7 +369,7 @@ hhero.buildSelector = function(options)
                             CONST_EVENT.pickHero,
                             {
                                 triggerPlayer = p,
-                                triggerUnit = u
+                                triggerUnit = whichHero
                             }
                         )
                     end)
@@ -365,7 +386,7 @@ hhero.buildSelector = function(options)
         -- 视野token
         for i = 1, hplayer.qty_max, 1 do
             local p = cj.Player(i - 1)
-            local u = hunit.create(
+            local whichHero = hunit.create(
                 {
                     whichPlayer = p,
                     unitId = hhero.build_token,
@@ -375,7 +396,7 @@ hhero.buildSelector = function(options)
                     isPause = true
                 }
             )
-            table.insert(hhero.selectorClearPool, u)
+            table.insert(hhero.selectorClearPool, whichHero)
         end
         -- 还剩10秒给个选英雄提示
         htime.setTimeout(
@@ -393,8 +414,8 @@ hhero.buildSelector = function(options)
         -- 对于可以选择多个的玩家，有选即可，不要求全选
         htime.setTimeout(during - 0.5, function(t)
             htime.delTimer(t)
-            for _, u in ipairs(hhero.selectorClearPool) do
-                hunit.del(u)
+            for _, hero in ipairs(hhero.selectorClearPool) do
+                hunit.del(hero)
             end
             hhero.selectorClearPool = {}
             for i = 1, hplayer.qty_max, 1 do
