@@ -610,7 +610,9 @@ slkHelper.unit = {
             Ubertip = Ubertip .. "|n" .. hColor.yellowLight("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
         end
         Ubertip = Ubertip .. "|n" .. hColor.greenLight("移动：" .. v.spd .. " " .. CONST_MOVE_TYPE[v.movetp].label)
-        Ubertip = Ubertip .. "|n|n" .. v.Ubertip -- 自定义说明会在最后
+        if (v.Ubertip ~= nil) then
+            Ubertip = Ubertip .. "|n|n" .. v.Ubertip -- 自定义说明会在最后
+        end
         local targs1 = v.targs1 or "vulnerable,ground,ward,structure,organic,mechanical,tree,debris,air" --攻击目标
         local Propernames = v.Propernames or v.Name
         local PropernamesArr = string.explode(',', Propernames)
@@ -829,7 +831,7 @@ slkHelper.unit = {
     ---@public
     ---@param v table
     courier = function(v)
-        if(slkHelper.courierBlink == nil)then
+        if (slkHelper.courierBlink == nil) then
             local obj = slk.ability.AEbl:new("slk_courier_blink")
             local Name = "闪烁"
             local Tip = "闪烁(" .. hColor.gold("Q") .. ")"
@@ -851,7 +853,7 @@ slkHelper.unit = {
             obj.race = v.race or "human"
             slkHelper.courierBlink = obj:get_id()
         end
-        if(slkHelper.courierPickUp == nil)then
+        if (slkHelper.courierPickUp == nil) then
             local obj = slk.ability.ANcl:new("slk_courier_pickup")
             Name = "拾取"
             Tip = "拾取(" .. hColor.gold("W") .. ")"
@@ -881,7 +883,18 @@ slkHelper.unit = {
         slkHelper.count = slkHelper.count + 1
         v.Name = v.Name or "信使-" .. slkHelper.count
         v.weapsOn = v.weapsOn or 0
-        local abl = { slkHelper.courierBlink, slkHelper.courierPickUp }
+        v.goldcost = v.goldcost or 0
+        v.lumbercost = v.lumbercost or 0
+        v.cool1 = v.cool1 or 1.50
+        v.def = v.def or 0
+        v.rangeN1 = v.rangeN1 or 100
+        v.sight = v.sight or 1800
+        v.nsight = v.nsight or 800
+        v.dmgplus1 = v.dmgplus1 or 0
+        v.movetp = v.movetp or "foot"
+        v.moveHeight = v.moveHeight or 0
+        v.spd = v.spd or 100
+        local abl = { "AInv", slkHelper.courierBlink, slkHelper.courierPickUp }
         if (type(v.abilList) == "string") then
             local tmpAbl = string.explode(',', v.abilList)
             for _, t in pairs(tmpAbl) do
@@ -892,11 +905,114 @@ slkHelper.unit = {
                 table.insert(abl, t)
             end
         end
-        local obj = slk.unit.ogru:new("slk_courier_" .. v.Name)
+        local targs1
         if (v.weapsOn == 1) then
-            obj.targs1 = "vulnerable,ground,ward,structure,organic,mechanical,debris,air,empty"
+            v.weapTp1 = v.weapTp1 or "normal"
+            targs1 = v.targs1 or "vulnerable,ground,ward,structure,organic,mechanical,debris,air"
+            if (v.weapTp1 == "normal") then
+                obj.weapType1 = v.weapType1 or "" --攻击声音
+                obj.Missileart = ""
+                obj.Missilespeed = 0
+                obj.Missilearc = 0
+            else
+                obj.weapType1 = "" --攻击声音
+                obj.Missileart = v.Missileart -- 箭矢模型
+                obj.Missilespeed = v.Missilespeed or 1100 -- 箭矢速度
+                obj.Missilearc = v.Missilearc or 0.05
+            end
+            if (v.weapTp1 == "msplash" or v.weapTp1 == "artillery") then
+                --溅射/炮火
+                obj.Farea1 = v.Farea1 or 1
+                obj.Qfact1 = v.Qfact1 or 0.05
+                obj.Qarea1 = v.Qarea1 or 500
+                obj.Hfact1 = v.Hfact1 or 0.15
+                obj.Harea1 = v.Harea1 or 350
+                obj.splashTargs1 = targs1 .. ",enemies"
+            elseif (v.weapTp1 == "mbounce") then
+                --弹射
+                obj.Farea1 = v.Farea1 or 450
+                obj.targCount1 = v.targCount1 or 4
+                obj.damageLoss1 = v.damageLoss1 or 0.3
+                obj.splashTargs1 = targs1 .. ",enemies"
+            elseif (v.weapTp1 == "mline") then
+                --穿透
+                obj.spillRadius = v.spillRadius or 200
+                obj.spillDist1 = v.spillDist1 or 450
+                obj.damageLoss1 = v.damageLoss1 or 0.3
+                obj.splashTargs1 = targs1 .. ",enemies"
+            elseif (v.weapTp1 == "aline") then
+                --炮火穿透
+                obj.Farea1 = v.Farea1 or 1
+                obj.Qfact1 = v.Qfact1 or 0.05
+                obj.Qarea1 = v.Qarea1 or 500
+                obj.Hfact1 = v.Hfact1 or 0.15
+                obj.Harea1 = v.Harea1 or 350
+                obj.spillRadius = v.spillRadius or 200
+                obj.spillDist1 = v.spillDist1 or 450
+                obj.damageLoss1 = v.damageLoss1 or 0.3
+                obj.splashTargs1 = targs1 .. ",enemies"
+            end
+        else
+            targs1 = ""
         end
-        obj.type = "Peon"
+        local Primary
+        local Ubertip
+        local obj
+        if (v.isHero == 1) then
+            --- 如果是英雄型信使
+            Primary = v.Primary or "STR"
+            Ubertip = hColor.greenLight("移动：" .. v.spd .. " " .. CONST_MOVE_TYPE[v.movetp].label)
+            if (v.weapsOn == 1) then
+                Ubertip = Ubertip .. "|n"
+                hColor.red("攻击类型：" .. CONST_WEAPON_TYPE[v.weapTp1].label .. "(" .. v.cool1 .. "秒/击)")
+                Ubertip = Ubertip .. "|n" .. hColor.redLight("基础攻击：" .. v.dmgplus1)
+                Ubertip = Ubertip .. "|n" .. hColor.seaLight("攻击范围：" .. v.rangeN1)
+            end
+            if (Primary == "STR") then
+                Ubertip = Ubertip .. "|n" .. hColor.yellow("力量：" .. v.STR .. "(+" .. v.STRplus .. ")")
+            else
+                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("力量：" .. v.STR .. "(+" .. v.STRplus .. ")")
+            end
+            if (Primary == "AGI") then
+                Ubertip = Ubertip .. "|n" .. hColor.yellow("敏捷：" .. v.AGI .. "(+" .. v.AGIplus .. ")")
+            else
+                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("敏捷：" .. v.AGI .. "(+" .. v.AGIplus .. ")")
+            end
+            if (Primary == "INT") then
+                Ubertip = Ubertip .. "|n" .. hColor.yellow("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
+            else
+                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
+            end
+            if (v.Ubertip ~= nil) then
+                Ubertip = Ubertip .. "|n|n" .. v.Ubertip -- 自定义说明会在最后
+            end
+            obj = slk.unit.Hpal:new("slk_courier_hero_" .. v.Name)
+            obj.STR = v.STR
+            obj.AGI = v.AGI
+            obj.INT = v.INT
+            obj.STRplus = v.STRplus
+            obj.AGIplus = v.AGIplus
+            obj.INTplus = v.INTplus
+            obj.Awakentip = "唤醒：" .. v.Name
+            obj.Revivetip = "复活：" .. v.Name
+        else
+            --- 如果是工人型信使
+            obj = slk.unit.ogru:new("slk_courier_" .. v.Name)
+            obj.type = "Peon"
+            Ubertip = v.Ubertip or ""
+        end
+        if (v.HotKey ~= nil) then
+            obj.HotKey = v.HotKey
+            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            obj.Tip = "选择：" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
+        else
+            obj.Buttonpos1 = v.Buttonpos1 or 0
+            obj.Buttonpos2 = v.Buttonpos2 or 0
+            obj.Tip = "选择：" .. v.Name
+        end
+        obj.targs1 = targs1
+        obj.Ubertip = Ubertip
         obj.upgrades = ""
         obj.weapsOn = v.weapsOn
         obj.Hotkey = ""
@@ -920,8 +1036,8 @@ slkHelper.unit = {
         obj.sides1 = 5 --骰子面
         obj.dice1 = 1 --骰子数量
         obj.regenMana = 0.00
-        obj.HP = v.HP or 99999
-        obj.regenHP = v.HP or 99999
+        obj.HP = v.HP or 100
+        obj.regenHP = v.HP or 100
         obj.stockStart = 0
         obj.stockRegen = 0
         obj.stockMax = 1
@@ -930,9 +1046,7 @@ slkHelper.unit = {
         obj.sight = v.sight or 1000 -- 白天视野
         obj.nsight = v.nsight or 1000 -- 夜晚视野
         obj.nameCount = v.nameCount or 1
-        obj.Tip = "选择 " .. v.Name
         obj.Name = "[信使]" .. v.Name
-        obj.Ubertip = v.Ubertip or ""
         obj.unitSound = v.unitSound -- 声音
         obj.modelScale = v.modelScale --模型缩放
         obj.file = v.file --模型
@@ -960,6 +1074,19 @@ slkHelper.unit = {
                 file = v.file,
                 sight = v.sight,
                 nsight = v.nsight,
+                goldcost = v.goldcost,
+                lumbercost = v.lumbercost,
+                cool1 = v.cool1,
+                def = v.def,
+                rangeN1 = v.rangeN1,
+                -- hero
+                Primary = Primary,
+                STR = v.STR,
+                AGI = v.AGI,
+                INT = v.INT,
+                STRplus = v.STRplus,
+                AGIplus = v.AGIplus,
+                INTplus = v.INTplus,
             }
         })
         return id
