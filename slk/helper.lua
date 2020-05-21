@@ -5,7 +5,11 @@ slkHelper = {
     ---@private
     count = 0,
     ---@private
-    shapeshiftIndex = 1
+    shapeshiftIndex = 1,
+    ---@private
+    courierBlink = nil,
+    ---@private
+    courierPickUp = nil,
 }
 
 --[[
@@ -825,9 +829,69 @@ slkHelper.unit = {
     ---@public
     ---@param v table
     courier = function(v)
+        if(slkHelper.courierBlink == nil)then
+            local obj = slk.ability.AEbl:new("slk_courier_blink")
+            local Name = "闪烁"
+            local Tip = "闪烁(" .. hColor.gold("Q") .. ")"
+            obj.Name = Name
+            obj.Tip = Tip
+            obj.Hotkey = "Q"
+            obj.Ubertip = "可以闪烁到任何地方"
+            obj.Buttonpos1 = 0
+            obj.Buttonpos2 = 2
+            obj.hero = 0
+            obj.levels = 1
+            obj.DataA1 = 99999
+            obj.DataB1 = 0
+            obj.Cool1 = 1
+            obj.Cost1 = 0
+            obj.Art = "ReplaceableTextures\\CommandButtons\\BTNBlink.blp"
+            obj.SpecialArt = "Abilities\\Spells\\NightElf\\Blink\\BlinkCaster.mdl"
+            obj.Areaeffectart = "Abilities\\Spells\\NightElf\\Blink\\BlinkTarget.mdl"
+            obj.race = v.race or "human"
+            slkHelper.courierBlink = obj:get_id()
+        end
+        if(slkHelper.courierPickUp == nil)then
+            local obj = slk.ability.ANcl:new("slk_courier_pickup")
+            Name = "拾取"
+            Tip = "拾取(" .. hColor.gold("W") .. ")"
+            obj.Order = "manaburn"
+            obj.DataF1 = "manaburn"
+            obj.Name = Name
+            obj.Tip = Tip
+            obj.Hotkey = "W"
+            obj.Ubertip = "将附近地上的物品拾取到身上"
+            obj.Buttonpos1 = 1
+            obj.Buttonpos2 = 2
+            obj.hero = 0
+            obj.levels = 1
+            obj.DataA1 = 0
+            obj.DataB1 = 0
+            obj.DataC1 = 1
+            obj.DataD1 = 0.01
+            obj.Cool1 = 1
+            obj.Cost1 = 0
+            obj.Art = "ReplaceableTextures\\CommandButtons\\BTNPickUpItem.blp"
+            obj.CasterArt = ""
+            obj.EffectArt = ""
+            obj.TargetArt = ""
+            obj.race = v.race or "human"
+            slkHelper.courierPickUp = obj:get_id()
+        end
         slkHelper.count = slkHelper.count + 1
         v.Name = v.Name or "信使-" .. slkHelper.count
         v.weapsOn = v.weapsOn or 0
+        local abl = { slkHelper.courierBlink, slkHelper.courierPickUp }
+        if (type(v.abilList) == "string") then
+            local tmpAbl = string.explode(',', v.abilList)
+            for _, t in pairs(tmpAbl) do
+                table.insert(abl, t)
+            end
+        elseif (type(v.abilList) == "table") then
+            for _, t in pairs(v.abilList) do
+                table.insert(abl, t)
+            end
+        end
         local obj = slk.unit.ogru:new("slk_courier_" .. v.Name)
         if (v.weapsOn == 1) then
             obj.targs1 = "vulnerable,ground,ward,structure,organic,mechanical,debris,air,empty"
@@ -883,7 +947,7 @@ slkHelper.unit = {
         obj.upgrades = ""
         obj.Builds = ""
         obj.fused = 0
-        obj.abilList = "AInv," .. string.implode(',', COURIERS_SKILL_IDS)
+        obj.abilList = string.implode(',', abl)
         local id = obj:get_id()
         table.insert(slkHelperHashData, {
             type = "unit",
