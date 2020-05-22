@@ -146,7 +146,7 @@ end
 ---@param whichPlayer userdata
 ---@return string
 hplayer.getPrestige = function(whichPlayer)
-    return hplayer.get(whichPlayer, "prestige", "初出茅庐")
+    return hplayer.get(whichPlayer, "prestige", "无称号")
 end
 --- 设置玩家当前称号
 ---@param whichPlayer userdata
