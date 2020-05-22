@@ -394,9 +394,7 @@ hitem.slotLoop = function(whichUnit, action)
     local it
     for i = 0, 5, 1 do
         it = cj.UnitItemInSlot(whichUnit, i)
-        if (it ~= nil) then
-            action(it, i)
-        end
+        action(it, i)
     end
 end
 
