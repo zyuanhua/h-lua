@@ -4,11 +4,6 @@
 --- DateTime: 2020/5/8 22:18
 ---
 
--- DZAPI vjass启用标志判断
-if (cg.HLUA_DZAPI_FLAG == true) then
-    hdzapi.enable = true
-end
-
 -- 全局秒钟
 cj.TimerStart(cj.CreateTimer(), 1.00, true, htime.clock)
 

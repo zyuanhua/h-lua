@@ -1,5 +1,5 @@
 hdzapi = {
-    enable = false,
+    enable = (cg.HLUA_DZAPI_FLAG == true),
     tips_showed = false,
     commandHashCache = {},
     mallItemCheater = {},
