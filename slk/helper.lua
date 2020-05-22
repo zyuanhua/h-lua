@@ -681,7 +681,7 @@ slkHelper.unit = {
         obj.EditorSuffix = v.EditorSuffix or ""
         obj.Propernames = Propernames
         obj.abilList = string.implode(",", abl)
-        obj.heroAbilList = ""
+        obj.heroAbilList = v.heroAbilList or ""
         obj.nameCount = v.nameCount or #PropernamesArr
         if (v.weapTp1 == "normal") then
             obj.weapType1 = v.weapType1 or "" --攻击声音
@@ -1062,6 +1062,8 @@ slkHelper.unit = {
         obj.Builds = ""
         obj.fused = 0
         obj.abilList = string.implode(',', abl)
+        obj.Propernames = "信使"
+        obj.heroAbilList = v.heroAbilList or ""
         local id = obj:get_id()
         table.insert(slkHelperHashData, {
             type = "unit",
