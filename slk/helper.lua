@@ -474,7 +474,6 @@ slkHelper.unit = {
         obj.death = 0.10
         obj.turnRate = 1.00
         obj.acquire = acquire
-        obj.weapsOn = 1
         obj.race = v.race or "human"
         obj.deathType = 0
         obj.fused = 0
