@@ -411,7 +411,7 @@ hitem.setAllowSeparate = function(whichUnit)
     end)
 end
 
---- 计算单位获得物品后的属性
+--- 计算单位得失物品的属性影响
 ---@private
 hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
     if (isAdd == nil) then

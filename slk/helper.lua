@@ -82,7 +82,7 @@ end
 
 --- 属性系统说明构成
 ---@private
-slkHelper.attrForItem = function(attr, sep)
+slkHelper.attrDesc = function(attr, sep)
     local str = ""
     sep = sep or "|n"
     for k, v in pairs(attr) do
@@ -151,9 +151,9 @@ slkHelper.attrForItem = function(attr, sep)
     return str
 end
 
---- 物品属性系统说明构成
+--- 属性系统说明构成
 ---@private
-slkHelper.attrForItemTable = function(attr, sep)
+slkHelper.attrTableDesc = function(attr, sep)
     local str = ""
     sep = sep or "|n"
     for k, v in pairs(attr) do
@@ -257,7 +257,7 @@ slkHelper.itemDesc = function(v)
     end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, slkHelper.attrForItem(v.ATTR, ";") .. slkHelper.attrForItemTable(v.ATTR, ";"))
+        table.insert(d, slkHelper.attrDesc(v.ATTR, ";") .. slkHelper.attrTableDesc(v.ATTR, ";"))
     end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
@@ -273,21 +273,38 @@ end
 ---@private
 slkHelper.itemUbertip = function(v)
     local d = {}
-    if (v.ATTR ~= nil) then
-        table.sort(v.ATTR)
-        table.insert(d, hColor.green(slkHelper.attrForItem(v.ATTR, "|n"))
-            .. hColor.yellow(slkHelper.attrForItemTable(v.ATTR, "|n")))
-    end
     if (v.ACTIVE ~= nil) then
         table.insert(d, hColor.yellow("主动：" .. v.ACTIVE .. "，冷却" .. v.cooldown .. "秒)"))
     end
     if (v.PASSIVE ~= nil) then
         table.insert(d, hColor.seaLight(v.PASSIVE))
     end
+    if (v.ATTR ~= nil) then
+        table.sort(v.ATTR)
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
+    end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
     weight = tostring(math.round(weight))
     table.insert(d, hColor.purpleLight("叠加：" .. overlie .. "|n重量：" .. weight .. "Kg"))
+    if (v.Desc ~= nil and v.Desc ~= "") then
+        table.insert(d, hColor.grey(v.Desc))
+    end
+    return string.implode("|n", d)
+end
+
+--- 组装空白技能的说明
+---@private
+slkHelper.abilityEmptyUbertip = function(v)
+    local d = {}
+    if (v.PASSIVE ~= nil) then
+        table.insert(d, hColor.seaLight(v.PASSIVE))
+    end
+    if (v.ATTR ~= nil) then
+        table.sort(v.ATTR)
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n"))
+            .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
+    end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, hColor.grey(v.Desc))
     end
@@ -1113,10 +1130,10 @@ slkHelper.ability = {
         else
             v.Tip = v.Name
         end
-        local obj = slk.ability.Aamk:new("slk_ability_empty_" .. v)
+        local obj = slk.ability.Aamk:new("slk_ability_empty_" .. v.Name)
         obj.Name = v.Name
         obj.Tip = v.Tip
-        obj.Ubertip = v.Ubertip or "作者很懒什么提示都没写"
+        obj.Ubertip = slkHelper.abilityEmptyUbertip(v)
         obj.Buttonpos1 = v.Buttonpos1
         obj.Buttonpos2 = v.Buttonpos2
         obj.hero = 0
@@ -1124,6 +1141,7 @@ slkHelper.ability = {
         obj.DataA1 = 0
         obj.DataB1 = 0
         obj.DataC1 = 0
+        obj.race = v.race or "human"
         obj.Art = v.Art or "ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp"
         local id = obj:get_id()
         table.insert(slkHelperHashData, {
@@ -1132,6 +1150,7 @@ slkHelper.ability = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
                 ABILITY_ID = id,
                 ABILITY_TYPE = "empty",
+                ATTR = v.ATTR,
                 Name = v.Name,
                 Art = v.Art,
             }

@@ -236,8 +236,9 @@ for i = 1, 4 do
                         table.insert(hRuntime.hero_judge_ids, data.UNIT_ID)
                     end
                 elseif (i == 3) then
+                    hRuntime.register.ability(data)
                 elseif (i == 4) then
-
+                    hRuntime.register.technology(data)
                 end
             end
         end
