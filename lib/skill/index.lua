@@ -44,9 +44,6 @@ hskill.getSlk = function(abilId)
     if (type(abilId) == "number") then
         abilityId = string.id2char(abilId)
     end
-    print_r(
-        hslk_global.id2Value.ability
-    )
     if (hslk_global.id2Value.ability[abilityId] ~= nil) then
         slk = hslk_global.id2Value.ability[abilityId]
     end
@@ -72,7 +69,6 @@ hskill.caleAttribute = function(isAdd, whichUnit, abilId)
         isAdd = true
     end
     local attr = hskill.getAttribute(abilId)
-    print_r(attr)
     if (attr == nil)then
         return
     end
