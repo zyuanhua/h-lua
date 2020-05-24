@@ -297,13 +297,12 @@ end
 ---@private
 slkHelper.abilityEmptyUbertip = function(v)
     local d = {}
-    if (v.PASSIVE ~= nil) then
-        table.insert(d, hColor.seaLight(v.PASSIVE))
-    end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n"))
-            .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
+    end
+    if (v.PASSIVE ~= nil) then
+        table.insert(d, hColor.seaLight(v.PASSIVE))
     end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, hColor.grey(v.Desc))
@@ -897,7 +896,11 @@ slkHelper.unit = {
             slkHelper.courierPickUp = obj:get_id()
         end
         slkHelper.count = slkHelper.count + 1
-        v.Name = v.Name or "信使-" .. slkHelper.count
+        local Primary
+        local Ubertip
+        local obj
+        local Name = v.Name or "信使-" .. slkHelper.count
+        local Tip
         v.weapsOn = v.weapsOn or 0
         v.goldcost = v.goldcost or 0
         v.lumbercost = v.lumbercost or 0
@@ -920,6 +923,58 @@ slkHelper.unit = {
             for _, t in pairs(v.abilList) do
                 table.insert(abl, t)
             end
+        end
+        if (v.HotKey ~= nil) then
+            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            Tip = "选择：" .. Name .. "(" .. hColor.gold(v.HotKey) .. ")"
+        else
+            v.Buttonpos1 = v.Buttonpos1 or 0
+            v.Buttonpos2 = v.Buttonpos2 or 0
+            Tip = "选择：" .. Name
+        end
+        if (v.isHero == 1) then
+            --- 如果是英雄型信使
+            Primary = v.Primary or "STR"
+            Ubertip = hColor.greenLight("移动：" .. v.spd .. " " .. CONST_MOVE_TYPE[v.movetp].label)
+            if (v.weapsOn == 1) then
+                Ubertip = Ubertip .. "|n"
+                hColor.red("攻击类型：" .. CONST_WEAPON_TYPE[v.weapTp1].label .. "(" .. v.cool1 .. "秒/击)")
+                Ubertip = Ubertip .. "|n" .. hColor.redLight("基础攻击：" .. v.dmgplus1)
+                Ubertip = Ubertip .. "|n" .. hColor.seaLight("攻击范围：" .. v.rangeN1)
+            end
+            if (Primary == "STR") then
+                Ubertip = Ubertip .. "|n" .. hColor.yellow("力量：" .. v.STR .. "(+" .. v.STRplus .. ")")
+            else
+                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("力量：" .. v.STR .. "(+" .. v.STRplus .. ")")
+            end
+            if (Primary == "AGI") then
+                Ubertip = Ubertip .. "|n" .. hColor.yellow("敏捷：" .. v.AGI .. "(+" .. v.AGIplus .. ")")
+            else
+                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("敏捷：" .. v.AGI .. "(+" .. v.AGIplus .. ")")
+            end
+            if (Primary == "INT") then
+                Ubertip = Ubertip .. "|n" .. hColor.yellow("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
+            else
+                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
+            end
+            if (v.Ubertip ~= nil) then
+                Ubertip = Ubertip .. "|n|n" .. v.Ubertip -- 自定义说明会在最后
+            end
+            obj = slk.unit.Hpal:new("slk_courier_hero_" .. Name)
+            obj.STR = v.STR
+            obj.AGI = v.AGI
+            obj.INT = v.INT
+            obj.STRplus = v.STRplus
+            obj.AGIplus = v.AGIplus
+            obj.INTplus = v.INTplus
+            obj.Awakentip = "唤醒：" .. Name
+            obj.Revivetip = "复活：" .. Name
+        else
+            --- 如果是工人型信使
+            obj = slk.unit.ogru:new("slk_courier_" .. Name)
+            obj.type = "Peon"
+            Ubertip = v.Ubertip or ""
         end
         local targs1
         if (v.weapsOn == 1) then
@@ -971,62 +1026,8 @@ slkHelper.unit = {
         else
             targs1 = ""
         end
-        local Primary
-        local Ubertip
-        local obj
-        if (v.isHero == 1) then
-            --- 如果是英雄型信使
-            Primary = v.Primary or "STR"
-            Ubertip = hColor.greenLight("移动：" .. v.spd .. " " .. CONST_MOVE_TYPE[v.movetp].label)
-            if (v.weapsOn == 1) then
-                Ubertip = Ubertip .. "|n"
-                hColor.red("攻击类型：" .. CONST_WEAPON_TYPE[v.weapTp1].label .. "(" .. v.cool1 .. "秒/击)")
-                Ubertip = Ubertip .. "|n" .. hColor.redLight("基础攻击：" .. v.dmgplus1)
-                Ubertip = Ubertip .. "|n" .. hColor.seaLight("攻击范围：" .. v.rangeN1)
-            end
-            if (Primary == "STR") then
-                Ubertip = Ubertip .. "|n" .. hColor.yellow("力量：" .. v.STR .. "(+" .. v.STRplus .. ")")
-            else
-                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("力量：" .. v.STR .. "(+" .. v.STRplus .. ")")
-            end
-            if (Primary == "AGI") then
-                Ubertip = Ubertip .. "|n" .. hColor.yellow("敏捷：" .. v.AGI .. "(+" .. v.AGIplus .. ")")
-            else
-                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("敏捷：" .. v.AGI .. "(+" .. v.AGIplus .. ")")
-            end
-            if (Primary == "INT") then
-                Ubertip = Ubertip .. "|n" .. hColor.yellow("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
-            else
-                Ubertip = Ubertip .. "|n" .. hColor.yellowLight("智力：" .. v.INT .. "(+" .. v.INTplus .. ")")
-            end
-            if (v.Ubertip ~= nil) then
-                Ubertip = Ubertip .. "|n|n" .. v.Ubertip -- 自定义说明会在最后
-            end
-            obj = slk.unit.Hpal:new("slk_courier_hero_" .. v.Name)
-            obj.STR = v.STR
-            obj.AGI = v.AGI
-            obj.INT = v.INT
-            obj.STRplus = v.STRplus
-            obj.AGIplus = v.AGIplus
-            obj.INTplus = v.INTplus
-            obj.Awakentip = "唤醒：" .. v.Name
-            obj.Revivetip = "复活：" .. v.Name
-        else
-            --- 如果是工人型信使
-            obj = slk.unit.ogru:new("slk_courier_" .. v.Name)
-            obj.type = "Peon"
-            Ubertip = v.Ubertip or ""
-        end
-        if (v.HotKey ~= nil) then
-            obj.HotKey = v.HotKey
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
-            obj.Tip = "选择：" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
-        else
-            obj.Buttonpos1 = v.Buttonpos1 or 0
-            obj.Buttonpos2 = v.Buttonpos2 or 0
-            obj.Tip = "选择：" .. v.Name
-        end
+        obj.Name = Name
+        obj.Tip = Tip
         obj.targs1 = targs1
         obj.Ubertip = Ubertip
         obj.upgrades = ""
@@ -1062,7 +1063,6 @@ slkHelper.unit = {
         obj.sight = v.sight or 1000 -- 白天视野
         obj.nsight = v.nsight or 1000 -- 夜晚视野
         obj.nameCount = v.nameCount or 1
-        obj.Name = v.Name
         obj.unitSound = v.unitSound -- 声音
         obj.modelScale = v.modelScale --模型缩放
         obj.file = v.file --模型
@@ -1087,7 +1087,7 @@ slkHelper.unit = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
                 UNIT_ID = id,
                 UNIT_TYPE = "courier",
-                Name = v.Name,
+                Name = Name,
                 Art = v.Art,
                 file = v.file,
                 sight = v.sight,
@@ -1118,20 +1118,20 @@ slkHelper.ability = {
     ---@param v table
     empty = function(v)
         slkHelper.count = slkHelper.count + 1
-        v.Name = v.Name or "空白被动-" .. slkHelper.count
+        local Name = v.Name or "空白被动-" .. slkHelper.count
         v.Buttonpos1 = v.Buttonpos1 or 0
         v.Buttonpos2 = v.Buttonpos2 or 0
         if (v.HotKey ~= nil) then
-            obj.HotKey = v.HotKey
             v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
             v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
-            v.Name = v.Name .. " - [" .. hColor.gold(v.HotKey) .. "]"
-            v.Tip = v.Name
+            v.Tip = Name .. "[" .. hColor.gold(v.HotKey) .. "]"
+            Name = Name .. v.HotKey
         else
-            v.Tip = v.Name
+            v.Tip = Name
         end
-        local obj = slk.ability.Aamk:new("slk_ability_empty_" .. v.Name)
-        obj.Name = v.Name
+        local obj = slk.ability.Aamk:new("slk_ability_empty_" .. Name)
+        obj.HotKey = v.HotKey or ""
+        obj.Name = Name
         obj.Tip = v.Tip
         obj.Ubertip = slkHelper.abilityEmptyUbertip(v)
         obj.Buttonpos1 = v.Buttonpos1
