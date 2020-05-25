@@ -156,7 +156,7 @@ end
 ---@param showDialog boolean 是否显示倒计时窗口
 hhero.rebornAtXY = function(whichHero, delay, invulnerable, x, y, showDialog)
     if (his.hero(whichHero)) then
-        if (delay < 0.3) then
+        if (delay < 0.3 and his.deleted(whichHero) == false) then
             cj.ReviveHero(whichHero, x, y, true)
             hattr.resetAttrGroups(whichHero)
             if (invulnerable > 0) then
@@ -179,18 +179,20 @@ hhero.rebornAtXY = function(whichHero, delay, invulnerable, x, y, showDialog)
                 delay,
                 function(t)
                     htime.delTimer(t)
-                    cj.ReviveHero(whichHero, x, y, true)
-                    if (invulnerable > 0) then
-                        hskill.invulnerable(whichHero, invulnerable)
+                    if(his.deleted(whichHero) == false)then
+                        cj.ReviveHero(whichHero, x, y, true)
+                        if (invulnerable > 0) then
+                            hskill.invulnerable(whichHero, invulnerable)
+                        end
+                        -- @触发复活事件
+                        hevent.triggerEvent(
+                            whichHero,
+                            CONST_EVENT.reborn,
+                            {
+                                triggerUnit = whichHero
+                            }
+                        )
                     end
-                    -- @触发复活事件
-                    hevent.triggerEvent(
-                        whichHero,
-                        CONST_EVENT.reborn,
-                        {
-                            triggerUnit = whichHero
-                        }
-                    )
                 end,
                 title
             )
