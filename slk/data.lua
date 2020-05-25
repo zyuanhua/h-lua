@@ -439,12 +439,12 @@ local itemFleeting = {
     { Name = "碎片", file = "Objects\\InventoryItems\\CrystalShard\\CrystalShard.mdl", modelScale = 1.00, moveHeight = -20 },
     { Name = "问号", file = "Objects\\InventoryItems\\QuestionMark\\QuestionMark.mdl", modelScale = 0.60, moveHeight = 0 },
     { Name = "荧光草", file = "Objects\\InventoryItems\\Shimmerweed\\Shimmerweed.mdl", modelScale = 0.80, moveHeight = 0 },
-    { Name = "Dota2赏金符", file = "war3mapImported\\Dota2.Runes.Bounty.mdl", modelScale = 0.80, moveHeight = -10 },
-    { Name = "Dota2伤害符", file = "war3mapImported\\Dota2.Runes.DoubleDamage.mdl", modelScale = 0.80, moveHeight = -10 },
-    { Name = "Dota2恢复符", file = "war3mapImported\\Dota2.Runes.Regeneration.mdl", modelScale = 0.80, moveHeight = -10 },
-    { Name = "Dota2极速符", file = "war3mapImported\\Dota2.Runes.Haste.mdl", modelScale = 0.80, moveHeight = -10 },
-    { Name = "Dota2幻象符", file = "war3mapImported\\Dota2.Runes.Illusion.mdl", modelScale = 0.80, moveHeight = -10 },
-    { Name = "Dota2隐身符", file = "war3mapImported\\Dota2.Runes.Invisibility.mdl", modelScale = 0.80, moveHeight = -10 }
+    { Name = "Dota2赏金符", file = "war3mapImported\\item_Dota2.Runes.Bounty.mdl", modelScale = 0.80, moveHeight = -10 },
+    { Name = "Dota2伤害符", file = "war3mapImported\\item_Dota2.Runes.DoubleDamage.mdl", modelScale = 0.80, moveHeight = -10 },
+    { Name = "Dota2恢复符", file = "war3mapImported\\item_Dota2.Runes.Regeneration.mdl", modelScale = 0.80, moveHeight = -10 },
+    { Name = "Dota2极速符", file = "war3mapImported\\item_Dota2.Runes.Haste.mdl", modelScale = 0.80, moveHeight = -10 },
+    { Name = "Dota2幻象符", file = "war3mapImported\\item_Dota2.Runes.Illusion.mdl", modelScale = 0.80, moveHeight = -10 },
+    { Name = "Dota2隐身符", file = "war3mapImported\\item_Dota2.Runes.Invisibility.mdl", modelScale = 0.80, moveHeight = -10 }
 }
 local itemFleetingLen = 0
 for k, v in ipairs(itemFleeting) do
