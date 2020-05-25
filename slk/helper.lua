@@ -935,7 +935,9 @@ slkHelper.unit = {
             v.Buttonpos2 = v.Buttonpos2 or 0
             Tip = "选择：" .. Name
         end
+        local UNIT_TYPE = "courier"
         if (v.isHero == 1) then
+            UNIT_TYPE = "courier_hero"
             --- 如果是英雄型信使
             Primary = v.Primary or "STR"
             Ubertip = hColor.greenLight("移动：" .. v.spd .. " " .. CONST_MOVE_TYPE[v.movetp].label)
@@ -1090,7 +1092,7 @@ slkHelper.unit = {
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
                 UNIT_ID = id,
-                UNIT_TYPE = "courier",
+                UNIT_TYPE = UNIT_TYPE,
                 Name = Name,
                 Art = v.Art,
                 file = v.file,

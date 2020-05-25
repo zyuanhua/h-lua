@@ -163,10 +163,15 @@ his.invisible = function(whichUnit)
 end
 
 --- 是否英雄
+--- UNIT_TYPE_HERO是对应平衡常数的英雄列表
+--- hero和courier_hero是对应slkHelper里面的UNIT_TYPE，是本框架固有用法
 ---@param whichUnit userdata
 ---@return boolean
 his.hero = function(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) or table.includes(hunit.getId(whichUnit), hRuntime.hero_judge_ids) == true
+    local uid = hunit.getId(whichUnit)
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) 
+        or table.includes(uid, hRuntime.unit_type_ids.hero) == true
+        or table.includes(uid, hRuntime.unit_type_ids.courier_hero) == true
 end
 
 --- 是否建筑

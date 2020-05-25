@@ -232,9 +232,10 @@ for i = 1, 4 do
                     hRuntime.register.item(data)
                 elseif (i == 2) then
                     hRuntime.register.unit(data)
-                    if (data.UNIT_TYPE == "hero") then
-                        table.insert(hRuntime.hero_judge_ids, data.UNIT_ID)
+                    if (hRuntime.unit_type_ids[data.UNIT_TYPE] == nil) then
+                        hRuntime.unit_type_ids[data.UNIT_TYPE] = {}
                     end
+                    table.insert(hRuntime.unit_type_ids[data.UNIT_TYPE], data.UNIT_ID)
                 elseif (i == 3) then
                     hRuntime.register.ability(data)
                 elseif (i == 4) then
