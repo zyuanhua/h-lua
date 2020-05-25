@@ -982,6 +982,7 @@ slkHelper.unit = {
         local targs1
         if (v.weapsOn == 1) then
             v.weapTp1 = v.weapTp1 or "normal"
+            obj.weapTp1 = v.weapTp1
             targs1 = v.targs1 or "vulnerable,ground,ward,structure,organic,mechanical,debris,air"
             if (v.weapTp1 == "normal") then
                 obj.weapType1 = v.weapType1 or "" --攻击声音
