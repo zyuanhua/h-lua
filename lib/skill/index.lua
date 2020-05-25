@@ -69,7 +69,7 @@ hskill.caleAttribute = function(isAdd, whichUnit, abilId)
         isAdd = true
     end
     local attr = hskill.getAttribute(abilId)
-    if (attr == nil)then
+    if (attr == nil) then
         return
     end
     local diff = {}
@@ -122,7 +122,7 @@ hskill.caleAttribute = function(isAdd, whichUnit, abilId)
                 [opt] = tempTable
             }
         end
-        if (table.includes(k, {"gold_ratio","lumber_ratio","exp_ratio","sell_ratio"})) then
+        if (table.includes(k, { "gold_ratio", "lumber_ratio", "exp_ratio", "sell_ratio" })) then
             table.insert(diffPlayer, { k, tonumber(tempDiff) })
         else
             diff[k] = tempDiff

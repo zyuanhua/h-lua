@@ -169,7 +169,7 @@ end
 ---@return boolean
 his.hero = function(whichUnit)
     local uid = hunit.getId(whichUnit)
-    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO) 
+    return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO)
         or table.includes(uid, hRuntime.unit_type_ids.hero) == true
         or table.includes(uid, hRuntime.unit_type_ids.courier_hero) == true
 end
