@@ -490,13 +490,14 @@ slkHelper.unit = {
         obj.death = 0.10
         obj.turnRate = 1.00
         obj.acquire = acquire
-        obj.race = v.race or "human"
+        obj.race = v.race or "other"
         obj.deathType = 0
         obj.fused = 0
         obj.sides1 = v.sides1 or 5 --骰子面
         obj.dice1 = v.dice1 or 1 --骰子数量
         obj.regenMana = v.regenMana or 0.00
         obj.regenHP = v.regenHP or 0.00
+        obj.regenType = v.regenType or 'none'
         obj.stockStart = v.stockStart or 0 -- 库存开始
         obj.stockRegen = v.stockRegen or 0 -- 进货周期
         obj.stockMax = v.stockMax or 1 -- 最大库存
@@ -678,7 +679,7 @@ slkHelper.unit = {
         obj.turnRate = 1.00
         obj.acquire = acquire
         obj.weapsOn = 1
-        obj.race = v.race or "human"
+        obj.race = v.race or "other"
         obj.deathType = 0
         obj.fused = 0
         obj.sides1 = v.sides1 or 3 --骰子面
@@ -823,6 +824,7 @@ slkHelper.unit = {
         obj.Makeitems = v.Makeitems
         obj.Sellitems = v.Sellitems
         obj.UberSplat = ""
+        obj.race = v.race or "other"
         local id = obj:get_id()
         table.insert(slkHelperHashData, {
             type = "unit",
@@ -865,13 +867,13 @@ slkHelper.unit = {
             obj.Art = "ReplaceableTextures\\CommandButtons\\BTNBlink.blp"
             obj.SpecialArt = "Abilities\\Spells\\NightElf\\Blink\\BlinkCaster.mdl"
             obj.Areaeffectart = "Abilities\\Spells\\NightElf\\Blink\\BlinkTarget.mdl"
-            obj.race = v.race or "human"
+            obj.race = v.race or "other"
             slkHelper.courierBlink = obj:get_id()
         end
         if (slkHelper.courierPickUp == nil) then
             local obj = slk.ability.ANcl:new("slk_courier_pickup")
-            Name = "拾取"
-            Tip = "拾取(" .. hColor.gold("W") .. ")"
+            local Name = "拾取"
+            local Tip = "拾取(" .. hColor.gold("W") .. ")"
             obj.Order = "manaburn"
             obj.DataF1 = "manaburn"
             obj.Name = Name
@@ -892,7 +894,7 @@ slkHelper.unit = {
             obj.CasterArt = ""
             obj.EffectArt = ""
             obj.TargetArt = ""
-            obj.race = v.race or "human"
+            obj.race = v.race or "other"
             slkHelper.courierPickUp = obj:get_id()
         end
         slkHelper.count = slkHelper.count + 1
@@ -1047,14 +1049,17 @@ slkHelper.unit = {
         obj.death = 0.10
         obj.turnRate = 1.00
         obj.acquire = 1000.00
-        obj.race = v.race or "human"
+        obj.race = v.race or "other"
         obj.deathType = 0
         obj.fused = 0
         obj.sides1 = 5 --骰子面
         obj.dice1 = 1 --骰子数量
         obj.regenMana = 0.00
         obj.HP = v.HP or 100
-        obj.regenHP = v.HP or 100
+        obj.regenHP = v.regenHP or 0
+        obj.regenType = v.regenType or 'none'
+        obj.goldcost = v.goldcost
+        obj.lumbercost = v.lumbercost
         obj.stockStart = 0
         obj.stockRegen = 0
         obj.stockMax = 1
@@ -1108,7 +1113,50 @@ slkHelper.unit = {
             }
         })
         return id
-    end
+    end,
+    --- 创建一个酒馆模版
+    --- 设置的CUSTOM_DATA数据会自动传到数据中
+    ---@public
+    ---@param v table
+    tavern = function(v)
+        slkHelper.count = slkHelper.count + 1
+        v.Name = v.Name or "酒馆-" .. slkHelper.count
+        v.Sellunits = v.Sellunits or ""
+        local obj = slk.unit.ntav:new("slk_tavern_" .. v.Name)
+        obj.Name = v.Name
+        obj.pathTex = v.pathTex or "PathTextures\\8x8Round.tga"
+        obj.Art = v.Art or nil
+        obj.file = v.file or "buildings\\other\\FruitStand\\FruitStand"
+        obj.EditorSuffix = ""
+        obj.abilList = v.abilList or "Avul,Asud," .. TAVERN_SELECTION_OBJ_ID
+        obj.Sellunits = ""
+        obj.collision = ""
+        obj.modelScale = v.modelScale or 1.00
+        obj.scale = v.scale or 1.00
+        obj.HP = v.HP or 99999
+        obj.sight = v.sight or 800
+        obj.nsight = v.nsight or 800
+        obj.unitSound = v.unitSound or ""
+        obj.uberSplat = ""
+        obj.teamColor = 12
+        obj.race = v.race or "other"
+        local id = obj:get_id()
+        table.insert(slkHelperHashData, {
+            type = "unit",
+            data = {
+                CUSTOM_DATA = v.CUSTOM_DATA or {},
+                UNIT_ID = id,
+                UNIT_TYPE = "tavern",
+                Name = v.Name,
+                Art = v.Art,
+                file = v.file,
+                sight = v.sight,
+                nsight = v.nsight,
+                Sellunits = v.Sellunits,
+            }
+        })
+        return id
+    end,
 }
 
 slkHelper.ability = {
@@ -1141,7 +1189,7 @@ slkHelper.ability = {
         obj.DataA1 = 0
         obj.DataB1 = 0
         obj.DataC1 = 0
-        obj.race = v.race or "human"
+        obj.race = v.race or "other"
         obj.Art = v.Art or "ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp"
         local id = obj:get_id()
         table.insert(slkHelperHashData, {

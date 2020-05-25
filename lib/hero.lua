@@ -131,6 +131,21 @@ hhero.setHeroIds = function(ids)
     end
 end
 
+--- 初始化英雄的属性,一般设定好英雄ID和使用框架内create方法创建自动会使用
+--- 但例如酒馆选英雄，地图放置等这些英雄单位就被忽略了，所以可以试用此方法补回
+---@param whichHero userdata
+hhero.formatHero = function(whichHero)
+    hhero.setPrevLevel(whichHero, 1)
+    hevent.pool(whichHero, hevent_default_actions.hero.levelUp, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, whichHero, EVENT_UNIT_HERO_LEVEL)
+    end)
+    hattribute.set(whichHero, 0, {
+        str_white = "=" .. cj.GetHeroStr(whichHero, false),
+        agi_white = "=" .. cj.GetHeroAgi(whichHero, false),
+        int_white = "=" .. cj.GetHeroInt(whichHero, false),
+    })
+end
+
 --- 在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
 ---@param whichHero userdata
 ---@param delay number
@@ -204,6 +219,7 @@ hhero.buildSelector = function(options)
             buildY = 0, -- 构建点Y
             buildDistance = 256, -- 构建距离，例如两个酒馆间，两个单位间
             buildRowQty = 4, -- 每行构建的最大数目，例如一行最多4个酒馆
+            tavernId = nil, -- 酒馆模式下，你可以自定义酒馆单位是哪一个(建议使用slkHelper创建酒馆，这样自动就有出售单位等必备技能)
             allowTavernQty = 10, -- 酒馆模式下，一个酒馆最多拥有几种单位
             onUnitSell = function, -- 酒馆模式时，购买单位的动作，默认是系统pickHero事件，你可自定义
             direct = {1,1}, -- 生成方向，默认左上角开始到右下角结束
@@ -214,10 +230,6 @@ hhero.buildSelector = function(options)
         heroIds = hRuntime.hero_judge_ids
     end
     if (#heroIds <= 0) then
-        return
-    end
-    if (#hhero.selectorClearPool > 0) then
-        echo("已经有1个选择事件在执行，请不要同时构建2个")
         return
     end
     local during = options.during or -1
@@ -320,7 +332,7 @@ hhero.buildSelector = function(options)
                 tavern = hunit.create(
                     {
                         whichPlayer = cj.Player(PLAYER_NEUTRAL_PASSIVE),
-                        unitId = hslk_global.unit_hero_tavern,
+                        unitId = options.tavernId or hslk_global.unit_hero_tavern,
                         x = x,
                         y = y,
                     }

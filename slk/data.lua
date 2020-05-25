@@ -315,22 +315,22 @@ obj.DataB1 = 4
 obj.DataC1 = 0
 obj.DataD1 = 0
 obj.Rng1 = 900.00
+TAVERN_SELECTION_OBJ_ID = obj:get_id()
 table.insert(
     slkHashData,
     {
         HLUA_SLK_KEYS.COMMON,
         HLUA_SLK_KEYS.SKILL_HERO_TAVERN_SELECTION,
-        obj:get_id(),
+        TAVERN_SELECTION_OBJ_ID,
         "int"
     }
 )
 
 -- #酒馆演示 tavern
-local aid = obj:get_id()
 obj = slk.unit.ntav:new("unit_hero_tavern")
 obj.EditorSuffix = "#h-lua"
 obj.Name = "英雄系统 酒馆"
-obj.abilList = "Avul,Asud," .. aid
+obj.abilList = "Avul,Asud," .. TAVERN_SELECTION_OBJ_ID
 obj.Sellunits = ""
 obj.pathTex = ""
 obj.collision = ""

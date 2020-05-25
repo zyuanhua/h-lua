@@ -328,17 +328,6 @@ hattribute.subAccumuDiff = function(whichUnit, attr, value)
     hattribute.setAccumuDiff(whichUnit, attr, hattribute.getAccumuDiff(whichUnit, attr) - value)
 end
 
---- 初始化英雄的属性,一般设定好英雄ID和使用框架内create方法创建自动会使用
---- 但例如酒馆选英雄，地图放置等这些英雄单位就被忽略了，所以可以试用此方法补回
----@param whichHero userdata
-hattribute.formatHero = function(whichHero)
-    hattribute.set(whichHero, 0, {
-        str_white = "=" .. cj.GetHeroStr(whichHero, false),
-        agi_white = "=" .. cj.GetHeroAgi(whichHero, false),
-        int_white = "=" .. cj.GetHeroInt(whichHero, false),
-    })
-end
-
 -- 设定属性
 --[[
     白字攻击 绿字攻击
