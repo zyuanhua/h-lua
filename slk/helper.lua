@@ -985,7 +985,7 @@ slkHelper.unit = {
             obj.weapTp1 = v.weapTp1
             obj.cool1 = v.cool1
             obj.rangeN1 = v.rangeN1
-            bj.dmgplus1 = v.dmgplus1
+            obj.dmgplus1 = v.dmgplus1
             targs1 = v.targs1 or "vulnerable,ground,ward,structure,organic,mechanical,debris,air"
             if (v.weapTp1 == "normal") then
                 obj.weapType1 = v.weapType1 or "" --攻击声音
