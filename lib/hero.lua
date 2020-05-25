@@ -132,21 +132,6 @@ hhero.setHeroIds = function(ids)
     end
 end
 
---- 初始化英雄的属性,一般设定好英雄ID和使用框架内create方法创建自动会使用
---- 但例如酒馆选英雄，地图放置等这些英雄单位就被忽略了，所以可以试用此方法补回
----@param whichHero userdata
-hhero.formatHero = function(whichHero)
-    hhero.setPrevLevel(whichHero, 1)
-    hevent.pool(whichHero, hevent_default_actions.hero.levelUp, function(tgr)
-        cj.TriggerRegisterUnitEvent(tgr, whichHero, EVENT_UNIT_HERO_LEVEL)
-    end)
-    hattribute.set(whichHero, 0, {
-        str_white = "=" .. cj.GetHeroStr(whichHero, false),
-        agi_white = "=" .. cj.GetHeroAgi(whichHero, false),
-        int_white = "=" .. cj.GetHeroInt(whichHero, false),
-    })
-end
-
 --- 在某XY坐标复活英雄,只有英雄能被复活,只有调用此方法会触发复活事件
 ---@param whichHero userdata
 ---@param delay number

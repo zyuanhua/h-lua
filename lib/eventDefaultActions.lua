@@ -416,25 +416,7 @@ hevent_default_actions = {
         end),
         sell = cj.Condition(function()
             local u = cj.GetSoldUnit()
-            -- 单位受伤
-            hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)
-            end)
-            -- 单位死亡
-            hevent.pool(u, hevent_default_actions.unit.death, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DEATH)
-            end)
-            -- 物品系统
-            if (his.hasSlot(u)) then
-                hitem.register(u)
-            elseif (bean.isOpenSlot == true) then
-                hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
-                hitem.register(u)
-            end
-            -- 如果是英雄，注册事件和计算初次属性
-            if (his.hero(u) == true) then
-                hhero.formatHero(u)
-            end
+            hunit.embed(u)
             hevent.triggerEvent(
                 cj.GetSellingUnit(),
                 CONST_EVENT.unitSell,

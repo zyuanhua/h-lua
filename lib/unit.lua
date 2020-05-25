@@ -315,6 +315,51 @@ hunit.animate = function(whichUnit, animate)
     end
 end
 
+--- 使得单位嵌入框架系统
+--- 一般不需要主动使用
+--- 但地图放置等这些单位就被忽略了，所以可以试用此方法补回
+---@param u userdata
+hunit.embed = function(u, options)
+    -- 记入group选择器（不在框架系统内的单位，也不会被group选择到）
+    table.insert(hRuntime.group, u)
+    -- 记入realtime
+    hRuntime.unit[u] = {
+        id = options.unitId or hunit.getId(u),
+        life = options.life or nil,
+        during = options.during or nil,
+        isOpenPunish = options.isOpenPunish or false,
+        isShadow = options.isShadow or false,
+        animateSpeed = options.timeScale or 1.00,
+    }
+    -- 单位受伤
+    hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)
+    end)
+    -- 单位死亡
+    hevent.pool(u, hevent_default_actions.unit.death, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DEATH)
+    end)
+    -- 物品系统
+    if (his.hasSlot(u)) then
+        hitem.register(u)
+    elseif (bean.isOpenSlot == true) then
+        hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
+        hitem.register(u)
+    end
+    -- 如果是英雄，注册事件和计算初次属性
+    if (his.hero(u) == true) then
+        hhero.setPrevLevel(u, 1)
+        hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
+            cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
+        end)
+        hattribute.set(u, 0, {
+            str_white = "=" .. cj.GetHeroStr(u, false),
+            agi_white = "=" .. cj.GetHeroAgi(u, false),
+            int_white = "=" .. cj.GetHeroInt(u, false),
+        })
+    end
+end
+
 --- 创建单位/单位组
 ---@param bean table
 ---@return userdata|table 最后创建单位|单位组
@@ -470,41 +515,12 @@ hunit.create = function(bean)
                 cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
             end
         end
-        -- 记入group选择器（不在框架系统内的单位，也不会被group选择到）
-        table.insert(hRuntime.group, u)
-        -- 记入realtime
-        hRuntime.unit[u] = {
-            id = bean.unitId,
-            life = bean.life,
-            during = bean.during,
-            isOpenPunish = bean.isOpenPunish,
-            isShadow = bean.isShadow,
-            animateSpeed = bean.timeScale,
-        }
         -- 注册系统(默认注册)
         if (type(bean.register) ~= "boolean") then
             bean.register = true
         end
         if (bean.register == true) then
-            -- 单位受伤
-            hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)
-            end)
-            -- 单位死亡
-            hevent.pool(u, hevent_default_actions.unit.death, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DEATH)
-            end)
-            -- 物品系统
-            if (his.hasSlot(u)) then
-                hitem.register(u)
-            elseif (bean.isOpenSlot == true) then
-                hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
-                hitem.register(u)
-            end
-        end
-        -- 如果是英雄，注册事件和计算初次属性
-        if (his.hero(u) == true) then
-            hhero.formatHero(u)
+            hunit.embed(u)
         end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then
