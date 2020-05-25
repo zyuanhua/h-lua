@@ -462,9 +462,9 @@ slkHelper.unit = {
         v.rangeN1 = v.rangeN1 or 100
         v.sight = v.sight or 1400
         v.nsight = v.nsight or 800
-        local acquire = v.acquire or v.rangeN1 -- 警戒范围
-        if (acquire < 1000) then
-            acquire = 1000
+        local acquire = v.acquire or (v.rangeN1 + 100) -- 警戒范围
+        if (acquire < (v.rangeN1 + 100)) then
+            acquire = v.rangeN1 + 100
         end
         --
         local obj = slk.unit.ogru:new("slk_units_" .. v.Name)
