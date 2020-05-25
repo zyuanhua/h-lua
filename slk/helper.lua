@@ -965,6 +965,7 @@ slkHelper.unit = {
                 Ubertip = Ubertip .. "|n|n" .. v.Ubertip -- 自定义说明会在最后
             end
             obj = slk.unit.Hpal:new("slk_courier_hero_" .. Name)
+            obj.Primary = Primary
             obj.STR = v.STR
             obj.AGI = v.AGI
             obj.INT = v.INT
