@@ -319,7 +319,9 @@ end
 --- 一般不需要主动使用
 --- 但地图放置等这些单位就被忽略了，所以可以试用此方法补回
 ---@param u userdata
+---@param options table
 hunit.embed = function(u, options)
+    options = options or {}
     -- 记入group选择器（不在框架系统内的单位，也不会被group选择到）
     table.insert(hRuntime.group, u)
     -- 记入realtime
@@ -342,7 +344,7 @@ hunit.embed = function(u, options)
     -- 物品系统
     if (his.hasSlot(u)) then
         hitem.register(u)
-    elseif (bean.isOpenSlot == true) then
+    elseif (options.isOpenSlot == true) then
         hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
         hitem.register(u)
     end
@@ -520,7 +522,7 @@ hunit.create = function(bean)
             bean.register = true
         end
         if (bean.register == true) then
-            hunit.embed(u)
+            hunit.embed(u, bean)
         end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then
