@@ -1,3 +1,13 @@
+--- 四舍五入
+---@param decimal number
+---@return number
+math.round = function(decimal)
+    if (decimal == nil) then
+        return 0.00
+    end
+    return math.floor((decimal * 100) + 0.5) * 0.01
+end
+
 --- slk hash data
 slkHelperHashData = {}
 
