@@ -54,7 +54,7 @@ table.merge = function(...)
     if (tables == nil) then
         return {}
     end
-    for _, tn in pairs(tables) do
+    for _, tn in ipairs(tables) do
         if (type(tn) == "table") then
             for _, v in ipairs(tn) do
                 table.insert(tempTable, v)

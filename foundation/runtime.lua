@@ -38,7 +38,10 @@ hRuntime = {
     unit = {},
     group = {}, -- 单位选择器
     hero = {},
-    unit_type_ids = {}, --单位类型ID集
+    unit_type_ids = { --单位类型ID集
+        hero = {},
+        courier_hero = {},
+    },
     heroBuildSelection = {},
     skill = {
         silentUnits = {},
