@@ -1,5 +1,54 @@
 hunit = {}
 
+--- [SLK] 获取英雄在slkHelper设定的部分数据
+--- 数值键值是根据地图编辑器作为标准的，所以大小写也是与之一致
+---@param whichUnit userdata
+---@return table
+hunit.getSlk = function(whichUnit)
+    local default = {
+        -- 参考数据
+        UNIT_ID = nil,
+        UNIT_TYPE = "normal",
+        CUSTOM_DATA = {},
+        Art = nil,
+        file = nil,
+        goldcost = 0,
+        lumbercost = 0,
+        cool1 = 1.50,
+        def = 0,
+        rangeN1 = 100,
+        sight = 1800,
+        nsight = 800,
+    }
+    if (whichUnit ~= nil) then
+        default.Name = cj.GetUnitName(whichUnit)
+    else
+        default.Name = ""
+    end
+    if (whichUnit == nil or his.deleted(whichUnit)) then
+        return default
+    end
+    if (his.hero(whichUnit)) then
+        default.UNIT_TYPE = "hero"
+        default.Primary = nil
+        default.STR = cj.GetHeroStr(whichUnit, false)
+        default.AGI = cj.GetHeroStr(whichUnit, false)
+        default.INT = cj.GetHeroStr(whichUnit, false)
+        default.STRplus = nil
+        default.AGIplus = nil
+        default.INTplus = nil
+    end
+    return hslk_global.id2Value.unit[hunit.getId(whichUnit)] or default
+end
+
+--- 获取单位的头像
+---@param uOrUid any
+---@return string
+hunit.getAvatar = function(whichUnit)
+    local slk = hunit.getSlk(whichUnit)
+    return slk.Art or "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
+end
+
 --- 获取单位的最大生命值
 ---@param u userdata
 ---@return number
@@ -118,11 +167,45 @@ hunit.setPeriod = function(u, life)
     cj.UnitApplyTimedLife(u, string.char2id("BTLF"), life)
 end
 
+--- 设置单位面向角度
+---@param u userdata
+---@param facing number
+hunit.setFacing = function(u, facing)
+    cj.SetUnitFacing(u, facing)
+end
+
 --- 获取单位面向角度
 ---@param u userdata
 ---@return number
 hunit.getFacing = function(u)
     return cj.GetUnitFacing(u)
+end
+
+--- 显示单位
+---@param u userdata
+hunit.show = function(u)
+    cj.ShowUnit(u, true)
+end
+
+--- 隐藏单位
+---@param u userdata
+---@return number
+hunit.hide = function(u)
+    cj.ShowUnit(u, false)
+end
+
+--- 获取单位X坐标
+---@param u userdata
+---@return number
+hunit.x = function(u)
+    return cj.GetUnitX(u)
+end
+
+--- 获取单位Y坐标
+---@param u userdata
+---@return number
+hunit.y = function(u)
+    return cj.GetUnitY(u)
 end
 
 --- 单位是否启用硬直（系统默认不启用）
@@ -232,6 +315,53 @@ hunit.animate = function(whichUnit, animate)
     end
 end
 
+--- 使得单位嵌入框架系统
+--- 一般不需要主动使用
+--- 但地图放置等这些单位就被忽略了，所以可以试用此方法补回
+---@param u userdata
+---@param options table
+hunit.embed = function(u, options)
+    options = options or {}
+    -- 记入group选择器（不在框架系统内的单位，也不会被group选择到）
+    table.insert(hRuntime.group, u)
+    -- 记入realtime
+    hRuntime.unit[u] = {
+        id = options.unitId or hunit.getId(u),
+        life = options.life or nil,
+        during = options.during or nil,
+        isOpenPunish = options.isOpenPunish or false,
+        isShadow = options.isShadow or false,
+        animateSpeed = options.timeScale or 1.00,
+    }
+    -- 单位受伤
+    hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)
+    end)
+    -- 单位死亡
+    hevent.pool(u, hevent_default_actions.unit.death, function(tgr)
+        cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DEATH)
+    end)
+    -- 物品系统
+    if (his.hasSlot(u)) then
+        hitem.register(u)
+    elseif (options.isOpenSlot == true) then
+        hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
+        hitem.register(u)
+    end
+    -- 如果是英雄，注册事件和计算初次属性
+    if (his.hero(u) == true) then
+        hhero.setPrevLevel(u, 1)
+        hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
+            cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
+        end)
+        hattribute.set(u, 0, {
+            str_white = "=" .. cj.GetHeroStr(u, false),
+            agi_white = "=" .. cj.GetHeroAgi(u, false),
+            int_white = "=" .. cj.GetHeroInt(u, false),
+        })
+    end
+end
+
 --- 创建单位/单位组
 ---@param bean table
 ---@return userdata|table 最后创建单位|单位组
@@ -314,7 +444,7 @@ hunit.create = function(bean)
     elseif (bean.facingLoc ~= nil) then
         facing = math.getDegBetweenXY(x, y, cj.GetLocationX(bean.facingLoc), cj.GetLocationY(bean.facingLoc))
     elseif (bean.facingUnit ~= nil) then
-        facing = math.getDegBetweenXY(x, y, cj.GetUnitX(bean.facingUnit), cj.GetUnitY(bean.facingUnit))
+        facing = math.getDegBetweenXY(x, y, hunit.x(bean.facingUnit), hunit.y(bean.facingUnit))
     else
         facing = bj_UNIT_FACING
     end
@@ -387,45 +517,12 @@ hunit.create = function(bean)
                 cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
             end
         end
-        -- 记入group选择器（不在框架系统内的单位，也不会被group选择到）
-        table.insert(hRuntime.group, u)
-        -- 记入realtime
-        hRuntime.unit[u] = {
-            id = bean.unitId,
-            life = bean.life,
-            during = bean.during,
-            isOpenPunish = bean.isOpenPunish,
-            isShadow = bean.isShadow,
-            animateSpeed = bean.timeScale,
-        }
         -- 注册系统(默认注册)
         if (type(bean.register) ~= "boolean") then
             bean.register = true
         end
         if (bean.register == true) then
-            -- 单位受伤
-            hevent.pool(u, hevent_default_actions.unit.damaged, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DAMAGED)
-            end)
-            -- 单位死亡
-            hevent.pool(u, hevent_default_actions.unit.death, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_DEATH)
-            end)
-            -- 物品系统
-            if (his.hasSlot(u)) then
-                hitem.register(u)
-            elseif (bean.isOpenSlot == true) then
-                hskill.add(u, hitem.DEFAULT_SKILL_ITEM_SLOT, 0)
-                hitem.register(u)
-            end
-        end
-        -- 如果是英雄，注册事件和计算初次属性
-        if (his.hero(u) == true) then
-            hhero.setPrevLevel(u, 1)
-            hevent.pool(u, hevent_default_actions.hero.levelUp, function(tgr)
-                cj.TriggerRegisterUnitEvent(tgr, u, EVENT_UNIT_HERO_LEVEL)
-            end)
-            hattribute.formatHero(u)
+            hunit.embed(u, bean)
         end
         -- 生命周期 dead
         if (bean.life ~= nil and bean.life > 0) then
@@ -450,60 +547,7 @@ end
 hunit.getId = function(u)
     return string.id2char(cj.GetUnitTypeId(u))
 end
---- 获取单位SLK数据集
----@private
-hunit.getSlk = function(uOrUid)
-    local slk
-    local uid
-    if (uOrUid == nil) then
-        print_err("uOrUid is nil")
-        return nil
-    end
-    if (type(uOrUid) == "string") then
-        uid = uOrUid
-    elseif (type(uOrUid) == "number") then
-        uid = string.id2char(uOrUid)
-    else
-        uid = hunit.getId(uOrUid)
-    end
-    if (hslk_global.unitsKV[uid] ~= nil) then
-        slk = hslk_global.unitsKV[uid]
-    end
-    return slk
-end
---- 获取单位的头像
----@param uOrUid any
----@return string
-hunit.getAvatar = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return slk.Art
-    else
-        return "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
-    end
-end
---- 获取单位的攻击速度间隔
----@param uOrUid any
----@return number
-hunit.getAttackSpeedBaseSpace = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return math.round(slk.cool1)
-    else
-        return 2.00
-    end
-end
---- 获取单位的攻击范围
----@param uOrUid any
----@return number
-hunit.getAttackRange = function(uOrUid)
-    local slk = hunit.getSlk(uOrUid)
-    if (slk ~= nil) then
-        return math.floor(slk.rangeN1)
-    else
-        return 100
-    end
-end
+
 --- 获取单位的名称
 ---@param u userdata
 ---@return string
@@ -548,13 +592,6 @@ hunit.setColor = function(u, color)
     else
         cj.SetUnitColor(u, cj.ConvertPlayerColor(color - 1))
     end
-end
-
---- 获取单位面向角度
----@param u userdata
----@return number
-hunit.getFacing = function(u)
-    return cj.GetUnitFacing(u)
 end
 
 --- 删除单位，延时<delay>秒

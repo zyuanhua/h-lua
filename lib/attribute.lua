@@ -7,7 +7,6 @@ hattribute = {
     min_mana = 1,
     max_attack_range = 9999,
     min_attack_range = 0,
-    default_attack_speed_space = 1.50,
     threeBuff = {
         -- 每一点三围对属性的影响，默认会写一些，可以通过 hattr.setThreeBuff 方法来改变系统构成
         -- 需要注意的是三围只能影响common内的大部分参数，natural及effect是无效的
@@ -166,26 +165,20 @@ hattribute.init = function(whichUnit)
         return false
     end
     -- init
-    local unitId = string.id2char(cj.GetUnitTypeId(whichUnit))
-    if (unitId == nil) then
-        return false
-    end
-    if (hslk_global.unitsKV[unitId] == nil) then
-        hslk_global.unitsKV[unitId] = {}
-    end
+    local slkData = hunit.getSlk(whichUnit)
     hRuntime.attribute[whichUnit] = {
-        primary = hslk_global.unitsKV[unitId].Primary or "NIL",
+        primary = slkData.Primary,
         life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE),
         mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA),
-        move = hslk_global.unitsKV[unitId].spd or cj.GetUnitDefaultMoveSpeed(whichUnit),
-        defend = hslk_global.unitsKV[unitId].def or 0.0,
+        move = cj.GetUnitDefaultMoveSpeed(whichUnit),
+        defend = slkData.def,
         attack_damage_type = {},
         attack_speed = 0.0,
-        attack_speed_space = hslk_global.unitsKV[unitId].cool1 or hattribute.default_attack_speed_space,
+        attack_speed_space = slkData.cool1,
         attack_white = 0.0,
         attack_green = 0.0,
-        attack_range = hslk_global.unitsKV[unitId].rangeN1 or 100.0,
-        sight = hslk_global.unitsKV[unitId].sight or 800,
+        attack_range = slkData.rangeN1,
+        sight = slkData.sight,
         str_green = 0.0,
         agi_green = 0.0,
         int_green = 0.0,
@@ -333,17 +326,6 @@ end
 --- @private
 hattribute.subAccumuDiff = function(whichUnit, attr, value)
     hattribute.setAccumuDiff(whichUnit, attr, hattribute.getAccumuDiff(whichUnit, attr) - value)
-end
-
---- 初始化英雄的属性,一般设定好英雄ID和使用框架内create方法创建自动会使用
---- 但例如酒馆选英雄，地图放置等这些英雄单位就被忽略了，所以可以试用此方法补回
----@param whichHero userdata
-hattribute.formatHero = function(whichHero)
-    hattribute.set(whichHero, 0, {
-        str_white = "=" .. cj.GetHeroStr(whichHero, false),
-        agi_white = "=" .. cj.GetHeroAgi(whichHero, false),
-        int_white = "=" .. cj.GetHeroInt(whichHero, false),
-    })
 end
 
 -- 设定属性
@@ -718,7 +700,7 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 local subAttr = string.gsub(attr, "_green", "")
                 -- 主属性影响(<= 0自动忽略)
                 if (hattribute.threeBuff.primary > 0) then
-                    if (subAttr == string.lower(hhero.getHeroType(whichUnit))) then
+                    if (string.upper(subAttr) == hhero.getPrimary(whichUnit)) then
                         hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.primary })
                     end
                 end
@@ -744,7 +726,7 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 local subAttr = string.gsub(attr, "_white", "")
                 -- 主属性影响(<= 0自动忽略)
                 if (hattribute.threeBuff.primary > 0) then
-                    if (subAttr == string.lower(hhero.getHeroType(whichUnit))) then
+                    if (string.upper(subAttr) == hhero.getPrimary(whichUnit)) then
                         hattribute.set(whichUnit, 0, { attack_white = "+" .. diff * hattribute.threeBuff.primary })
                     end
                 end
@@ -906,7 +888,7 @@ hattribute.reRegister = function(whichUnit)
     end
     hRuntime.attribute[whichUnit].life = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)
     hRuntime.attribute[whichUnit].mana = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_MANA)
-    hRuntime.attribute[whichUnit].defend = hslk_global.unitsKV[unitId].def or 0.0
+    hRuntime.attribute[whichUnit].defend = hslk_global.id2Value.unit[hunit.getId(whichUnit)].def or 0.0
     hRuntime.attribute[whichUnit].attack_speed = 0
     hRuntime.attribute[whichUnit].attack_white = 0
     hRuntime.attribute[whichUnit].attack_green = 0

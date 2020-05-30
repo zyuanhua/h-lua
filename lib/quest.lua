@@ -20,6 +20,7 @@ end
 
 --- 创建一个任务
 ---@param options table
+---@return userdata quest
 hquest.create = function(options)
     --[[
         options = {

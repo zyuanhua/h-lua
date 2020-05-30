@@ -128,6 +128,7 @@ end
 hplayer.getSelection = function(whichPlayer)
     return hplayer.get(whichPlayer, "selection", nil)
 end
+
 --- 获取玩家当前状态
 ---@param whichPlayer userdata
 ---@return string
@@ -140,11 +141,12 @@ end
 hplayer.setStatus = function(whichPlayer, status)
     hplayer.set(whichPlayer, "status", status)
 end
+
 --- 获取玩家当前称号
 ---@param whichPlayer userdata
 ---@return string
 hplayer.getPrestige = function(whichPlayer)
-    return hplayer.get(whichPlayer, "prestige", "初出茅庐")
+    return hplayer.get(whichPlayer, "prestige", "无称号")
 end
 --- 设置玩家当前称号
 ---@param whichPlayer userdata
@@ -152,6 +154,20 @@ end
 hplayer.setPrestige = function(whichPlayer, prestige)
     hplayer.set(whichPlayer, "prestige", prestige)
 end
+
+--- 获取玩家是否支持random/repick命令
+---@param whichPlayer userdata
+---@return boolean
+hplayer.getAllowCommandPick = function(whichPlayer)
+    return hplayer.get(whichPlayer, "allowCommandPick", false)
+end
+--- 设置玩家是否支持random/repick命令
+---@param whichPlayer userdata
+---@param flag boolean
+hplayer.setAllowCommandPick = function(whichPlayer, flag)
+    hplayer.set(whichPlayer, "allowCommandPick", flag)
+end
+
 --- 获取玩家APM
 ---@param whichPlayer userdata
 ---@return number

@@ -226,9 +226,9 @@ end
 ---@param table table
 ---@return string
 string.implode = function(delimeter, table)
-    local str
+    local str = ""
     for _, v in ipairs(table) do
-        if (str == nil) then
+        if (str == "") then
             str = v
         else
             str = str .. delimeter .. v

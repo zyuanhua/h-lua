@@ -56,15 +56,19 @@ hslk_global = {
     unit_hero_tavern = 0, -- 酒馆id
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
-    heroesLen = 0,
-    heroesKV = {},
-    heroesItems = {},
-    heroesItemsKV = {},
-    unitsKV = {},
-    itemsKV = {},
-    itemsShadowKV = {},
-    itemsFaceKV = {},
-    abilitiesKV = {},
+    itemsShadowMapping = {},
+    id2Value = {
+        unit = {},
+        item = {},
+        ability = {},
+        technology = {},
+    },
+    name2Value = {
+        unit = {},
+        item = {},
+        ability = {},
+        technology = {},
+    },
     attr = {
         agi_green = {
             add = {},
@@ -217,4 +221,30 @@ hslk_global.skill_shapeshift[toUnitId] = {
     backAbilityId = backAbilityId
 }
 
+for i = 1, 4 do
+    local qty = cj.LoadInteger(cg.hash_hslk_helper, 0, i)
+    if (qty > 0) then
+        for j = 1, qty do
+            local js = cj.LoadStr(cg.hash_hslk_helper, i, j)
+            local data = json.parse(js)
+            if (data) then
+                if (i == 1) then
+                    hRuntime.register.item(data)
+                elseif (i == 2) then
+                    hRuntime.register.unit(data)
+                    if (hRuntime.unit_type_ids[data.UNIT_TYPE] == nil) then
+                        hRuntime.unit_type_ids[data.UNIT_TYPE] = {}
+                    end
+                    table.insert(hRuntime.unit_type_ids[data.UNIT_TYPE], data.UNIT_ID)
+                elseif (i == 3) then
+                    hRuntime.register.ability(data)
+                elseif (i == 4) then
+                    hRuntime.register.technology(data)
+                end
+            end
+        end
+    end
+end
+
 cj.FlushParentHashtable(cg.hash_hslk)
+cj.FlushParentHashtable(cg.hash_hslk_helper)

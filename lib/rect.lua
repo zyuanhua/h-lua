@@ -195,8 +195,8 @@ hrect.lock = function(bean)
                     htime.delTimer(t)
                     return
                 end
-                x = cj.GetUnitX(bean.whichUnit)
-                y = cj.GetUnitY(bean.whichUnit)
+                x = hunit.x(bean.whichUnit)
+                y = hunit.y(bean.whichUnit)
             end
             --区域优先
             if (bean.whichRect) then
@@ -230,8 +230,8 @@ hrect.lock = function(bean)
                     print_mb(hunit.getName(u))
                     local distance = 0.000
                     local deg = 0
-                    local xx = cj.GetUnitX(u)
-                    local yy = cj.GetUnitY(u)
+                    local xx = hunit.x(u)
+                    local yy = hunit.y(u)
                     if (bean.type == "square") then
                         if (his.borderRect(lockRect, xx, yy) == true) then
                             deg = math.getDegBetweenXY(x, y, xx, yy)

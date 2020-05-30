@@ -2,18 +2,25 @@ hRuntime = {
     -- 注册runtime的数据
     register = {
         unit = function(json)
-            hslk_global.unitsKV[json.UNIT_ID] = json
+            hslk_global.id2Value.unit[json.UNIT_ID] = json
+            hslk_global.name2Value.unit[json.Name] = json
         end,
         item = function(json)
-            hslk_global.itemsKV[json.ITEM_ID] = json
+            hslk_global.id2Value.item[json.ITEM_ID] = json
+            hslk_global.name2Value.item[json.Name] = json
             if (type(json.SHADOW_ID) == "string") then
-                hslk_global.itemsShadowKV[json.ITEM_ID] = json.SHADOW_ID
-                hslk_global.itemsFaceKV[json.SHADOW_ID] = json.ITEM_ID
+                hslk_global.itemsShadowMapping[json.ITEM_ID] = json.SHADOW_ID
+                hslk_global.itemsShadowMapping[json.SHADOW_ID] = json.ITEM_ID
             end
         end,
         ability = function(json)
-            hslk_global.abilitiesKV[json.ABILITY_ID] = json
-        end
+            hslk_global.id2Value.ability[json.ABILITY_ID] = json
+            hslk_global.name2Value.ability[json.Name] = json
+        end,
+        technology = function(json)
+            hslk_global.id2Value.technology[json.TECHNOLOGY_ID] = json
+            hslk_global.name2Value.technology[json.Name] = json
+        end,
     },
     is = {},
     sound = {},
@@ -31,6 +38,10 @@ hRuntime = {
     unit = {},
     group = {}, -- 单位选择器
     hero = {},
+    unit_type_ids = { --单位类型ID集
+        hero = {},
+        courier_hero = {},
+    },
     heroBuildSelection = {},
     skill = {
         silentUnits = {},

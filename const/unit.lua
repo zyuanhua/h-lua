@@ -36,3 +36,13 @@ CONST_MOVE_TYPE = {
     float = { value = "float", label = "漂浮" },
     amph = { value = "amph", label = "两栖" },
 }
+
+
+-- 装甲类型
+CONST_ARMOR_TYPE = {
+    Metal = { value = "Metal", label = "金属" },
+    Ethereal = { value = "Ethereal", label = "气态" },
+    Flesh = { value = "Flesh", label = "肉体" },
+    Wood = { value = "Wood", label = "木头" },
+    Stone = { value = "Stone", label = "石头" },
+}

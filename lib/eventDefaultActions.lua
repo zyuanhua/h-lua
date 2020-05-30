@@ -84,11 +84,12 @@ hevent_default_actions = {
             elseif (str == "-gg") then
                 hplayer.defeat(p, "GG")
             elseif (str == "-random") then
-                if (#hhero.selectorPool <= 0) then
-                    echo("已禁止random", p)
+                if (#hhero.selectorPool <= 0 or hplayer.getAllowCommandPick(p) ~= true) then
+                    echo("-random命令被禁用", p)
                     return
                 end
-                if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                local pIndex = hplayer.index(p)
+                if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                     echo("|cffffff80你已经选够了|r", p)
                     return
                 end
@@ -118,7 +119,7 @@ hevent_default_actions = {
                         hunit.portal(u, hhero.bornX, hhero.bornY)
                         cj.PauseUnit(u, false)
                     end
-                    table.insert(hhero.player_heroes[p], u)
+                    table.insert(hhero.player_heroes[pIndex], u)
                     -- 触发英雄被选择事件(全局)
                     hevent.triggerEvent(
                         "global",
@@ -130,22 +131,23 @@ hevent_default_actions = {
                     )
                     txt = txt .. " " .. cj.GetUnitName(u)
                     qty = qty + 1
-                    if (#hhero.player_heroes[p] >= hhero.player_allow_qty[p]) then
+                    if (#hhero.player_heroes[pIndex] >= hhero.player_allow_qty[pIndex]) then
                         break
                     end
                 end
                 echo("已为您 |cffffff80random|r 挑选了 " .. "|cffffff80" .. math.floor(qty) .. "|r 个：|cffffff80" .. txt .. "|r", p)
             elseif (str == "-repick") then
-                if (#hhero.selectorPool <= 0) then
-                    echo("已禁止repick", p)
+                if (#hhero.selectorPool <= 0 or hplayer.getAllowCommandPick(p) ~= true) then
+                    echo("-repick命令被禁用", p)
                     return
                 end
-                if (#hhero.player_heroes[p] <= 0) then
+                local pIndex = hplayer.index(p)
+                if (#hhero.player_heroes[pIndex] <= 0) then
                     echo("|cffffff80你还没有选过任何单位|r", p)
                     return
                 end
-                local qty = #hhero.player_heroes[p]
-                for _, u in ipairs(hhero.player_heroes[p]) do
+                local qty = #hhero.player_heroes[pIndex]
+                for _, u in ipairs(hhero.player_heroes[pIndex]) do
                     if (type(hRuntime.hero[u].selector) == "userdata") then
                         table.insert(hhero.selectorPool, hunit.getId(u))
                         cj.AddUnitToStock(hRuntime.hero[u].selector, cj.GetUnitTypeId(u), 1, 1)
@@ -168,7 +170,7 @@ hevent_default_actions = {
                     end
                     hunit.del(u, 0)
                 end
-                hhero.player_heroes[p] = {}
+                hhero.player_heroes[pIndex] = {}
                 echo("已为您 |cffffff80repick|r 了 " .. "|cffffff80" .. qty .. "|r 个单位", p)
             else
                 local first = string.sub(str, 1, 1)
@@ -413,12 +415,14 @@ hevent_default_actions = {
             )
         end),
         sell = cj.Condition(function()
+            local u = cj.GetSoldUnit()
+            hunit.embed(u)
             hevent.triggerEvent(
                 cj.GetSellingUnit(),
                 CONST_EVENT.unitSell,
                 {
                     triggerUnit = cj.GetSellingUnit(),
-                    soldUnit = cj.GetSoldUnit(),
+                    soldUnit = u,
                     buyingUnit = cj.GetBuyingUnit(),
                 }
             )
@@ -468,7 +472,7 @@ hevent_default_actions = {
         pickup = cj.Condition(function()
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
-            if (hslk_global.itemsKV[itId] == nil) then
+            if (hslk_global.id2Value.item[itId] == nil) then
                 -- 排除掉没有注册的物品。例如框架内自带的一些物品
                 return
             end
@@ -478,14 +482,9 @@ hevent_default_actions = {
             end
             local u = cj.GetTriggerUnit()
             local charges = cj.GetItemCharges(it)
-            local shadowItId = hitem.getShadowId(itId)
+            local shadowItId = hitem.getShadowMappingId(itId)
             if (shadowItId == nil) then
                 if (hitem.getIsPowerUp(itId) == true) then
-                    --检测是否有回调动作
-                    local call = hitem.getTriggerCall(itId)
-                    if (call ~= nil and type(call) == "function") then
-                        call(u, it, itId, charges)
-                    end
                     --触发使用物品事件
                     hevent.triggerEvent(
                         u,
@@ -526,7 +525,7 @@ hevent_default_actions = {
             local u = cj.GetTriggerUnit()
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
-            local faceId = hitem.getFaceId(itId)
+            local faceId = hitem.getShadowMappingId(itId)
             local orderId = cj.OrderId("dropitem")
             local charges = cj.GetItemCharges(it)
             if (cj.GetUnitCurrentOrder(u) == orderId) then
@@ -623,11 +622,6 @@ hevent_default_actions = {
             --检测是否使用后自动消失，如果不是，次数补回1
             if (perishable == false) then
                 hitem.setCharges(it, hitem.getCharges(it) + 1)
-            end
-            --检测是否有回调动作
-            local call = hitem.getTriggerCall(itId)
-            if (call ~= nil and type(call) == "function") then
-                call(u, it, itId, charges)
             end
             --触发使用物品事件
             hevent.triggerEvent(

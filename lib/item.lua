@@ -156,8 +156,8 @@ hitem.getSlk = function(itOrId)
     else
         itId = hitem.getId(itOrId)
     end
-    if (hslk_global.itemsKV[itId] ~= nil) then
-        slk = hslk_global.itemsKV[itId]
+    if (hslk_global.id2Value.item[itId] ~= nil) then
+        slk = hslk_global.id2Value.item[itId]
     end
     return slk
 end
@@ -260,40 +260,17 @@ hitem.getIsSellAble = function(itOrId)
         return false
     end
 end
---- 获取物品的影子ID（实现神符满格购物的关键）,需要注册
+--- 获取物品的(表面/影子)ID（实现神符满格购物的关键，会自动获得相对ID）,需要注册
 ---@param itOrId userdata|string|number
 ---@return string
-hitem.getShadowId = function(itOrId)
+hitem.getShadowMappingId = function(itOrId)
     local itId
     if (type(itOrId == "string")) then
         itId = itOrId
     else
         itId = hitem.getId(itOrId)
     end
-    return hslk_global.itemsShadowKV[itId]
-end
--- 获取物品的真实ID（实现神符满格购物的关键）,需要注册
----@param itOrId userdata|string|number
----@return string
-hitem.getFaceId = function(itOrId)
-    local itId
-    if (type(itOrId == "string")) then
-        itId = itOrId
-    else
-        itId = hitem.getId(itOrId)
-    end
-    return hslk_global.itemsFaceKV[itId]
-end
---- 获取物品的回调函数,需要注册
----@param itOrId userdata|string|number
----@return function
-hitem.getTriggerCall = function(itOrId)
-    local slk = hitem.getSlk(itOrId)
-    if (slk ~= nil) then
-        return slk.TRIGGER_CALL
-    else
-        return nil
-    end
+    return hslk_global.itemsShadowMapping[itId]
 end
 --- 获取物品的最大叠加数(默认是1个,此系统以使用次数作为数量使用),需要注册
 ---@param itOrId userdata|string|number
@@ -333,6 +310,28 @@ hitem.getAttribute = function(itOrId)
     end
 end
 
+--- 获取物品的SLK自定义数据CUSTOM_DATA
+---@param itOrId any
+---@return table
+hitem.getCustomData = function(itOrId)
+    local slk = hitem.getSlk(itOrId)
+    if (slk ~= nil) then
+        return slk.CUSTOM_DATA or {}
+    else
+        return {}
+    end
+end
+
+--- 获取物品的等级
+---@param it userdata
+---@return number
+hitem.getLevel = function(it)
+    if (it ~= nil) then
+        return cj.GetItemLevel(it)
+    end
+    return 0
+end
+
 --- 获取物品的使用次数
 ---@param it userdata
 ---@return number
@@ -351,6 +350,7 @@ hitem.setCharges = function(it, charges)
         cj.SetItemCharges(it, charges)
     end
 end
+
 --- 获取某单位身上某种物品的使用总次数
 ---@param itemId string|number
 ---@param whichUnit userdata
@@ -385,6 +385,19 @@ hitem.getEmptySlot = function(whichUnit)
     return qty
 end
 
+--- 循环获取某单位6格物品
+---@alias SlotLoop fun(enumUnit: userdata):void
+---@param whichUnit userdata
+---@param action SlotLoop | "function(slotItem, slotIndex) end"
+---@return number
+hitem.slotLoop = function(whichUnit, action)
+    local it
+    for i = 0, 5, 1 do
+        it = cj.UnitItemInSlot(whichUnit, i)
+        action(it, i)
+    end
+end
+
 --- 使得单位拥有拆分物品的技能
 ---@param whichUnit userdata
 hitem.setAllowSeparate = function(whichUnit)
@@ -398,7 +411,7 @@ hitem.setAllowSeparate = function(whichUnit)
     end)
 end
 
---- 计算单位获得物品后的属性
+--- 计算单位得失物品的属性影响
 ---@private
 hitem.caleAttribute = function(isAdd, whichUnit, itId, charges)
     if (isAdd == nil) then
@@ -681,10 +694,10 @@ hitem.create = function(bean)
         it = cj.CreateItem(bean.itemId, bean.x, bean.y)
         type = hitem.POSITION_TYPE.COORDINATE
     elseif (bean.whichUnitPosition ~= nil) then
-        it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
+        it = cj.CreateItem(bean.itemId, hunit.x(bean.whichUnit), hunit.y(bean.whichUnit))
         type = hitem.POSITION_TYPE.COORDINATE
     elseif (bean.whichUnit ~= nil) then
-        it = cj.CreateItem(bean.itemId, cj.GetUnitX(bean.whichUnit), cj.GetUnitY(bean.whichUnit))
+        it = cj.CreateItem(bean.itemId, hunit.x(bean.whichUnit), hunit.y(bean.whichUnit))
         type = hitem.POSITION_TYPE.UNIT
     elseif (bean.whichLoc ~= nil) then
         it = cj.CreateItem(bean.itemId, cj.GetLocationX(bean.whichLoc), cj.GetLocationY(bean.whichLoc))
@@ -822,8 +835,8 @@ hitem.drop = function(origin)
                 {
                     itemId = hitem.getId(it),
                     charges = hitem.getCharges(it),
-                    x = cj.GetUnitX(origin),
-                    x = cj.GetUnitY(origin)
+                    x = hunit.x(origin),
+                    x = hunit.y(origin)
                 }
             )
             htime.del(it, 0)

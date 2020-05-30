@@ -14,3 +14,18 @@ CONST_HOTKEY = {
     { HotKey = "C", Buttonpos1 = 2, Buttonpos2 = 2, },
     { HotKey = "V", Buttonpos1 = 3, Buttonpos2 = 2, },
 }
+
+CONST_HOTKEY_KV = {
+    Q = { Buttonpos1 = 0, Buttonpos2 = 0, },
+    W = { Buttonpos1 = 1, Buttonpos2 = 0, },
+    E = { Buttonpos1 = 2, Buttonpos2 = 0, },
+    R = { Buttonpos1 = 3, Buttonpos2 = 0, },
+    A = { Buttonpos1 = 0, Buttonpos2 = 1, },
+    S = { Buttonpos1 = 1, Buttonpos2 = 1, },
+    D = { Buttonpos1 = 2, Buttonpos2 = 1, },
+    F = { Buttonpos1 = 3, Buttonpos2 = 1, },
+    Z = { Buttonpos1 = 0, Buttonpos2 = 2, },
+    X = { Buttonpos1 = 1, Buttonpos2 = 2, },
+    C = { Buttonpos1 = 2, Buttonpos2 = 2, },
+    V = { Buttonpos1 = 3, Buttonpos2 = 2, },
+}
