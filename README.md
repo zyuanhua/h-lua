@@ -1,4 +1,5 @@
  * [github地址](https://github.com/hunzsig-warcraft3/h-lua)
+ * [开源地图：HelloWorld](https://github.com/hunzsig-warcraft3/w3x-h-lua-helloworld)
  * [开源地图：我塔非凡](https://github.com/hunzsig-warcraft3/w3x-my-tower)
  * [功能测试：DZAPI](https://github.com/hunzsig-warcraft3/w3x-test-dzapi)
  * [功能测试：崩溃压力](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
@@ -7,8 +8,7 @@
  * QQ：325338043
 
 ## 使用优势？
-h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依赖任何游戏平台（如JAPI、DzAPI）
-但并不禁止你使用(有集成DzAPI)。
+h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依赖其他API（如JAPI、DzAPI），并集成少量的DzAPI。
 包含多样丰富的属性系统，内置多达几十种以上的自定义事件,可以轻松做出平时难以甚至不能做出的技能效果。
 强大的物品合成分拆，丰富自定义技能模板！免去自行编写！
 计时器、环境、镜头、单位、敌人、音乐、天气、遮罩、任务等等应有尽有。
@@ -83,9 +83,9 @@ h-lua拥有优秀的demo，在开源的同时引导您学习的更多，不依�
 
 ## 前期准备：
 
-> 打开 YDWE【设置】的lua引擎 
+> 记得打开 YDWE【设置】的lua引擎
 
-> 关闭 YDWE “逆天”
+> 编辑器设置可查看极速上手参考
 
 ### 好了，让我们开始接入：
 
