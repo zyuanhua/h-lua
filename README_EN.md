@@ -1,7 +1,8 @@
  * [Github](https://github.com/hunzsig-warcraft3/h-lua)
- * [Demo:My TD Game](https://github.com/hunzsig-warcraft3/w3x-my-tower)
- * [Test: DZAPI](https://github.com/hunzsig-warcraft3/w3x-test-dzapi)
- * [Test: Crash](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
+ * [Demo1:HelloWorld](https://github.com/hunzsig-warcraft3/w3x-h-lua-helloworld)
+ * [Demo2:My TD Game](https://github.com/hunzsig-warcraft3/w3x-my-tower)
+ * [Test1: DZAPI](https://github.com/hunzsig-warcraft3/w3x-test-dzapi)
+ * [Test2: Crash](https://github.com/hunzsig-warcraft3/w3x-test-breakdown)
  * [Quick start(zh-cn)](https://docs.qq.com/doc/DTUZZZWZzYVpyeW1o)
  * Author: hunzsig
  * QQ Group Number: 325338043(China)
@@ -81,9 +82,9 @@ Contains a variety of rich attribute systems, built-in up to dozens of custom ev
 
 ## Preparation：
 
-> Open the Lua engine of YDWE
+> Checked the Lua engine of YDWE
 
-> Close YDWE "ni tian"
+> You can sed editor settings in the [Quick start]
 
 ### Let's start to use h-lua：
 
