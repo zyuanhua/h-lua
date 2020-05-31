@@ -57,8 +57,6 @@ math.numberFormat = function(value)
         return string.format("%.2f", value / 10 * 100000000) .. "B"
     elseif (value > 100 * 10000) then
         return string.format("%.2f", value / 100 * 10000) .. "M"
-    elseif (value > 10000) then
-        return string.format("%.2f", value / 10000) .. "W"
     elseif (value > 1000) then
         return string.format("%.2f", value / 1000) .. "K"
     else
