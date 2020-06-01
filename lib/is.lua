@@ -1,10 +1,10 @@
 ---@class his 判断
 his = {
     mapInitialPlayableArea = cj.Rect(
-        cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
-        cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
-        cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
-        cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+            cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
+            cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+            cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
+            cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
     )
 }
 
@@ -170,8 +170,8 @@ end
 his.hero = function(whichUnit)
     local uid = hunit.getId(whichUnit)
     return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO)
-        or table.includes(uid, hRuntime.unit_type_ids.hero) == true
-        or table.includes(uid, hRuntime.unit_type_ids.courier_hero) == true
+            or table.includes(uid, hRuntime.unit_type_ids.hero) == true
+            or table.includes(uid, hRuntime.unit_type_ids.courier_hero) == true
 end
 
 --- 是否建筑
@@ -322,6 +322,42 @@ end
 ---@return boolean
 his.ally = function(whichUnit, otherUnit)
     return cj.IsUnitAlly(whichUnit, hunit.getOwner(otherUnit))
+end
+
+--- 判断两个单位是否背对着
+---@param u1 userdata
+---@param u2 userdata
+---@param maxDistance number 最大相对距离
+---@return number
+his.behind = function(u1, u2, maxDistance)
+    if (his.alive(u1) == false or his.alive(u2) == false) then
+        return false
+    end
+    maxDistance = maxDistance or 99999
+    if (math.getDistanceBetweenUnit(u1, u2) > maxDistance) then
+        return false
+    end
+    local fac1 = hunit.getFacing(u1)
+    local fac2 = hunit.getFacing(u2)
+    return math.abs(fac1 - fac2) <= 50
+end
+
+--- 判断两个单位是否正对着
+---@param u1 userdata
+---@param u2 userdata
+---@param maxDistance number 最大相对距离
+---@return number
+his.face = function(u1, u2, maxDistance)
+    if (his.alive(u1) == false or his.alive(u2) == false) then
+        return false
+    end
+    maxDistance = maxDistance or 99999
+    if (math.getDistanceBetweenUnit(u1, u2) > maxDistance) then
+        return false
+    end
+    local fac1 = hunit.getFacing(u1)
+    local fac2 = hunit.getFacing(u2)
+    return math.abs((math.abs(fac1 - fac2) - 180)) <= 50
 end
 
 --- 是否敌人玩家
