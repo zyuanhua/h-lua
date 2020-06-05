@@ -68,31 +68,31 @@ hattribute.setAttackWhite = function(u, itemId, qty)
         local per = 3.00
         local limit = 60.0 / per -- 一般不会超过1分钟复活
         htime.setInterval(
-                per,
-                function(t)
-                    limit = limit - 1
-                    if (limit < 0) then
-                        htime.delTimer(t)
-                    elseif (his.alive(u) == true) then
-                        htime.delTimer(t)
-                        local i = 1
-                        local it
-                        local hasSlot = (cj.GetUnitAbilityLevel(u, hattribute.DEFAULT_SKILL_ITEM_SLOT) >= 1)
-                        if (hasSlot == false) then
-                            cj.UnitAddAbility(u, hattribute.DEFAULT_SKILL_ITEM_SLOT)
-                        end
-                        while (i <= qty) do
-                            it = cj.CreateItem(itemId, 0, 0)
-                            cj.UnitAddItem(u, it)
-                            cj.SetWidgetLife(it, 10.00)
-                            cj.RemoveItem(it)
-                            i = i + 1
-                        end
-                        if (hasSlot == false) then
-                            cj.UnitRemoveAbility(u, hattribute.DEFAULT_SKILL_ITEM_SLOT)
-                        end
+            per,
+            function(t)
+                limit = limit - 1
+                if (limit < 0) then
+                    htime.delTimer(t)
+                elseif (his.alive(u) == true) then
+                    htime.delTimer(t)
+                    local i = 1
+                    local it
+                    local hasSlot = (cj.GetUnitAbilityLevel(u, hattribute.DEFAULT_SKILL_ITEM_SLOT) >= 1)
+                    if (hasSlot == false) then
+                        cj.UnitAddAbility(u, hattribute.DEFAULT_SKILL_ITEM_SLOT)
+                    end
+                    while (i <= qty) do
+                        it = cj.CreateItem(itemId, 0, 0)
+                        cj.UnitAddItem(u, it)
+                        cj.SetWidgetLife(it, 10.00)
+                        cj.RemoveItem(it)
+                        i = i + 1
+                    end
+                    if (hasSlot == false) then
+                        cj.UnitRemoveAbility(u, hattribute.DEFAULT_SKILL_ITEM_SLOT)
                     end
                 end
+            end
         )
     end
 end
@@ -362,11 +362,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             params[attr] = table.merge(params[attr], valArr)
             if (dur > 0) then
                 htime.setTimeout(
-                        dur,
-                        function(t)
-                            htime.delTimer(t)
-                            hattribute.setHandle(whichUnit, attr, "-", val, 0)
-                        end
+                    dur,
+                    function(t)
+                        htime.delTimer(t)
+                        hattribute.setHandle(whichUnit, attr, "-", val, 0)
+                    end
                 )
             end
         elseif (opr == "-") then
@@ -379,11 +379,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             end
             if (dur > 0) then
                 htime.setTimeout(
-                        dur,
-                        function(t)
-                            htime.delTimer(t)
-                            hattribute.setHandle(whichUnit, attr, "+", val, 0)
-                        end
+                    dur,
+                    function(t)
+                        htime.delTimer(t)
+                        hattribute.setHandle(whichUnit, attr, "+", val, 0)
+                    end
                 )
             end
         elseif (opr == "=") then
@@ -392,11 +392,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             params[attr] = string.explode(",", val)
             if (dur > 0) then
                 htime.setTimeout(
-                        dur,
-                        function(t)
-                            htime.delTimer(t)
-                            hattribute.setHandle(whichUnit, attr, "=", string.implode(",", old), 0)
-                        end
+                    dur,
+                    function(t)
+                        htime.delTimer(t)
+                        hattribute.setHandle(whichUnit, attr, "=", string.implode(",", old), 0)
+                    end
                 )
             end
         end
@@ -408,11 +408,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             table.insert(params[attr], { hash = hkey, table = val })
             if (dur > 0) then
                 htime.setTimeout(
-                        dur,
-                        function(t)
-                            htime.delTimer(t)
-                            hattribute.setHandle(whichUnit, attr, "-", val, 0)
-                        end
+                    dur,
+                    function(t)
+                        htime.delTimer(t)
+                        hattribute.setHandle(whichUnit, attr, "-", val, 0)
+                    end
                 )
             end
         elseif (opr == "-") then
@@ -435,11 +435,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             if (hasKey == true) then
                 if (dur > 0) then
                     htime.setTimeout(
-                            dur,
-                            function(t)
-                                htime.delTimer(t)
-                                hattribute.setHandle(whichUnit, attr, "+", val, 0)
-                            end
+                        dur,
+                        function(t)
+                            htime.delTimer(t)
+                            hattribute.setHandle(whichUnit, attr, "+", val, 0)
+                        end
                     )
                 end
             end
@@ -514,11 +514,11 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             params[attr] = futureVal
             if (dur > 0) then
                 htime.setTimeout(
-                        dur,
-                        function(t)
-                            htime.delTimer(t)
-                            hattribute.setHandle(whichUnit, attr, "-", diff, 0)
-                        end
+                    dur,
+                    function(t)
+                        htime.delTimer(t)
+                        hattribute.setHandle(whichUnit, attr, "-", diff, 0)
+                    end
                 )
             end
             -- ability
@@ -896,18 +896,18 @@ hattribute.reRegister = function(whichUnit)
     hRuntime.attribute[whichUnit].agi_green = 0
     hRuntime.attribute[whichUnit].int_green = 0
     hattribute.set(
-            whichUnit,
-            0,
-            {
-                life = "+" .. (life - cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)),
-                mana = "+" .. (mana - cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)),
-                str_green = "+" .. strGreen,
-                agi_green = "+" .. agiGreen,
-                int_green = "+" .. intGreen,
-                attack_white = "+" .. attackWhite,
-                attack_green = "+" .. attackGreen,
-                attack_speed = "+" .. attackSpeed,
-                defend = "+" .. defend
-            }
+        whichUnit,
+        0,
+        {
+            life = "+" .. (life - cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)),
+            mana = "+" .. (mana - cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE)),
+            str_green = "+" .. strGreen,
+            agi_green = "+" .. agiGreen,
+            int_green = "+" .. intGreen,
+            attack_white = "+" .. attackWhite,
+            attack_green = "+" .. attackGreen,
+            attack_speed = "+" .. attackSpeed,
+            defend = "+" .. defend
+        }
     )
 end

@@ -1200,7 +1200,9 @@ hskill.crackFly = function(options)
                         originDeg
                     )
                     cj.SetUnitFacing(options.whichUnit, originFacing)
-                    hunit.portal(options.whichUnit, pxy.x, pxy.y)
+                    if (his.borderMap(pxy.x, pxy.y) == false) then
+                        hunit.portal(options.whichUnit, pxy.x, pxy.y)
+                    end
                 end
                 if (z > 0) then
                     cj.SetUnitFlyHeight(options.whichUnit, cj.GetUnitFlyHeight(options.whichUnit) - z, z / timerSetTime)
@@ -1541,13 +1543,17 @@ hskill.leap = function(options)
             end
             local fac = math.getDegBetweenXY(ax, ay, tx, ty)
             local txy = math.polarProjection(ax, ay, speed, fac)
-            hunit.portal(arrowUnit, txy.x, txy.y)
+            if (acceleration ~= 0) then
+                speed = speed + acceleration
+            end
+            if (his.borderMap(txy.x, txy.y) == false) then
+                hunit.portal(arrowUnit, txy.x, txy.y)
+            else
+                speed = 0
+            end
             cj.SetUnitFacing(arrowUnit, fac)
             if (options.effectMovement ~= nil) then
                 heffect.toXY(options.effectMovement, txy.x, txy.y, 0)
-            end
-            if (acceleration ~= 0) then
-                speed = speed + acceleration
             end
             if (damageMovementRange > 0) then
                 local g = hgroup.createByUnit(
