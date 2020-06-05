@@ -1,10 +1,16 @@
 ---@class his 判断
 his = {
     mapInitialPlayableArea = cj.Rect(
-            cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
-            cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
-            cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
-            cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+        cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
+        cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+        cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
+        cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+    ),
+    mapCameraArea = cj.Rect(
+        cj.GetCameraBoundMinX(),
+        cj.GetCameraBoundMinY(),
+        cj.GetCameraBoundMaxX(),
+        cj.GetCameraBoundMaxY()
     )
 }
 
@@ -170,8 +176,8 @@ end
 his.hero = function(whichUnit)
     local uid = hunit.getId(whichUnit)
     return cj.IsUnitType(whichUnit, UNIT_TYPE_HERO)
-            or table.includes(uid, hRuntime.unit_type_ids.hero) == true
-            or table.includes(uid, hRuntime.unit_type_ids.courier_hero) == true
+        or table.includes(uid, hRuntime.unit_type_ids.hero) == true
+        or table.includes(uid, hRuntime.unit_type_ids.courier_hero) == true
 end
 
 --- 是否建筑
@@ -403,6 +409,14 @@ end
 ---@return boolean
 his.borderMap = function(x, y)
     return his.borderRect(his.mapInitialPlayableArea, x, y)
+end
+
+--- 是否超出镜头边界
+---@param x number
+---@param y number
+---@return boolean
+his.borderCamera = function(x, y)
+    return his.borderRect(his.mapCameraArea, x, y)
 end
 
 --- 是否身上有某种物品
