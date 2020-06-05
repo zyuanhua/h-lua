@@ -1453,7 +1453,7 @@ hskill.leap = function(options)
     local tokenArrowOpacity = options.tokenArrowOpacity or 1.00
     local tokenArrowHeight = options.tokenArrowHeight or 0
     local oneHitOnly = options.oneHitOnly or false
-    --这里要注意：targetUnit的优先级是比xy高的!
+    --这里要注意：targetUnit比xy优先
     local leapType
     local initFacing = 0
     if (options.arrowUnit ~= nil) then
@@ -1470,7 +1470,7 @@ hskill.leap = function(options)
         return
     end
     local repeatGroup
-    if (damageMovement > 0 and damageMovementRepeat == false) then
+    if (damageMovement > 0 and damageMovementRepeat ~= true) then
         repeatGroup = {}
     end
     if (arrowUnit == nil) then
