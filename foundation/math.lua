@@ -31,10 +31,10 @@ end
 ---@param angle number
 ---@return table
 math.polarProjection = function(x, y, dist, angle)
-    return {
-        x = x + dist * math.cos(angle * bj_DEGTORAD),
-        y = y + dist * math.sin(angle * bj_DEGTORAD)
-    }
+    local tx = x + dist * math.cos(angle * bj_DEGTORAD)
+    local ty = y + dist * math.sin(angle * bj_DEGTORAD)
+    
+    return { x = tx, y = ty }
 end
 
 --- 四舍五入

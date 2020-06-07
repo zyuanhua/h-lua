@@ -665,5 +665,16 @@ hevent_default_actions = {
                 print_err("拆分物品尚未完成")
             end
         end),
+    },
+    destructable = {
+        destroy = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerDestructable(),
+                CONST_EVENT.destructableDestroy,
+                {
+                    triggerDestructable = cj.GetTriggerDestructable()
+                }
+            )
+        end)
     }
 }

@@ -355,6 +355,8 @@ slkHelper.item = {
         local cd = slkHelper.itemCooldownID(v)
         local abilList = ""
         local usable = 0
+        local uses = 0
+        local OVERLIE = v.OVERLIE or 1
         if (cd ~= "AIat") then
             abilList = cd
             usable = 1
@@ -362,11 +364,17 @@ slkHelper.item = {
                 v.perishable = 1
             end
             v.class = "Charged"
+            uses = v.uses or 1
         else
             if (v.perishable == nil) then
                 v.perishable = 0
             end
             v.class = "Permanent"
+            if (OVERLIE > 1) then
+                uses = v.uses or 1
+            else
+                uses = 0
+            end
         end
         local lv = 1
         v.goldcost = v.goldcost or 0
@@ -383,7 +391,6 @@ slkHelper.item = {
         v.sellable = v.sellable or 1
         v.pawnable = v.pawnable or 1
         v.dropable = v.dropable or 1
-        local OVERLIE = v.OVERLIE or 1
         local WEIGHT = v.WEIGHT or 0
         local obj = slk.item.rat9:new("items_" .. v.Name)
         obj.Name = v.Name
@@ -411,7 +418,7 @@ slkHelper.item = {
         obj.stockStart = v.stockStart or 0 -- 库存开始
         obj.stockRegen = v.stockRegen or 0 -- 进货周期
         obj.stockMax = v.stockMax or 1 -- 最大库存
-        obj.uses = 1
+        obj.uses = uses
         if (v.HotKey ~= nil) then
             obj.HotKey = v.HotKey
             v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
