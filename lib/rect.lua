@@ -1,6 +1,18 @@
 ---@class hrect
 hrect = {
     WORLD_BOUND = cj.GetWorldBounds(),
+    MAP_INITIAL_PLAYABLE_AREA = cj.Rect(
+        cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
+        cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
+        cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
+        cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
+    ),
+    MAP_CAMERA_AREA = cj.Rect(
+        cj.GetCameraBoundMinX(),
+        cj.GetCameraBoundMinY(),
+        cj.GetCameraBoundMaxX(),
+        cj.GetCameraBoundMaxY()
+    )
 }
 
 --- 创建一个设定中心（x,y）创建一个长w宽h的矩形区域
