@@ -124,6 +124,7 @@ end
 ---@param whichRect userdata
 ---@param delay number|nil 延时
 hrect.del = function(whichRect, delay)
+    delay = delay or 0
     if (delay == nil or delay <= 0) then
         hRuntime.clear(whichRect)
         cj.RemoveRect(whichRect)
