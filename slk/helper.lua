@@ -1190,6 +1190,7 @@ slkHelper.ability = {
     empty = function(v)
         slkHelper.count = slkHelper.count + 1
         local Name = v.Name or "空白被动-" .. slkHelper.count
+        local Art = v.Art or "ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp"
         v.Buttonpos1 = v.Buttonpos1 or 0
         v.Buttonpos2 = v.Buttonpos2 or 0
         if (v.HotKey ~= nil) then
@@ -1213,7 +1214,7 @@ slkHelper.ability = {
         obj.DataB1 = 0
         obj.DataC1 = 0
         obj.race = v.race or "other"
-        obj.Art = v.Art or "ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp"
+        obj.Art = Art
         local id = obj:get_id()
         table.insert(slkHelperHashData, {
             type = "ability",
@@ -1223,7 +1224,70 @@ slkHelper.ability = {
                 ABILITY_TYPE = "empty",
                 ATTR = v.ATTR,
                 Name = v.Name,
-                Art = v.Art,
+                Art = Art,
+            }
+        })
+        return id
+    end,
+    --- 创建一个空白的光环技能
+    --- 设置的CUSTOM_DATA数据会自动传到数据中
+    ---@public
+    ---@param v table
+    ring = function(v)
+        slkHelper.count = slkHelper.count + 1
+        local Name = v.Name or "空白光环-" .. slkHelper.count
+        local BuffName = "[BUFF]" .. (v.Name or "空白光环-" .. slkHelper.count)
+        local Art = v.Art or "ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp"
+        local Area1 = v.Area1 or 900
+        local targs1 = v.targs1 or "air,ground,friend,self,vuln,invu"
+
+        local buffObj = slk.buff.BHad:new("slk_buff_ring_" .. BuffName)
+        buffObj.BuffTip = Name
+        buffObj.BuffuberTip = "此单位正处于" .. Name .. "的作用之下"
+        buffObj.Buffart = Art
+        buffObj.TargetArt = v.BuffTargetArt or "Abilities\\Spells\\Other\\GeneralAuraTarget\\GeneralAuraTarget.mdl"
+        buffObj.Targetattach = v.Targetattach or "origin"
+
+        v.Buttonpos1 = v.Buttonpos1 or 0
+        v.Buttonpos2 = v.Buttonpos2 or 0
+        if (v.HotKey ~= nil) then
+            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Tip = Name .. "[" .. hColor.gold(v.HotKey) .. "] "
+            Name = Name .. v.HotKey
+        else
+            v.Tip = Name
+        end
+        local obj = slk.ability.AHad:new("slk_ability_ring_ " .. Name)
+        obj.BuffID1 = buffObj:get_id()
+        obj.HotKey = v.HotKey or " "
+        obj.Name = Name
+        obj.Tip = v.Tip
+        obj.Ubertip = slkHelper.abilityEmptyUbertip(v)
+        obj.Buttonpos1 = v.Buttonpos1
+        obj.Buttonpos2 = v.Buttonpos2
+        obj.TargetArt = v.TargetArt or " "
+        obj.Area1 = Area1
+        obj.hero = 0
+        obj.levels = 1
+        obj.DataA1 = 0
+        obj.DataB1 = 0
+        obj.DataC1 = 0
+        obj.race = v.race or "other"
+        obj.Art = Art
+        obj.targs1 = targs1
+        local id = obj:get_id()
+        table.insert(slkHelperHashData, {
+            type = "ability",
+            data = {
+                CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ABILITY_ID = id,
+                ABILITY_TYPE = "ring",
+                ATTR = v.ATTR,
+                Name = v.Name,
+                Art = Art,
+                Area1 = Area1,
+                targs1 = targs1,
             }
         })
         return id
