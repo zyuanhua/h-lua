@@ -363,11 +363,11 @@ hunit.embed = function(u, options)
 end
 
 --- 创建单位/单位组
----@param bean table
+---@param options table
 ---@return userdata|table 最后创建单位|单位组
-hunit.create = function(bean)
+hunit.create = function(options)
     --[[
-        bean = {
+        options = {
             register = true, --是否注册进系统
             whichPlayer = nil, --归属玩家
             unitId = nil, --类型id,如'H001'
@@ -397,141 +397,146 @@ hunit.create = function(bean)
             isPause = false, -- 是否暂停
             isInvulnerable = false, --是否无敌，可选
             isShareSight = false, --是否与所有玩家共享视野，可选
+            attr = nil, --自定义属性，可选
         }
     ]]
-    if (bean.qty == nil) then
-        bean.qty = 1
+    if (options.qty == nil) then
+        options.qty = 1
     end
-    if (bean.whichPlayer == nil) then
+    if (options.whichPlayer == nil) then
         print_err("create unit fail -pl")
         return
     end
-    if (bean.unitId == nil) then
+    if (options.unitId == nil) then
         print_err("create unit fail -id")
         return
     end
-    if (bean.qty <= 0) then
+    if (options.qty <= 0) then
         print_err("create unit fail -qty")
         return
     end
-    if (bean.x == nil and bean.y == nil and bean.loc == nil) then
+    if (options.x == nil and options.y == nil and options.loc == nil) then
         print_err("create unit fail -place")
         return
     end
-    if (bean.unitId == nil) then
+    if (options.unitId == nil) then
         print_err("create unit id")
         return
     end
-    if (type(bean.unitId) == "string") then
-        bean.unitId = string.char2id(bean.unitId)
+    if (type(options.unitId) == "string") then
+        options.unitId = string.char2id(options.unitId)
     end
     local u
     local facing
     local x
     local y
     local g
-    if (bean.x ~= nil and bean.y ~= nil) then
-        x = bean.x
-        y = bean.y
-    elseif (bean.loc ~= nil) then
-        x = cj.GetLocationX(bean.loc)
-        y = cj.GetLocationY(bean.loc)
+    if (options.x ~= nil and options.y ~= nil) then
+        x = options.x
+        y = options.y
+    elseif (options.loc ~= nil) then
+        x = cj.GetLocationX(options.loc)
+        y = cj.GetLocationY(options.loc)
     end
-    if (bean.facing ~= nil) then
-        facing = bean.facing
-    elseif (bean.facingX ~= nil and bean.facingY ~= nil) then
-        facing = math.getDegBetweenXY(x, y, bean.facingX, bean.facingY)
-    elseif (bean.facingLoc ~= nil) then
-        facing = math.getDegBetweenXY(x, y, cj.GetLocationX(bean.facingLoc), cj.GetLocationY(bean.facingLoc))
-    elseif (bean.facingUnit ~= nil) then
-        facing = math.getDegBetweenXY(x, y, hunit.x(bean.facingUnit), hunit.y(bean.facingUnit))
+    if (options.facing ~= nil) then
+        facing = options.facing
+    elseif (options.facingX ~= nil and options.facingY ~= nil) then
+        facing = math.getDegBetweenXY(x, y, options.facingX, options.facingY)
+    elseif (options.facingLoc ~= nil) then
+        facing = math.getDegBetweenXY(x, y, cj.GetLocationX(options.facingLoc), cj.GetLocationY(options.facingLoc))
+    elseif (options.facingUnit ~= nil) then
+        facing = math.getDegBetweenXY(x, y, hunit.x(options.facingUnit), hunit.y(options.facingUnit))
     else
         facing = bj_UNIT_FACING
     end
-    if (bean.qty > 1) then
+    if (options.qty > 1) then
         g = {}
     end
-    for _ = 1, bean.qty, 1 do
-        if (bean.x ~= nil and bean.y ~= nil) then
-            u = cj.CreateUnit(bean.whichPlayer, bean.unitId, bean.x, bean.y, facing)
-        elseif (bean.loc ~= nil) then
-            u = cj.CreateUnitAtLoc(bean.whichPlayer, bean.unitId, bean.loc, facing)
+    for _ = 1, options.qty, 1 do
+        if (options.x ~= nil and options.y ~= nil) then
+            u = cj.CreateUnit(options.whichPlayer, options.unitId, options.x, options.y, facing)
+        elseif (options.loc ~= nil) then
+            u = cj.CreateUnitAtLoc(options.whichPlayer, options.unitId, options.loc, facing)
         end
         -- 高度
-        if (bean.height ~= nil and bean.height ~= 0) then
-            bean.height = math.round(bean.height)
+        if (options.height ~= nil and options.height ~= 0) then
+            options.height = math.round(options.height)
             hunit.setCanFly(u)
-            cj.SetUnitFlyHeight(u, bean.height, 10000)
+            cj.SetUnitFlyHeight(u, options.height, 10000)
         end
         -- 动作时间比例 %
-        if (bean.timeScale ~= nil and bean.timeScale > 0) then
-            bean.timeScale = math.round(bean.timeScale * 0.01)
-            cj.SetUnitTimeScale(u, bean.timeScale)
+        if (options.timeScale ~= nil and options.timeScale > 0) then
+            options.timeScale = math.round(options.timeScale * 0.01)
+            cj.SetUnitTimeScale(u, options.timeScale)
         end
         -- 模型缩放比例 %
-        if (bean.modelScale ~= nil and bean.modelScale > 0) then
-            bean.modelScale = math.round(bean.modelScale)
-            cj.SetUnitScale(u, bean.modelScale, bean.modelScale, bean.modelScale)
+        if (options.modelScale ~= nil and options.modelScale > 0) then
+            options.modelScale = math.round(options.modelScale)
+            cj.SetUnitScale(u, options.modelScale, options.modelScale, options.modelScale)
         end
         -- 透明比例
-        if (bean.opacity ~= nil and bean.opacity <= 1 and bean.opacity >= 0) then
-            bean.opacity = math.round(bean.opacity)
-            cj.SetUnitVertexColor(u, 255, 255, 255, 255 * bean.opacity)
+        if (options.opacity ~= nil and options.opacity <= 1 and options.opacity >= 0) then
+            options.opacity = math.round(options.opacity)
+            cj.SetUnitVertexColor(u, 255, 255, 255, 255 * options.opacity)
         end
-        if (bean.attackX ~= nil and bean.attackY ~= nil) then
-            cj.IssuePointOrder(u, "attack", bean.attackX, bean.attackY)
-        elseif (bean.attackLoc ~= nil) then
-            cj.IssuePointOrderLoc(u, "attack", bean.attackLoc)
-        elseif (bean.attackUnit ~= nil) then
-            cj.IssueTargetOrder(u, "attack", bean.attackUnit)
+        if (options.attackX ~= nil and options.attackY ~= nil) then
+            cj.IssuePointOrder(u, "attack", options.attackX, options.attackY)
+        elseif (options.attackLoc ~= nil) then
+            cj.IssuePointOrderLoc(u, "attack", options.attackLoc)
+        elseif (options.attackUnit ~= nil) then
+            cj.IssueTargetOrder(u, "attack", options.attackUnit)
         end
-        if (bean.qty > 1) then
+        if (options.qty > 1) then
             hgroup.addUnit(g, u)
         end
         --是否可选
-        if (bean.isUnSelectable ~= nil and bean.isUnSelectable == true) then
+        if (options.isUnSelectable ~= nil and options.isUnSelectable == true) then
             cj.UnitAddAbility(u, string.char2id("Aloc"))
         end
         --是否暂停
-        if (bean.isPause ~= nil and bean.isPause == true) then
+        if (options.isPause ~= nil and options.isPause == true) then
             cj.PauseUnit(u, true)
         end
         --是否无敌
-        if (bean.isInvulnerable ~= nil and bean.isInvulnerable == true) then
+        if (options.isInvulnerable ~= nil and options.isInvulnerable == true) then
             hunit.setInvulnerable(u, true)
         end
         --开启硬直，执行硬直计算
-        if (bean.isOpenPunish ~= nil and bean.isOpenPunish == true) then
+        if (options.isOpenPunish ~= nil and options.isOpenPunish == true) then
             table.insert(hRuntime.attributeGroup.punish, u)
         end
         --影子，无敌蝗虫暂停,且不注册系统
-        if (bean.isShadow ~= nil and bean.isShadow == true) then
+        if (options.isShadow ~= nil and options.isShadow == true) then
             cj.UnitAddAbility(u, "Aloc")
             cj.PauseUnit(u, true)
             hunit.setInvulnerable(u, true)
-            bean.register = false
+            options.register = false
         end
         --是否与所有玩家共享视野
-        if (bean.isShareSight ~= nil and bean.isShareSight == true) then
+        if (options.isShareSight ~= nil and options.isShareSight == true) then
             for pi = 0, bj_MAX_PLAYERS - 1, 1 do
-                cj.SetPlayerAlliance(bean.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
+                cj.SetPlayerAlliance(options.whichPlayer, cj.Player(pi), ALLIANCE_SHARED_VISION, true)
             end
         end
         -- 注册系统(默认注册)
-        if (type(bean.register) ~= "boolean") then
-            bean.register = true
+        if (type(options.register) ~= "boolean") then
+            options.register = true
         end
-        if (bean.register == true) then
-            hunit.embed(u, bean)
+        if (options.register == true) then
+            hunit.embed(u, options)
         end
         -- 生命周期 dead
-        if (bean.life ~= nil and bean.life > 0) then
-            hunit.setPeriod(u, bean.life)
-            hunit.del(u, bean.life + 1)
+        if (options.life ~= nil and options.life > 0) then
+            hunit.setPeriod(u, options.life)
+            hunit.del(u, options.life + 1)
         end
         -- 持续时间 delete
-        if (bean.during ~= nil and bean.during >= 0) then
-            hunit.del(u, bean.during)
+        if (options.during ~= nil and options.during >= 0) then
+            hunit.del(u, options.during)
+        end
+        -- attr
+        if (options.attr ~= nil and type(options.attr) == "table") then
+            hattr.set(u, 0, options.attr)
         end
     end
     if (g ~= nil) then

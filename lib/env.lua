@@ -122,7 +122,7 @@ henv = {
         end
     end,
     --- 清理可破坏物
-    clearDestructable = function()
+    _clearDestructable = function()
         cj.RemoveDestructable(cj.GetEnumDestructable())
     end
 }
@@ -150,7 +150,7 @@ end
 
 --- 清空一片区域的可破坏物
 henv.clearDestructable = function(whichRect)
-    cj.EnumDestructablesInRect(whichRect, nil, henv.clearDestructable)
+    cj.EnumDestructablesInRect(whichRect, nil, henv._clearDestructable)
 end
 
 --- 构建区域装饰
