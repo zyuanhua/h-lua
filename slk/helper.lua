@@ -303,7 +303,7 @@ slkHelper.itemUbertip = function(v)
     return string.implode("|n", d)
 end
 
---- 组装空白技能的说明
+--- 组装空白被动技能的说明
 ---@private
 slkHelper.abilityEmptyUbertip = function(v)
     local d = {}
@@ -316,6 +316,32 @@ slkHelper.abilityEmptyUbertip = function(v)
     end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, hColor.grey(v.Desc))
+    end
+    return string.implode("|n", d)
+end
+
+--- 组装光环技能的说明
+---@private
+slkHelper.abilityRingUbertip = function(v)
+    local d = {}
+    if (v.Area1 ~= nil) then
+        table.insert(d, hColor.seaLight("光环范围：" .. v.Area1))
+    end
+    if (v.targs1 ~= nil) then
+        local targs1 = string.explode(',', v.targs1)
+        local labels = {}
+        for _, t in ipairs(targs1) do
+            table.insert(labels, CONST_TARGET_LABEL[t])
+        end
+        table.insert(d, hColor.seaLight("作用目标：" .. string.implode(',', labels)))
+        labels = nil
+    end
+    if (v.RING ~= nil) then
+        table.sort(v.RING)
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.RING, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.RING, "|n")))
+    end
+    if (v.Desc ~= nil and v.Desc ~= "") then
+        table.insert(d, v.Desc)
     end
     return string.implode("|n", d)
 end
@@ -421,8 +447,8 @@ slkHelper.item = {
         obj.uses = uses
         if (v.HotKey ~= nil) then
             obj.HotKey = v.HotKey
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Buttonpos1 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos2 or 0
             obj.Tip = "获得" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
         else
             obj.Buttonpos1 = v.Buttonpos1 or 0
@@ -487,8 +513,8 @@ slkHelper.unit = {
         local obj = slk.unit.ogru:new("slk_units_" .. v.Name)
         if (v.HotKey ~= nil) then
             obj.HotKey = v.HotKey
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Buttonpos1 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos2 or 0
             obj.Tip = "选择：" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
         else
             obj.Buttonpos1 = v.Buttonpos1 or 0
@@ -674,8 +700,8 @@ slkHelper.unit = {
         local obj = slk.unit.Hpal:new("slk_hero_" .. v.Name)
         if (v.HotKey ~= nil) then
             obj.HotKey = v.HotKey
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Buttonpos1 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos2 or 0
             obj.Tip = "选择：" .. v.Name .. "(" .. hColor.gold(v.HotKey) .. ")"
         else
             obj.Buttonpos1 = v.Buttonpos1 or 0
@@ -944,8 +970,8 @@ slkHelper.unit = {
             end
         end
         if (v.HotKey ~= nil) then
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Buttonpos1 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_FULL_KV[v.HotKey].Buttonpos2 or 0
             Tip = "选择：" .. Name .. "(" .. hColor.gold(v.HotKey) .. ")"
         else
             v.Buttonpos1 = v.Buttonpos1 or 0
@@ -1194,8 +1220,8 @@ slkHelper.ability = {
         v.Buttonpos1 = v.Buttonpos1 or 0
         v.Buttonpos2 = v.Buttonpos2 or 0
         if (v.HotKey ~= nil) then
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Buttonpos1 = CONST_HOTKEY_ABILITY_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_ABILITY_KV[v.HotKey].Buttonpos2 or 0
             v.Tip = Name .. "[" .. hColor.gold(v.HotKey) .. "]"
             Name = Name .. v.HotKey
         else
@@ -1239,20 +1265,20 @@ slkHelper.ability = {
         local BuffName = "[BUFF]" .. (v.Name or "空白光环-" .. slkHelper.count)
         local Art = v.Art or "ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp"
         local Area1 = v.Area1 or 900
-        local targs1 = v.targs1 or "air,ground,friend,self,vuln,invu"
-
-        local buffObj = slk.buff.BHad:new("slk_buff_ring_" .. BuffName)
+        v.targs1 = v.targs1 or "air,ground,friend,self,vuln,invu"
+        -- buff
+        local buffObj = slk.buff.BHad:new("slk_ringbuff_" .. BuffName)
         buffObj.BuffTip = Name
         buffObj.BuffuberTip = "此单位正处于" .. Name .. "的作用之下"
         buffObj.Buffart = Art
         buffObj.TargetArt = v.BuffTargetArt or "Abilities\\Spells\\Other\\GeneralAuraTarget\\GeneralAuraTarget.mdl"
         buffObj.Targetattach = v.Targetattach or "origin"
-
+        --
         v.Buttonpos1 = v.Buttonpos1 or 0
         v.Buttonpos2 = v.Buttonpos2 or 0
         if (v.HotKey ~= nil) then
-            v.Buttonpos1 = CONST_HOTKEY_KV[v.HotKey].Buttonpos1 or 0
-            v.Buttonpos2 = CONST_HOTKEY_KV[v.HotKey].Buttonpos2 or 0
+            v.Buttonpos1 = CONST_HOTKEY_ABILITY_KV[v.HotKey].Buttonpos1 or 0
+            v.Buttonpos2 = CONST_HOTKEY_ABILITY_KV[v.HotKey].Buttonpos2 or 0
             v.Tip = Name .. "[" .. hColor.gold(v.HotKey) .. "] "
             Name = Name .. v.HotKey
         else
@@ -1263,10 +1289,10 @@ slkHelper.ability = {
         obj.HotKey = v.HotKey or " "
         obj.Name = Name
         obj.Tip = v.Tip
-        obj.Ubertip = slkHelper.abilityEmptyUbertip(v)
+        obj.Ubertip = slkHelper.abilityRingUbertip(v) .. "|n|n" .. hColor.grey(" * 同一种光环仅有一个有效")
         obj.Buttonpos1 = v.Buttonpos1
         obj.Buttonpos2 = v.Buttonpos2
-        obj.TargetArt = v.TargetArt or " "
+        obj.TargetArt = v.TargetArt or ""
         obj.Area1 = Area1
         obj.hero = 0
         obj.levels = 1
@@ -1275,7 +1301,7 @@ slkHelper.ability = {
         obj.DataC1 = 0
         obj.race = v.race or "other"
         obj.Art = Art
-        obj.targs1 = targs1
+        obj.targs1 = v.targs1
         local id = obj:get_id()
         table.insert(slkHelperHashData, {
             type = "ability",
@@ -1287,7 +1313,7 @@ slkHelper.ability = {
                 Name = v.Name,
                 Art = Art,
                 Area1 = Area1,
-                targs1 = targs1,
+                targs1 = string.explode(",", v.targs1),
             }
         })
         return id
