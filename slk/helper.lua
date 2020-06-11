@@ -269,6 +269,11 @@ slkHelper.itemDesc = function(v)
         table.sort(v.ATTR)
         table.insert(d, slkHelper.attrDesc(v.ATTR, ";") .. slkHelper.attrTableDesc(v.ATTR, ";"))
     end
+    -- 仅文本无效果，适用于例如技能书这类的物品
+    if (v.ATTR_TXT ~= nil) then
+        table.sort(v.ATTR_TXT)
+        table.insert(d, slkHelper.attrDesc(v.ATTR_TXT, ";") .. slkHelper.attrTableDesc(v.ATTR_TXT, ";"))
+    end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
     weight = tostring(math.round(weight))
@@ -295,6 +300,11 @@ slkHelper.itemUbertip = function(v)
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
         table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
+    end
+    -- 仅文本无效果，适用于例如技能书这类的物品
+    if (v.ATTR_TXT ~= nil) then
+        table.sort(v.ATTR_TXT)
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR_TXT, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR_TXT, "|n")))
     end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
@@ -351,6 +361,29 @@ end
 
 --- 创建一件物品的冷却技能
 ---@private
+slkHelper.itemCooldown0ID = nil
+slkHelper.itemCooldownID0 = function()
+    if (slkHelper.itemCooldown0ID == nil) then
+        local oobTips = "ITEMS_DEFCD_ID_#0"
+        local oob = slk.ability.AIgo:new("items_default_cooldown_#0")
+        oob.Effectsound = ""
+        oob.Name = oobTips
+        oob.Tip = oobTips
+        oob.Ubertip = oobTips
+        oob.Art = ""
+        oob.TargetArt = ""
+        oob.Targetattach = ""
+        oob.DataA1 = 0
+        oob.Art = ""
+        oob.CasterArt = ""
+        oob.Cool = 0
+        slkHelper.itemCooldown0ID = oob:get_id()
+    end
+    return slkHelper.itemCooldown0ID
+end
+
+--- 创建一件物品的冷却技能
+---@private
 slkHelper.itemCooldownID = function(v)
     if (v.cooldown == nil) then
         return "AIat"
@@ -359,7 +392,7 @@ slkHelper.itemCooldownID = function(v)
         v.cooldown = 0
     end
     if (v.cooldown == 0) then
-        return '0000'
+        return slkHelper.itemCooldownID0()
     end
     local oobTips = "ITEMS_DEFCD_ID_" .. v.Name
     local oob = slk.ability.AIgo:new("items_default_cooldown_" .. v.Name)
@@ -387,35 +420,24 @@ slkHelper.item = {
         local cd = slkHelper.itemCooldownID(v)
         local abilList = ""
         local usable = 0
-        local uses = 0
+        local uses = v.uses or 1
         local OVERLIE = v.OVERLIE or 1
         local ignoreCD = 0
-        if (cd == "0000") then
-            usable = 1
-            if (v.perishable == nil) then
-                v.perishable = 1
-            end
-            v.class = "Charged"
-            uses = v.uses or 1
-            ignoreCD = 1
-        elseif (cd ~= "AIat") then
+        if (cd ~= "AIat") then
             abilList = cd
             usable = 1
             if (v.perishable == nil) then
                 v.perishable = 1
             end
             v.class = "Charged"
-            uses = v.uses or 1
+            if (cd == slkHelper.itemCooldown0ID) then
+                ignoreCD = 1
+            end
         else
             if (v.perishable == nil) then
                 v.perishable = 0
             end
             v.class = "Permanent"
-            if (OVERLIE > 1) then
-                uses = v.uses or 1
-            else
-                uses = 0
-            end
         end
         local lv = 1
         v.goldcost = v.goldcost or 0

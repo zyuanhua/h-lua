@@ -56,7 +56,7 @@ end
 hskill.getAttribute = function(abilId)
     local slk = hskill.getSlk(abilId)
     if (slk ~= nil) then
-        return slk.ATTR or slk.ATTRIBUTE
+        return slk.ATTR
     else
         return nil
     end

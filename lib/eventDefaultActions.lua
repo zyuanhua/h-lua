@@ -622,6 +622,8 @@ hevent_default_actions = {
             --检测是否使用后自动消失，如果不是，次数补回1
             if (perishable == false) then
                 hitem.setCharges(it, hitem.getCharges(it) + 1)
+            else
+                hitem.subAttribute(u, itId, 1)
             end
             --触发使用物品事件
             hevent.triggerEvent(
