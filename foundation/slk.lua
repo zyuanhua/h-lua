@@ -56,7 +56,7 @@ hslk_global = {
     unit_hero_tavern = 0, -- 酒馆id
     unit_hero_tavern_token = 0, -- 酒馆选择马甲id（视野）
     unit_hero_death_token = 0,
-    itemsShadowMapping = {},
+    items_shadow_mapping = {},
     id2Value = {
         unit = {},
         item = {},
@@ -64,6 +64,12 @@ hslk_global = {
         technology = {},
     },
     name2Value = {
+        unit = {},
+        item = {},
+        ability = {},
+        technology = {},
+    },
+    id_array = {
         unit = {},
         item = {},
         ability = {},
@@ -118,8 +124,8 @@ hslk_global = {
             add = {},
             sub = {}
         },
-        ablisGradient = {},
-        sightGradient = {}
+        ablis_gradient = {},
+        sight_gradient = {}
     }
 }
 
@@ -169,7 +175,7 @@ end
 -- 属性系统
 for i = 1, 9 do
     local val = math.floor(10 ^ (i - 1))
-    table.insert(hslk_global.attr.ablisGradient, val)
+    table.insert(hslk_global.attr.ablis_gradient, val)
     hslk_global.attr.str_green.add[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_STR_GREEN_ADD, val)
     hslk_global.attr.str_green.sub[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_STR_GREEN_SUB, val)
     hslk_global.attr.agi_green.add[val] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_AGI_GREEN_ADD, val)
@@ -200,14 +206,14 @@ local si = 1
 while (si <= 10000) do
     for _, v in ipairs(sightBase) do
         v = math.floor(v * si)
-        table.insert(hslk_global.attr.sightGradient, v)
+        table.insert(hslk_global.attr.sight_gradient, v)
         hslk_global.attr.sight.add[v] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_SIGHT_ADD, v)
         hslk_global.attr.sight.sub[v] = cj.LoadInteger(cg.hash_hslk, HSK.ATTR_SIGHT_SUB, v)
     end
     si = si * 10
 end
 table.sort(
-    hslk_global.attr.sightGradient,
+    hslk_global.attr.sight_gradient,
     function(a, b)
         return a > b
     end

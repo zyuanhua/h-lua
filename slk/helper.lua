@@ -284,7 +284,10 @@ end
 slkHelper.itemUbertip = function(v)
     local d = {}
     if (v.ACTIVE ~= nil) then
-        table.insert(d, hColor.yellow("主动：" .. v.ACTIVE .. "，冷却" .. v.cooldown .. "秒)"))
+        table.insert(d, hColor.yellow("主动：" .. v.ACTIVE))
+        if (v.cooldown ~= nil and v.cooldown > 0) then
+            table.insert(d, hColor.skyLight("冷却：" .. v.cooldown .. "秒"))
+        end
     end
     if (v.PASSIVE ~= nil) then
         table.insert(d, hColor.seaLight(v.PASSIVE))
@@ -355,6 +358,9 @@ slkHelper.itemCooldownID = function(v)
     if (v.cooldown < 0) then
         v.cooldown = 0
     end
+    if (v.cooldown == 0) then
+        return '0000'
+    end
     local oobTips = "ITEMS_DEFCD_ID_" .. v.Name
     local oob = slk.ability.AIgo:new("items_default_cooldown_" .. v.Name)
     oob.Effectsound = ""
@@ -383,7 +389,16 @@ slkHelper.item = {
         local usable = 0
         local uses = 0
         local OVERLIE = v.OVERLIE or 1
-        if (cd ~= "AIat") then
+        local ignoreCD = 0
+        if (cd == "0000") then
+            usable = 1
+            if (v.perishable == nil) then
+                v.perishable = 1
+            end
+            v.class = "Charged"
+            uses = v.uses or 1
+            ignoreCD = 1
+        elseif (cd ~= "AIat") then
             abilList = cd
             usable = 1
             if (v.perishable == nil) then
@@ -432,7 +447,7 @@ slkHelper.item = {
         obj.prio = v.prio or 0
         obj.cooldownID = cd
         obj.abilList = abilList
-        obj.ignoreCD = v.ignoreCD or 0
+        obj.ignoreCD = ignoreCD
         obj.drop = v.drop or 0
         obj.perishable = v.perishable
         obj.usable = usable
@@ -459,6 +474,8 @@ slkHelper.item = {
         table.insert(slkHelperHashData, {
             type = "item",
             data = {
+                CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 ITEM_ID = id,
                 Name = v.Name,
                 class = v.class,
@@ -473,7 +490,6 @@ slkHelper.item = {
                 OVERLIE = OVERLIE,
                 WEIGHT = WEIGHT,
                 ATTR = v.ATTR,
-                CUSTOM_DATA = v.CUSTOM_DATA or {},
             }
         })
         return id
@@ -625,6 +641,7 @@ slkHelper.unit = {
             type = "unit",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 UNIT_ID = id,
                 UNIT_TYPE = "normal",
                 Name = v.Name,
@@ -821,6 +838,7 @@ slkHelper.unit = {
             type = "unit",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 UNIT_ID = id,
                 UNIT_TYPE = "hero",
                 Primary = Primary,
@@ -873,6 +891,7 @@ slkHelper.unit = {
             type = "unit",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 UNIT_ID = id,
                 UNIT_TYPE = "shop",
                 Name = v.Name,
@@ -1139,6 +1158,7 @@ slkHelper.unit = {
             type = "unit",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 UNIT_ID = id,
                 UNIT_TYPE = UNIT_TYPE,
                 Name = Name,
@@ -1194,6 +1214,7 @@ slkHelper.unit = {
             type = "unit",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 UNIT_ID = id,
                 UNIT_TYPE = "tavern",
                 Name = v.Name,
@@ -1246,6 +1267,7 @@ slkHelper.ability = {
             type = "ability",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 ABILITY_ID = id,
                 ABILITY_TYPE = "empty",
                 ATTR = v.ATTR,
@@ -1307,6 +1329,7 @@ slkHelper.ability = {
             type = "ability",
             data = {
                 CUSTOM_DATA = v.CUSTOM_DATA or {},
+                ID_ARRAY = v.ID_ARRAY or nil,
                 ABILITY_ID = id,
                 ABILITY_TYPE = "ring",
                 ATTR = v.ATTR,

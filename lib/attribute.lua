@@ -109,7 +109,7 @@ end
 --- hslk_global.attr
 ---@private
 hattribute.regAllAbility = function(whichUnit)
-    for _, v in ipairs(hslk_global.attr.ablisGradient) do
+    for _, v in ipairs(hslk_global.attr.ablis_gradient) do
         -- 生命
         cj.UnitAddAbility(whichUnit, hslk_global.attr.life.add[v])
         cj.UnitRemoveAbility(whichUnit, hslk_global.attr.life.add[v])
@@ -149,7 +149,7 @@ hattribute.regAllAbility = function(whichUnit)
         cj.UnitAddAbility(whichUnit, hslk_global.attr.defend.sub[v])
         cj.UnitRemoveAbility(whichUnit, hslk_global.attr.defend.sub[v])
     end
-    for _, v in ipairs(hslk_global.attr.sightGradient) do
+    for _, v in ipairs(hslk_global.attr.sight_gradient) do
         -- 视野
         cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
         cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.add[v])
@@ -596,19 +596,19 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 cj.SetUnitAcquireRange(whichUnit, futureVal * 1.1)
             elseif (attr == "sight") then
                 -- 视野
-                for _, gradient in ipairs(hslk_global.attr.sightGradient) do
+                for _, gradient in ipairs(hslk_global.attr.sight_gradient) do
                     cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.add[gradient])
                     cj.UnitRemoveAbility(whichUnit, hslk_global.attr.sight.sub[gradient])
                 end
                 tempVal = math.floor(math.abs(futureVal))
-                local sightGradient = table.clone(hslk_global.attr.sightGradient)
+                local sight_gradient = table.clone(hslk_global.attr.sight_gradient)
                 if (tempVal ~= 0) then
                     while (true) do
                         local isFound = false
-                        for _, v in ipairs(sightGradient) do
+                        for _, v in ipairs(sight_gradient) do
                             if (tempVal >= v) then
                                 tempVal = math.floor(tempVal - v)
-                                table.delete(v, sightGradient)
+                                table.delete(v, sight_gradient)
                                 if (futureVal > 0) then
                                     cj.UnitAddAbility(whichUnit, hslk_global.attr.sight.add[v])
                                 else
@@ -630,7 +630,7 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (futureVal > 99999999) then
                     futureVal = 99999999
                 end
-                for _, grad in ipairs(hslk_global.attr.ablisGradient) do
+                for _, grad in ipairs(hslk_global.attr.ablis_gradient) do
                     local ab = hslk_global.attr[attr].add[grad]
                     if (cj.GetUnitAbilityLevel(whichUnit, ab) > 1) then
                         cj.SetUnitAbilityLevel(whichUnit, ab, 1)
@@ -667,7 +667,7 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
                 elseif (futureVal > 99999999) then
                     futureVal = 99999999
                 end
-                for _, grad in ipairs(hslk_global.attr.ablisGradient) do
+                for _, grad in ipairs(hslk_global.attr.ablis_gradient) do
                     local ab = hslk_global.attr[attr].add[grad]
                     if (cj.GetUnitAbilityLevel(whichUnit, ab) > 1) then
                         cj.SetUnitAbilityLevel(whichUnit, ab, 1)
