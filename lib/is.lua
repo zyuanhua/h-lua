@@ -275,6 +275,13 @@ end
 --- 是否正在受伤
 ---@param whichUnit userdata
 ---@return boolean
+his.beDamaging = function(whichUnit)
+    return his.get(whichUnit, "isBeDamaging")
+end
+
+--- 是否正在造成伤害
+---@param whichUnit userdata
+---@return boolean
 his.damaging = function(whichUnit)
     return his.get(whichUnit, "isDamaging")
 end

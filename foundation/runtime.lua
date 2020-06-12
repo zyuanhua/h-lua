@@ -75,6 +75,7 @@ hRuntime = {
     },
     attribute = {},
     attributeDiff = {},
+    attributeBeDamaging = {},
     attributeDamaging = {},
     attributeGroup = {
         life_back = {},
