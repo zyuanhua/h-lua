@@ -1,18 +1,5 @@
 ---@class his 判断
-his = {
-    mapInitialPlayableArea = cj.Rect(
-        cj.GetCameraBoundMinX() - cj.GetCameraMargin(CAMERA_MARGIN_LEFT),
-        cj.GetCameraBoundMinY() - cj.GetCameraMargin(CAMERA_MARGIN_BOTTOM),
-        cj.GetCameraBoundMaxX() + cj.GetCameraMargin(CAMERA_MARGIN_RIGHT),
-        cj.GetCameraBoundMaxY() + cj.GetCameraMargin(CAMERA_MARGIN_TOP)
-    ),
-    mapCameraArea = cj.Rect(
-        cj.GetCameraBoundMinX(),
-        cj.GetCameraBoundMinY(),
-        cj.GetCameraBoundMaxX(),
-        cj.GetCameraBoundMaxY()
-    )
-}
+his = {}
 
 ---@private
 his.set = function(handle, key, val)
@@ -288,6 +275,13 @@ end
 --- 是否正在受伤
 ---@param whichUnit userdata
 ---@return boolean
+his.beDamaging = function(whichUnit)
+    return his.get(whichUnit, "isBeDamaging")
+end
+
+--- 是否正在造成伤害
+---@param whichUnit userdata
+---@return boolean
 his.damaging = function(whichUnit)
     return his.get(whichUnit, "isDamaging")
 end
@@ -408,7 +402,7 @@ end
 ---@param y number
 ---@return boolean
 his.borderMap = function(x, y)
-    return his.borderRect(his.mapInitialPlayableArea, x, y)
+    return his.borderRect(hrect.MAP_INITIAL_PLAYABLE_AREA, x, y)
 end
 
 --- 是否超出镜头边界
@@ -416,7 +410,7 @@ end
 ---@param y number
 ---@return boolean
 his.borderCamera = function(x, y)
-    return his.borderRect(his.mapCameraArea, x, y)
+    return his.borderRect(his.MAP_CAMERA_AREA, x, y)
 end
 
 --- 是否身上有某种物品

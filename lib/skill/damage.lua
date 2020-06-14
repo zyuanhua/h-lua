@@ -192,10 +192,9 @@ hskill.damage = function(options)
         damageStringColor = CONST_DAMAGE_TYPE_MAP.absolute.color
     end
     -- 计算回避 X 命中
-    if
-    (damageKind == CONST_DAMAGE_KIND.attack and targetUnitAttr.avoid - (sourceUnitAttr.aim or 0) > 0 and
-        math.random(1, 100) <= targetUnitAttr.avoid - (sourceUnitAttr.aim or 0))
-    then
+    if (damageKind == CONST_DAMAGE_KIND.attack
+        and targetUnitAttr.avoid - (sourceUnitAttr.aim or 0) > 0
+        and math.random(1, 100) <= targetUnitAttr.avoid - (sourceUnitAttr.aim or 0)) then
         isAvoid = true
         lastDamage = 0
         htextTag.style(htextTag.create2Unit(targetUnit, "回避", 6.00, "5ef78e", 10, 1.00, 10.00), "scale", 0, 0.2)
@@ -287,42 +286,59 @@ hskill.damage = function(options)
     -- 上面都是先行计算
     if (lastDamage > 0.125) then
         -- 设置单位正在受伤
-        if (hRuntime.attributeDamaging[targetUnit] ~= nil) then
-            htime.delTimer(hRuntime.attributeDamaging[targetUnit])
-            hRuntime.attributeDamaging[targetUnit] = nil
+        if (hRuntime.attributeBeDamaging[targetUnit] ~= nil) then
+            htime.delTimer(hRuntime.attributeBeDamaging[targetUnit])
+            hRuntime.attributeBeDamaging[targetUnit] = nil
         end
-        his.set(targetUnit, "isDamaging", true)
-        hRuntime.attributeDamaging[targetUnit] = htime.setTimeout(
+        his.set(targetUnit, "isBeDamaging", true)
+        hRuntime.attributeBeDamaging[targetUnit] = htime.setTimeout(
             3.5,
             function(t)
                 htime.delTimer(t)
-                hRuntime.attributeDamaging[targetUnit] = nil
-                his.set(targetUnit, "isDamaging", false)
+                hRuntime.attributeBeDamaging[targetUnit] = nil
+                his.set(targetUnit, "isBeDamaging", false)
             end
         )
+        if (sourceUnit ~= nil) then
+            if (hRuntime.attributeDamaging[targetUnit] ~= nil) then
+                htime.delTimer(hRuntime.attributeDamaging[targetUnit])
+                hRuntime.attributeDamaging[targetUnit] = nil
+            end
+            his.set(sourceUnit, "isDamaging", true)
+            hRuntime.attributeDamaging[sourceUnit] = htime.setTimeout(
+                3.5,
+                function(t)
+                    htime.delTimer(t)
+                    hRuntime.attributeDamaging[sourceUnit] = nil
+                    his.set(sourceUnit, "isDamaging", false)
+                end
+            )
+            hevent.setLastDamageUnit(targetUnit, sourceUnit)
+            hplayer.addDamage(hunit.getOwner(sourceUnit), lastDamage)
+        end
         -- 造成伤害及漂浮字
         _damageTtg(targetUnit, lastDamage, damageString, damageStringColor)
         --
-        hevent.setLastDamageUnit(targetUnit, sourceUnit)
-        hplayer.addDamage(hunit.getOwner(sourceUnit), lastDamage)
         hplayer.addBeDamage(hunit.getOwner(targetUnit), lastDamage)
         hunit.subCurLife(targetUnit, lastDamage)
         if (type(effect) == "string" and string.len(effect) > 0) then
             heffect.toXY(effect, hunit.x(targetUnit), hunit.y(targetUnit), 0)
         end
         -- @触发伤害事件
-        hevent.triggerEvent(
-            sourceUnit,
-            CONST_EVENT.damage,
-            {
-                triggerUnit = sourceUnit,
-                targetUnit = targetUnit,
-                sourceUnit = sourceUnit,
-                damage = lastDamage,
-                damageKind = damageKind,
-                damageType = damageType
-            }
-        )
+        if (sourceUnit ~= nil) then
+            hevent.triggerEvent(
+                sourceUnit,
+                CONST_EVENT.damage,
+                {
+                    triggerUnit = sourceUnit,
+                    targetUnit = targetUnit,
+                    sourceUnit = sourceUnit,
+                    damage = lastDamage,
+                    damageKind = damageKind,
+                    damageType = damageType
+                }
+            )
+        end
         -- @触发被伤害事件
         hevent.triggerEvent(
             targetUnit,
@@ -336,19 +352,21 @@ hskill.damage = function(options)
             }
         )
         if (damageKind == CONST_DAMAGE_KIND.attack) then
-            -- @触发攻击事件
-            hevent.triggerEvent(
-                sourceUnit,
-                CONST_EVENT.attack,
-                {
-                    triggerUnit = sourceUnit,
-                    attacker = sourceUnit,
-                    targetUnit = targetUnit,
-                    damage = lastDamage,
-                    damageKind = damageKind,
-                    damageType = damageType
-                }
-            )
+            if (sourceUnit ~= nil) then
+                -- @触发攻击事件
+                hevent.triggerEvent(
+                    sourceUnit,
+                    CONST_EVENT.attack,
+                    {
+                        triggerUnit = sourceUnit,
+                        attacker = sourceUnit,
+                        targetUnit = targetUnit,
+                        damage = lastDamage,
+                        damageKind = damageKind,
+                        damageType = damageType
+                    }
+                )
+            end
             -- @触发被攻击事件
             hevent.triggerEvent(
                 targetUnit,

@@ -4,22 +4,46 @@ hRuntime = {
         unit = function(json)
             hslk_global.id2Value.unit[json.UNIT_ID] = json
             hslk_global.name2Value.unit[json.Name] = json
+            if (json.ID_ARRAY ~= nil) then
+                if (hslk_global.id_array.unit[json.ID_ARRAY] == nil) then
+                    hslk_global.id_array.unit[json.ID_ARRAY] = {}
+                end
+                table.insert(hslk_global.id_array.unit[json.ID_ARRAY], json.UNIT_ID)
+            end
         end,
         item = function(json)
             hslk_global.id2Value.item[json.ITEM_ID] = json
             hslk_global.name2Value.item[json.Name] = json
             if (type(json.SHADOW_ID) == "string") then
-                hslk_global.itemsShadowMapping[json.ITEM_ID] = json.SHADOW_ID
-                hslk_global.itemsShadowMapping[json.SHADOW_ID] = json.ITEM_ID
+                hslk_global.items_shadow_mapping[json.ITEM_ID] = json.SHADOW_ID
+                hslk_global.items_shadow_mapping[json.SHADOW_ID] = json.ITEM_ID
+            end
+            if (json.ID_ARRAY ~= nil) then
+                if (hslk_global.id_array.item[json.ID_ARRAY] == nil) then
+                    hslk_global.id_array.item[json.ID_ARRAY] = {}
+                end
+                table.insert(hslk_global.id_array.item[json.ID_ARRAY], json.ITEM_ID)
             end
         end,
         ability = function(json)
             hslk_global.id2Value.ability[json.ABILITY_ID] = json
             hslk_global.name2Value.ability[json.Name] = json
+            if (json.ID_ARRAY ~= nil) then
+                if (hslk_global.id_array.ability[json.ID_ARRAY] == nil) then
+                    hslk_global.id_array.ability[json.ID_ARRAY] = {}
+                end
+                table.insert(hslk_global.id_array.ability[json.ID_ARRAY], json.ABILITY_ID)
+            end
         end,
         technology = function(json)
             hslk_global.id2Value.technology[json.TECHNOLOGY_ID] = json
             hslk_global.name2Value.technology[json.Name] = json
+            if (json.ID_ARRAY ~= nil) then
+                if (hslk_global.id_array.technology[json.ID_ARRAY] == nil) then
+                    hslk_global.id_array.technology[json.ID_ARRAY] = {}
+                end
+                table.insert(hslk_global.id_array.technology[json.ID_ARRAY], json.TECHNOLOGY_ID)
+            end
         end,
     },
     is = {},
@@ -51,6 +75,7 @@ hRuntime = {
     },
     attribute = {},
     attributeDiff = {},
+    attributeBeDamaging = {},
     attributeDamaging = {},
     attributeGroup = {
         life_back = {},

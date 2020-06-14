@@ -473,7 +473,7 @@ hevent_default_actions = {
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
             if (hslk_global.id2Value.item[itId] == nil) then
-                -- 排除掉没有注册的物品。例如框架内自带的一些物品
+                -- 排除掉没有注册进hslk_global的物品
                 return
             end
             if (hRuntime.item[it] ~= nil and hRuntime.item[it].positionType == hitem.POSITION_TYPE.UNIT) then
@@ -622,6 +622,8 @@ hevent_default_actions = {
             --检测是否使用后自动消失，如果不是，次数补回1
             if (perishable == false) then
                 hitem.setCharges(it, hitem.getCharges(it) + 1)
+            else
+                hitem.subAttribute(u, itId, 1)
             end
             --触发使用物品事件
             hevent.triggerEvent(
@@ -665,5 +667,16 @@ hevent_default_actions = {
                 print_err("拆分物品尚未完成")
             end
         end),
+    },
+    destructable = {
+        destroy = cj.Condition(function()
+            hevent.triggerEvent(
+                cj.GetTriggerDestructable(),
+                CONST_EVENT.destructableDestroy,
+                {
+                    triggerDestructable = cj.GetTriggerDestructable()
+                }
+            )
+        end)
     }
 }

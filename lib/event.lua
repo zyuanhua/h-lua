@@ -1018,3 +1018,30 @@ end
 hevent.onPickHero = function(callFunc)
     return hevent.registerEvent("global", CONST_EVENT.pickHero, callFunc)
 end
+
+--- 可破坏物死亡
+---@alias onDestructableDestroy fun(evtData: {triggerDestructable:"被破坏的可破坏物"}):void
+---@param whichDestructable userdata
+---@param callFunc onDestructableDestroy | "function(evtData) end"
+---@return any
+hevent.onDestructableDestroy = function(whichDestructable, callFunc)
+    hevent.pool(whichDestructable, hevent_default_actions.destructable.destroy, function(tgr)
+        cj.TriggerRegisterDeathEvent(tgr, whichDestructable)
+    end)
+    return hevent.registerEvent(whichDestructable, CONST_EVENT.destructableDestroy, callFunc)
+end
+
+--- 全图当前可破坏物死亡
+---@alias onMapDestructableDestroy fun(evtData: {triggerDestructable:"被破坏的可破坏物"}):void
+---@param whichDestructable userdata
+---@param callFunc onMapDestructableDestroy | "function(evtData) end"
+---@return any
+hevent.onMapDestructableDestroy = function(callFunc)
+    local tgr = cj.CreateTrigger()
+    cj.TriggerAddCondition(tgr, cj.Condition(function()
+        callFunc({ triggerDestructable = cj.GetTriggerDestructable() })
+    end))
+    cj.EnumDestructablesInRect(hrect.MAP_INITIAL_PLAYABLE_AREA, nil, function()
+        cj.TriggerRegisterDeathEvent(tgr, cj.GetEnumDestructable())
+    end)
+end

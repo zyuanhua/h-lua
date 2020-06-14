@@ -31,10 +31,23 @@ end
 ---@param angle number
 ---@return table
 math.polarProjection = function(x, y, dist, angle)
-    return {
-        x = x + dist * math.cos(angle * bj_DEGTORAD),
-        y = y + dist * math.sin(angle * bj_DEGTORAD)
-    }
+    local tx = x + dist * math.cos(angle * bj_DEGTORAD)
+    local ty = y + dist * math.sin(angle * bj_DEGTORAD)
+    local minX = cj.GetRectMinX(hrect.MAP_INITIAL_PLAYABLE_AREA)
+    local minY = cj.GetRectMinY(hrect.MAP_INITIAL_PLAYABLE_AREA)
+    local maxX = cj.GetRectMaxX(hrect.MAP_INITIAL_PLAYABLE_AREA)
+    local maxY = cj.GetRectMaxY(hrect.MAP_INITIAL_PLAYABLE_AREA)
+    if (tx < minX) then
+        tx = minX
+    elseif (tx > maxX) then
+        tx = maxX
+    end
+    if (ty < minY) then
+        ty = minY
+    elseif (ty > maxY) then
+        ty = maxY
+    end
+    return { x = tx, y = ty }
 end
 
 --- 四舍五入

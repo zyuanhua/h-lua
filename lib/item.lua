@@ -270,7 +270,7 @@ hitem.getShadowMappingId = function(itOrId)
     else
         itId = hitem.getId(itOrId)
     end
-    return hslk_global.itemsShadowMapping[itId]
+    return hslk_global.items_shadow_mapping[itId]
 end
 --- 获取物品的最大叠加数(默认是1个,此系统以使用次数作为数量使用),需要注册
 ---@param itOrId userdata|string|number
@@ -304,7 +304,7 @@ end
 hitem.getAttribute = function(itOrId)
     local slk = hitem.getSlk(itOrId)
     if (slk ~= nil) then
-        return slk.ATTR or slk.ATTRIBUTE or {}
+        return slk.ATTR or {}
     else
         return {}
     end

@@ -247,10 +247,10 @@ htextTag.style = function(ttg, showType, xSpeed, ySpeed)
     elseif (showType == "toggle") then
         -- 放大再缩小
         local tnow = 0
-        local tend1 = tend * 0.2
-        local tend2 = tend * 0.2
+        local tend1 = tend * 0.1
+        local tend2 = tend * 0.25
         local tend3 = tend - tend1 - tend2
-        local scale = tend * 0.0022
+        local scale = tend * 0.002
         htime.setInterval(
             0.03,
             function(t)

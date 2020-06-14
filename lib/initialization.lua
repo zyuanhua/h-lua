@@ -119,7 +119,7 @@ htime.setInterval(
         for agk, agu in ipairs(hRuntime.attributeGroup.punish) do
             if (his.deleted(agu) == true) then
                 table.remove(hRuntime.attributeGroup.punish, agk)
-            elseif (his.alive(agu) == true and his.damaging(agu) == false) then
+            elseif (his.alive(agu) == true and his.beDamaging(agu) == false) then
                 hattr.set(agu, 0, { punish_current = "+" .. (hattr.get(agu, "punish") * 0.015) })
             end
         end
