@@ -473,7 +473,8 @@ hevent_default_actions = {
             local it = cj.GetManipulatedItem()
             local itId = string.id2char(cj.GetItemTypeId(it))
             if (hslk_global.id2Value.item[itId] == nil) then
-                -- 排除掉没有注册的物品。例如框架内自带的一些物品
+                -- 排除掉没有注册进hslk_global的物品
+                print_err("[物品" .. hitem.getName(it) .. "]未注册被排除掉了")
                 return
             end
             if (hRuntime.item[it] ~= nil and hRuntime.item[it].positionType == hitem.POSITION_TYPE.UNIT) then
