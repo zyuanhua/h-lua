@@ -494,6 +494,16 @@ hevent_default_actions = {
                             triggerItem = it
                         }
                     )
+                    --检测是否有匹配使用
+                    if (#hitem.MATCH_ITEM_USED > 0) then
+                        local itemName = cj.GetItemName(it)
+                        for _, m in ipairs(hitem.MATCH_ITEM_USED) do
+                            local s, e = string.find(itemName, m[1])
+                            if (s ~= nil and e ~= nil) then
+                                m[2]({ triggerUnit = u, triggerItem = it })
+                            end
+                        end
+                    end
                 else
                     --这里删除重建是为了实现地上物品的过期重置
                     hitem.del(it, 0)
@@ -634,6 +644,16 @@ hevent_default_actions = {
                     triggerItem = it
                 }
             )
+            --检测是否有匹配使用
+            if (#hitem.MATCH_ITEM_USED > 0) then
+                local itemName = cj.GetItemName(it)
+                for _, m in ipairs(hitem.MATCH_ITEM_USED) do
+                    local s, e = string.find(itemName, m[1])
+                    if (s ~= nil and e ~= nil) then
+                        m[2]({ triggerUnit = u, triggerItem = it })
+                    end
+                end
+            end
             --消失的清理cache
             if (perishable == true and hitem.getCharges(it) <= 0) then
                 hitem.del(it)

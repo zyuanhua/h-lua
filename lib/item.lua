@@ -33,7 +33,9 @@ hitem = {
         DOTA2_SPEED = hslk_global.item_fleeting[17], -- Dota2极速符
         DOTA2_VISION = hslk_global.item_fleeting[18], -- Dota2幻象符
         DOTA2_INVISIBLE = hslk_global.item_fleeting[19], -- Dota2隐身符
-    }
+    },
+    -- 全局使用注册
+    MATCH_ITEM_USED = {},
 }
 
 -- 单位注册物品
@@ -70,6 +72,29 @@ hitem.clearUnitCache = function(whichUnit)
             if (it ~= nil) then
                 hRuntime.clear(it)
             end
+        end
+    end
+end
+
+--- 注册一些物品的方法，在物品被使用时自动回调
+--- 可以简化onItemUsed的使用，协助管理物品
+--- 适用于大众物品调用,支持正则匹配
+--- evtData 同 hevent.onItemUsed
+---@param options table
+hitem.matchUsed = function(options)
+    --[[
+        options = {
+            {"匹配的物品名1", function(evtData) end},
+            {"匹配的物品名2", function(evtData) end},
+            ...
+        }
+    ]]
+    if (#options <= 0) then
+        return
+    end
+    for _, v in ipairs(options) do
+        if (type(v[1]) == "string" and type(v[2]) == "function") then
+            table.insert(hitem.MATCH_ITEM_USED, v)
         end
     end
 end
