@@ -189,9 +189,20 @@ end
 
 --- 隐藏单位
 ---@param u userdata
----@return number
 hunit.hide = function(u)
     cj.ShowUnit(u, false)
+end
+
+--- 暂停单位
+---@param u userdata
+hunit.pause = function(u)
+    cj.PauseUnit(u, true)
+end
+
+--- 恢复暂停单位
+---@param u userdata
+hunit.resume = function(u)
+    cj.PauseUnit(u, false)
 end
 
 --- 获取单位X坐标
