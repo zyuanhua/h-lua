@@ -93,7 +93,8 @@ end
 --- 属性系统说明构成
 ---@private
 slkHelper.attrDesc = function(attr, sep)
-    local str = ""
+    local str = {}
+    local strTable = {}
     sep = sep or "|n"
     for k, v in pairs(attr) do
         -- 附加单位
@@ -131,20 +132,19 @@ slkHelper.attrDesc = function(attr, sep)
         end
         --
         if (k == "attack_damage_type") then
-            str = str .. (CONST_ATTR[k] or "") .. "："
-            local temp = ""
+            local tempStr = (CONST_ATTR[k] or "") .. "："
             local opt = string.sub(v, 1, 1) or "+"
             if (type(v) == "string") then
                 v = string.sub(v, 2)
                 v = string.explode(",", v)
             end
             local av = {}
-            for kk, vv in ipairs(v) do
+            for _, vv in ipairs(v) do
                 table.insert(av, CONST_ATTR[vv] or "")
             end
-            str = str .. opt .. string.implode(",", av)
+            tempStr = tempStr .. opt .. string.implode(",", av)
             av = nil
-            str = str .. temp .. sep
+            table.insert(str, tempStr)
         elseif (table.includes(k, {
             "attack_buff",
             "attack_debuff",
@@ -152,13 +152,85 @@ slkHelper.attrDesc = function(attr, sep)
             "skill_debuff",
             "attack_effect",
             "skill_effect"
-        }) == false)
-        then
-            str = str .. (CONST_ATTR[k] or "") .. "："
-            str = str .. v .. sep
+        })) then
+            table.insert(strTable, (CONST_ATTR[k] or "") .. "：")
+            local tempStr = {}
+            for _, vv in pairs(v) do
+                local odds = vv["odds"] or 0
+                local during = vv["during"] or 0
+                local val = vv["val"] or 0
+                local percent = vv["percent"] or 0
+                local qty = vv["qty"] or 0
+                local reduce = vv["reduce"] or 0
+                local range = vv["range"] or 0
+                local distance = vv["distance"] or 0
+                local high = vv["high"] or 0
+                local temp2 = "　-"
+                if (k == "attack_buff" or k == "skill_buff") then
+                    temp2 = temp2 .. "有"
+                    temp2 = temp2 .. odds .. "%几率"
+                    temp2 = temp2 .. "在" .. during .. "秒内"
+                    if (val >= 0) then
+                        temp2 = temp2 .. "增加自身" .. val
+                    else
+                        temp2 = temp2 .. "减少自身" .. val
+                    end
+                    temp2 = temp2 .. CONST_ATTR[vv["attr"]]
+                elseif (k == "attack_debuff" or k == "skill_debuff") then
+                    temp2 = temp2 .. "有" .. odds .. "%几率"
+                    temp2 = temp2 .. "在" .. during .. "秒内"
+                    if (vv["val"] >= 0) then
+                        temp2 = temp2 .. "减少敌人" .. vv["val"]
+                    else
+                        temp2 = temp2 .. "增加敌人" .. vv["val"]
+                    end
+                    temp2 = temp2 .. CONST_ATTR[vv["attr"]]
+                elseif (k == "attack_effect" or k == "skill_effect") then
+                    if (odds < 100) then
+                        temp2 = temp2 .. "有" .. odds .. "%几率"
+                    end
+                    if (vv["attr"] == "knocking" or vv["attr"] == "violence") then
+                        temp2 = temp2 .. "击出额外" .. percent .. "%伤害的" .. CONST_ATTR[vv["attr"]]
+                    elseif (vv["attr"] == "split" or vv["attr"] == "bomb") then
+                        temp2 = temp2 .. "击出" .. range .. "范围"
+                        temp2 = temp2 .. percent .. "%的" .. CONST_ATTR[vv["attr"]] .. "伤害"
+                    elseif (vv["attr"] == "swim" or vv["attr"] == "silent" or vv["attr"] == "unarm" or vv["attr"] == "fetter")
+                    then
+                        temp2 = temp2 .. CONST_ATTR[vv["attr"]] .. "目标" .. during .. "秒"
+                        if (val > 0) then
+                            temp2 = temp2 .. ",并造成" .. val .. "点伤害"
+                        end
+                    elseif (vv["attr"] == "broken") then
+                        temp2 = temp2 .. CONST_ATTR[vv["attr"]] .. "目标"
+                        if (val > 0) then
+                            temp2 = temp2 .. ",并造成" .. val .. "点伤害"
+                        end
+                    elseif (vv["attr"] == "lightning_chain") then
+                        temp2 = temp2 .. "对最多" .. qty .. "个目标"
+                        temp2 = temp2 .. "发动" .. val .. "伤害的" .. CONST_ATTR[vv["attr"]]
+                        if (reduce > 0) then
+                            temp2 = temp2 .. ",每次击中伤害渐强" .. reduce .. "%"
+                        elseif (reduce < 0) then
+                            temp2 = temp2 .. ",每次击中伤害衰减" .. reduce .. "%"
+                        end
+                    elseif (vv["attr"] == "crack_fly") then
+                        temp2 = temp2 .. CONST_ATTR[vv["attr"]] .. "目标高达" .. high .. "高度"
+                        if (val > 0) then
+                            temp2 = temp2 .. ",并击退" .. distance .. "范围"
+                        end
+                        if (val > 0) then
+                            temp2 = temp2 .. ",同时造成" .. val .. "伤害"
+                        end
+                    end
+                end
+                table.insert(tempStr, temp2)
+            end
+            table.insert(strTable, string.implode(sep, tempStr))
+        else
+            table.insert(str, (CONST_ATTR[k] or "") .. "：" .. v)
         end
     end
-    return str
+    return string.implode(sep, table.merge(str, strTable))
 end
 
 --- 属性系统说明构成
@@ -174,8 +246,7 @@ slkHelper.attrTableDesc = function(attr, sep)
             "skill_debuff",
             "attack_effect",
             "skill_effect"
-        }))
-        then
+        })) then
             str = str .. (CONST_ATTR[k] or "") .. "："
             local temp = ""
             for kk, vv in pairs(v) do
@@ -263,16 +334,16 @@ slkHelper.itemDesc = function(v)
         table.insert(d, "主动：" .. v.ACTIVE)
     end
     if (v.PASSIVE ~= nil) then
-        table.insert(d, v.PASSIVE)
+        table.insert(d, "被动：" .. v.PASSIVE)
     end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, slkHelper.attrDesc(v.ATTR, ";") .. slkHelper.attrTableDesc(v.ATTR, ";"))
+        table.insert(d, slkHelper.attrDesc(v.ATTR, ";"))
     end
     -- 仅文本无效果，适用于例如技能书这类的物品
     if (v.ATTR_TXT ~= nil) then
         table.sort(v.ATTR_TXT)
-        table.insert(d, slkHelper.attrDesc(v.ATTR_TXT, ";") .. slkHelper.attrTableDesc(v.ATTR_TXT, ";"))
+        table.insert(d, slkHelper.attrDesc(v.ATTR_TXT, ";"))
     end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
@@ -295,16 +366,16 @@ slkHelper.itemUbertip = function(v)
         end
     end
     if (v.PASSIVE ~= nil) then
-        table.insert(d, hColor.seaLight(v.PASSIVE))
+        table.insert(d, hColor.seaLight("被动：" .. v.PASSIVE))
     end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
+        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.ATTR, "|n")))
     end
     -- 仅文本无效果，适用于例如技能书这类的物品
     if (v.ATTR_TXT ~= nil) then
         table.sort(v.ATTR_TXT)
-        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR_TXT, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR_TXT, "|n")))
+        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.ATTR_TXT, "|n")))
     end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
@@ -320,12 +391,12 @@ end
 ---@private
 slkHelper.abilityEmptyUbertip = function(v)
     local d = {}
+    if (v.PASSIVE ~= nil) then
+        table.insert(d, hColor.seaLight("被动：" .. v.PASSIVE))
+    end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.ATTR, "|n")))
-    end
-    if (v.PASSIVE ~= nil) then
-        table.insert(d, hColor.seaLight(v.PASSIVE))
+        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.ATTR, "|n")))
     end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, hColor.grey(v.Desc))
@@ -351,7 +422,7 @@ slkHelper.abilityRingUbertip = function(v)
     end
     if (v.RING ~= nil) then
         table.sort(v.RING)
-        table.insert(d, hColor.green(slkHelper.attrDesc(v.RING, "|n")) .. hColor.yellow(slkHelper.attrTableDesc(v.RING, "|n")))
+        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.RING, "|n")))
     end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, v.Desc)

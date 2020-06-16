@@ -232,6 +232,18 @@ hunit.isOpenPunish = function(u)
     return hRuntime.unit[u].isOpenPunish
 end
 
+--- 单位启用硬直（系统默认不启用）
+---@param u userdata
+hunit.openPunish = function(u)
+    if (u == nil) then
+        return
+    end
+    if (hRuntime.unit[u] == nil == nil) then
+        hRuntime.unit[u] = {}
+    end
+    hRuntime.unit[u].isOpenPunish = true
+end
+
 --- 设置单位无敌
 ---@param u userdata
 ---@param flag boolean

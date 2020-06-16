@@ -453,10 +453,7 @@ hskill.damage = function(options)
         end
         -- 硬直
         local punish_during = 5.00
-        if
-        (lastDamage > 1 and his.alive(targetUnit) and his.punish(targetUnit) == false and
-            hunit.isOpenPunish(targetUnit))
-        then
+        if (lastDamage > 1 and his.alive(targetUnit) and his.punish(targetUnit) == false and hunit.isOpenPunish(targetUnit)) then
             hattr.set(
                 targetUnit,
                 0,
@@ -514,6 +511,7 @@ hskill.damage = function(options)
             if (targetUnitDamageRebound > 0) then
                 local ldr = math.round(lastDamage * targetUnitDamageRebound * 0.01)
                 if (ldr > 0.01) then
+                    hevent.setLastDamageUnit(sourceUnit, targetUnit)
                     hunit.subCurLife(sourceUnit, ldr)
                     htextTag.style(
                         htextTag.create2Unit(sourceUnit, "反伤" .. ldr, 12.00, "f8aaeb", 10, 1.00, 10.00),
