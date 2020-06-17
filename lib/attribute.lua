@@ -191,8 +191,8 @@ hattribute.init = function(whichUnit)
         toughness = 0.0,
         avoid = 0.0,
         aim = 0.0,
-        punish = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
-        punish_current = cj.GetUnitState(whichUnit, UNIT_STATE_MAX_LIFE) / 2,
+        punish = 0.0,
+        punish_current = 0.0,
         meditative = 0.0,
         help = 0.0,
         hemophagia = 0.0,
@@ -758,6 +758,8 @@ hattribute.setHandle = function(whichUnit, attr, opr, val, dur)
             elseif (attr == "punish_current" and hunit.isOpenPunish(whichUnit)) then
                 -- 硬直(current)
                 if (futureVal > hRuntime.attribute[whichUnit].punish) then
+                    hRuntime.attribute[whichUnit].punish_current = hRuntime.attribute[whichUnit].punish
+                elseif (futureVal <= 0) then
                     hRuntime.attribute[whichUnit].punish_current = hRuntime.attribute[whichUnit].punish
                 end
             end

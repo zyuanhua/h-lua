@@ -454,14 +454,10 @@ hskill.damage = function(options)
         -- 硬直
         local punish_during = 5.00
         if (lastDamage > 1 and his.alive(targetUnit) and his.punish(targetUnit) == false and hunit.isOpenPunish(targetUnit)) then
-            hattr.set(
-                targetUnit,
-                0,
-                {
-                    punish_current = "-" .. lastDamage
-                }
-            )
-            if (targetUnitAttr.punish_current <= 0) then
+            hattr.set(targetUnit, 0, {
+                punish_current = "-" .. lastDamage
+            })
+            if (targetUnitAttr.punish_current - lastDamage <= 0) then
                 his.set(targetUnit, "isPunishing", true)
                 htime.setTimeout(
                     punish_during + 1.00,
