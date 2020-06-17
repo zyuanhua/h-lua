@@ -370,12 +370,12 @@ slkHelper.itemUbertip = function(v)
     end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.ATTR, "|n")))
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")))
     end
     -- 仅文本无效果，适用于例如技能书这类的物品
     if (v.ATTR_TXT ~= nil) then
         table.sort(v.ATTR_TXT)
-        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.ATTR_TXT, "|n")))
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR_TXT, "|n")))
     end
     local overlie = v.OVERLIE or 1
     local weight = v.WEIGHT or 0
@@ -396,7 +396,7 @@ slkHelper.abilityEmptyUbertip = function(v)
     end
     if (v.ATTR ~= nil) then
         table.sort(v.ATTR)
-        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.ATTR, "|n")))
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.ATTR, "|n")))
     end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, hColor.grey(v.Desc))
@@ -422,7 +422,7 @@ slkHelper.abilityRingUbertip = function(v)
     end
     if (v.RING ~= nil) then
         table.sort(v.RING)
-        table.insert(d, hColor.yellow(slkHelper.attrDesc(v.RING, "|n")))
+        table.insert(d, hColor.green(slkHelper.attrDesc(v.RING, "|n")))
     end
     if (v.Desc ~= nil and v.Desc ~= "") then
         table.insert(d, v.Desc)
