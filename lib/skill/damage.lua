@@ -466,40 +466,36 @@ hskill.damage = function(options)
                         his.set(targetUnit, "isPunishing", false)
                     end
                 )
-            end
-            local punishEffectAttackSpeed = (100 + targetUnitAttr.attack_speed) * punishEffectRatio
-            local punishEffectMove = targetUnitAttr.move * punishEffectRatio
-            if (punishEffectAttackSpeed < 1) then
-                punishEffectAttackSpeed = 1.00
-            end
-            if (punishEffectMove < 1) then
-                punishEffectMove = 1.00
-            end
-            hattr.set(
-                targetUnit,
-                punish_during,
-                {
+                local punishEffectAttackSpeed = (100 + targetUnitAttr.attack_speed) * punishEffectRatio
+                local punishEffectMove = targetUnitAttr.move * punishEffectRatio
+                if (punishEffectAttackSpeed < 1) then
+                    punishEffectAttackSpeed = 1.00
+                end
+                if (punishEffectMove < 1) then
+                    punishEffectMove = 1.00
+                end
+                hattr.set(targetUnit, punish_during, {
                     attack_speed = "-" .. punishEffectAttackSpeed,
                     move = "-" .. punishEffectMove
-                }
-            )
-            htextTag.style(
-                htextTag.create2Unit(targetUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00),
-                "scale",
-                0,
-                0
-            )
-            -- @触发硬直事件
-            hevent.triggerEvent(
-                targetUnit,
-                CONST_EVENT.heavy,
-                {
-                    triggerUnit = targetUnit,
-                    sourceUnit = sourceUnit,
-                    percent = punishEffectRatio * 100,
-                    during = punish_during
-                }
-            )
+                })
+                htextTag.style(
+                    htextTag.create2Unit(targetUnit, "僵硬", 6.00, "c0c0c0", 0, punish_during, 50.00),
+                    "scale",
+                    0,
+                    0
+                )
+                -- @触发硬直事件
+                hevent.triggerEvent(
+                    targetUnit,
+                    CONST_EVENT.heavy,
+                    {
+                        triggerUnit = targetUnit,
+                        sourceUnit = sourceUnit,
+                        percent = punishEffectRatio * 100,
+                        during = punish_during
+                    }
+                )
+            end
         end
         -- 反伤
         if (sourceUnit ~= nil and his.invincible(sourceUnit) == false) then
