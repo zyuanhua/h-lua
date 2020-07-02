@@ -431,11 +431,11 @@ hevent_default_actions = {
     hero = {
         levelUp = cj.Condition(function()
             local u = cj.GetTriggerUnit()
-            hhero.setPrevLevel(u, cj.GetHeroLevel(u))
             local diffLv = cj.GetHeroLevel(u) - hhero.getPrevLevel(u)
             if (diffLv < 1) then
                 return
             end
+            hhero.setPrevLevel(u, cj.GetHeroLevel(u))
             hattr.set(u, 0, {
                 str_white = "=" .. cj.GetHeroStr(u, false),
                 agi_white = "=" .. cj.GetHeroAgi(u, false),

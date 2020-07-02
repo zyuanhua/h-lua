@@ -189,9 +189,20 @@ end
 
 --- 隐藏单位
 ---@param u userdata
----@return number
 hunit.hide = function(u)
     cj.ShowUnit(u, false)
+end
+
+--- 暂停单位
+---@param u userdata
+hunit.pause = function(u)
+    cj.PauseUnit(u, true)
+end
+
+--- 恢复暂停单位
+---@param u userdata
+hunit.resume = function(u)
+    cj.PauseUnit(u, false)
 end
 
 --- 获取单位X坐标
@@ -212,13 +223,23 @@ end
 ---@param u userdata
 ---@return boolean
 hunit.isOpenPunish = function(u)
-    if (u == nil or hRuntime.unit[u] == nil) then
-        return false
+    return table.includes(u, hRuntime.attributeGroup.punish)
+end
+
+--- 单位启用硬直（系统默认不启用）
+---@param u userdata
+hunit.openPunish = function(u)
+    if (table.includes(u, hRuntime.attributeGroup.punish) == false) then
+        table.insert(hRuntime.attributeGroup.punish, u)
     end
-    if (type(hRuntime.unit[u].isOpenPunish) ~= 'boolean') then
-        return false
+end
+
+--- 单位停用硬直（系统默认不启用）
+---@param u userdata
+hunit.closePunish = function(u)
+    if (table.includes(u, hRuntime.attributeGroup.punish)) then
+        table.delete(u, hRuntime.attributeGroup.punish)
     end
-    return hRuntime.unit[u].isOpenPunish
 end
 
 --- 设置单位无敌
@@ -329,7 +350,6 @@ hunit.embed = function(u, options)
         id = options.unitId or hunit.getId(u),
         life = options.life or nil,
         during = options.during or nil,
-        isOpenPunish = options.isOpenPunish or false,
         isShadow = options.isShadow or false,
         animateSpeed = options.timeScale or 1.00,
     }
@@ -503,7 +523,7 @@ hunit.create = function(options)
         end
         --开启硬直，执行硬直计算
         if (options.isOpenPunish ~= nil and options.isOpenPunish == true) then
-            table.insert(hRuntime.attributeGroup.punish, u)
+            hunit.openPunish(u)
         end
         --影子，无敌蝗虫暂停,且不注册系统
         if (options.isShadow ~= nil and options.isShadow == true) then
