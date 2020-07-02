@@ -702,3 +702,12 @@ hplayer.subLumber = function(whichPlayer, lumber)
     end
     hplayer.setLumber(whichPlayer, hplayer.getLumber(whichPlayer) - lumber)
 end
+
+--禁用玩家技能
+hplayer.SetPlayerAbilityAvailable= function (whichPlayer, abilID, isFalse)
+    --print(abilID)
+    abilID=string.char2id( abilID)
+    --print(abilID)
+    cj.SetPlayerAbilityAvailable( whichPlayer, abilID, isFalse )
+    
+end
